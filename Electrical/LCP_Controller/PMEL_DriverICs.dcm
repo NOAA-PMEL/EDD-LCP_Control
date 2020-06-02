@@ -1,0 +1,18 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP MAX14830
+D Quad Serial UART with 128-Word FIFOs
+F https://datasheets.maximintegrated.com/en/ds/MAX14830.pdf
+$ENDCMP
+#
+$CMP SN55HVD75-EP
+D 3.3-V Supply RS-485 With IEC ESD Protection
+F http://www.ti.com/lit/ds/symlink/sn55hvd75-ep.pdf?ts=1590698329284
+$ENDCMP
+#
+$CMP TRS3122E
+D TRS3122E 1.8 V Low Power Dual RS-232 Transceiver
+F https://www.ti.com/lit/ds/symlink/trs3122e.pdf?ts=1591021643258
+$ENDCMP
+#
+#End Doc Library

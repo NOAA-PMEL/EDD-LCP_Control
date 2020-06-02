@@ -1,0 +1,298 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 5 5
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L PMEL_PowerICs:ADM4210 U?
+U 1 1 5F56DAAA
+P 8100 3800
+F 0 "U?" H 8544 3846 50  0000 L CNN
+F 1 "ADM4210" H 8544 3755 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:TSOT-23-6" H 8150 3450 50  0001 C CNN
+F 3 "https://www.analog.com/media/en/technical-documentation/data-sheets/ADM4210.pdf" H 8100 3900 50  0001 C CNN
+	1    8100 3800
+	1    0    0    -1  
+$EndComp
+$Comp
+L PMEL_PowerICs:LTC3225 U?
+U 1 1 5F56E00F
+P 5050 3800
+F 0 "U?" H 5250 4350 50  0000 C CNN
+F 1 "LTC3225" H 4800 4350 50  0000 C CNN
+F 2 "Package_DFN_QFN:DFN-10-1EP_2x3mm_P0.5mm_EP0.64x2.4mm" H 5050 3350 50  0001 C CNN
+F 3 "https://www.analog.com/media/en/technical-documentation/data-sheets/3225fb.pdf" H 4900 3700 50  0001 C CNN
+	1    5050 3800
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP C?
+U 1 1 5F56FAE3
+P 1950 3450
+F 0 "C?" H 2068 3496 50  0000 L CNN
+F 1 "1F" H 2068 3405 50  0000 L CNN
+F 2 "" H 1988 3300 50  0001 C CNN
+F 3 "~" H 1950 3450 50  0001 C CNN
+F 4 "HV0810-2R7105-R" H 1950 3450 50  0001 C CNN "MPN"
+	1    1950 3450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP C?
+U 1 1 5F5705CB
+P 1950 4050
+F 0 "C?" H 2068 4096 50  0000 L CNN
+F 1 "1F" H 2068 4005 50  0000 L CNN
+F 2 "" H 1988 3900 50  0001 C CNN
+F 3 "~" H 1950 4050 50  0001 C CNN
+F 4 "HV0810-2R7105-R" H 1950 4050 50  0001 C CNN "MPN"
+	1    1950 4050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 5F570A2E
+P 3650 2950
+F 0 "C?" H 3765 2996 50  0000 L CNN
+F 1 "2.2uF" H 3765 2905 50  0000 L CNN
+F 2 "" H 3688 2800 50  0001 C CNN
+F 3 "~" H 3650 2950 50  0001 C CNN
+	1    3650 2950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 5F571A00
+P 4150 3300
+F 0 "C?" H 4265 3346 50  0000 L CNN
+F 1 "1uF" H 4265 3255 50  0000 L CNN
+F 2 "" H 4188 3150 50  0001 C CNN
+F 3 "~" H 4150 3300 50  0001 C CNN
+	1    4150 3300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4650 4000 4450 4000
+Wire Wire Line
+	5050 3250 5050 2650
+Wire Wire Line
+	5050 2650 4450 2650
+$Comp
+L power:GND #PWR?
+U 1 1 5F573561
+P 3650 3150
+AR Path="/5EC7245E/5F573561" Ref="#PWR?"  Part="1" 
+AR Path="/5F56D5B9/5F573561" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 3650 2900 50  0001 C CNN
+F 1 "GND" H 3655 2977 50  0000 C CNN
+F 2 "" H 3650 3150 50  0001 C CNN
+F 3 "" H 3650 3150 50  0001 C CNN
+	1    3650 3150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Jumper:SolderJumper_3_Bridged12 JP?
+U 1 1 5F573E5A
+P 4500 4850
+F 0 "JP?" H 4500 4963 50  0000 C CNN
+F 1 "SolderJumper_3_Bridged12" H 4500 5054 50  0001 C CNN
+F 2 "" H 4500 4850 50  0001 C CNN
+F 3 "~" H 4500 4850 50  0001 C CNN
+	1    4500 4850
+	1    0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 5F5759D5
+P 3950 5100
+F 0 "R?" H 4020 5146 50  0000 L CNN
+F 1 "12k" H 4020 5055 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 3880 5100 50  0001 C CNN
+F 3 "~" H 3950 5100 50  0001 C CNN
+	1    3950 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 5F576645
+P 4950 5100
+F 0 "R?" H 5020 5146 50  0000 L CNN
+F 1 "30.1" H 5020 5055 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 4880 5100 50  0001 C CNN
+F 3 "~" H 4950 5100 50  0001 C CNN
+	1    4950 5100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3950 4950 3950 4850
+Wire Wire Line
+	3950 4850 4300 4850
+Wire Wire Line
+	4700 4850 4950 4850
+Wire Wire Line
+	4950 4850 4950 4950
+$Comp
+L power:GND #PWR?
+U 1 1 5F576F12
+P 3950 5350
+AR Path="/5EC7245E/5F576F12" Ref="#PWR?"  Part="1" 
+AR Path="/5F56D5B9/5F576F12" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 3950 5100 50  0001 C CNN
+F 1 "GND" H 3955 5177 50  0000 C CNN
+F 2 "" H 3950 5350 50  0001 C CNN
+F 3 "" H 3950 5350 50  0001 C CNN
+	1    3950 5350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5F57735F
+P 4950 5350
+AR Path="/5EC7245E/5F57735F" Ref="#PWR?"  Part="1" 
+AR Path="/5F56D5B9/5F57735F" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 4950 5100 50  0001 C CNN
+F 1 "GND" H 4955 5177 50  0000 C CNN
+F 2 "" H 4950 5350 50  0001 C CNN
+F 3 "" H 4950 5350 50  0001 C CNN
+	1    4950 5350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5F5775E2
+P 5050 4400
+AR Path="/5EC7245E/5F5775E2" Ref="#PWR?"  Part="1" 
+AR Path="/5F56D5B9/5F5775E2" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 5050 4150 50  0001 C CNN
+F 1 "GND" H 5055 4227 50  0000 C CNN
+F 2 "" H 5050 4400 50  0001 C CNN
+F 3 "" H 5050 4400 50  0001 C CNN
+	1    5050 4400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5050 4400 5050 4300
+Wire Wire Line
+	4950 5250 4950 5350
+Wire Wire Line
+	3950 5250 3950 5350
+Wire Wire Line
+	4650 4100 4500 4100
+Wire Wire Line
+	4500 4100 4500 4700
+$Comp
+L Device:R R?
+U 1 1 5F5796BA
+P 3750 4250
+F 0 "R?" H 3820 4296 50  0000 L CNN
+F 1 "12k" H 3820 4205 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 3680 4250 50  0001 C CNN
+F 3 "~" H 3750 4250 50  0001 C CNN
+	1    3750 4250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4650 3900 3750 3900
+Wire Wire Line
+	3750 3900 3750 4100
+$Comp
+L power:GND #PWR?
+U 1 1 5F57A15F
+P 3750 4500
+AR Path="/5EC7245E/5F57A15F" Ref="#PWR?"  Part="1" 
+AR Path="/5F56D5B9/5F57A15F" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 3750 4250 50  0001 C CNN
+F 1 "GND" H 3755 4327 50  0000 C CNN
+F 2 "" H 3750 4500 50  0001 C CNN
+F 3 "" H 3750 4500 50  0001 C CNN
+	1    3750 4500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3750 4500 3750 4400
+$Comp
+L power:GND #PWR?
+U 1 1 5F57A88C
+P 1950 4300
+AR Path="/5EC7245E/5F57A88C" Ref="#PWR?"  Part="1" 
+AR Path="/5F56D5B9/5F57A88C" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 1950 4050 50  0001 C CNN
+F 1 "GND" H 1955 4127 50  0000 C CNN
+F 2 "" H 1950 4300 50  0001 C CNN
+F 3 "" H 1950 4300 50  0001 C CNN
+	1    1950 4300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1950 4300 1950 4200
+Wire Wire Line
+	1950 3900 1950 3750
+Wire Wire Line
+	4650 3750 1950 3750
+Connection ~ 1950 3750
+Wire Wire Line
+	1950 3750 1950 3600
+Wire Wire Line
+	4150 3150 4150 3100
+Wire Wire Line
+	4150 3100 4600 3100
+Wire Wire Line
+	4600 3100 4600 3450
+Wire Wire Line
+	4600 3450 4650 3450
+Wire Wire Line
+	4150 3450 4150 3600
+Wire Wire Line
+	4150 3600 4650 3600
+Wire Wire Line
+	4450 2650 4450 4000
+Connection ~ 4450 2650
+Wire Wire Line
+	3650 3100 3650 3150
+Wire Wire Line
+	3650 2800 3650 2650
+Wire Wire Line
+	3650 2650 4450 2650
+Text GLabel 3550 3900 0    50   Input ~ 0
+ARTEMIS_D0
+Wire Wire Line
+	3550 3900 3750 3900
+Connection ~ 3750 3900
+Text GLabel 5950 4150 2    50   Input ~ 0
+ARTEMIS_D28
+$Comp
+L Device:R R?
+U 1 1 5F5851F1
+P 5800 3950
+F 0 "R?" H 5870 3996 50  0000 L CNN
+F 1 "12k" H 5870 3905 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 5730 3950 50  0001 C CNN
+F 3 "~" H 5800 3950 50  0001 C CNN
+	1    5800 3950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5950 4150 5600 4150
+Wire Wire Line
+	5600 4150 5600 3750
+Wire Wire Line
+	5600 3750 5450 3750
+Wire Wire Line
+	1950 3300 1950 2400
+Wire Wire Line
+	1950 2400 5600 2400
+Wire Wire Line
+	5600 2400 5600 3550
+Wire Wire Line
+	5600 3550 5450 3550
+$EndSCHEMATC

@@ -1,0 +1,13 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP ADM4210
+D Hot Swap Controller in 6-Lead TSOT Package
+F https://www.analog.com/media/en/technical-documentation/data-sheets/ADM4210.pdf
+$ENDCMP
+#
+$CMP LTC3225
+D 150mA Supercapacitor Charger
+F https://www.analog.com/media/en/technical-documentation/data-sheets/3225fb.pdf
+$ENDCMP
+#
+#End Doc Library

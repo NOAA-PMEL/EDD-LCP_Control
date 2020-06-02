@@ -1,0 +1,8 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP ADS1219
+K  4-Channel, 1-kSPS, 24-Bit, Delta-Sigma ADC With I
+F https://www.ti.com/lit/ds/symlink/ads1219.pdf?ts=1591017919738
+$ENDCMP
+#
+#End Doc Library

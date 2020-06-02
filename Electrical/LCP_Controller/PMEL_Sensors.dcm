@@ -1,0 +1,13 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP LIS2DW12
+D MEMS digital output motion sensor: high-performance ultra-low-power 3-axis "femto" accelerometer
+F https://www.st.com/resource/en/datasheet/lis2dw12.pdf
+$ENDCMP
+#
+$CMP ZOE-M8Q
+D Ultra-small u-blox M8 GNSS SiP modules
+F https://www.u-blox.com/sites/default/files/ZOE-M8_DataSheet_%28UBX-16008094%29.pdf
+$ENDCMP
+#
+#End Doc Library
