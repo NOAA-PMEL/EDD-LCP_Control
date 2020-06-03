@@ -1759,10 +1759,10 @@ F 4 "YC124-JR-070RL" V 7850 3650 50  0001 C CNN "MPN"
 	0    1    1    0   
 $EndComp
 $Comp
-L Jumper:SolderJumper_2_Bridged JP?
+L Jumper:SolderJumper_2_Bridged JP6
 U 1 1 5F4EC797
 P 4150 5700
-F 0 "JP?" H 4150 5600 50  0000 C CNN
+F 0 "JP6" H 4150 5600 50  0000 C CNN
 F 1 "S2U_GND_JMP" H 4150 5500 50  0000 C CNN
 F 2 "Jumper:SolderJumper-2_P1.3mm_Bridged2Bar_Pad1.0x1.5mm" H 4150 5700 50  0001 C CNN
 F 3 "~" H 4150 5700 50  0001 C CNN

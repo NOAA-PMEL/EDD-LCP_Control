@@ -45,4 +45,5 @@
   (lib (name PMEL_PowerICs)(type Legacy)(uri ${KIPRJMOD}/PMEL_PowerICs.lib)(options "")(descr ""))
   (lib (name PMEL_Sensors)(type Legacy)(uri ${KIPRJMOD}/PMEL_Sensors.lib)(options "")(descr ""))
   (lib (name PMEL_ADC)(type Legacy)(uri ${KIPRJMOD}/PMEL_ADC.lib)(options "")(descr ""))
+  (lib (name PMEL_RF)(type Legacy)(uri ${KIPRJMOD}/PMEL_RF.lib)(options "")(descr ""))
 )
