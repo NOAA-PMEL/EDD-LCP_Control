@@ -549,13 +549,13 @@ Wire Wire Line
 	7350 4000 6950 4000
 Text Notes 2450 3500 0    200  ~ 0
 Super Capacitor Charging
-Text Notes 1550 1050 0    200  ~ 0
+Text Notes 2850 1150 0    200  ~ 0
 3V3 Regulator
 $Comp
-L Regulator_Linear:AP2112K-3.3 U?
+L Regulator_Linear:AP2112K-3.3 U14
 U 1 1 5F44F39F
 P 3300 1750
-F 0 "U?" H 3300 2092 50  0000 C CNN
+F 0 "U14" H 3300 2092 50  0000 C CNN
 F 1 "AP2112K-3.3" H 3300 2001 50  0000 C CNN
 F 2 "Package_TO_SOT_SMD:SOT-23-5" H 3300 2075 50  0001 C CNN
 F 3 "https://www.diodes.com/assets/Datasheets/AP2112.pdf" H 3300 1850 50  0001 C CNN
@@ -563,29 +563,12 @@ F 3 "https://www.diodes.com/assets/Datasheets/AP2112.pdf" H 3300 1850 50  0001 C
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector_Generic:Conn_01x04 J?
-U 1 1 5F452735
-P 1250 1850
-AR Path="/5ED049DE/5F452735" Ref="J?"  Part="1" 
-AR Path="/5F56D5B9/5F452735" Ref="J?"  Part="1" 
-F 0 "J?" H 1168 1425 50  0000 C CNN
-F 1 "Conn_01x04" H 1168 1516 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 1250 1850 50  0001 C CNN
-F 3 "~" H 1250 1850 50  0001 C CNN
-	1    1250 1850
-	-1   0    0    1   
-$EndComp
-Text Notes 1050 1800 2    50   ~ 0
-COM0
-Wire Wire Line
-	1450 1950 1800 1950
-$Comp
 L Jumper:SolderJumper_2_Bridged JP?
 U 1 1 5F45A722
 P 3100 2200
 AR Path="/60F8228B/5F45A722" Ref="JP?"  Part="1" 
-AR Path="/5F56D5B9/5F45A722" Ref="JP?"  Part="1" 
-F 0 "JP?" H 3100 2100 50  0000 C CNN
+AR Path="/5F56D5B9/5F45A722" Ref="JP11"  Part="1" 
+F 0 "JP11" H 3100 2100 50  0000 C CNN
 F 1 "IN_GND_JMPR" H 3150 2000 50  0000 C CNN
 F 2 "" H 3100 2200 50  0001 C CNN
 F 3 "~" H 3100 2200 50  0001 C CNN
@@ -599,8 +582,8 @@ L power:GND #PWR?
 U 1 1 5F45A72C
 P 3600 2300
 AR Path="/60F8228B/5F45A72C" Ref="#PWR?"  Part="1" 
-AR Path="/5F56D5B9/5F45A72C" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 3600 2050 50  0001 C CNN
+AR Path="/5F56D5B9/5F45A72C" Ref="#PWR057"  Part="1" 
+F 0 "#PWR057" H 3600 2050 50  0001 C CNN
 F 1 "GND" H 3700 2200 50  0000 C CNN
 F 2 "" H 3600 2300 50  0001 C CNN
 F 3 "" H 3600 2300 50  0001 C CNN
@@ -611,28 +594,14 @@ Connection ~ 3300 2200
 Wire Wire Line
 	3600 2300 3600 2200
 Wire Wire Line
-	1800 1950 1800 2200
-Wire Wire Line
 	3300 2050 3300 2200
 Wire Wire Line
 	3300 2200 3600 2200
-Text GLabel 1550 1850 2    50   Input ~ 0
-ARTEMIS_D27_SCL(2)
-Text GLabel 1550 1750 2    50   Input ~ 0
-ARTEMIS_D25_SDA(2)
-Wire Wire Line
-	1550 1750 1450 1750
-Wire Wire Line
-	1450 1850 1550 1850
-Wire Wire Line
-	1800 2200 2000 2200
-Wire Wire Line
-	1450 1650 1950 1650
 $Comp
-L Connector:TestPoint TP?
+L Connector:TestPoint TP10
 U 1 1 5F4991A4
 P 1950 1500
-F 0 "TP?" H 2008 1618 50  0000 L CNN
+F 0 "TP10" H 2008 1618 50  0000 L CNN
 F 1 "TestPoint" H 2008 1527 50  0000 L CNN
 F 2 "" H 2150 1500 50  0001 C CNN
 F 3 "~" H 2150 1500 50  0001 C CNN
@@ -640,29 +609,27 @@ F 3 "~" H 2150 1500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector:TestPoint TP?
+L Connector:TestPoint TP11
 U 1 1 5F499ED2
 P 2000 2200
-F 0 "TP?" H 2058 2318 50  0000 L CNN
+F 0 "TP11" H 2058 2318 50  0000 L CNN
 F 1 "TestPoint" H 2058 2227 50  0000 L CNN
 F 2 "" H 2200 2200 50  0001 C CNN
 F 3 "~" H 2200 2200 50  0001 C CNN
 	1    2000 2200
 	1    0    0    -1  
 $EndComp
-Connection ~ 2000 2200
 Wire Wire Line
 	2000 2200 2950 2200
 Wire Wire Line
 	1950 1500 1950 1650
-Connection ~ 1950 1650
 Wire Wire Line
 	1950 1650 2700 1650
 $Comp
-L power:+3.3V #PWR?
+L power:+3.3V #PWR058
 U 1 1 5F49C860
 P 4500 1550
-F 0 "#PWR?" H 4500 1400 50  0001 C CNN
+F 0 "#PWR058" H 4500 1400 50  0001 C CNN
 F 1 "+3.3V" H 4515 1723 50  0000 C CNN
 F 2 "" H 4500 1550 50  0001 C CNN
 F 3 "" H 4500 1550 50  0001 C CNN
@@ -674,10 +641,10 @@ Wire Wire Line
 Wire Wire Line
 	4500 1650 4500 1550
 $Comp
-L Device:C C?
+L Device:C C45
 U 1 1 5F49EC6C
 P 3700 1850
-F 0 "C?" H 3815 1896 50  0000 L CNN
+F 0 "C45" H 3815 1896 50  0000 L CNN
 F 1 "22uF" H 3815 1805 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 3738 1700 50  0001 C CNN
 F 3 "~" H 3700 1850 50  0001 C CNN
@@ -685,10 +652,10 @@ F 3 "~" H 3700 1850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C C?
+L Device:C C46
 U 1 1 5F49F450
 P 4100 1850
-F 0 "C?" H 4215 1896 50  0000 L CNN
+F 0 "C46" H 4215 1896 50  0000 L CNN
 F 1 "1uF" H 4215 1805 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 4138 1700 50  0001 C CNN
 F 3 "~" H 4100 1850 50  0001 C CNN
@@ -696,10 +663,10 @@ F 3 "~" H 4100 1850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C C?
+L Device:C C47
 U 1 1 5F49F777
 P 4500 1850
-F 0 "C?" H 4615 1896 50  0000 L CNN
+F 0 "C47" H 4615 1896 50  0000 L CNN
 F 1 "0.1uF" H 4615 1805 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 4538 1700 50  0001 C CNN
 F 3 "~" H 4500 1850 50  0001 C CNN
@@ -735,10 +702,10 @@ Wire Wire Line
 	4500 2200 4100 2200
 Connection ~ 4100 2200
 $Comp
-L Jumper:SolderJumper_3_Bridged12 JP?
+L Jumper:SolderJumper_3_Bridged12 JP10
 U 1 1 5F4B38B9
 P 2700 1850
-F 0 "JP?" H 2700 1963 50  0000 C CNN
+F 0 "JP10" H 2700 1963 50  0000 C CNN
 F 1 "SolderJumper_3_Bridged12" H 2700 2054 50  0001 C CNN
 F 2 "" H 2700 1850 50  0001 C CNN
 F 3 "~" H 2700 1850 50  0001 C CNN

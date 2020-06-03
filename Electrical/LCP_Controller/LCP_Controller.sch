@@ -37,4 +37,6 @@ U 5F56D5B9
 F0 "Power" 50
 F1 "Power.sch" 50
 $EndSheet
+Text Notes 2450 3100 0    50   ~ 0
+To Do:\nAdd GPS Footprint\nAdd Iridium 9603n Footprint\nAdd GPS Battery Backup\nAdd Bootloader ?\nAdd Specific Power Pin Control for External COM\n
 $EndSCHEMATC
