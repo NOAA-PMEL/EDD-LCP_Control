@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr B 17000 11000
 encoding utf-8
-Sheet 23 23
+Sheet 23 21
 Title ""
 Date ""
 Rev ""

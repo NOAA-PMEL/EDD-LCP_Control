@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 8 23
+Sheet 6 21
 Title ""
 Date ""
 Rev ""
@@ -103,22 +103,6 @@ Wire Wire Line
 Wire Wire Line
 	5550 5750 5550 5850
 Connection ~ 5850 5750
-$Comp
-L Connector_Generic:Conn_02x04_Odd_Even J?
-U 1 1 5EED9FF1
-P 7900 4450
-AR Path="/5ED049DE/5EED9FF1" Ref="J?"  Part="1" 
-AR Path="/60F8228B/5EED9FF1" Ref="J?"  Part="1" 
-AR Path="/5EDA4305/5EED9FF1" Ref="J17"  Part="1" 
-F 0 "J17" H 8000 4650 50  0000 R CNN
-F 1 "ANALOG_CONN" H 8200 4150 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 7900 4450 50  0001 C CNN
-F 3 "~" H 7900 4450 50  0001 C CNN
-	1    7900 4450
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7700 4450 7150 4450
 Wire Wire Line
 	7150 4450 7150 4400
 Wire Wire Line
@@ -128,51 +112,13 @@ Wire Wire Line
 Wire Wire Line
 	7150 4600 7150 4550
 Wire Wire Line
-	7150 4550 7700 4550
-Wire Wire Line
 	6500 4800 7250 4800
 Wire Wire Line
 	7250 4800 7250 4650
 Wire Wire Line
-	7250 4650 7700 4650
-Wire Wire Line
 	6500 4200 7250 4200
 Wire Wire Line
 	7250 4200 7250 4350
-Wire Wire Line
-	7250 4350 7700 4350
-$Comp
-L power:GNDA #PWR?
-U 1 1 5EEDA003
-P 8400 4900
-AR Path="/60F8228B/5EEDA003" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA4305/5EEDA003" Ref="#PWR052"  Part="1" 
-F 0 "#PWR052" H 8400 4650 50  0001 C CNN
-F 1 "GNDA" H 8405 4727 50  0000 C CNN
-F 2 "" H 8400 4900 50  0001 C CNN
-F 3 "" H 8400 4900 50  0001 C CNN
-	1    8400 4900
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	8200 4350 8400 4350
-Wire Wire Line
-	8400 4350 8400 4450
-Wire Wire Line
-	8200 4450 8400 4450
-Connection ~ 8400 4450
-Wire Wire Line
-	8400 4450 8400 4550
-Wire Wire Line
-	8200 4550 8400 4550
-Connection ~ 8400 4550
-Wire Wire Line
-	8400 4550 8400 4650
-Wire Wire Line
-	8200 4650 8400 4650
-Connection ~ 8400 4650
-Wire Wire Line
-	8400 4650 8400 4900
 $Comp
 L Device:C_Small C?
 U 1 1 5EEDA014
@@ -527,4 +473,39 @@ Wire Wire Line
 	2100 4250 5050 4250
 Wire Wire Line
 	2100 2850 3550 2850
+Text HLabel 8050 4350 2    50   Input ~ 0
+ADC24_IN0
+Text HLabel 8050 4450 2    50   Input ~ 0
+ADC24_IN1
+Text HLabel 8050 4550 2    50   Input ~ 0
+ADC24_IN2
+Text HLabel 8050 4650 2    50   Input ~ 0
+ADC24_IN3
+Text HLabel 8050 4900 2    50   Output ~ 0
+ADC24_GND
+$Comp
+L power:GNDA #PWR?
+U 1 1 5F501F04
+P 7900 4950
+AR Path="/60F8228B/5F501F04" Ref="#PWR?"  Part="1" 
+AR Path="/5EDA4305/5F501F04" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 7900 4700 50  0001 C CNN
+F 1 "GNDA" H 7905 4777 50  0000 C CNN
+F 2 "" H 7900 4950 50  0001 C CNN
+F 3 "" H 7900 4950 50  0001 C CNN
+	1    7900 4950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8050 4900 7900 4900
+Wire Wire Line
+	7900 4900 7900 4950
+Wire Wire Line
+	7250 4650 8050 4650
+Wire Wire Line
+	7150 4550 8050 4550
+Wire Wire Line
+	7150 4450 8050 4450
+Wire Wire Line
+	7250 4350 8050 4350
 $EndSCHEMATC

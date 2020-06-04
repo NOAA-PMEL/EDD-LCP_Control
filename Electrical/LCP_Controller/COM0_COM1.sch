@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 15 23
+Sheet 12 21
 Title ""
 Date ""
 Rev ""
@@ -398,12 +398,146 @@ Wire Wire Line
 Wire Wire Line
 	8350 4900 9900 4900
 Connection ~ 8350 4900
-Text HLabel 2150 5650 0    50   Input ~ 0
+Text HLabel 2650 5600 0    50   Input ~ 0
 COM0_ON
-Text HLabel 2150 5800 0    50   Input ~ 0
+Text HLabel 2650 6600 0    50   Input ~ 0
 COM1_ON
 Text HLabel 8650 5650 2    50   Output ~ 0
 COM0_PWR
 Text HLabel 8650 5850 2    50   Output ~ 0
 COM1_PWR
+$Comp
+L SparkFun-DiscreteSemi:MOSFET_PCH-DMG2307L Q?
+U 1 1 5F4567CC
+P 3350 5700
+AR Path="/60F8228B/5F4567CC" Ref="Q?"  Part="1" 
+AR Path="/5EEDF256/5F4567CC" Ref="Q?"  Part="1" 
+AR Path="/5EDB3B75/5F4567CC" Ref="Q?"  Part="1" 
+F 0 "Q?" H 3515 5605 45  0000 L CNN
+F 1 "MOSFET_PCH-DMG2305UX-7" H 3515 5689 45  0001 L CNN
+F 2 "SOT23-3" H 3350 5950 20  0001 C CNN
+F 3 "" H 3350 5700 50  0001 C CNN
+F 4 "TRANS-11308" H 3515 5784 60  0001 L CNN "Field4"
+	1    3350 5700
+	1    0    0    1   
+$EndComp
+Wire Wire Line
+	3450 5950 3450 5900
+$Comp
+L power:+3.3V #PWR?
+U 1 1 5F4567D3
+P 3450 5300
+AR Path="/60F8228B/5F4567D3" Ref="#PWR?"  Part="1" 
+AR Path="/5EEDF256/5F4567D3" Ref="#PWR?"  Part="1" 
+AR Path="/5EDB3B75/5F4567D3" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 3450 5150 50  0001 C CNN
+F 1 "+3.3V" H 3465 5473 50  0000 C CNN
+F 2 "" H 3450 5300 50  0001 C CNN
+F 3 "" H 3450 5300 50  0001 C CNN
+	1    3450 5300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3450 5300 3450 5400
+$Comp
+L Device:R R?
+U 1 1 5F4567DA
+P 3200 5400
+AR Path="/60F8228B/5F4567DA" Ref="R?"  Part="1" 
+AR Path="/5EEDF256/5F4567DA" Ref="R?"  Part="1" 
+AR Path="/5EDB3B75/5F4567DA" Ref="R?"  Part="1" 
+F 0 "R?" V 2993 5400 50  0000 C CNN
+F 1 "10k" V 3084 5400 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 3130 5400 50  0001 C CNN
+F 3 "~" H 3200 5400 50  0001 C CNN
+	1    3200 5400
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3350 5400 3450 5400
+Connection ~ 3450 5400
+Wire Wire Line
+	3450 5400 3450 5500
+Wire Wire Line
+	3150 5600 3000 5600
+Wire Wire Line
+	3000 5600 3000 5400
+Wire Wire Line
+	3000 5400 3050 5400
+Wire Wire Line
+	2650 5600 3000 5600
+Connection ~ 3000 5600
+$Comp
+L SparkFun-DiscreteSemi:MOSFET_PCH-DMG2307L Q?
+U 1 1 5F45C958
+P 3350 6700
+AR Path="/60F8228B/5F45C958" Ref="Q?"  Part="1" 
+AR Path="/5EEDF256/5F45C958" Ref="Q?"  Part="1" 
+AR Path="/5EDB3B75/5F45C958" Ref="Q?"  Part="1" 
+F 0 "Q?" H 3515 6605 45  0000 L CNN
+F 1 "MOSFET_PCH-DMG2305UX-7" H 3515 6689 45  0001 L CNN
+F 2 "SOT23-3" H 3350 6950 20  0001 C CNN
+F 3 "" H 3350 6700 50  0001 C CNN
+F 4 "TRANS-11308" H 3515 6784 60  0001 L CNN "Field4"
+	1    3350 6700
+	1    0    0    1   
+$EndComp
+$Comp
+L power:+3.3V #PWR?
+U 1 1 5F45C95F
+P 3450 6300
+AR Path="/60F8228B/5F45C95F" Ref="#PWR?"  Part="1" 
+AR Path="/5EEDF256/5F45C95F" Ref="#PWR?"  Part="1" 
+AR Path="/5EDB3B75/5F45C95F" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 3450 6150 50  0001 C CNN
+F 1 "+3.3V" H 3465 6473 50  0000 C CNN
+F 2 "" H 3450 6300 50  0001 C CNN
+F 3 "" H 3450 6300 50  0001 C CNN
+	1    3450 6300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3450 6300 3450 6400
+$Comp
+L Device:R R?
+U 1 1 5F45C966
+P 3200 6400
+AR Path="/60F8228B/5F45C966" Ref="R?"  Part="1" 
+AR Path="/5EEDF256/5F45C966" Ref="R?"  Part="1" 
+AR Path="/5EDB3B75/5F45C966" Ref="R?"  Part="1" 
+F 0 "R?" V 2993 6400 50  0000 C CNN
+F 1 "10k" V 3084 6400 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 3130 6400 50  0001 C CNN
+F 3 "~" H 3200 6400 50  0001 C CNN
+	1    3200 6400
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3350 6400 3450 6400
+Connection ~ 3450 6400
+Wire Wire Line
+	3450 6400 3450 6500
+Wire Wire Line
+	3150 6600 3000 6600
+Wire Wire Line
+	3000 6600 3000 6400
+Wire Wire Line
+	3000 6400 3050 6400
+Wire Wire Line
+	2650 6600 3000 6600
+Connection ~ 3000 6600
+Wire Wire Line
+	3450 5950 4550 5950
+Wire Wire Line
+	4550 5950 4550 5650
+Wire Wire Line
+	4550 5650 8650 5650
+Wire Wire Line
+	3450 7000 4700 7000
+Wire Wire Line
+	4700 7000 4700 5850
+Wire Wire Line
+	4700 5850 8650 5850
+Wire Wire Line
+	3450 6900 3450 7000
 $EndSCHEMATC

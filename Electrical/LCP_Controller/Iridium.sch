@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 7 23
+Sheet 22 21
 Title ""
 Date ""
 Rev ""
@@ -217,7 +217,7 @@ F 3 "" H 8050 4150 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	8050 3950 8050 4150
-Text HLabel 8750 3750 2    50   Output ~ 0
+Text HLabel 8750 3750 2    50   BiDi ~ 0
 IRIDIUM_SIGNAL
 Wire Wire Line
 	8250 3750 8750 3750

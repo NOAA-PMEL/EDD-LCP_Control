@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 23 23
+Sheet 19 21
 Title ""
 Date ""
 Rev ""
@@ -15,23 +15,6 @@ Comment4 ""
 $EndDescr
 Text Notes 8250 2750 2    200  ~ 0
 Pressure Sensor or Spare I2C
-$Comp
-L power:GND #PWR?
-U 1 1 5EEEC56E
-P 6650 4500
-AR Path="/60F8228B/5EEEC56E" Ref="#PWR?"  Part="1" 
-AR Path="/5EEE892C/5EEEC56E" Ref="#PWR096"  Part="1" 
-F 0 "#PWR096" H 6650 4250 50  0001 C CNN
-F 1 "GND" H 6750 4400 50  0000 C CNN
-F 2 "" H 6650 4500 50  0001 C CNN
-F 3 "" H 6650 4500 50  0001 C CNN
-	1    6650 4500
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	6800 4400 6650 4400
-Wire Wire Line
-	6650 4400 6650 4500
 $Comp
 L SparkFun-DiscreteSemi:MOSFET_PCH-DMG2307L Q?
 U 1 1 5EEEC577
@@ -49,18 +32,10 @@ $EndComp
 Wire Wire Line
 	5550 3700 5550 3650
 Wire Wire Line
-	6800 4200 6250 4200
-Wire Wire Line
 	5800 4200 5800 4150
 Wire Wire Line
-	6800 4300 6350 4300
-Wire Wire Line
 	5700 4300 5700 4150
-Wire Wire Line
-	5200 4300 5700 4300
 Connection ~ 5700 4300
-Wire Wire Line
-	5200 4200 5800 4200
 Connection ~ 5800 4200
 $Comp
 L power:+3.3V #PWR?
@@ -101,13 +76,7 @@ Wire Wire Line
 	5100 3350 5100 3150
 Wire Wire Line
 	5100 3150 5150 3150
-Wire Wire Line
-	5100 3350 4950 3350
 Connection ~ 5100 3350
-Wire Wire Line
-	6150 3700 6150 4100
-Wire Wire Line
-	6150 4100 6800 4100
 Wire Wire Line
 	5550 3700 5700 3700
 Wire Wire Line
@@ -133,19 +102,6 @@ F 2 "Resistor_SMD:R_Array_Concave_2x0603" V 5875 3950 50  0001 C CNN
 F 3 "~" H 5700 3950 50  0001 C CNN
 	1    5700 3950
 	-1   0    0    1   
-$EndComp
-$Comp
-L Connector_Generic:Conn_01x04 J?
-U 1 1 5EEEC5AD
-P 7000 4300
-AR Path="/60F8228B/5EEEC5AD" Ref="J?"  Part="1" 
-AR Path="/5EEE892C/5EEEC5AD" Ref="J27"  Part="1" 
-F 0 "J27" H 6918 3875 50  0000 C CNN
-F 1 "Conn_01x04" H 6918 3966 50  0000 C CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical" H 7000 4300 50  0001 C CNN
-F 3 "~" H 7000 4300 50  0001 C CNN
-	1    7000 4300
-	1    0    0    1   
 $EndComp
 $Comp
 L power:GND #PWR?
@@ -194,22 +150,17 @@ F 3 "~" H 5800 4900 50  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 Wire Wire Line
-	6150 4800 6150 4100
-Wire Wire Line
 	6000 4800 6150 4800
-Connection ~ 6150 4100
 Wire Wire Line
 	6250 4900 6250 4200
 Wire Wire Line
 	6000 4900 6250 4900
-Connection ~ 6250 4200
 Wire Wire Line
 	6250 4200 5800 4200
 Wire Wire Line
 	6350 5000 6350 4300
 Wire Wire Line
 	6000 5000 6350 5000
-Connection ~ 6350 4300
 Wire Wire Line
 	6350 4300 5700 4300
 NoConn ~ 6000 5100
@@ -219,4 +170,29 @@ Text HLabel 3500 4200 0    50   Input ~ 0
 SPARE_SCL
 Text HLabel 3500 4300 0    50   BiDi ~ 0
 SPARE_SDA
+Wire Wire Line
+	6150 3700 6150 4100
+Text HLabel 7300 4200 2    50   Output ~ 0
+SPARE_I2C_SCL
+Text HLabel 7300 4300 2    50   BiDi ~ 0
+SPARE_I2C_SDA
+Text HLabel 7300 4100 2    50   Output ~ 0
+SPARE_I2C_PWR
+Wire Wire Line
+	3500 4200 5800 4200
+Wire Wire Line
+	3500 4300 5700 4300
+Wire Wire Line
+	3500 3350 5100 3350
+Wire Wire Line
+	7300 4100 6150 4100
+Connection ~ 6150 4100
+Wire Wire Line
+	6150 4100 6150 4800
+Wire Wire Line
+	7300 4200 6250 4200
+Connection ~ 6250 4200
+Wire Wire Line
+	6350 4300 7300 4300
+Connection ~ 6350 4300
 $EndSCHEMATC

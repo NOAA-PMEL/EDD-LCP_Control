@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 21 23
+Sheet 17 21
 Title ""
 Date ""
 Rev ""
@@ -75,41 +75,10 @@ F 3 "~" H 6700 4000 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	6600 4000 6400 4000
-$Comp
-L Connector:Conn_Coaxial J?
-U 1 1 5EEACBC4
-P 7450 3600
-AR Path="/60F8228B/5EEACBC4" Ref="J?"  Part="1" 
-AR Path="/5EE96A32/5EEACBC4" Ref="J23"  Part="1" 
-F 0 "J23" H 7550 3575 50  0000 L CNN
-F 1 "Conn_Coaxial" H 7550 3484 50  0000 L CNN
-F 2 "Connector_Coaxial:SMA_Amphenol_132134_Vertical" H 7450 3600 50  0001 C CNN
-F 3 " ~" H 7450 3600 50  0001 C CNN
-F 4 "132134" H 7450 3600 50  0001 C CNN "MPN"
-	1    7450 3600
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	6800 4000 7050 4000
 Wire Wire Line
 	7050 4000 7050 3600
-Wire Wire Line
-	7050 3600 7250 3600
-$Comp
-L power:GND #PWR?
-U 1 1 5EEACBCD
-P 7450 3900
-AR Path="/60F8228B/5EEACBCD" Ref="#PWR?"  Part="1" 
-AR Path="/5EE96A32/5EEACBCD" Ref="#PWR090"  Part="1" 
-F 0 "#PWR090" H 7450 3650 50  0001 C CNN
-F 1 "GND" H 7550 3800 50  0000 C CNN
-F 2 "" H 7450 3900 50  0001 C CNN
-F 3 "" H 7450 3900 50  0001 C CNN
-	1    7450 3900
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7450 3900 7450 3800
 Text Notes 7100 2650 2    200  ~ 0
 Antenna Switch
 Text GLabel 6650 4300 2    50   Input ~ 0
@@ -131,7 +100,7 @@ F 3 "" H 5900 4600 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	5900 4500 5900 4600
-Text HLabel 4150 3900 0    50   Input ~ 0
+Text HLabel 4150 3900 0    50   BiDi ~ 0
 IRIDIUM_SIGNAL
 Text HLabel 4150 4100 0    50   Input ~ 0
 GPS_SIGNAL
@@ -139,4 +108,8 @@ Wire Wire Line
 	4150 4100 5150 4100
 Wire Wire Line
 	4150 3900 5150 3900
+Text HLabel 7450 3600 2    50   BiDi ~ 0
+Iridium_GPS_Signal
+Wire Wire Line
+	7050 3600 7450 3600
 $EndSCHEMATC

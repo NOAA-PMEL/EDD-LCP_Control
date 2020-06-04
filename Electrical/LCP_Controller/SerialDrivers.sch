@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr B 17000 11000
 encoding utf-8
-Sheet 3 23
+Sheet 3 21
 Title "LCP Controller "
 Date "5/19/2020"
 Rev "0.1"

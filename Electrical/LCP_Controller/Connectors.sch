@@ -1,9 +1,9 @@
 EESchema Schematic File Version 4
 EELAYER 30 0
 EELAYER END
-$Descr A4 11693 8268
+$Descr B 17000 11000
 encoding utf-8
-Sheet 19 23
+Sheet 15 21
 Title ""
 Date ""
 Rev ""
@@ -13,4 +13,538 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Text HLabel 1900 5650 0    50   Input ~ 0
+COM0_TX
+Text HLabel 1900 5750 0    50   Output ~ 0
+COM0_RX
+Text HLabel 1900 6000 0    50   Input ~ 0
+COM1_TX
+Text HLabel 1900 6100 0    50   Output ~ 0
+COM1_RX
+Text HLabel 1900 5550 0    50   Input ~ 0
+COM0_PWR
+Text HLabel 1900 5900 0    50   Input ~ 0
+COM1_PWR
+Text HLabel 1900 6400 0    50   BiDi ~ 0
+COM2_TX(D+)
+Text HLabel 1900 6500 0    50   BiDi ~ 0
+COM2_RX(D-)
+Text HLabel 1900 6650 0    50   BiDi ~ 0
+COM3_TX(D+)
+Text HLabel 1900 6750 0    50   BiDi ~ 0
+COM3_RX(D-)
+Text HLabel 1900 6300 0    50   Input ~ 0
+COM2_PWR
+Text HLabel 1900 6850 0    50   Input ~ 0
+COM3_PWR
+$Comp
+L Connector_Generic:Conn_02x04_Odd_Even J?
+U 1 1 5F4FCF41
+P 9500 1600
+AR Path="/5ED049DE/5F4FCF41" Ref="J?"  Part="1" 
+AR Path="/60F8228B/5F4FCF41" Ref="J?"  Part="1" 
+AR Path="/5EDA4305/5F4FCF41" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/5F4FCF41" Ref="J?"  Part="1" 
+F 0 "J?" H 9600 1800 50  0000 R CNN
+F 1 "ANALOG_CONN" H 9800 1300 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 9500 1600 50  0001 C CNN
+F 3 "~" H 9500 1600 50  0001 C CNN
+	1    9500 1600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9800 1500 10000 1500
+Wire Wire Line
+	10000 1500 10000 1600
+Wire Wire Line
+	9800 1600 10000 1600
+Connection ~ 10000 1600
+Wire Wire Line
+	10000 1600 10000 1700
+Wire Wire Line
+	9800 1700 10000 1700
+Connection ~ 10000 1700
+Wire Wire Line
+	10000 1700 10000 1800
+Wire Wire Line
+	9800 1800 10000 1800
+Connection ~ 10000 1800
+Wire Wire Line
+	10000 1800 10000 2050
+Text HLabel 8650 1500 0    50   Output ~ 0
+ADC24_IN0
+Text HLabel 8650 1600 0    50   Output ~ 0
+ADC24_IN1
+Text HLabel 8650 1700 0    50   Output ~ 0
+ADC24_IN2
+Text HLabel 8650 1800 0    50   Output ~ 0
+ADC24_IN3
+Wire Wire Line
+	8650 1800 9300 1800
+Wire Wire Line
+	9300 1700 8650 1700
+Wire Wire Line
+	8650 1600 9300 1600
+Wire Wire Line
+	9300 1500 8650 1500
+Text HLabel 8650 2050 0    50   Output ~ 0
+ADC24_GND
+Wire Wire Line
+	8650 2050 10000 2050
+$Comp
+L power:GND #PWR?
+U 1 1 5F536637
+P 9250 5800
+AR Path="/60F8228B/5F536637" Ref="#PWR?"  Part="1" 
+AR Path="/5EEE892C/5F536637" Ref="#PWR?"  Part="1" 
+AR Path="/5EE033BE/5F536637" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 9250 5550 50  0001 C CNN
+F 1 "GND" H 9350 5700 50  0000 C CNN
+F 2 "" H 9250 5800 50  0001 C CNN
+F 3 "" H 9250 5800 50  0001 C CNN
+	1    9250 5800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9400 5700 9250 5700
+Wire Wire Line
+	9250 5700 9250 5800
+Wire Wire Line
+	9400 5500 8850 5500
+Wire Wire Line
+	9400 5600 8950 5600
+Wire Wire Line
+	8750 5400 9400 5400
+$Comp
+L Connector_Generic:Conn_01x04 J?
+U 1 1 5F536642
+P 9600 5600
+AR Path="/60F8228B/5F536642" Ref="J?"  Part="1" 
+AR Path="/5EEE892C/5F536642" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/5F536642" Ref="J?"  Part="1" 
+F 0 "J?" H 9518 5175 50  0000 C CNN
+F 1 "Conn_01x04" H 9518 5266 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical" H 9600 5600 50  0001 C CNN
+F 3 "~" H 9600 5600 50  0001 C CNN
+	1    9600 5600
+	1    0    0    1   
+$EndComp
+Text HLabel 8400 5500 0    50   Input ~ 0
+SPARE_I2C_SCL
+Text HLabel 8400 5600 0    50   BiDi ~ 0
+SPARE_I2C_SDA
+Text HLabel 8400 5400 0    50   BiDi ~ 0
+SPARE_I2C_PWR
+$Comp
+L Connector_Generic:Conn_01x04 J?
+U 1 1 5F55B6FB
+P 26800 3700
+AR Path="/5ED049DE/5F55B6FB" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/5F55B6FB" Ref="J?"  Part="1" 
+F 0 "J?" H 26800 3350 50  0000 C CNN
+F 1 "Conn_01x04" H 26718 3366 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 26800 3700 50  0001 C CNN
+F 3 "~" H 26800 3700 50  0001 C CNN
+	1    26800 3700
+	1    0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5F55B701
+P 26450 3850
+AR Path="/5ED049DE/5F55B701" Ref="#PWR?"  Part="1" 
+AR Path="/5EE033BE/5F55B701" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 26450 3600 50  0001 C CNN
+F 1 "GND" H 26550 3750 50  0000 C CNN
+F 2 "" H 26450 3850 50  0001 C CNN
+F 3 "" H 26450 3850 50  0001 C CNN
+	1    26450 3850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	26450 3850 26450 3800
+Wire Wire Line
+	26450 3800 26600 3800
+$Comp
+L Connector_Generic:Conn_01x04 J?
+U 1 1 5F55B709
+P 26800 4450
+AR Path="/5ED049DE/5F55B709" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/5F55B709" Ref="J?"  Part="1" 
+F 0 "J?" H 26800 4100 50  0000 C CNN
+F 1 "Conn_01x04" H 26718 4116 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 26800 4450 50  0001 C CNN
+F 3 "~" H 26800 4450 50  0001 C CNN
+	1    26800 4450
+	1    0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5F55B70F
+P 26450 4600
+AR Path="/5ED049DE/5F55B70F" Ref="#PWR?"  Part="1" 
+AR Path="/5EE033BE/5F55B70F" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 26450 4350 50  0001 C CNN
+F 1 "GND" H 26550 4500 50  0000 C CNN
+F 2 "" H 26450 4600 50  0001 C CNN
+F 3 "" H 26450 4600 50  0001 C CNN
+	1    26450 4600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	26450 4600 26450 4550
+Wire Wire Line
+	26450 4550 26600 4550
+Wire Wire Line
+	26500 7300 26600 7300
+Wire Wire Line
+	26500 7350 26500 7300
+Wire Wire Line
+	26500 8050 26600 8050
+Wire Wire Line
+	26500 8150 26500 8050
+$Comp
+L power:GND #PWR?
+U 1 1 5F55B71B
+P 26500 8150
+AR Path="/5ED049DE/5F55B71B" Ref="#PWR?"  Part="1" 
+AR Path="/5EE033BE/5F55B71B" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 26500 7900 50  0001 C CNN
+F 1 "GND" H 26400 8050 50  0000 C CNN
+F 2 "" H 26500 8150 50  0001 C CNN
+F 3 "" H 26500 8150 50  0001 C CNN
+	1    26500 8150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5F55B721
+P 26500 7350
+AR Path="/5ED049DE/5F55B721" Ref="#PWR?"  Part="1" 
+AR Path="/5EE033BE/5F55B721" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 26500 7100 50  0001 C CNN
+F 1 "GND" H 26400 7250 50  0000 C CNN
+F 2 "" H 26500 7350 50  0001 C CNN
+F 3 "" H 26500 7350 50  0001 C CNN
+	1    26500 7350
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x04 J?
+U 1 1 5F55B727
+P 26800 7200
+AR Path="/5ED049DE/5F55B727" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/5F55B727" Ref="J?"  Part="1" 
+F 0 "J?" H 26850 7400 50  0000 C CNN
+F 1 "Conn_01x04" H 27000 7500 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 26800 7200 50  0001 C CNN
+F 3 "~" H 26800 7200 50  0001 C CNN
+	1    26800 7200
+	1    0    0    1   
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x04 J?
+U 1 1 5F55B72D
+P 26800 7950
+AR Path="/5ED049DE/5F55B72D" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/5F55B72D" Ref="J?"  Part="1" 
+F 0 "J?" H 26850 8200 50  0000 C CNN
+F 1 "Conn_01x04" H 27000 8300 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 26800 7950 50  0001 C CNN
+F 3 "~" H 26800 7950 50  0001 C CNN
+	1    26800 7950
+	1    0    0    1   
+$EndComp
+Wire Wire Line
+	25700 3700 26550 3700
+Wire Wire Line
+	25800 3600 26450 3600
+Wire Wire Line
+	25700 2100 25700 3400
+Wire Wire Line
+	25800 2000 25800 3300
+Wire Wire Line
+	25600 4350 26300 4350
+Wire Wire Line
+	25600 2200 25600 3500
+Connection ~ 25600 3500
+Wire Wire Line
+	25600 3500 25600 4350
+Wire Wire Line
+	25500 2300 25500 3600
+Wire Wire Line
+	26600 4450 26400 4450
+Connection ~ 25500 3600
+Wire Wire Line
+	25500 3600 25500 4450
+Connection ~ 25700 3400
+Wire Wire Line
+	25700 3400 25700 3700
+Connection ~ 25800 3300
+Wire Wire Line
+	25800 3300 25800 3600
+Wire Wire Line
+	22350 3600 25500 3600
+Wire Wire Line
+	22350 3500 25600 3500
+Wire Wire Line
+	22600 3400 25700 3400
+Wire Wire Line
+	22700 3300 25800 3300
+Text Notes 26950 3650 0    50   ~ 0
+COM0
+Text Notes 26950 4450 0    50   ~ 0
+COM1
+Text Notes 26900 7200 0    50   ~ 0
+COM2
+Text Notes 26900 7950 0    50   ~ 0
+COM3
+Text GLabel 26300 3500 0    50   Input ~ 0
+COM0_PWR
+Text GLabel 26100 4250 0    50   Input ~ 0
+COM1_PWR
+Wire Wire Line
+	26100 4250 26200 4250
+Wire Wire Line
+	26600 3500 26350 3500
+Wire Wire Line
+	25400 6200 25300 6200
+Connection ~ 25500 6200
+Wire Wire Line
+	25500 6200 25400 6200
+Wire Wire Line
+	25600 6200 25500 6200
+Wire Wire Line
+	25600 6300 25600 6200
+Wire Wire Line
+	25500 6200 25500 6300
+Wire Wire Line
+	25400 6300 25400 6200
+$Comp
+L Connector_Generic:Conn_02x04_Odd_Even J?
+U 1 1 5F55B757
+P 25400 6600
+AR Path="/5ED049DE/5F55B757" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/5F55B757" Ref="J?"  Part="1" 
+F 0 "J?" V 25550 6300 50  0000 R CNN
+F 1 "Saleae Test" V 25450 6300 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 25400 6600 50  0001 C CNN
+F 3 "~" H 25400 6600 50  0001 C CNN
+F 4 "COM2 Test Points" V 25350 5950 50  0000 C CNN "Field4"
+	1    25400 6600
+	0    -1   -1   0   
+$EndComp
+Connection ~ 25400 6200
+$Comp
+L power:GND #PWR?
+U 1 1 5F55B75E
+P 26000 5850
+AR Path="/5ED049DE/5F55B75E" Ref="#PWR?"  Part="1" 
+AR Path="/5EE033BE/5F55B75E" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 26000 5600 50  0001 C CNN
+F 1 "GND" H 26100 5750 50  0000 C CNN
+F 2 "" H 26000 5850 50  0001 C CNN
+F 3 "" H 26000 5850 50  0001 C CNN
+	1    26000 5850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	26000 5850 26000 5800
+Wire Wire Line
+	26000 5800 26200 5800
+Wire Wire Line
+	26300 5800 26200 5800
+Connection ~ 26400 5800
+Wire Wire Line
+	26400 5800 26300 5800
+Wire Wire Line
+	26500 5800 26400 5800
+Wire Wire Line
+	26500 5700 26500 5800
+Wire Wire Line
+	26400 5800 26400 5700
+Wire Wire Line
+	26300 5700 26300 5800
+Wire Wire Line
+	26200 5800 26200 5700
+$Comp
+L Connector_Generic:Conn_02x04_Odd_Even J?
+U 1 1 5F55B76F
+P 26300 5400
+AR Path="/5ED049DE/5F55B76F" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/5F55B76F" Ref="J?"  Part="1" 
+F 0 "J?" V 26200 5150 50  0000 R CNN
+F 1 "Saleae Test" V 26100 5150 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 26300 5400 50  0001 C CNN
+F 3 "~" H 26300 5400 50  0001 C CNN
+F 4 "COM3 Test Points" V 26000 4850 50  0000 C CNN "Field4"
+	1    26300 5400
+	0    -1   1    0   
+$EndComp
+Connection ~ 26300 5800
+Wire Wire Line
+	26200 5200 26200 4250
+Connection ~ 26200 4250
+Wire Wire Line
+	26200 4250 26600 4250
+Wire Wire Line
+	26300 5200 26300 4350
+Connection ~ 26300 4350
+Wire Wire Line
+	26300 4350 26600 4350
+Connection ~ 26400 4450
+Wire Wire Line
+	26400 4450 25500 4450
+Wire Wire Line
+	26400 4450 26400 5200
+NoConn ~ 26500 5200
+$Comp
+L power:GND #PWR?
+U 1 1 5F55B780
+P 26150 2550
+AR Path="/5ED049DE/5F55B780" Ref="#PWR?"  Part="1" 
+AR Path="/5EE033BE/5F55B780" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 26150 2300 50  0001 C CNN
+F 1 "GND" H 26150 2400 50  0000 C CNN
+F 2 "" H 26150 2550 50  0001 C CNN
+F 3 "" H 26150 2550 50  0001 C CNN
+	1    26150 2550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	26150 2550 26150 2300
+Wire Wire Line
+	26650 2400 26650 2300
+Wire Wire Line
+	26550 2300 26550 2400
+Wire Wire Line
+	26450 2400 26450 2300
+Wire Wire Line
+	26350 2300 26350 2400
+$Comp
+L Connector_Generic:Conn_02x04_Odd_Even J?
+U 1 1 5F55B78C
+P 26450 2700
+AR Path="/5ED049DE/5F55B78C" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/5F55B78C" Ref="J?"  Part="1" 
+F 0 "J?" V 26350 2450 50  0000 R CNN
+F 1 "Saleae Test" V 26250 2450 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 26450 2700 50  0001 C CNN
+F 3 "~" H 26450 2700 50  0001 C CNN
+F 4 "COM1 Test Points" V 26150 2100 50  0000 C CNN "Field4"
+	1    26450 2700
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	26350 2900 26350 3500
+Connection ~ 26350 3500
+Wire Wire Line
+	26350 3500 26300 3500
+Wire Wire Line
+	26450 2900 26450 3600
+Connection ~ 26450 3600
+Wire Wire Line
+	26450 3600 26600 3600
+NoConn ~ 26650 2900
+Wire Wire Line
+	26550 2900 26550 3700
+Connection ~ 26550 3700
+Wire Wire Line
+	26550 3700 26600 3700
+Connection ~ 26200 5800
+Wire Wire Line
+	23700 7100 25400 7100
+Wire Wire Line
+	23600 7200 25500 7200
+Wire Wire Line
+	23450 7850 25400 7850
+Wire Wire Line
+	23350 7950 25500 7950
+Wire Wire Line
+	25400 6800 25400 7100
+Wire Wire Line
+	25500 6800 25500 7200
+Wire Wire Line
+	25400 8650 25300 8650
+Connection ~ 25500 8650
+Wire Wire Line
+	25500 8650 25400 8650
+Wire Wire Line
+	25600 8650 25500 8650
+Wire Wire Line
+	25600 8550 25600 8650
+Wire Wire Line
+	25500 8650 25500 8550
+Wire Wire Line
+	25400 8550 25400 8650
+$Comp
+L Connector_Generic:Conn_02x04_Odd_Even J?
+U 1 1 5F55B7AB
+P 25400 8250
+AR Path="/5ED049DE/5F55B7AB" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/5F55B7AB" Ref="J?"  Part="1" 
+F 0 "J?" V 25350 7950 50  0000 R CNN
+F 1 "Saleae Test" V 25450 7950 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 25400 8250 50  0001 C CNN
+F 3 "~" H 25400 8250 50  0001 C CNN
+F 4 "COM3 Test Points" V 25550 7600 50  0000 C CNN "Field4"
+	1    25400 8250
+	0    -1   1    0   
+$EndComp
+Connection ~ 25400 8650
+NoConn ~ 25600 8050
+Wire Wire Line
+	25300 7750 26600 7750
+Wire Wire Line
+	25400 8050 25400 7850
+Connection ~ 25400 7850
+Wire Wire Line
+	25400 7850 26600 7850
+Wire Wire Line
+	25500 8050 25500 7950
+Connection ~ 25500 7950
+Wire Wire Line
+	25500 7950 26600 7950
+NoConn ~ 25600 6800
+Connection ~ 25400 7100
+Connection ~ 25500 7200
+Wire Wire Line
+	25300 7000 26600 7000
+Wire Wire Line
+	25400 7100 26600 7100
+Wire Wire Line
+	25500 7200 26600 7200
+$Comp
+L Connector:Conn_Coaxial J?
+U 1 1 5F5682F4
+P 3450 1600
+AR Path="/60F8228B/5F5682F4" Ref="J?"  Part="1" 
+AR Path="/5EE96A32/5F5682F4" Ref="J?"  Part="1" 
+F 0 "J?" H 3550 1575 50  0000 L CNN
+F 1 "Conn_Coaxial" H 3550 1484 50  0000 L CNN
+F 2 "Connector_Coaxial:SMA_Amphenol_132134_Vertical" H 3450 1600 50  0001 C CNN
+F 3 " ~" H 3450 1600 50  0001 C CNN
+F 4 "132134" H 3450 1600 50  0001 C CNN "MPN"
+	1    3450 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5F5682FA
+P 3450 1900
+AR Path="/60F8228B/5F5682FA" Ref="#PWR?"  Part="1" 
+AR Path="/5EE96A32/5F5682FA" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 3450 1650 50  0001 C CNN
+F 1 "GND" H 3550 1800 50  0000 C CNN
+F 2 "" H 3450 1900 50  0001 C CNN
+F 3 "" H 3450 1900 50  0001 C CNN
+	1    3450 1900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3450 1900 3450 1800
+Text HLabel 2500 1600 0    50   BiDi ~ 0
+Iridium_GPS_Signal
+Wire Wire Line
+	3250 1600 2500 1600
 $EndSCHEMATC
