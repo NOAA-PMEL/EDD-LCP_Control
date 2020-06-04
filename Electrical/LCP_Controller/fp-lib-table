@@ -20,4 +20,6 @@
   (lib (name Silicon-Standard)(type KiCad)(uri ${KICAD_SPARKFUN_SYMBOL}/Footprints/Silicon-Standard.pretty)(options "")(descr ""))
   (lib (name Switches)(type KiCad)(uri ${KICAD_SPARKFUN_SYMBOL}/Footprints/Switches.pretty)(options "")(descr ""))
   (lib (name Artemis)(type KiCad)(uri ${KICAD_SPARKFUN_SYMBOL}/Footprints/Artemis.pretty)(options "")(descr ""))
+  (lib (name PMEL_LGA)(type KiCad)(uri ${KIPRJMOD}/PMEL_LGA.pretty)(options "")(descr ""))
+  (lib (name PMEL_Modules)(type KiCad)(uri ${KIPRJMOD}/PMEL_Modules.pretty)(options "")(descr ""))
 )

@@ -1,0 +1,409 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 15 23
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Text HLabel 2600 2450 0    50   Input ~ 0
+COM0_UART_TX
+Text HLabel 2600 2550 0    50   Output ~ 0
+COM0_UART_RX
+Text HLabel 2600 2900 0    50   Input ~ 0
+COM1_UART_TX
+Text HLabel 2600 3000 0    50   Output ~ 0
+COM1_UART_RX
+Text HLabel 2600 1900 0    50   Input ~ 0
+COM01_ON
+Text HLabel 2600 2000 0    50   Input ~ 0
+COM01_OFF
+Text HLabel 2600 2100 0    50   Input ~ 0
+~COM01_INV
+$Comp
+L Device:C_Small C?
+U 1 1 5EEA7D58
+P 6400 1800
+AR Path="/5ED049DE/5EEA7D58" Ref="C?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7D58" Ref="C?"  Part="1" 
+F 0 "C?" H 6492 1846 50  0000 L CNN
+F 1 "0.1uF" H 6492 1755 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 6400 1800 50  0001 C CNN
+F 3 "~" H 6400 1800 50  0001 C CNN
+	1    6400 1800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6850 1650 6400 1650
+Wire Wire Line
+	6400 1450 6650 1450
+Wire Wire Line
+	6650 1450 6650 1500
+Wire Wire Line
+	6650 1500 6850 1500
+Wire Wire Line
+	6400 1900 6850 1900
+Wire Wire Line
+	6400 1700 6650 1700
+Wire Wire Line
+	6650 1700 6650 1750
+Wire Wire Line
+	6650 1750 6850 1750
+Wire Wire Line
+	6400 1950 6650 1950
+Wire Wire Line
+	6650 1950 6650 2000
+Wire Wire Line
+	6650 2000 6850 2000
+$Comp
+L Device:C_Small C?
+U 1 1 5EEA7D69
+P 6900 1000
+AR Path="/5ED049DE/5EEA7D69" Ref="C?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7D69" Ref="C?"  Part="1" 
+F 0 "C?" H 6992 1046 50  0000 L CNN
+F 1 "0.1uF" H 6992 955 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 6900 1000 50  0001 C CNN
+F 3 "~" H 6900 1000 50  0001 C CNN
+	1    6900 1000
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C_Small C?
+U 1 1 5EEA7D6F
+P 8550 1650
+AR Path="/5ED049DE/5EEA7D6F" Ref="C?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7D6F" Ref="C?"  Part="1" 
+F 0 "C?" H 8642 1696 50  0000 L CNN
+F 1 "0.1uF" H 8642 1605 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 8550 1650 50  0001 C CNN
+F 3 "~" H 8550 1650 50  0001 C CNN
+	1    8550 1650
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C_Small C?
+U 1 1 5EEA7D75
+P 8100 1950
+AR Path="/5ED049DE/5EEA7D75" Ref="C?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7D75" Ref="C?"  Part="1" 
+F 0 "C?" H 8192 1996 50  0000 L CNN
+F 1 "0.1uF" H 8192 1905 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 8100 1950 50  0001 C CNN
+F 3 "~" H 8100 1950 50  0001 C CNN
+	1    8100 1950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8000 1850 8100 1850
+Wire Wire Line
+	7300 1300 7300 900 
+Wire Wire Line
+	7300 900  6900 900 
+Wire Wire Line
+	7300 900  7600 900 
+Wire Wire Line
+	7600 900  7600 1300
+Connection ~ 7300 900 
+$Comp
+L power:GND #PWR?
+U 1 1 5EEA7D81
+P 6900 1150
+AR Path="/5ED049DE/5EEA7D81" Ref="#PWR?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7D81" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 6900 900 50  0001 C CNN
+F 1 "GND" H 6905 977 50  0000 C CNN
+F 2 "" H 6900 1150 50  0001 C CNN
+F 3 "" H 6900 1150 50  0001 C CNN
+	1    6900 1150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5EEA7D87
+P 7500 4000
+AR Path="/5ED049DE/5EEA7D87" Ref="#PWR?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7D87" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 7500 3750 50  0001 C CNN
+F 1 "GND" H 7505 3827 50  0000 C CNN
+F 2 "" H 7500 4000 50  0001 C CNN
+F 3 "" H 7500 4000 50  0001 C CNN
+	1    7500 4000
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5EEA7D8D
+P 8100 2100
+AR Path="/5ED049DE/5EEA7D8D" Ref="#PWR?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7D8D" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 8100 1850 50  0001 C CNN
+F 1 "GND" H 8105 1927 50  0000 C CNN
+F 2 "" H 8100 2100 50  0001 C CNN
+F 3 "" H 8100 2100 50  0001 C CNN
+	1    8100 2100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5EEA7D93
+P 8550 1800
+AR Path="/5ED049DE/5EEA7D93" Ref="#PWR?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7D93" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 8550 1550 50  0001 C CNN
+F 1 "GND" H 8555 1627 50  0000 C CNN
+F 2 "" H 8550 1800 50  0001 C CNN
+F 3 "" H 8550 1800 50  0001 C CNN
+	1    8550 1800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8550 1750 8550 1800
+Wire Wire Line
+	8100 2050 8100 2100
+Wire Wire Line
+	7450 3350 7450 3400
+Wire Wire Line
+	6900 1150 6900 1100
+$Comp
+L Device:C_Small C?
+U 1 1 5EEA7D9D
+P 6400 2050
+AR Path="/5ED049DE/5EEA7D9D" Ref="C?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7D9D" Ref="C?"  Part="1" 
+F 0 "C?" H 6492 2096 50  0000 L CNN
+F 1 "0.1uF" H 6492 2005 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 6400 2050 50  0001 C CNN
+F 3 "~" H 6400 2050 50  0001 C CNN
+	1    6400 2050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6400 2150 6850 2150
+Wire Wire Line
+	8350 3000 8000 3000
+Wire Wire Line
+	8000 2900 8450 2900
+Wire Wire Line
+	8000 2800 8550 2800
+Wire Wire Line
+	8000 1550 8550 1550
+$Comp
+L Device:C_Small C?
+U 1 1 5EEA7DAA
+P 6400 1550
+AR Path="/5ED049DE/5EEA7DAA" Ref="C?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7DAA" Ref="C?"  Part="1" 
+F 0 "C?" H 6492 1596 50  0000 L CNN
+F 1 "0.1uF" H 6492 1505 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 6400 1550 50  0001 C CNN
+F 3 "~" H 6400 1550 50  0001 C CNN
+	1    6400 1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8000 2700 8650 2700
+$Comp
+L Device:R_Pack02 RN?
+U 1 1 5EEA7DB2
+P 5000 2550
+AR Path="/5ED049DE/5EEA7DB2" Ref="RN?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7DB2" Ref="RN?"  Part="1" 
+F 0 "RN?" V 4683 2550 50  0000 C CNN
+F 1 "Jumper/0Ohm(x2)" V 4774 2550 50  0000 C CNN
+F 2 "Resistor_SMD:R_Array_Concave_2x0603" V 5175 2550 50  0001 C CNN
+F 3 "~" H 5000 2550 50  0001 C CNN
+F 4 "YC122-JR-070RL" V 5000 2550 50  0001 C CNN "MPN"
+	1    5000 2550
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Pack02 RN?
+U 1 1 5EEA7DB8
+P 5000 3000
+AR Path="/5ED049DE/5EEA7DB8" Ref="RN?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7DB8" Ref="RN?"  Part="1" 
+F 0 "RN?" V 4683 3000 50  0000 C CNN
+F 1 "Jumper/0Ohm(x2)" V 4774 3000 50  0000 C CNN
+F 2 "Resistor_SMD:R_Array_Concave_2x0603" V 5175 3000 50  0001 C CNN
+F 3 "~" H 5000 3000 50  0001 C CNN
+	1    5000 3000
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5200 3000 6850 3000
+Wire Wire Line
+	5200 2900 6850 2900
+Wire Wire Line
+	5200 2550 5300 2550
+Wire Wire Line
+	5300 2550 5300 2800
+Wire Wire Line
+	5300 2800 6850 2800
+Wire Wire Line
+	5200 2450 5400 2450
+Wire Wire Line
+	5400 2450 5400 2700
+Wire Wire Line
+	5400 2700 6850 2700
+Connection ~ 4150 3000
+Wire Wire Line
+	4150 3000 4800 3000
+Connection ~ 4250 2900
+Wire Wire Line
+	4250 2900 4800 2900
+Connection ~ 4350 2550
+Wire Wire Line
+	4350 2550 4800 2550
+Connection ~ 4450 2450
+Wire Wire Line
+	4450 2450 4800 2450
+$Comp
+L Device:R_Pack02 RN?
+U 1 1 5EEA7DE5
+P 5000 4900
+AR Path="/5ED049DE/5EEA7DE5" Ref="RN?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7DE5" Ref="RN?"  Part="1" 
+F 0 "RN?" V 4683 4900 50  0000 C CNN
+F 1 "Jumper/0Ohm(x2)" V 4774 4900 50  0000 C CNN
+F 2 "Resistor_SMD:R_Array_Concave_2x0603" V 5175 4900 50  0001 C CNN
+F 3 "~" H 5000 4900 50  0001 C CNN
+	1    5000 4900
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Pack02 RN?
+U 1 1 5EEA7DEB
+P 5000 4450
+AR Path="/5ED049DE/5EEA7DEB" Ref="RN?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7DEB" Ref="RN?"  Part="1" 
+F 0 "RN?" V 4683 4450 50  0000 C CNN
+F 1 "Jumper/0Ohm(x2)" V 4774 4450 50  0000 C CNN
+F 2 "Resistor_SMD:R_Array_Concave_2x0603" V 5175 4450 50  0001 C CNN
+F 3 "~" H 5000 4450 50  0001 C CNN
+	1    5000 4450
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5200 4900 8350 4900
+Wire Wire Line
+	5200 4800 8450 4800
+Wire Wire Line
+	5200 4450 5450 4450
+Wire Wire Line
+	5450 4450 5450 4700
+Wire Wire Line
+	5450 4700 8550 4700
+Wire Wire Line
+	5200 4350 5550 4350
+Wire Wire Line
+	5550 4350 5550 4600
+Wire Wire Line
+	5550 4600 8650 4600
+Text Notes 4400 1650 0    67   ~ 0
+For RS232 (COM0/1) Populate \nthese Resistor netorks 
+Text GLabel 10150 1950 0    50   Input ~ 0
+COM0_PWR
+$Comp
+L PMEL_DriverICs:TRS3122E U?
+U 1 1 5EEA7E05
+P 7450 2550
+AR Path="/5ED049DE/5EEA7E05" Ref="U?"  Part="1" 
+AR Path="/5EDB3B75/5EEA7E05" Ref="U?"  Part="1" 
+F 0 "U?" H 7425 1661 50  0000 C CNN
+F 1 "TRS3122E" H 7425 1570 50  0000 C CNN
+F 2 "Package_DFN_QFN:Texas_RGE0024H_EP2.7x2.7mm_ThermalVias" H 6700 3400 50  0001 C CNN
+F 3 "https://www.ti.com/lit/ds/symlink/trs3122e.pdf?ts=1591021643258" H 6700 3400 50  0001 C CNN
+	1    7450 2550
+	1    0    0    -1  
+$EndComp
+Text Notes 4900 4100 0    100  ~ 20
+COM0/1 UART
+Text Notes 4550 1050 0    100  ~ 20
+COM0/1 RS-232
+Wire Wire Line
+	2600 2450 4450 2450
+Wire Wire Line
+	2600 2550 4350 2550
+Wire Wire Line
+	2600 2900 4250 2900
+Wire Wire Line
+	2600 3000 4150 3000
+Wire Wire Line
+	2600 2100 5500 2100
+Wire Wire Line
+	5500 2100 5500 2500
+Wire Wire Line
+	5500 2500 6850 2500
+Wire Wire Line
+	5600 2400 5600 2000
+Wire Wire Line
+	5600 2000 2600 2000
+Wire Wire Line
+	5600 2400 6850 2400
+Wire Wire Line
+	2600 1900 5700 1900
+Wire Wire Line
+	5700 1900 5700 2300
+Wire Wire Line
+	5700 2300 6850 2300
+Wire Wire Line
+	4450 2450 4450 4350
+Wire Wire Line
+	4450 4350 4800 4350
+Wire Wire Line
+	4350 2550 4350 4450
+Wire Wire Line
+	4350 4450 4800 4450
+Wire Wire Line
+	4250 2900 4250 4800
+Wire Wire Line
+	4250 4800 4800 4800
+Wire Wire Line
+	4150 3000 4150 4900
+Wire Wire Line
+	4150 4900 4800 4900
+Wire Wire Line
+	8350 3000 8350 4900
+Wire Wire Line
+	8450 2900 8450 4800
+Connection ~ 8450 4800
+Wire Wire Line
+	8550 2800 8550 4700
+Connection ~ 8550 4700
+Wire Wire Line
+	8650 2700 8650 4600
+Connection ~ 8650 4600
+Text HLabel 9900 4600 2    50   Output ~ 0
+COM0_TX
+Text HLabel 9900 4700 2    50   Input ~ 0
+COM0_RX
+Text HLabel 9900 4800 2    50   Output ~ 0
+COM1_TX
+Text HLabel 9900 4900 2    50   Input ~ 0
+COM1_RX
+Wire Wire Line
+	9900 4600 8650 4600
+Wire Wire Line
+	8550 4700 9900 4700
+Wire Wire Line
+	9900 4800 8450 4800
+Wire Wire Line
+	8350 4900 9900 4900
+Connection ~ 8350 4900
+Text HLabel 2150 5650 0    50   Input ~ 0
+COM0_ON
+Text HLabel 2150 5800 0    50   Input ~ 0
+COM1_ON
+Text HLabel 8650 5650 2    50   Output ~ 0
+COM0_PWR
+Text HLabel 8650 5850 2    50   Output ~ 0
+COM1_PWR
+$EndSCHEMATC
