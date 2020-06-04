@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 14 21
+Sheet 20 20
 Title ""
 Date ""
 Rev ""
@@ -30,18 +30,6 @@ Wire Wire Line
 	5800 4250 6500 4250
 Wire Wire Line
 	5800 5150 6450 5150
-Text GLabel 2000 4400 0    50   Input ~ 0
-ARTEMIS_D43_MISO(3)
-Text GLabel 2000 4500 0    50   Input ~ 0
-ARTEMIS_D38_MOSI(3)
-Text GLabel 2000 4600 0    50   Input ~ 0
-ARTEMIS_D42_SCK(3)
-Text GLabel 2000 4700 0    50   Input ~ 0
-ARTEMIS_D17
-Text GLabel 2000 4950 0    50   Input ~ 0
-ARTEMIS_D18
-Text GLabel 2000 5050 0    50   Input ~ 0
-ARTEMIS_D19
 $Comp
 L power:GND #PWR?
 U 1 1 5F17081F
@@ -55,10 +43,6 @@ F 3 "" H 4450 6100 50  0001 C CNN
 	1    4450 6100
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	2250 3500 4000 3500
-Wire Wire Line
-	2250 3600 4000 3600
 Wire Wire Line
 	5800 4050 6300 4050
 Wire Wire Line
@@ -385,28 +369,20 @@ Connection ~ 6250 5800
 Wire Wire Line
 	6250 5800 6250 5900
 Wire Wire Line
-	2250 3250 2850 3250
-Wire Wire Line
 	2850 3250 4000 3250
 Connection ~ 2850 3250
 Wire Wire Line
 	2850 2250 2850 3250
-Wire Wire Line
-	2250 3150 2750 3150
 Wire Wire Line
 	2750 3150 4000 3150
 Connection ~ 2750 3150
 Wire Wire Line
 	2750 2250 2750 3150
 Wire Wire Line
-	2250 3050 2650 3050
-Wire Wire Line
 	2650 3050 4000 3050
 Connection ~ 2650 3050
 Wire Wire Line
 	2650 2250 2650 3050
-Wire Wire Line
-	2250 2950 2550 2950
 Wire Wire Line
 	2550 2950 4000 2950
 Connection ~ 2550 2950
@@ -570,30 +546,30 @@ Wire Wire Line
 	6650 2350 10350 2350
 Wire Wire Line
 	6550 2250 10350 2250
-Text HLabel 7250 2750 2    50   Output ~ 0
+Text HLabel 10350 2750 2    50   Output ~ 0
 COM01_ON
-Text HLabel 7250 2850 2    50   Output ~ 0
+Text HLabel 10350 2850 2    50   Output ~ 0
 COM01_OFF
-Text HLabel 7250 2950 2    50   Output ~ 0
+Text HLabel 10350 2950 2    50   Output ~ 0
 ~COM01_INV
-Text HLabel 7150 4550 2    50   Output ~ 0
+Text HLabel 10350 4550 2    50   Output ~ 0
 COM23_ON
-Text HLabel 7150 4650 2    50   Output ~ 0
+Text HLabel 10350 4650 2    50   Output ~ 0
 COM23_OFF
-Text HLabel 7150 4750 2    50   Output ~ 0
+Text HLabel 10350 4750 2    50   Output ~ 0
 ~COM23_INV
 Wire Wire Line
-	5800 2750 7250 2750
+	5800 2750 8300 2750
 Wire Wire Line
-	5800 2850 7250 2850
+	5800 2850 8400 2850
 Wire Wire Line
-	5800 2950 7250 2950
+	5800 2950 8500 2950
 Wire Wire Line
-	5800 4550 7150 4550
+	5800 4550 8250 4550
 Wire Wire Line
-	5800 4650 7150 4650
+	5800 4650 8350 4650
 Wire Wire Line
-	5800 4750 7150 4750
+	5800 4750 8450 4750
 Text HLabel 1550 2950 0    50   Output ~ 0
 S2U_MISO
 Text HLabel 1550 3050 0    50   Input ~ 0
@@ -662,4 +638,202 @@ Wire Wire Line
 	6750 6800 6750 6400
 Wire Wire Line
 	6750 6400 10300 6400
+$Comp
+L power:GND #PWR?
+U 1 1 5F5D34D2
+P 8850 1500
+AR Path="/5ED049DE/5F5D34D2" Ref="#PWR?"  Part="1" 
+AR Path="/5EDB3B1A/5F5D34D2" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 8850 1250 50  0001 C CNN
+F 1 "GND" H 8950 1400 50  0000 C CNN
+F 2 "" H 8850 1500 50  0001 C CNN
+F 3 "" H 8850 1500 50  0001 C CNN
+	1    8850 1500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8850 1500 8850 1250
+Wire Wire Line
+	8850 1250 8600 1250
+Wire Wire Line
+	8400 1250 8300 1250
+Connection ~ 8500 1250
+Wire Wire Line
+	8500 1250 8400 1250
+Connection ~ 8600 1250
+Wire Wire Line
+	8600 1250 8500 1250
+Wire Wire Line
+	8600 1350 8600 1250
+Wire Wire Line
+	8500 1250 8500 1350
+Wire Wire Line
+	8400 1350 8400 1250
+Wire Wire Line
+	8300 1250 8300 1350
+$Comp
+L Connector_Generic:Conn_02x04_Odd_Even J?
+U 1 1 5F5D34E4
+P 8400 1650
+AR Path="/5ED049DE/5F5D34E4" Ref="J?"  Part="1" 
+AR Path="/5EDB3B1A/5F5D34E4" Ref="J?"  Part="1" 
+F 0 "J?" V 8300 1400 50  0000 R CNN
+F 1 "Saleae Test" V 8200 1400 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 8400 1650 50  0001 C CNN
+F 3 "~" H 8400 1650 50  0001 C CNN
+F 4 "GPIO1/2/3 Test" V 8100 1100 50  0000 C CNN "Field4"
+	1    8400 1650
+	0    -1   -1   0   
+$EndComp
+Connection ~ 8400 1250
+$Comp
+L power:GND #PWR?
+U 1 1 5F5D34EB
+P 8800 3500
+AR Path="/5ED049DE/5F5D34EB" Ref="#PWR?"  Part="1" 
+AR Path="/5EDB3B1A/5F5D34EB" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 8800 3250 50  0001 C CNN
+F 1 "GND" H 8900 3400 50  0000 C CNN
+F 2 "" H 8800 3500 50  0001 C CNN
+F 3 "" H 8800 3500 50  0001 C CNN
+	1    8800 3500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8800 3500 8800 3350
+Wire Wire Line
+	8550 3500 8550 3350
+Wire Wire Line
+	8450 3350 8450 3500
+Wire Wire Line
+	8350 3500 8350 3350
+Wire Wire Line
+	8250 3350 8250 3500
+$Comp
+L Connector_Generic:Conn_02x04_Odd_Even J?
+U 1 1 5F5D34FD
+P 8350 3800
+AR Path="/5ED049DE/5F5D34FD" Ref="J?"  Part="1" 
+AR Path="/5EDB3B1A/5F5D34FD" Ref="J?"  Part="1" 
+F 0 "J?" V 8500 3500 50  0000 R CNN
+F 1 "Saleae Test" V 8400 3500 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 8350 3800 50  0001 C CNN
+F 3 "~" H 8350 3800 50  0001 C CNN
+F 4 "GPIO9/10/11 Test" V 8300 3150 50  0000 C CNN "Field4"
+	1    8350 3800
+	0    -1   -1   0   
+$EndComp
+Connection ~ 8300 2750
+Wire Wire Line
+	8300 2750 10350 2750
+Connection ~ 8400 2850
+Wire Wire Line
+	8400 2850 10350 2850
+Connection ~ 8500 2950
+Wire Wire Line
+	8500 2950 10350 2950
+Wire Wire Line
+	1550 2950 2550 2950
+Wire Wire Line
+	1550 3050 2650 3050
+Wire Wire Line
+	1550 3150 2750 3150
+Wire Wire Line
+	1550 3250 2850 3250
+Wire Wire Line
+	1550 3500 4000 3500
+Wire Wire Line
+	1550 3600 4000 3600
+Wire Wire Line
+	8500 1850 8500 2950
+Wire Wire Line
+	8400 1850 8400 2850
+Wire Wire Line
+	8300 1850 8300 2750
+Wire Wire Line
+	8250 4000 8250 4550
+Wire Wire Line
+	8350 4000 8350 4650
+Wire Wire Line
+	8450 4000 8450 4550
+Connection ~ 8450 4550
+Wire Wire Line
+	8450 4550 10350 4550
+Wire Wire Line
+	8250 3350 8350 3350
+Connection ~ 8350 3350
+Wire Wire Line
+	8350 3350 8450 3350
+Connection ~ 8450 3350
+Wire Wire Line
+	8450 3350 8550 3350
+Connection ~ 8550 3350
+Wire Wire Line
+	8550 3350 8800 3350
+Connection ~ 8250 4550
+Wire Wire Line
+	8250 4550 8450 4550
+Connection ~ 8350 4650
+Connection ~ 8450 4750
+Wire Wire Line
+	8450 4550 8450 4750
+Wire Wire Line
+	8350 4650 10350 4650
+Wire Wire Line
+	8450 4750 10350 4750
+$Comp
+L SparkFun-DiscreteSemi:MOSFET_PCH-DMG2307L Q?
+U 1 1 5F70A6FE
+P 2450 5650
+AR Path="/60F8228B/5F70A6FE" Ref="Q?"  Part="1" 
+AR Path="/5EEDF256/5F70A6FE" Ref="Q?"  Part="1" 
+F 0 "Q?" H 2615 5555 45  0000 L CNN
+F 1 "MOSFET_PCH-DMG2305UX-7" H 2615 5639 45  0001 L CNN
+F 2 "SOT23-3" H 2450 5900 20  0001 C CNN
+F 3 "" H 2450 5650 50  0001 C CNN
+F 4 "TRANS-11308" H 2615 5734 60  0001 L CNN "Field4"
+	1    2450 5650
+	1    0    0    1   
+$EndComp
+Wire Wire Line
+	2550 5900 2550 5850
+$Comp
+L power:+3.3V #PWR?
+U 1 1 5F70A705
+P 2550 5250
+AR Path="/60F8228B/5F70A705" Ref="#PWR?"  Part="1" 
+AR Path="/5EEDF256/5F70A705" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 2550 5100 50  0001 C CNN
+F 1 "+3.3V" H 2565 5423 50  0000 C CNN
+F 2 "" H 2550 5250 50  0001 C CNN
+F 3 "" H 2550 5250 50  0001 C CNN
+	1    2550 5250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2550 5250 2550 5350
+$Comp
+L Device:R R?
+U 1 1 5F70A70C
+P 2300 5350
+AR Path="/60F8228B/5F70A70C" Ref="R?"  Part="1" 
+AR Path="/5EEDF256/5F70A70C" Ref="R?"  Part="1" 
+F 0 "R?" V 2093 5350 50  0000 C CNN
+F 1 "10k" V 2184 5350 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 2230 5350 50  0001 C CNN
+F 3 "~" H 2300 5350 50  0001 C CNN
+	1    2300 5350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	2450 5350 2550 5350
+Connection ~ 2550 5350
+Wire Wire Line
+	2550 5350 2550 5450
+Wire Wire Line
+	2250 5550 2100 5550
+Wire Wire Line
+	2100 5550 2100 5350
+Wire Wire Line
+	2100 5350 2150 5350
 $EndSCHEMATC

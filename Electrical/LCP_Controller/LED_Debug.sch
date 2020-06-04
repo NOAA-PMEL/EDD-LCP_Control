@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 7 21
+Sheet 4 20
 Title ""
 Date ""
 Rev ""
@@ -78,14 +78,6 @@ F 3 "~" H 6350 4650 50  0001 C CNN
 	1    6150 4650
 	1    0    0    -1  
 $EndComp
-Text GLabel 6350 5250 2    50   Input ~ 0
-ARTEMIS_D2
-Text GLabel 6350 5350 2    50   Input ~ 0
-ARTEMIS_AD31
-Text GLabel 6350 5450 2    50   Input ~ 0
-ARTEMIS_AD32
-Text GLabel 6350 5550 2    50   Input ~ 0
-ARTEMIS_AD29
 $Comp
 L Jumper:SolderJumper_2_Open JP?
 U 1 1 5EE11B5D
@@ -231,14 +223,6 @@ Wire Wire Line
 	5050 3800 5050 4000
 Wire Wire Line
 	4550 3800 4550 4000
-Wire Wire Line
-	6350 5250 6050 5250
-Wire Wire Line
-	5550 5350 6350 5350
-Wire Wire Line
-	6350 5450 5050 5450
-Wire Wire Line
-	6350 5550 4550 5550
 $Comp
 L Connector:TestPoint TP?
 U 1 1 5EE11BA8
@@ -389,4 +373,20 @@ Wire Wire Line
 	7000 4750 7150 4750
 Text Notes 5150 2350 0    200  ~ 0
 LED/Debug
+Text HLabel 7500 5250 2    50   Input ~ 0
+LED1
+Text HLabel 7500 5350 2    50   Input ~ 0
+LED2
+Text HLabel 7500 5450 2    50   Input ~ 0
+LED3
+Text HLabel 7500 5550 2    50   Input ~ 0
+LED4
+Wire Wire Line
+	6050 5250 7500 5250
+Wire Wire Line
+	5550 5350 7500 5350
+Wire Wire Line
+	5050 5450 7500 5450
+Wire Wire Line
+	4550 5550 7500 5550
 $EndSCHEMATC

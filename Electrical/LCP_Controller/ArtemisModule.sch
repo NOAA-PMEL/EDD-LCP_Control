@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr B 17000 11000
 encoding utf-8
-Sheet 23 21
+Sheet 17 20
 Title ""
 Date ""
 Rev ""
@@ -749,4 +749,28 @@ Text HLabel 15300 6850 2    50   Output ~ 0
 COM2_POWER_ON
 Text HLabel 15300 6950 2    50   Output ~ 0
 COM3_POWER_ON
+Text GLabel 2450 9100 2    50   Input ~ 0
+ARTEMIS_D2
+Text GLabel 2450 9200 2    50   Input ~ 0
+ARTEMIS_AD31
+Text GLabel 2450 9300 2    50   Input ~ 0
+ARTEMIS_AD32
+Text GLabel 2450 9400 2    50   Input ~ 0
+ARTEMIS_AD29
+Text HLabel 1300 9100 0    50   Output ~ 0
+LED1
+Text HLabel 1300 9200 0    50   Output ~ 0
+LED2
+Text HLabel 1300 9300 0    50   Output ~ 0
+LED3
+Text HLabel 1300 9400 0    50   Output ~ 0
+LED4
+Wire Wire Line
+	1300 9400 2450 9400
+Wire Wire Line
+	2450 9300 1300 9300
+Wire Wire Line
+	1300 9200 2450 9200
+Wire Wire Line
+	2450 9100 1300 9100
 $EndSCHEMATC

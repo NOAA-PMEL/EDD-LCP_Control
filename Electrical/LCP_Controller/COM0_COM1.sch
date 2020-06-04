@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 12 21
+Sheet 9 20
 Title ""
 Date ""
 Rev ""
@@ -309,8 +309,6 @@ Wire Wire Line
 	5550 4600 8650 4600
 Text Notes 4400 1650 0    67   ~ 0
 For RS232 (COM0/1) Populate \nthese Resistor netorks 
-Text GLabel 10150 1950 0    50   Input ~ 0
-COM0_PWR
 $Comp
 L PMEL_DriverICs:TRS3122E U?
 U 1 1 5EEA7E05
@@ -381,30 +379,28 @@ Connection ~ 8550 4700
 Wire Wire Line
 	8650 2700 8650 4600
 Connection ~ 8650 4600
-Text HLabel 9900 4600 2    50   Output ~ 0
+Text HLabel 10400 4600 2    50   Output ~ 0
 COM0_TX
-Text HLabel 9900 4700 2    50   Input ~ 0
+Text HLabel 10400 4700 2    50   Input ~ 0
 COM0_RX
-Text HLabel 9900 4800 2    50   Output ~ 0
+Text HLabel 10400 4800 2    50   Output ~ 0
 COM1_TX
-Text HLabel 9900 4900 2    50   Input ~ 0
+Text HLabel 10400 4900 2    50   Input ~ 0
 COM1_RX
 Wire Wire Line
-	9900 4600 8650 4600
+	8550 4700 9200 4700
 Wire Wire Line
-	8550 4700 9900 4700
+	10400 4800 10000 4800
 Wire Wire Line
-	9900 4800 8450 4800
-Wire Wire Line
-	8350 4900 9900 4900
+	8350 4900 10100 4900
 Connection ~ 8350 4900
 Text HLabel 2650 5600 0    50   Input ~ 0
 COM0_ON
 Text HLabel 2650 6600 0    50   Input ~ 0
 COM1_ON
-Text HLabel 8650 5650 2    50   Output ~ 0
+Text HLabel 10400 5650 2    50   Output ~ 0
 COM0_PWR
-Text HLabel 8650 5850 2    50   Output ~ 0
+Text HLabel 10400 5850 2    50   Output ~ 0
 COM1_PWR
 $Comp
 L SparkFun-DiscreteSemi:MOSFET_PCH-DMG2307L Q?
@@ -531,13 +527,131 @@ Wire Wire Line
 Wire Wire Line
 	4550 5950 4550 5650
 Wire Wire Line
-	4550 5650 8650 5650
-Wire Wire Line
 	3450 7000 4700 7000
 Wire Wire Line
 	4700 7000 4700 5850
 Wire Wire Line
-	4700 5850 8650 5850
+	4700 5850 9900 5850
 Wire Wire Line
 	3450 6900 3450 7000
+Wire Wire Line
+	10200 3300 10200 3200
+Wire Wire Line
+	10100 3200 10100 3300
+Wire Wire Line
+	10000 3300 10000 3200
+Wire Wire Line
+	9900 3200 9900 3300
+$Comp
+L Connector_Generic:Conn_02x04_Odd_Even J?
+U 1 1 5F84B732
+P 10000 3600
+AR Path="/5ED049DE/5F84B732" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/5F84B732" Ref="J?"  Part="1" 
+AR Path="/5EDB3B75/5F84B732" Ref="J?"  Part="1" 
+F 0 "J?" V 9900 3350 50  0000 R CNN
+F 1 "Saleae Test" V 9800 3350 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 10000 3600 50  0001 C CNN
+F 3 "~" H 10000 3600 50  0001 C CNN
+F 4 "COM1 Test Points" V 9700 3150 50  0000 C CNN "Field4"
+	1    10000 3600
+	0    -1   -1   0   
+$EndComp
+NoConn ~ 10200 3800
+Wire Wire Line
+	9300 3300 9300 3200
+Wire Wire Line
+	9200 3200 9200 3300
+Wire Wire Line
+	9100 3300 9100 3200
+Wire Wire Line
+	9000 3200 9000 3300
+$Comp
+L Connector_Generic:Conn_02x04_Odd_Even J?
+U 1 1 5F86DBFA
+P 9100 3600
+AR Path="/5ED049DE/5F86DBFA" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/5F86DBFA" Ref="J?"  Part="1" 
+AR Path="/5EDB3B75/5F86DBFA" Ref="J?"  Part="1" 
+F 0 "J?" V 9000 3350 50  0000 R CNN
+F 1 "Saleae Test" V 8900 3350 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 9100 3600 50  0001 C CNN
+F 3 "~" H 9100 3600 50  0001 C CNN
+F 4 "COM0 Test Points" V 8800 3150 50  0000 C CNN "Field4"
+	1    9100 3600
+	0    -1   -1   0   
+$EndComp
+NoConn ~ 9300 3800
+Wire Wire Line
+	4550 5650 9000 5650
+Wire Wire Line
+	9000 3800 9000 5650
+Connection ~ 9000 5650
+Wire Wire Line
+	9000 5650 10400 5650
+Wire Wire Line
+	9100 3800 9100 4600
+Wire Wire Line
+	8650 4600 9100 4600
+Connection ~ 9100 4600
+Wire Wire Line
+	9100 4600 10400 4600
+Wire Wire Line
+	9200 3800 9200 4700
+Connection ~ 9200 4700
+Wire Wire Line
+	9200 4700 10400 4700
+Wire Wire Line
+	9900 3800 9900 5850
+Connection ~ 9900 5850
+Wire Wire Line
+	9900 5850 10400 5850
+Wire Wire Line
+	10000 3800 10000 4800
+Connection ~ 10000 4800
+Wire Wire Line
+	10000 4800 8450 4800
+Wire Wire Line
+	10100 3800 10100 4900
+Connection ~ 10100 4900
+Wire Wire Line
+	10100 4900 10400 4900
+$Comp
+L power:GND #PWR?
+U 1 1 5F88E19C
+P 10550 3300
+AR Path="/5ED049DE/5F88E19C" Ref="#PWR?"  Part="1" 
+AR Path="/5EDB3B75/5F88E19C" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 10550 3050 50  0001 C CNN
+F 1 "GND" H 10555 3127 50  0000 C CNN
+F 2 "" H 10550 3300 50  0001 C CNN
+F 3 "" H 10550 3300 50  0001 C CNN
+	1    10550 3300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10550 3300 10550 3200
+Wire Wire Line
+	10550 3200 10200 3200
+Connection ~ 9100 3200
+Wire Wire Line
+	9100 3200 9000 3200
+Connection ~ 9200 3200
+Wire Wire Line
+	9200 3200 9100 3200
+Connection ~ 9300 3200
+Wire Wire Line
+	9300 3200 9200 3200
+Connection ~ 9900 3200
+Wire Wire Line
+	9900 3200 9300 3200
+Connection ~ 10000 3200
+Wire Wire Line
+	10000 3200 9900 3200
+Connection ~ 10100 3200
+Wire Wire Line
+	10100 3200 10000 3200
+Connection ~ 10200 3200
+Wire Wire Line
+	10200 3200 10100 3200
 $EndSCHEMATC
