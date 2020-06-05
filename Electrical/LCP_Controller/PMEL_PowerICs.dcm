@@ -5,6 +5,10 @@ D Hot Swap Controller in 6-Lead TSOT Package
 F https://www.analog.com/media/en/technical-documentation/data-sheets/ADM4210.pdf
 $ENDCMP
 #
+$CMP LMR33610A
+F http://www.ti.com/lit/ds/symlink/lmr33610.pdf?ts=1591319194087
+$ENDCMP
+#
 $CMP LTC3225
 D 150mA Supercapacitor Charger
 F https://www.analog.com/media/en/technical-documentation/data-sheets/3225fb.pdf

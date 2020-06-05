@@ -3,11 +3,11 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 20
-Title ""
-Date ""
-Rev ""
-Comp ""
+Sheet 3 20
+Title "LCP Controller "
+Date "2020-06-04"
+Rev "0.1"
+Comp "NOAA Pacific Marine Environmental Laboratory"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -15,24 +15,11 @@ Comment4 ""
 $EndDescr
 $Comp
 L Device:LED D?
-U 1 1 5EE11B3B
-P 4550 4150
-AR Path="/5EC7245E/5EE11B3B" Ref="D?"  Part="1" 
-AR Path="/5EDA436D/5EE11B3B" Ref="D3"  Part="1" 
-F 0 "D3" V 4589 4033 50  0000 R CNN
-F 1 "LED" V 4498 4033 50  0000 R CNN
-F 2 "LED_SMD:LED_0805_2012Metric" H 4550 4150 50  0001 C CNN
-F 3 "~" H 4550 4150 50  0001 C CNN
-	1    4550 4150
-	0    -1   -1   0   
-$EndComp
-$Comp
-L Device:LED D?
 U 1 1 5EE11B41
 P 5050 4150
 AR Path="/5EC7245E/5EE11B41" Ref="D?"  Part="1" 
-AR Path="/5EDA436D/5EE11B41" Ref="D4"  Part="1" 
-F 0 "D4" V 5089 4033 50  0000 R CNN
+AR Path="/5EDA436D/5EE11B41" Ref="D2"  Part="1" 
+F 0 "D2" V 5089 4033 50  0000 R CNN
 F 1 "LED" V 4998 4033 50  0000 R CNN
 F 2 "LED_SMD:LED_0805_2012Metric" H 5050 4150 50  0001 C CNN
 F 3 "~" H 5050 4150 50  0001 C CNN
@@ -44,25 +31,12 @@ L power:+3.3V #PWR?
 U 1 1 5EE11B47
 P 5300 2650
 AR Path="/5EC7245E/5EE11B47" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA436D/5EE11B47" Ref="#PWR053"  Part="1" 
-F 0 "#PWR053" H 5300 2500 50  0001 C CNN
+AR Path="/5EDA436D/5EE11B47" Ref="#PWR09"  Part="1" 
+F 0 "#PWR09" H 5300 2500 50  0001 C CNN
 F 1 "+3.3V" H 5315 2823 50  0000 C CNN
 F 2 "" H 5300 2650 50  0001 C CNN
 F 3 "" H 5300 2650 50  0001 C CNN
 	1    5300 2650
-	1    0    0    -1  
-$EndComp
-$Comp
-L Connector:TestPoint TP?
-U 1 1 5EE11B4D
-P 4650 4650
-AR Path="/5EC7245E/5EE11B4D" Ref="TP?"  Part="1" 
-AR Path="/5EDA436D/5EE11B4D" Ref="TP1"  Part="1" 
-F 0 "TP1" H 4708 4768 50  0000 L CNN
-F 1 "DBG1" H 4708 4677 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 4850 4650 50  0001 C CNN
-F 3 "~" H 4850 4650 50  0001 C CNN
-	1    4650 4650
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -80,24 +54,11 @@ F 3 "~" H 6350 4650 50  0001 C CNN
 $EndComp
 $Comp
 L Jumper:SolderJumper_2_Open JP?
-U 1 1 5EE11B5D
-P 4550 3650
-AR Path="/5EC7245E/5EE11B5D" Ref="JP?"  Part="1" 
-AR Path="/5EDA436D/5EE11B5D" Ref="JP5"  Part="1" 
-F 0 "JP5" V 4504 3718 50  0000 L CNN
-F 1 "JMP_Open" V 4595 3718 50  0000 L CNN
-F 2 "Jumper:SolderJumper-2_P1.3mm_Open_TrianglePad1.0x1.5mm" H 4550 3650 50  0001 C CNN
-F 3 "~" H 4550 3650 50  0001 C CNN
-	1    4550 3650
-	0    1    1    0   
-$EndComp
-$Comp
-L Jumper:SolderJumper_2_Open JP?
 U 1 1 5EE11B63
 P 5050 3650
 AR Path="/5EC7245E/5EE11B63" Ref="JP?"  Part="1" 
-AR Path="/5EDA436D/5EE11B63" Ref="JP6"  Part="1" 
-F 0 "JP6" V 5004 3718 50  0000 L CNN
+AR Path="/5EDA436D/5EE11B63" Ref="JP5"  Part="1" 
+F 0 "JP5" V 5004 3718 50  0000 L CNN
 F 1 "JMP_Open" V 5095 3718 50  0000 L CNN
 F 2 "Jumper:SolderJumper-2_P1.3mm_Open_TrianglePad1.0x1.5mm" H 5050 3650 50  0001 C CNN
 F 3 "~" H 5050 3650 50  0001 C CNN
@@ -109,8 +70,8 @@ L Jumper:SolderJumper_2_Open JP?
 U 1 1 5EE11B69
 P 5550 3650
 AR Path="/5EC7245E/5EE11B69" Ref="JP?"  Part="1" 
-AR Path="/5EDA436D/5EE11B69" Ref="JP7"  Part="1" 
-F 0 "JP7" V 5504 3718 50  0000 L CNN
+AR Path="/5EDA436D/5EE11B69" Ref="JP6"  Part="1" 
+F 0 "JP6" V 5504 3718 50  0000 L CNN
 F 1 "JMP_Open" V 5595 3718 50  0000 L CNN
 F 2 "Jumper:SolderJumper-2_P1.3mm_Open_TrianglePad1.0x1.5mm" H 5550 3650 50  0001 C CNN
 F 3 "~" H 5550 3650 50  0001 C CNN
@@ -122,8 +83,8 @@ L Jumper:SolderJumper_2_Open JP?
 U 1 1 5EE11B6F
 P 6050 3650
 AR Path="/5EC7245E/5EE11B6F" Ref="JP?"  Part="1" 
-AR Path="/5EDA436D/5EE11B6F" Ref="JP8"  Part="1" 
-F 0 "JP8" V 6004 3718 50  0000 L CNN
+AR Path="/5EDA436D/5EE11B6F" Ref="JP7"  Part="1" 
+F 0 "JP7" V 6004 3718 50  0000 L CNN
 F 1 "JMP_Open" V 6095 3718 50  0000 L CNN
 F 2 "Jumper:SolderJumper-2_P1.3mm_Open_TrianglePad1.0x1.5mm" H 6050 3650 50  0001 C CNN
 F 3 "~" H 6050 3650 50  0001 C CNN
@@ -135,8 +96,8 @@ L Device:R_Pack04 RN?
 U 1 1 5EE11B76
 P 5350 3100
 AR Path="/5EC7245E/5EE11B76" Ref="RN?"  Part="1" 
-AR Path="/5EDA436D/5EE11B76" Ref="RN15"  Part="1" 
-F 0 "RN15" H 5538 3146 50  0000 L CNN
+AR Path="/5EDA436D/5EE11B76" Ref="RN3"  Part="1" 
+F 0 "RN3" H 5538 3146 50  0000 L CNN
 F 1 "1k (x4)" H 5538 3055 50  0000 L CNN
 F 2 "Resistor_SMD:R_Array_Concave_4x0402" V 5625 3100 50  0001 C CNN
 F 3 "~" H 5350 3100 50  0001 C CNN
@@ -183,19 +144,13 @@ Wire Wire Line
 	5250 3450 5050 3450
 Wire Wire Line
 	5050 3450 5050 3500
-Wire Wire Line
-	5150 3300 5150 3400
-Wire Wire Line
-	5150 3400 4550 3400
-Wire Wire Line
-	4550 3400 4550 3500
 $Comp
 L Device:LED D?
 U 1 1 5EE11B94
 P 5550 4150
 AR Path="/5EC7245E/5EE11B94" Ref="D?"  Part="1" 
-AR Path="/5EDA436D/5EE11B94" Ref="D5"  Part="1" 
-F 0 "D5" V 5589 4033 50  0000 R CNN
+AR Path="/5EDA436D/5EE11B94" Ref="D3"  Part="1" 
+F 0 "D3" V 5589 4033 50  0000 R CNN
 F 1 "LED" V 5498 4033 50  0000 R CNN
 F 2 "LED_SMD:LED_0805_2012Metric" H 5550 4150 50  0001 C CNN
 F 3 "~" H 5550 4150 50  0001 C CNN
@@ -207,8 +162,8 @@ L Device:LED D?
 U 1 1 5EE11B9A
 P 6050 4150
 AR Path="/5EC7245E/5EE11B9A" Ref="D?"  Part="1" 
-AR Path="/5EDA436D/5EE11B9A" Ref="D6"  Part="1" 
-F 0 "D6" V 6089 4033 50  0000 R CNN
+AR Path="/5EDA436D/5EE11B9A" Ref="D4"  Part="1" 
+F 0 "D4" V 6089 4033 50  0000 R CNN
 F 1 "LED" V 5998 4033 50  0000 R CNN
 F 2 "LED_SMD:LED_0805_2012Metric" H 6050 4150 50  0001 C CNN
 F 3 "~" H 6050 4150 50  0001 C CNN
@@ -221,8 +176,6 @@ Wire Wire Line
 	5550 3800 5550 4000
 Wire Wire Line
 	5050 3800 5050 4000
-Wire Wire Line
-	4550 3800 4550 4000
 $Comp
 L Connector:TestPoint TP?
 U 1 1 5EE11BA8
@@ -250,11 +203,6 @@ F 3 "~" H 5850 4650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4650 4650 4650 4800
-Wire Wire Line
-	4650 4800 4550 4800
-Connection ~ 4550 4800
-Wire Wire Line
 	5150 4650 5150 4800
 Wire Wire Line
 	5150 4800 5050 4800
@@ -270,8 +218,6 @@ Wire Wire Line
 	6150 4800 6050 4800
 Connection ~ 6050 4800
 Wire Wire Line
-	4550 4800 4550 5550
-Wire Wire Line
 	5050 4800 5050 5450
 Wire Wire Line
 	5550 4800 5550 5350
@@ -283,8 +229,6 @@ Wire Wire Line
 	5550 4300 5550 4800
 Wire Wire Line
 	5050 4300 5050 4800
-Wire Wire Line
-	4550 4300 4550 4800
 $Comp
 L Connector:TestPoint TP?
 U 1 1 5EE11BC8
@@ -342,8 +286,8 @@ L power:GND #PWR?
 U 1 1 5EE11BE0
 P 7150 4850
 AR Path="/5EC7245E/5EE11BE0" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA436D/5EE11BE0" Ref="#PWR054"  Part="1" 
-F 0 "#PWR054" H 7150 4600 50  0001 C CNN
+AR Path="/5EDA436D/5EE11BE0" Ref="#PWR010"  Part="1" 
+F 0 "#PWR010" H 7150 4600 50  0001 C CNN
 F 1 "GND" H 7155 4677 50  0000 C CNN
 F 2 "" H 7150 4850 50  0001 C CNN
 F 3 "" H 7150 4850 50  0001 C CNN
@@ -379,14 +323,11 @@ Text HLabel 7500 5350 2    50   Input ~ 0
 LED2
 Text HLabel 7500 5450 2    50   Input ~ 0
 LED3
-Text HLabel 7500 5550 2    50   Input ~ 0
-LED4
 Wire Wire Line
 	6050 5250 7500 5250
 Wire Wire Line
 	5550 5350 7500 5350
 Wire Wire Line
 	5050 5450 7500 5450
-Wire Wire Line
-	4550 5550 7500 5550
+NoConn ~ 5150 3300
 $EndSCHEMATC

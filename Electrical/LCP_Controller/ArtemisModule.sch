@@ -3,11 +3,11 @@ EELAYER 30 0
 EELAYER END
 $Descr B 17000 11000
 encoding utf-8
-Sheet 17 20
-Title ""
-Date ""
-Rev ""
-Comp ""
+Sheet 15 20
+Title "LCP Controller "
+Date "2020-06-04"
+Rev "0.1"
+Comp "NOAA Pacific Marine Environmental Laboratory"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -18,8 +18,8 @@ L Sparkfun-Artemis:Artemis_Module U?
 U 1 1 5EDF2CAD
 P 9100 5200
 AR Path="/5EC7245E/5EDF2CAD" Ref="U?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2CAD" Ref="U6"  Part="1" 
-F 0 "U6" H 10000 6950 60  0000 C CNN
+AR Path="/5EDA42A9/5EDF2CAD" Ref="U12"  Part="1" 
+F 0 "U12" H 10000 6950 60  0000 C CNN
 F 1 "Artemis_Module" H 8000 6900 60  0000 C CNN
 F 2 "Artemis:Artemis" H 7750 6800 60  0001 L CNN
 F 3 "https://cdn.sparkfun.com/assets/learn_tutorials/9/0/9/Apollo3_Blue_MCU_Data_Sheet_v0_9_1.pdf" H 15850 2450 60  0001 L CNN
@@ -31,8 +31,8 @@ L Device:Crystal Y?
 U 1 1 5EDF2CB4
 P 6400 5150
 AR Path="/5EC7245E/5EDF2CB4" Ref="Y?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2CB4" Ref="Y2"  Part="1" 
-F 0 "Y2" V 6354 5281 50  0000 L CNN
+AR Path="/5EDA42A9/5EDF2CB4" Ref="Y1"  Part="1" 
+F 0 "Y1" V 6354 5281 50  0000 L CNN
 F 1 "Crystal" V 6445 5281 50  0000 L CNN
 F 2 "Crystal:Crystal_SMD_MicroCrystal_CM9V-T1A-2Pin_1.6x1.0mm_HandSoldering" H 6400 5150 50  0001 C CNN
 F 3 "~" H 6400 5150 50  0001 C CNN
@@ -45,8 +45,8 @@ L Device:C C?
 U 1 1 5EDF2CBA
 P 6100 5000
 AR Path="/5EC7245E/5EDF2CBA" Ref="C?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2CBA" Ref="C19"  Part="1" 
-F 0 "C19" V 5950 4850 50  0000 C CNN
+AR Path="/5EDA42A9/5EDF2CBA" Ref="C36"  Part="1" 
+F 0 "C36" V 5950 4850 50  0000 C CNN
 F 1 "15pF" V 6250 5000 50  0000 C CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 6138 4850 50  0001 C CNN
 F 3 "~" H 6100 5000 50  0001 C CNN
@@ -58,8 +58,8 @@ L Device:C C?
 U 1 1 5EDF2CC0
 P 6100 5300
 AR Path="/5EC7245E/5EDF2CC0" Ref="C?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2CC0" Ref="C20"  Part="1" 
-F 0 "C20" V 6000 5150 50  0000 C CNN
+AR Path="/5EDA42A9/5EDF2CC0" Ref="C37"  Part="1" 
+F 0 "C37" V 6000 5150 50  0000 C CNN
 F 1 "15pF" V 6250 5300 50  0000 C CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 6138 5150 50  0001 C CNN
 F 3 "~" H 6100 5300 50  0001 C CNN
@@ -118,8 +118,8 @@ L Device:C C?
 U 1 1 5EDF2CE1
 P 8150 3000
 AR Path="/5EC7245E/5EDF2CE1" Ref="C?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2CE1" Ref="C21"  Part="1" 
-F 0 "C21" H 8265 3046 50  0000 L CNN
+AR Path="/5EDA42A9/5EDF2CE1" Ref="C38"  Part="1" 
+F 0 "C38" H 8265 3046 50  0000 L CNN
 F 1 "10uF" H 8265 2955 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 8188 2850 50  0001 C CNN
 F 3 "~" H 8150 3000 50  0001 C CNN
@@ -131,8 +131,8 @@ L Device:C C?
 U 1 1 5EDF2CE7
 P 8450 3000
 AR Path="/5EC7245E/5EDF2CE7" Ref="C?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2CE7" Ref="C22"  Part="1" 
-F 0 "C22" H 8565 3046 50  0000 L CNN
+AR Path="/5EDA42A9/5EDF2CE7" Ref="C39"  Part="1" 
+F 0 "C39" H 8565 3046 50  0000 L CNN
 F 1 "1uF" H 8565 2955 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 8488 2850 50  0001 C CNN
 F 3 "~" H 8450 3000 50  0001 C CNN
@@ -144,8 +144,8 @@ L Device:C C?
 U 1 1 5EDF2CED
 P 8750 3000
 AR Path="/5EC7245E/5EDF2CED" Ref="C?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2CED" Ref="C23"  Part="1" 
-F 0 "C23" H 8865 3046 50  0000 L CNN
+AR Path="/5EDA42A9/5EDF2CED" Ref="C40"  Part="1" 
+F 0 "C40" H 8865 3046 50  0000 L CNN
 F 1 "0.1uF" H 8865 2955 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 8788 2850 50  0001 C CNN
 F 3 "~" H 8750 3000 50  0001 C CNN
@@ -184,8 +184,8 @@ L power:+3.3V #PWR?
 U 1 1 5EDF2D02
 P 4950 3550
 AR Path="/5EC7245E/5EDF2D02" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2D02" Ref="#PWR037"  Part="1" 
-F 0 "#PWR037" H 4950 3400 50  0001 C CNN
+AR Path="/5EDA42A9/5EDF2D02" Ref="#PWR070"  Part="1" 
+F 0 "#PWR070" H 4950 3400 50  0001 C CNN
 F 1 "+3.3V" H 4965 3723 50  0000 C CNN
 F 2 "" H 4950 3550 50  0001 C CNN
 F 3 "" H 4950 3550 50  0001 C CNN
@@ -375,8 +375,8 @@ L power:+3.3V #PWR?
 U 1 1 5EDF2D61
 P 8450 2450
 AR Path="/5EC7245E/5EDF2D61" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2D61" Ref="#PWR039"  Part="1" 
-F 0 "#PWR039" H 8450 2300 50  0001 C CNN
+AR Path="/5EDA42A9/5EDF2D61" Ref="#PWR072"  Part="1" 
+F 0 "#PWR072" H 8450 2300 50  0001 C CNN
 F 1 "+3.3V" H 8465 2623 50  0000 C CNN
 F 2 "" H 8450 2450 50  0001 C CNN
 F 3 "" H 8450 2450 50  0001 C CNN
@@ -431,8 +431,8 @@ L power:GND #PWR?
 U 1 1 5EDF2D7D
 P 8900 7450
 AR Path="/5EC7245E/5EDF2D7D" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2D7D" Ref="#PWR041"  Part="1" 
-F 0 "#PWR041" H 8900 7200 50  0001 C CNN
+AR Path="/5EDA42A9/5EDF2D7D" Ref="#PWR074"  Part="1" 
+F 0 "#PWR074" H 8900 7200 50  0001 C CNN
 F 1 "GND" H 8905 7277 50  0000 C CNN
 F 2 "" H 8900 7450 50  0001 C CNN
 F 3 "" H 8900 7450 50  0001 C CNN
@@ -444,8 +444,8 @@ L power:GND #PWR?
 U 1 1 5EDF2D83
 P 8450 3300
 AR Path="/5EC7245E/5EDF2D83" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2D83" Ref="#PWR040"  Part="1" 
-F 0 "#PWR040" H 8450 3050 50  0001 C CNN
+AR Path="/5EDA42A9/5EDF2D83" Ref="#PWR073"  Part="1" 
+F 0 "#PWR073" H 8450 3050 50  0001 C CNN
 F 1 "GND" H 8455 3127 50  0000 C CNN
 F 2 "" H 8450 3300 50  0001 C CNN
 F 3 "" H 8450 3300 50  0001 C CNN
@@ -457,8 +457,8 @@ L power:GND #PWR?
 U 1 1 5EDF2D89
 P 4850 5100
 AR Path="/5EC7245E/5EDF2D89" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2D89" Ref="#PWR036"  Part="1" 
-F 0 "#PWR036" H 4850 4850 50  0001 C CNN
+AR Path="/5EDA42A9/5EDF2D89" Ref="#PWR069"  Part="1" 
+F 0 "#PWR069" H 4850 4850 50  0001 C CNN
 F 1 "GND" H 4855 4927 50  0000 C CNN
 F 2 "" H 4850 5100 50  0001 C CNN
 F 3 "" H 4850 5100 50  0001 C CNN
@@ -470,8 +470,8 @@ L power:GND #PWR?
 U 1 1 5EDF2D8F
 P 5700 5450
 AR Path="/5EC7245E/5EDF2D8F" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2D8F" Ref="#PWR038"  Part="1" 
-F 0 "#PWR038" H 5700 5200 50  0001 C CNN
+AR Path="/5EDA42A9/5EDF2D8F" Ref="#PWR071"  Part="1" 
+F 0 "#PWR071" H 5700 5200 50  0001 C CNN
 F 1 "GND" H 5705 5277 50  0000 C CNN
 F 2 "" H 5700 5450 50  0001 C CNN
 F 3 "" H 5700 5450 50  0001 C CNN
@@ -487,8 +487,8 @@ L Connector_Generic:Conn_01x06 J?
 U 1 1 5EDF2D97
 P 4600 4050
 AR Path="/5EC7245E/5EDF2D97" Ref="J?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2D97" Ref="J15"  Part="1" 
-F 0 "J15" H 4600 4400 50  0000 C CNN
+AR Path="/5EDA42A9/5EDF2D97" Ref="J11"  Part="1" 
+F 0 "J11" H 4600 4400 50  0000 C CNN
 F 1 "Tag-Connect SWD" H 4700 3600 50  0000 C CNN
 F 2 "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical" H 4600 4050 50  0001 C CNN
 F 3 "~" H 4600 4050 50  0001 C CNN
@@ -521,78 +521,76 @@ Text Label 4950 4350 0    50   ~ 0
 SWO
 Text Label 4950 3950 0    50   ~ 0
 SWDIO
-Text GLabel 2300 5750 2    50   BiDi ~ 0
+Text GLabel 2250 5750 2    50   BiDi ~ 0
 ARTEMIS_D48_TX(0)
-Text GLabel 2300 5850 2    50   BiDi ~ 0
+Text GLabel 2250 5850 2    50   BiDi ~ 0
 ARTEMIS_D49_RX(0)
-Text GLabel 2300 5950 2    50   BiDi ~ 0
+Text GLabel 2250 5950 2    50   BiDi ~ 0
 ARTEMIS_BOOT
-Text HLabel 1200 5750 0    50   Output ~ 0
+Text HLabel 1350 5750 0    50   Output ~ 0
 CONSOLE_TX
-Text HLabel 1200 5850 0    50   Input ~ 0
+Text HLabel 1350 5850 0    50   Input ~ 0
 CONSOLE_RX
-Text HLabel 1200 5950 0    50   Input ~ 0
+Text HLabel 1350 5950 0    50   Input ~ 0
 CONSOLE_BOOT
 Wire Wire Line
-	1200 5750 2300 5750
+	1350 5750 2250 5750
 Wire Wire Line
-	1200 5850 2300 5850
+	1350 5850 2250 5850
 Wire Wire Line
-	1200 5950 2300 5950
-Text GLabel 14650 1750 0    50   Input ~ 0
+	1350 5950 2250 5950
+Text GLabel 14650 1400 0    50   Input ~ 0
 ARTEMIS_D14_TX(1)
-Text GLabel 14650 1850 0    50   Input ~ 0
+Text GLabel 14650 1500 0    50   Input ~ 0
 ARTEMIS_D15_RX(1)
-Text GLabel 14350 1650 0    50   Input ~ 0
+Text GLabel 14350 1300 0    50   Input ~ 0
 ARTEMIS_D4
-Text GLabel 14400 1950 0    50   Input ~ 0
+Text GLabel 14400 1600 0    50   Input ~ 0
 ARTEMIS_D22
-Text GLabel 14400 2050 0    50   Input ~ 0
+Text GLabel 14400 1700 0    50   Input ~ 0
 ARTEMIS_D24
-Text HLabel 15350 1650 2    50   Output ~ 0
+Text HLabel 15350 1300 2    50   Output ~ 0
 IRIDIUM_ON
-Text HLabel 15350 1750 2    50   Output ~ 0
+Text HLabel 15350 1400 2    50   Output ~ 0
 IRIDIUM_TX
-Text HLabel 15350 1850 2    50   Input ~ 0
+Text HLabel 15350 1500 2    50   Input ~ 0
 IRIDIUM_RX
-Text HLabel 15350 1950 2    50   Input ~ 0
+Text HLabel 15350 1600 2    50   Input ~ 0
 IRIDIUM_RING_IND
-Text HLabel 15350 2050 2    50   Input ~ 0
+Text HLabel 15350 1700 2    50   Input ~ 0
 IRIDIUM_NET_AVAIL
 Wire Wire Line
-	15350 1650 14350 1650
+	15350 1300 14350 1300
 Wire Wire Line
-	14650 1750 15350 1750
+	14650 1400 15350 1400
 Wire Wire Line
-	15350 1850 14650 1850
+	15350 1500 14650 1500
 Wire Wire Line
-	14400 1950 15350 1950
+	14400 1600 15350 1600
 Wire Wire Line
-	15350 2050 14400 2050
-Text GLabel 14400 2400 0    50   Input ~ 0
+	15350 1700 14400 1700
+Text GLabel 14450 2200 0    50   Input ~ 0
 ARTEMIS_D26
-Text GLabel 14400 2700 0    50   Input ~ 0
+Text GLabel 14450 2500 0    50   Input ~ 0
 ARTEMIS_D10
-Text GLabel 14650 2500 0    50   Input ~ 0
+Text GLabel 14700 2300 0    50   Input ~ 0
 ARTEMIS_D9_SDA(1)
-Text GLabel 14650 2600 0    50   Input ~ 0
+Text GLabel 14700 2400 0    50   Input ~ 0
 ARTEMIS_D8_SCL(1)
-Text HLabel 15350 2400 2    50   Output ~ 0
+Text HLabel 15400 2200 2    50   Output ~ 0
 GPS_POWER
-Text HLabel 15350 2500 2    50   BiDi ~ 0
+Text HLabel 15400 2300 2    50   BiDi ~ 0
 GPS_SDA
-Text HLabel 15350 2600 2    50   Output ~ 0
+Text HLabel 15400 2400 2    50   Output ~ 0
 GPS_SCL
-Text HLabel 15350 2700 2    50   BiDi ~ 0
+Text HLabel 15400 2500 2    50   BiDi ~ 0
 GPS_GPIO
 Wire Wire Line
-	15350 2700 14400 2700
+	15400 2500 14450 2500
 Wire Wire Line
-	14650 2600 15350 2600
+	14700 2400 15400 2400
 Wire Wire Line
-	15400 2500 14650 2500
-Wire Wire Line
-	14400 2400 15350 2400
+	14450 2200 15400 2200
 Text GLabel 14400 3400 0    50   Input ~ 0
 ARTEMIS_D37
 Text GLabel 14400 3300 0    50   Input ~ 0
@@ -623,39 +621,39 @@ Wire Wire Line
 	14400 3300 15350 3300
 Wire Wire Line
 	15350 3400 14400 3400
-Text GLabel 14700 4850 0    50   Input ~ 0
+Text GLabel 14650 4600 0    50   Input ~ 0
 ARTEMIS_D8_SCL(1)
-Text GLabel 14700 4950 0    50   Input ~ 0
+Text GLabel 14650 4700 0    50   Input ~ 0
 ARTEMIS_D9_SDA(1)
-Text GLabel 14450 4750 0    50   Input ~ 0
+Text GLabel 14400 4500 0    50   Input ~ 0
 ARTEMIS_D44
-Text GLabel 14100 5050 0    50   Input ~ 0
-???
-Text HLabel 15400 4750 2    50   Output ~ 0
+Text GLabel 14350 4800 0    50   Input ~ 0
+ARTEMIS_D3
+Text HLabel 15350 4500 2    50   Output ~ 0
 ADC24_ON
-Text HLabel 15400 4850 2    50   Output ~ 0
+Text HLabel 15350 4600 2    50   Output ~ 0
 ADC24_SCL
-Text HLabel 15400 4950 2    50   BiDi ~ 0
+Text HLabel 15350 4700 2    50   BiDi ~ 0
 ADC24_SDA
-Text HLabel 15400 5050 2    50   Input ~ 0
+Text HLabel 15350 4800 2    50   Input ~ 0
 ~ADC24_DRDY
 Wire Wire Line
-	15400 5050 14100 5050
+	15350 4800 14350 4800
 Wire Wire Line
-	14700 4950 15400 4950
+	14650 4700 15350 4700
 Wire Wire Line
-	15400 4850 14700 4850
+	15350 4600 14650 4600
 Wire Wire Line
-	14450 4750 15400 4750
-Text GLabel 14400 7900 0    50   Input ~ 0
+	14400 4500 15350 4500
+Text GLabel 14600 7900 0    50   Input ~ 0
 ARTEMIS_AD16
-Text HLabel 15100 7900 2    50   Output ~ 0
+Text HLabel 15300 7900 2    50   Output ~ 0
 IMU_ON
 Wire Wire Line
-	14400 7900 15100 7900
-Text HLabel 15100 8000 2    50   Output ~ 0
+	14600 7900 15300 7900
+Text HLabel 15300 8000 2    50   Output ~ 0
 IMU_SCL
-Text HLabel 15100 8100 2    50   BiDi ~ 0
+Text HLabel 15300 8100 2    50   BiDi ~ 0
 IMU_SDA
 Text GLabel 14450 5300 0    50   Input ~ 0
 ARTEMIS_D44
@@ -675,24 +673,24 @@ Wire Wire Line
 	14750 5400 15400 5400
 Wire Wire Line
 	15400 5500 14750 5500
-Text GLabel 14650 3850 0    50   Input ~ 0
-ARTEMIS_D8_SCL(1)
 Text GLabel 14650 3950 0    50   Input ~ 0
+ARTEMIS_D8_SCL(1)
+Text GLabel 14650 4050 0    50   Input ~ 0
 ARTEMIS_D9_SDA(1)
-Text GLabel 14450 3750 0    50   Input ~ 0
+Text GLabel 14450 3850 0    50   Input ~ 0
 ARTEMIS_AD16
-Text HLabel 15350 3750 2    50   Output ~ 0
-CRYPTO_ON
-Text HLabel 15350 3950 2    50   BiDi ~ 0
-CRYPTO_SDA
 Text HLabel 15350 3850 2    50   Output ~ 0
+CRYPTO_ON
+Text HLabel 15350 4050 2    50   BiDi ~ 0
+CRYPTO_SDA
+Text HLabel 15350 3950 2    50   Output ~ 0
 CRYPTO_SCL
 Wire Wire Line
-	14450 3750 15350 3750
+	14450 3850 15350 3850
+Wire Wire Line
+	14650 4050 15350 4050
 Wire Wire Line
 	14650 3950 15350 3950
-Wire Wire Line
-	14650 3850 15350 3850
 Text GLabel 2200 1850 2    50   Input ~ 0
 ARTEMIS_D27_SCL(2)
 Text GLabel 2200 1750 2    50   Input ~ 0
@@ -750,12 +748,10 @@ COM2_POWER_ON
 Text HLabel 15300 6950 2    50   Output ~ 0
 COM3_POWER_ON
 Text GLabel 2450 9100 2    50   Input ~ 0
-ARTEMIS_D2
-Text GLabel 2450 9200 2    50   Input ~ 0
 ARTEMIS_AD31
-Text GLabel 2450 9300 2    50   Input ~ 0
+Text GLabel 2450 9200 2    50   Input ~ 0
 ARTEMIS_AD32
-Text GLabel 2450 9400 2    50   Input ~ 0
+Text GLabel 2450 9300 2    50   Input ~ 0
 ARTEMIS_AD29
 Text HLabel 1300 9100 0    50   Output ~ 0
 LED1
@@ -763,14 +759,106 @@ Text HLabel 1300 9200 0    50   Output ~ 0
 LED2
 Text HLabel 1300 9300 0    50   Output ~ 0
 LED3
-Text HLabel 1300 9400 0    50   Output ~ 0
-LED4
-Wire Wire Line
-	1300 9400 2450 9400
 Wire Wire Line
 	2450 9300 1300 9300
 Wire Wire Line
 	1300 9200 2450 9200
 Wire Wire Line
 	2450 9100 1300 9100
+Text HLabel 15300 5950 2    50   Output ~ 0
+S2U_ON
+Text GLabel 2300 3250 2    50   Input ~ 0
+ARTEMIS_D23
+Text GLabel 2300 7650 2    50   Input ~ 0
+ARTEMIS_D28
+Text GLabel 2300 7750 2    50   Input ~ 0
+ARTEMIS_D1
+Text HLabel 1300 7550 0    50   Output ~ 0
+~SC_SHDN
+Text HLabel 1300 7650 0    50   Input ~ 0
+SC_PGOOD
+Text HLabel 1300 7750 0    50   Output ~ 0
+SC_ON
+Text GLabel 2300 7550 2    50   Input ~ 0
+ARTEMIS_D0
+Wire Wire Line
+	2300 7550 1300 7550
+Wire Wire Line
+	1300 7650 2300 7650
+Wire Wire Line
+	2300 7750 1300 7750
+Text HLabel 1600 3250 0    50   Output ~ 0
+SYS_PWR_ENABLE
+Wire Wire Line
+	1600 3250 2300 3250
+Text GLabel 7550 9150 2    50   Input ~ 0
+ARTEMIS_D41_BLEIF_IRQ
+Text GLabel 14450 5950 0    50   Input ~ 0
+ARTEMIS_D45
+Text GLabel 14500 6950 0    50   Input ~ 0
+ARTEMIS_AD34
+Text GLabel 7550 9250 2    50   Input ~ 0
+ARTEMIS_AD35
+Text GLabel 14500 6650 0    50   Input ~ 0
+ARTEMIS_AD11
+Text GLabel 14500 6750 0    50   Input ~ 0
+ARTEMIS_AD12
+Text GLabel 14500 6850 0    50   Input ~ 0
+ARTEMIS_AD13
+NoConn ~ 7550 9150
+NoConn ~ 7550 9250
+Text Notes 7700 8850 0    50   ~ 0
+UNUSED NETS
+Wire Notes Line
+	7150 8600 8850 8600
+Wire Notes Line
+	8850 8600 8850 10050
+Wire Notes Line
+	8850 10050 7150 10050
+Wire Notes Line
+	7150 10050 7150 8600
+Wire Wire Line
+	14450 5950 15300 5950
+Wire Wire Line
+	14500 6650 15300 6650
+Wire Wire Line
+	15300 6750 14500 6750
+Wire Wire Line
+	14500 6850 15300 6850
+Wire Wire Line
+	15300 6950 14500 6950
+Wire Wire Line
+	14700 2300 15400 2300
+Text Notes 14700 1100 0    50   ~ 0
+IRIDIUM Nets
+Text Notes 14700 2050 0    50   ~ 0
+GPS Nets
+Text Notes 14500 2850 0    50   ~ 0
+ACCELEROMETER Nets
+Text Notes 14650 3750 0    50   ~ 0
+CRYPTO Nets
+Text Notes 14650 4400 0    50   ~ 0
+ADC24 Nets
+Text Notes 14400 5200 0    50   ~ 0
+SPARE I2C/PRESSURE Nets
+Text Notes 14350 5850 0    50   ~ 0
+SPARE I2C/PRESSURE Nets
+Text Notes 14600 7750 0    50   ~ 0
+IMU Nets
+Text Notes 1800 8950 0    50   ~ 0
+LED/DEBUG Nets
+Text Notes 1350 7400 0    50   ~ 0
+SUPERCAPACITOR CHARGE Nets
+Text Notes 1600 5600 0    50   ~ 0
+CONSOLE Nets
+Text Notes 1650 3050 0    50   ~ 0
+POWER ENABLE Nets
+Text Notes 1500 1600 0    50   ~ 0
+POWER CONTROL BOARD Nets
+Text HLabel 1600 1950 0    50   Output ~ 0
+PWR_CTRL_EN
+Text GLabel 2200 1950 2    50   Input ~ 0
+ARTEMIS_D2
+Wire Wire Line
+	2200 1950 1600 1950
 $EndSCHEMATC
