@@ -9,6 +9,11 @@ $CMP LMR33610A
 F http://www.ti.com/lit/ds/symlink/lmr33610.pdf?ts=1591319194087
 $ENDCMP
 #
+$CMP LMR50410
+D SIMPLE SWITCHER® 4-V to 36-V, 1-A Buck Converter in SOT-23-6 package
+F https://www.ti.com/lit/ds/symlink/lmr50410.pdf?ts=1591402847494&ref_url=https://www.ti.com/product/LMR50410
+$ENDCMP
+#
 $CMP LTC3225
 D 150mA Supercapacitor Charger
 F https://www.analog.com/media/en/technical-documentation/data-sheets/3225fb.pdf
