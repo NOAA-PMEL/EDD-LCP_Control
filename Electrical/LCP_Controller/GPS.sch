@@ -582,4 +582,8 @@ $EndComp
 Wire Wire Line
 	6550 2000 6550 2050
 Connection ~ 6550 2050
+Text Notes 8400 3500 0    50   ~ 0
+Add U.FL with Jumper to prototype\n
+Text Notes 4700 6350 0    100  Italic 20
+Alex: Please check pinout & footprint on U13
 $EndSCHEMATC

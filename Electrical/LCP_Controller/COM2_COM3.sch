@@ -560,7 +560,7 @@ U 1 1 5EFA1E34
 P 9700 4450
 AR Path="/5ED049DE/5EFA1E34" Ref="U?"  Part="1" 
 AR Path="/5EDB3CE1/5EFA1E34" Ref="U9"  Part="1" 
-F 0 "U9" H 9675 3561 50  0000 C CNN
+F 0 "U9" H 10050 5650 50  0000 C CNN
 F 1 "TRS3122E" H 9675 3470 50  0000 C CNN
 F 2 "Package_DFN_QFN:Texas_RGE0024H_EP2.7x2.7mm_ThermalVias" H 8950 5300 50  0001 C CNN
 F 3 "https://www.ti.com/lit/ds/symlink/trs3122e.pdf?ts=1591021643258" H 8950 5300 50  0001 C CNN
@@ -1293,7 +1293,6 @@ F 3 "~" H 8150 6000 50  0001 C CNN
 	1    8150 6000
 	1    0    0    -1  
 $EndComp
-Connection ~ 9000 6000
 $Comp
 L power:PWR_FLAG #FLG011
 U 1 1 5EE8293B
@@ -1323,4 +1322,6 @@ F 3 "~" H 7200 3050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Connection ~ 7200 3050
+Text Notes 12350 1150 0    100  Italic 20
+Alex: Please check pinout & footprint on U7,U8, U9\n
 $EndSCHEMATC

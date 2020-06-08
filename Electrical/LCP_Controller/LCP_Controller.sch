@@ -13,8 +13,8 @@ Comment2 "Based on Paul Clark's Sparkfun Artemis Global Tracker "
 Comment3 "Project Repo: https://github.com/NOAA-PMEL/EDD-LCP_Control"
 Comment4 ""
 $EndDescr
-Text Notes -5100 4800 0    100  ~ 0
-To Do:\nAdd GPS Battery Backup\nAdd Specific Power Pin Control for External COM\nReplace regulator with higher input voltage one\n
+Text Notes 1150 7450 0    100  ~ 0
+To Do:\nLabel parts to review\nHave Alex Review\n\n
 $Sheet
 S 8050 5650 1350 750 
 U 5EDA4305

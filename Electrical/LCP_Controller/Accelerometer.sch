@@ -277,4 +277,6 @@ Wire Wire Line
 	3750 4050 5250 4050
 Wire Wire Line
 	3750 4150 5450 4150
+Text Notes 4050 5750 0    100  Italic 20
+Alex: Please check pinout & footprint on U10
 $EndSCHEMATC

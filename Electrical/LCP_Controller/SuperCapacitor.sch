@@ -634,4 +634,6 @@ Wire Wire Line
 Connection ~ 4300 3200
 Wire Wire Line
 	4300 3200 4300 4450
+Text Notes 6400 5950 0    100  Italic 20
+Alex: Please check pinout & footprint on U4, U5, C11, Q3
 $EndSCHEMATC

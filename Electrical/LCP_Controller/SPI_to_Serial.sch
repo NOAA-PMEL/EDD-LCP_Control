@@ -926,4 +926,6 @@ Wire Wire Line
 	5200 6100 5500 6100
 NoConn ~ 8550 4000
 NoConn ~ 8600 2100
+Text Notes 2250 7450 0    100  Italic 20
+Alex: Please check pinout & footprint on U15
 $EndSCHEMATC

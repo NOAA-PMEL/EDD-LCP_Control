@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 8 20
+Sheet 4 20
 Title "LCP Controller "
 Date "2020-06-04"
 Rev "0.1"
@@ -219,4 +219,6 @@ Wire Wire Line
 Wire Wire Line
 	3300 3600 4900 3600
 Connection ~ 4900 3600
+Text Notes 4200 5750 0    100  Italic 20
+Alex: Please check pinout & footprint on U2
 $EndSCHEMATC

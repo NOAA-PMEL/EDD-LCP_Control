@@ -520,4 +520,20 @@ F 3 "~" H 6550 5750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Connection ~ 6550 5750
+Text Notes 2750 5400 0    50   ~ 0
+I2C Addressing Scheme
+Text Notes 3650 4800 0    50   ~ 0
+A0
+Text Notes 4300 4800 0    50   ~ 0
+A1
+Text Notes 2750 5900 0    50   ~ 0
+A1:\nGND\nGND\n3V3\n3V3
+Text Notes 3000 5900 0    50   ~ 0
+A0:\nGND\n3V3\nGND\n3V3
+Text Notes 3250 5900 0    50   ~ 0
+I2C Address:\n100 0000\n100 0001\n100 0100\n100 0101
+Text Notes 5250 6150 0    50   ~ 0
+Cut Jumper for isolation of AGND & DGND
+Text Notes 4000 6450 0    100  Italic 20
+Alex: Please check pinout & footprint on U1
 $EndSCHEMATC

@@ -695,4 +695,8 @@ Wire Wire Line
 Connection ~ 6050 5650
 Wire Wire Line
 	6050 5650 9000 5650
+Text Notes 8650 2700 0    50   ~ 0
+Add output jumpers
+Text Notes 7900 850  0    100  Italic 20
+Alex: Please check pinout & footprint on U6
 $EndSCHEMATC

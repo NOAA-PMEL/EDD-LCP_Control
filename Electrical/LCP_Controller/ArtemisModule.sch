@@ -941,7 +941,7 @@ U 1 1 5EE35DA1
 P 6800 3750
 F 0 "TP13" H 6858 3874 50  0000 L CNN
 F 1 "~RESET" H 6858 3776 50  0000 L CNN
-F 2 "" H 7000 3750 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 7000 3750 50  0001 C CNN
 F 3 "~" H 7000 3750 50  0001 C CNN
 	1    6800 3750
 	1    0    0    -1  
@@ -989,4 +989,6 @@ Text GLabel 4600 1950 0    50   Input ~ 0
 ARTEMIS_BOOT
 Wire Wire Line
 	4850 1950 4600 1950
+Text Notes 7200 7900 0    100  Italic 20
+Alex: Please check pinout & footprint on U12, J11
 $EndSCHEMATC

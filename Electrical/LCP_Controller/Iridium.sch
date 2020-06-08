@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 19 20
+Sheet 17 20
 Title "LCP Controller "
 Date "2020-06-04"
 Rev "0.1"
@@ -223,4 +223,6 @@ Wire Wire Line
 	8250 3750 8750 3750
 Text Notes 8150 4250 0    100  Italic 0
 This requires some impedance\n matching calculation for PCB!!!
+Text Notes 4400 5750 0    100  Italic 20
+Alex: Please check pinout & footprint on U14
 $EndSCHEMATC
