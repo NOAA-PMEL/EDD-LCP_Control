@@ -13,8 +13,6 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text Notes 4800 4050 2    50   ~ 0
-COM0
 $Comp
 L SparkFun-PowerSymbols:VIN #SUPPLY?
 U 1 1 5EE23044
@@ -74,4 +72,6 @@ Text HLabel 6800 3900 2    50   Input ~ 0
 PWR_CTRL_ENABLE
 Wire Wire Line
 	6800 3900 5200 3900
+Text Notes 4550 4000 0    50   ~ 0
+CONTROL
 $EndSCHEMATC

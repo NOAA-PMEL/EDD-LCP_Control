@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 15 20
+Sheet 13 20
 Title "LCP Controller "
 Date "2020-06-04"
 Rev "0.1"
@@ -119,21 +119,6 @@ Wire Wire Line
 	6800 4100 6650 4100
 Wire Wire Line
 	5700 4100 5700 3950
-$Comp
-L power:+3.3V #PWR?
-U 1 1 5EEE7646
-P 5550 2850
-AR Path="/60F8228B/5EEE7646" Ref="#PWR?"  Part="1" 
-AR Path="/5EEDF256/5EEE7646" Ref="#PWR063"  Part="1" 
-F 0 "#PWR063" H 5550 2700 50  0001 C CNN
-F 1 "+3.3V" H 5565 3023 50  0000 C CNN
-F 2 "" H 5550 2850 50  0001 C CNN
-F 3 "" H 5550 2850 50  0001 C CNN
-	1    5550 2850
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	5550 2850 5550 2950
 $Comp
 L Device:R R?
 U 1 1 5EEE764D
@@ -275,4 +260,19 @@ Wire Wire Line
 Connection ~ 5800 4000
 Wire Wire Line
 	3000 3150 5100 3150
+$Comp
+L power:+3.3V #PWR?
+U 1 1 5EEE7646
+P 5550 2750
+AR Path="/60F8228B/5EEE7646" Ref="#PWR?"  Part="1" 
+AR Path="/5EEDF256/5EEE7646" Ref="#PWR063"  Part="1" 
+F 0 "#PWR063" H 5550 2600 50  0001 C CNN
+F 1 "+3.3V" H 5565 2923 50  0000 C CNN
+F 2 "" H 5550 2750 50  0001 C CNN
+F 3 "" H 5550 2750 50  0001 C CNN
+	1    5550 2750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5550 2750 5550 2950
 $EndSCHEMATC

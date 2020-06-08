@@ -153,4 +153,6 @@ F 3 "~" H 4900 3650 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	5550 3300 6150 3300
+Text Notes 4400 3700 0    50   ~ 0
+CONSOLE
 $EndSCHEMATC

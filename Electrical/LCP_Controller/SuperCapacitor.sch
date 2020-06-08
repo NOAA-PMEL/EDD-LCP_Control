@@ -96,9 +96,9 @@ $EndComp
 Wire Wire Line
 	4500 4450 4300 4450
 Wire Wire Line
-	4900 3700 4900 3100
+	4900 3700 4900 3200
 Wire Wire Line
-	4900 3100 4300 3100
+	4900 3200 4300 3200
 $Comp
 L power:GND #PWR?
 U 1 1 5EE42235
@@ -279,14 +279,9 @@ Wire Wire Line
 Wire Wire Line
 	4000 4050 4500 4050
 Wire Wire Line
-	4300 3100 4300 4450
-Connection ~ 4300 3100
-Wire Wire Line
 	3500 3550 3500 3600
 Wire Wire Line
-	3500 3250 3500 3100
-Wire Wire Line
-	3500 3100 4300 3100
+	3500 3250 3500 3200
 Wire Wire Line
 	5950 4600 5650 4600
 Wire Wire Line
@@ -398,7 +393,6 @@ F 3 "" H 3500 3100 50  0001 C CNN
 	1    3500 3100
 	1    0    0    -1  
 $EndComp
-Connection ~ 3500 3100
 Connection ~ 5650 4600
 Wire Wire Line
 	5650 4600 5450 4600
@@ -632,4 +626,12 @@ Wire Wire Line
 	6050 4600 6650 4600
 Wire Wire Line
 	6850 3900 6850 4250
+Wire Wire Line
+	3500 3200 4300 3200
+Connection ~ 3500 3200
+Wire Wire Line
+	3500 3200 3500 3100
+Connection ~ 4300 3200
+Wire Wire Line
+	4300 3200 4300 4450
 $EndSCHEMATC

@@ -177,8 +177,6 @@ Wire Wire Line
 Wire Wire Line
 	8750 2850 8750 2700
 Connection ~ 8750 2700
-Wire Wire Line
-	8450 2450 8450 2700
 $Comp
 L power:+3.3V #PWR?
 U 1 1 5EDF2D02
@@ -205,7 +203,7 @@ Wire Wire Line
 Wire Wire Line
 	5650 4150 5650 4700
 Wire Wire Line
-	5850 3950 7550 3950
+	5850 3950 6550 3950
 Text GLabel 10900 4100 2    50   Input ~ 0
 ARTEMIS_D4
 Text GLabel 10900 4200 2    50   Input ~ 0
@@ -370,19 +368,6 @@ Wire Wire Line
 	10900 6800 10650 6800
 Wire Wire Line
 	10650 6900 10900 6900
-$Comp
-L power:+3.3V #PWR?
-U 1 1 5EDF2D61
-P 8450 2450
-AR Path="/5EC7245E/5EDF2D61" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA42A9/5EDF2D61" Ref="#PWR071"  Part="1" 
-F 0 "#PWR071" H 8450 2300 50  0001 C CNN
-F 1 "+3.3V" H 8465 2623 50  0000 C CNN
-F 2 "" H 8450 2450 50  0001 C CNN
-F 3 "" H 8450 2450 50  0001 C CNN
-	1    8450 2450
-	1    0    0    -1  
-$EndComp
 Text GLabel 10900 4000 2    50   Input ~ 0
 ARTEMIS_D3
 Text GLabel 10900 3900 2    50   Input ~ 0
@@ -415,7 +400,7 @@ ARTEMIS_BOOT
 Wire Wire Line
 	7550 4150 7300 4150
 Text Label 7200 3950 0    50   ~ 0
-nRESET
+~RESET
 Text Label 7200 4700 0    50   ~ 0
 SWDCLK
 Text Label 7200 4800 0    50   ~ 0
@@ -514,7 +499,7 @@ Wire Wire Line
 Wire Wire Line
 	4850 4250 4850 5100
 Text Label 4950 4050 0    50   ~ 0
-nRESET
+~RESET
 Text Label 4950 4150 0    50   ~ 0
 SWDCLK
 Text Label 4950 4350 0    50   ~ 0
@@ -788,7 +773,7 @@ Wire Wire Line
 Wire Wire Line
 	2300 7750 1300 7750
 Text HLabel 1600 3250 0    50   Output ~ 0
-SYS_PWR_ENABLE
+BUS_VOLT_ENABLE
 Wire Wire Line
 	1600 3250 2300 3250
 Text GLabel 7550 9150 2    50   Input ~ 0
@@ -797,7 +782,7 @@ Text GLabel 14450 5950 0    50   Input ~ 0
 ARTEMIS_D45
 Text GLabel 14500 6950 0    50   Input ~ 0
 ARTEMIS_AD34
-Text GLabel 7550 9250 2    50   Input ~ 0
+Text GLabel 2300 3350 2    50   Input ~ 0
 ARTEMIS_AD35
 Text GLabel 14500 6650 0    50   Input ~ 0
 ARTEMIS_AD11
@@ -861,4 +846,147 @@ Text GLabel 2200 1950 2    50   Input ~ 0
 ARTEMIS_D2
 Wire Wire Line
 	2200 1950 1600 1950
+$Comp
+L Switch:SW_Push SW1
+U 1 1 5EDEC293
+P 5300 2250
+F 0 "SW1" V 5254 2398 50  0000 L CNN
+F 1 "RESET" V 5345 2398 50  0000 L CNN
+F 2 "Button_Switch_SMD:SW_SPST_PTS810" H 5300 2450 50  0001 C CNN
+F 3 "~" H 5300 2450 50  0001 C CNN
+	1    5300 2250
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R33
+U 1 1 5EDEC701
+P 5300 1700
+F 0 "R33" H 5370 1746 50  0000 L CNN
+F 1 "100k" H 5370 1655 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 5230 1700 50  0001 C CNN
+F 3 "~" H 5300 1700 50  0001 C CNN
+	1    5300 1700
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C52
+U 1 1 5EDF4DD1
+P 5950 2300
+F 0 "C52" H 6065 2346 50  0000 L CNN
+F 1 "1nF" H 6065 2255 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 5988 2150 50  0001 C CNN
+F 3 "~" H 5950 2300 50  0001 C CNN
+	1    5950 2300
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5EDF5623
+P 5600 2700
+AR Path="/5EC7245E/5EDF5623" Ref="#PWR?"  Part="1" 
+AR Path="/5EDA42A9/5EDF5623" Ref="#PWR0105"  Part="1" 
+F 0 "#PWR0105" H 5600 2450 50  0001 C CNN
+F 1 "GND" H 5605 2527 50  0000 C CNN
+F 2 "" H 5600 2700 50  0001 C CNN
+F 3 "" H 5600 2700 50  0001 C CNN
+	1    5600 2700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5300 2450 5300 2600
+Wire Wire Line
+	5300 2600 5600 2600
+Wire Wire Line
+	5600 2600 5600 2700
+Wire Wire Line
+	5950 2450 5950 2600
+Wire Wire Line
+	5950 2600 5600 2600
+Connection ~ 5600 2600
+Wire Wire Line
+	5950 2150 5950 1950
+Wire Wire Line
+	5950 1950 5300 1950
+Wire Wire Line
+	5300 1950 5300 1850
+Wire Wire Line
+	5300 2050 5300 1950
+Connection ~ 5300 1950
+$Comp
+L power:+3.3V #PWR?
+U 1 1 5EE17F4C
+P 5300 1450
+AR Path="/5EC7245E/5EE17F4C" Ref="#PWR?"  Part="1" 
+AR Path="/5EDA42A9/5EE17F4C" Ref="#PWR0104"  Part="1" 
+F 0 "#PWR0104" H 5300 1300 50  0001 C CNN
+F 1 "+3.3V" H 5315 1623 50  0000 C CNN
+F 2 "" H 5300 1450 50  0001 C CNN
+F 3 "" H 5300 1450 50  0001 C CNN
+	1    5300 1450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5300 1450 5300 1550
+Wire Wire Line
+	5950 1950 6550 1950
+Wire Wire Line
+	6550 1950 6550 3950
+Connection ~ 5950 1950
+Connection ~ 6550 3950
+Wire Wire Line
+	6550 3950 6800 3950
+$Comp
+L Connector:TestPoint TP13
+U 1 1 5EE35DA1
+P 6800 3750
+F 0 "TP13" H 6858 3874 50  0000 L CNN
+F 1 "~RESET" H 6858 3776 50  0000 L CNN
+F 2 "" H 7000 3750 50  0001 C CNN
+F 3 "~" H 7000 3750 50  0001 C CNN
+	1    6800 3750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6800 3750 6800 3950
+Connection ~ 6800 3950
+Wire Wire Line
+	6800 3950 7550 3950
+$Comp
+L Device:C C51
+U 1 1 5EE40235
+P 5000 1950
+F 0 "C51" V 4748 1950 50  0000 C CNN
+F 1 "1nF" V 4839 1950 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 5038 1800 50  0001 C CNN
+F 3 "~" H 5000 1950 50  0001 C CNN
+	1    5000 1950
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5150 1950 5300 1950
+Text Notes 3650 1150 0    200  ~ 0
+RESET SWITCH
+Text HLabel 1600 3350 0    50   Input ~ 0
+BUS_VOLTAGE
+Wire Wire Line
+	8450 2450 8450 2700
+$Comp
+L power:+3.3V #PWR?
+U 1 1 5EDF2D61
+P 8450 2450
+AR Path="/5EC7245E/5EDF2D61" Ref="#PWR?"  Part="1" 
+AR Path="/5EDA42A9/5EDF2D61" Ref="#PWR071"  Part="1" 
+F 0 "#PWR071" H 8450 2300 50  0001 C CNN
+F 1 "+3.3V" H 8465 2623 50  0000 C CNN
+F 2 "" H 8450 2450 50  0001 C CNN
+F 3 "" H 8450 2450 50  0001 C CNN
+	1    8450 2450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1600 3350 2300 3350
+Text GLabel 4600 1950 0    50   Input ~ 0
+ARTEMIS_BOOT
+Wire Wire Line
+	4850 1950 4600 1950
 $EndSCHEMATC
