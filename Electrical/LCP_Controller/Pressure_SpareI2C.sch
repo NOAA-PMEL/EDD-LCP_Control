@@ -5,13 +5,13 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 14 20
 Title "LCP Controller "
-Date "2020-06-04"
+Date "2020-06-09"
 Rev "0.1"
 Comp "NOAA Pacific Marine Environmental Laboratory"
 Comment1 ""
 Comment2 ""
 Comment3 ""
-Comment4 ""
+Comment4 "Current design by: Matt Casari"
 $EndDescr
 Text Notes 8250 2750 2    200  ~ 0
 Pressure Sensor or Spare I2C

@@ -5,13 +5,13 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 2 20
 Title "LCP Controller "
-Date "2020-06-04"
+Date "2020-06-09"
 Rev "0.1"
 Comp "NOAA Pacific Marine Environmental Laboratory"
 Comment1 ""
 Comment2 ""
 Comment3 ""
-Comment4 ""
+Comment4 "Current design by: Matt Casari"
 $EndDescr
 Text Notes 8300 2200 2    200  ~ 0
 24Bit Analog-to-Digital Converter\nBus Voltage Read and Spare ADC

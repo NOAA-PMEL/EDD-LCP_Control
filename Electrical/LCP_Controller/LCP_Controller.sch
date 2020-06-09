@@ -5,13 +5,13 @@ $Descr B 17000 11000
 encoding utf-8
 Sheet 1 20
 Title "LCP Controller "
-Date "2020-06-04"
+Date "2020-06-09"
 Rev "0.1"
 Comp "NOAA Pacific Marine Environmental Laboratory"
 Comment1 "https://github.com/PaulZC/Artemis_Global_Tracker"
 Comment2 "Based on Paul Clark's Sparkfun Artemis Global Tracker "
 Comment3 "Project Repo: https://github.com/NOAA-PMEL/EDD-LCP_Control"
-Comment4 ""
+Comment4 "Current design by: Matt Casari"
 $EndDescr
 Text Notes 1150 7450 0    100  ~ 0
 To Do:\nLabel parts to review\nHave Alex Review\n\n

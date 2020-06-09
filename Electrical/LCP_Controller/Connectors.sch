@@ -5,13 +5,13 @@ $Descr B 17000 11000
 encoding utf-8
 Sheet 19 20
 Title "LCP Controller "
-Date "2020-06-04"
+Date "2020-06-09"
 Rev "0.1"
 Comp "NOAA Pacific Marine Environmental Laboratory"
 Comment1 ""
 Comment2 ""
 Comment3 ""
-Comment4 ""
+Comment4 "Current design by: Matt Casari"
 $EndDescr
 Text HLabel 2400 6950 0    50   Input ~ 0
 COM0_TX

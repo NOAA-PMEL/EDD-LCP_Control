@@ -5,13 +5,13 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 17 20
 Title "LCP Controller "
-Date "2020-06-04"
+Date "2020-06-09"
 Rev "0.1"
 Comp "NOAA Pacific Marine Environmental Laboratory"
 Comment1 ""
 Comment2 ""
 Comment3 ""
-Comment4 ""
+Comment4 "Current design by: Matt Casari"
 $EndDescr
 $Comp
 L power:GND #PWR?
