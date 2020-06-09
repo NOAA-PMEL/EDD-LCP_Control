@@ -42,7 +42,7 @@ Wire Wire Line
 	6000 4050 6000 4150
 Connection ~ 6000 4050
 Wire Wire Line
-	6650 3650 5100 3650
+	8200 3650 7350 3650
 Wire Wire Line
 	5100 3450 5550 3450
 Wire Wire Line
@@ -88,6 +88,7 @@ F 0 "C35" V 5450 4050 50  0000 C CNN
 F 1 "0.1uF" V 5350 4050 50  0000 C CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric" H 5688 3900 50  0001 C CNN
 F 3 "~" H 5650 4050 50  0001 C CNN
+F 4 "885012207016" H 5650 4050 50  0001 C CNN "MPN"
 	1    5650 4050
 	0    1    -1   0   
 $EndComp
@@ -99,6 +100,7 @@ F 0 "R23" H 6070 4346 50  0000 L CNN
 F 1 "220k" H 6070 4255 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 5930 4300 50  0001 C CNN
 F 3 "~" H 6000 4300 50  0001 C CNN
+F 4 "CRG0805F220K" H 6000 4300 50  0001 C CNN "MPN"
 	1    6000 4300
 	1    0    0    -1  
 $EndComp
@@ -113,7 +115,7 @@ F 3 "" H 6000 4550 50  0001 C CNN
 	1    6000 4550
 	1    0    0    -1  
 $EndComp
-Text GLabel 6650 3650 2    50   Input ~ 0
+Text GLabel 8200 3650 2    50   Input ~ 0
 VCC_USB
 $Comp
 L power:GND #PWR061
@@ -126,18 +128,18 @@ F 3 "" H 6150 3400 50  0001 C CNN
 	1    6150 3400
 	1    0    0    -1  
 $EndComp
-Text HLabel 6650 4050 2    50   Output ~ 0
+Text HLabel 8200 4050 2    50   Output ~ 0
 CONSOLE_BOOT
-Text HLabel 6650 3850 2    50   Input ~ 0
+Text HLabel 8200 3850 2    50   Input ~ 0
 CONSOLE_TX
-Text HLabel 6650 3750 2    50   Output ~ 0
+Text HLabel 8200 3750 2    50   Output ~ 0
 CONSOLE_RX
 Wire Wire Line
-	5100 3750 6650 3750
+	5100 3750 7450 3750
 Wire Wire Line
-	5100 3850 6650 3850
+	5100 3850 7550 3850
 Wire Wire Line
-	6000 4050 6650 4050
+	6000 4050 7650 4050
 $Comp
 L Connector_Generic:Conn_01x06 J?
 U 1 1 5EF59BE1
@@ -148,6 +150,7 @@ F 0 "J7" H 4900 4000 50  0000 C CNN
 F 1 "Conn_01x06" H 4900 3200 50  0000 C CNN
 F 2 "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical" H 4900 3650 50  0001 C CNN
 F 3 "~" H 4900 3650 50  0001 C CNN
+F 4 "N/A" H 4900 3650 50  0001 C CNN "MPN"
 	1    4900 3650
 	-1   0    0    -1  
 $EndComp
@@ -155,4 +158,84 @@ Wire Wire Line
 	5550 3300 6150 3300
 Text Notes 4400 3700 0    50   ~ 0
 CONSOLE
+$Comp
+L Connector_Generic:Conn_02x04_Odd_Even J?
+U 1 1 5EEFBABD
+P 6950 5000
+AR Path="/5ED049DE/5EEFBABD" Ref="J?"  Part="1" 
+AR Path="/60F8228B/5EEFBABD" Ref="J?"  Part="1" 
+AR Path="/5EDB548E/5EEFBABD" Ref="J?"  Part="1" 
+AR Path="/5EDA50A5/5EEFBABD" Ref="J?"  Part="1" 
+AR Path="/5EE01D96/5EEFBABD" Ref="J31"  Part="1" 
+F 0 "J31" H 7050 5200 50  0000 R CNN
+F 1 "SALEAE_TEST" H 7200 4700 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 6950 5000 50  0001 C CNN
+F 3 "~" H 6950 5000 50  0001 C CNN
+F 4 "Console/Bootloader" H 7000 4600 50  0000 C CNN "TestPoint"
+F 5 "0010897080" H 6950 5000 50  0001 C CNN "MPN"
+	1    6950 5000
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	6350 5200 6350 5250
+Connection ~ 6350 5200
+Wire Wire Line
+	6650 5200 6350 5200
+Wire Wire Line
+	6350 5100 6350 5200
+Connection ~ 6350 5100
+Wire Wire Line
+	6650 5100 6350 5100
+Wire Wire Line
+	6350 5000 6350 5100
+Wire Wire Line
+	6350 5000 6350 4900
+Connection ~ 6350 5000
+Wire Wire Line
+	6650 5000 6350 5000
+Wire Wire Line
+	6350 4900 6650 4900
+$Comp
+L power:GND #PWR?
+U 1 1 5EEFBACE
+P 6350 5250
+AR Path="/60F8228B/5EEFBACE" Ref="#PWR?"  Part="1" 
+AR Path="/5EDB548E/5EEFBACE" Ref="#PWR?"  Part="1" 
+AR Path="/5EDA50A5/5EEFBACE" Ref="#PWR?"  Part="1" 
+AR Path="/5EE01D96/5EEFBACE" Ref="#PWR0119"  Part="1" 
+F 0 "#PWR0119" H 6350 5000 50  0001 C CNN
+F 1 "GND" H 6250 5150 50  0000 C CNN
+F 2 "" H 6350 5250 50  0001 C CNN
+F 3 "" H 6350 5250 50  0001 C CNN
+	1    6350 5250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7150 4900 7350 4900
+Wire Wire Line
+	7150 5000 7450 5000
+Wire Wire Line
+	7150 5100 7550 5100
+Wire Wire Line
+	7350 3650 7350 4900
+Connection ~ 7350 3650
+Wire Wire Line
+	7350 3650 5100 3650
+Wire Wire Line
+	7450 3750 7450 5000
+Connection ~ 7450 3750
+Wire Wire Line
+	7450 3750 8200 3750
+Wire Wire Line
+	7550 3850 7550 5100
+Connection ~ 7550 3850
+Wire Wire Line
+	7550 3850 8200 3850
+Wire Wire Line
+	7150 5200 7650 5200
+Wire Wire Line
+	7650 5200 7650 4050
+Connection ~ 7650 4050
+Wire Wire Line
+	7650 4050 8200 4050
 $EndSCHEMATC

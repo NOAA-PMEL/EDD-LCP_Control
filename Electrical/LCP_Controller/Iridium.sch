@@ -72,7 +72,8 @@ F 0 "J13" V 5250 2900 50  0000 R CNN
 F 1 "SALEAE_TEST" V 5150 2900 50  0000 R CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 5100 3200 50  0001 C CNN
 F 3 "~" H 5100 3200 50  0001 C CNN
-F 4 "Iridium COM Test" V 5050 2600 50  0000 C CNN "Field4"
+F 4 "Iridium COM Test" V 5050 2600 50  0000 C CNN "TestPoint"
+F 5 "0010897080" H 5100 3200 50  0001 C CNN "MPN"
 	1    5100 3200
 	0    -1   -1   0   
 $EndComp
@@ -185,6 +186,8 @@ F 1 "IRIDIUM_9603N" H 6100 3650 50  0000 C CNN
 F 2 "PMEL_Modules:Iridium_9603n" H 6550 3600 50  0001 C CNN
 F 3 "" H 6550 3600 50  0001 C CNN
 F 4 "http://suddendocs.samtec.com/prints/ss4-xx-x.xx-x-d-x-xx-tr-mkt.pdf" H 6550 3600 50  0001 C CNN "Connector Datasheet"
+F 5 "SS4-10-3.00-L-D-K-TR" H 6550 3600 50  0001 C CNN "Connector PN"
+F 6 "SS4-10-3.00-L-D-K-TR" H 6550 3600 50  0001 C CNN "MPN"
 	1    6550 3600
 	1    0    0    -1  
 $EndComp
@@ -199,6 +202,7 @@ F 0 "J14" H 8150 3725 50  0000 L CNN
 F 1 "U.FL" H 8150 3634 50  0000 L CNN
 F 2 "Connector_Coaxial:U.FL_Hirose_U.FL-R-SMT-1_Vertical" H 8050 3750 50  0001 C CNN
 F 3 " ~" H 8050 3750 50  0001 C CNN
+F 4 "U.FL-R-SMT-1(40)" H 8050 3750 50  0001 C CNN "MPN"
 	1    8050 3750
 	-1   0    0    -1  
 $EndComp
@@ -225,4 +229,47 @@ Text Notes 8150 4250 0    100  Italic 0
 This requires some impedance\n matching calculation for PCB!!!
 Text Notes 4400 5750 0    100  Italic 20
 Alex: Please check pinout & footprint on U14
+$Comp
+L Connector:TestPoint TP54
+U 1 1 5EE03645
+P 6450 3300
+F 0 "TP54" H 6508 3463 50  0000 L CNN
+F 1 "5000" H 6508 3372 50  0000 L CNN
+F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 6650 3300 50  0001 C CNN
+F 3 "~" H 6650 3300 50  0001 C CNN
+F 4 "EXT_PWR" H 6508 3281 50  0000 L CNN "TestPoint"
+F 5 "5000" H 6450 3300 50  0001 C CNN "MPN"
+	1    6450 3300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:TestPoint TP55
+U 1 1 5EE03EFE
+P 7400 3300
+F 0 "TP55" H 7458 3418 50  0000 L CNN
+F 1 "5001" H 7458 3327 50  0000 L CNN
+F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 7600 3300 50  0001 C CNN
+F 3 "~" H 7600 3300 50  0001 C CNN
+F 4 "GND" H 7400 3300 50  0001 C CNN "TestPoint"
+F 5 "5001" H 7400 3300 50  0001 C CNN "MPN"
+	1    7400 3300
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5EE04D38
+P 7400 3350
+AR Path="/5EC7245E/5EE04D38" Ref="#PWR?"  Part="1" 
+AR Path="/5EDA42CC/5EE04D38" Ref="#PWR0125"  Part="1" 
+F 0 "#PWR0125" H 7400 3100 50  0001 C CNN
+F 1 "GND" H 7405 3177 50  0000 C CNN
+F 2 "" H 7400 3350 50  0001 C CNN
+F 3 "" H 7400 3350 50  0001 C CNN
+	1    7400 3350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7400 3300 7400 3350
+Wire Wire Line
+	6450 3300 6450 3400
 $EndSCHEMATC

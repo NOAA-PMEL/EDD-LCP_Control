@@ -39,6 +39,7 @@ F 0 "J23" H 6850 2050 50  0000 R CNN
 F 1 "ANALOG_CONN" H 7050 1550 50  0000 R CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 6750 1850 50  0001 C CNN
 F 3 "~" H 6750 1850 50  0001 C CNN
+F 4 "N/A" H 6750 1850 50  0001 C CNN "MPN"
 	1    6750 1850
 	1    0    0    -1  
 $EndComp
@@ -110,6 +111,7 @@ F 0 "J25" H 10718 1575 50  0000 C CNN
 F 1 "Conn_01x04" H 10718 1666 50  0000 C CNN
 F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical" H 10800 2000 50  0001 C CNN
 F 3 "~" H 10800 2000 50  0001 C CNN
+F 4 "N/A" H 10800 2000 50  0001 C CNN "MPN"
 	1    10800 2000
 	1    0    0    1   
 $EndComp
@@ -129,6 +131,7 @@ F 0 "J22" H 3450 6700 50  0000 C CNN
 F 1 "Conn_01x04" H 3368 6716 50  0001 C CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 3450 7050 50  0001 C CNN
 F 3 "~" H 3450 7050 50  0001 C CNN
+F 4 "N/A" H 3450 7050 50  0001 C CNN "MPN"
 	1    3450 7050
 	1    0    0    1   
 $EndComp
@@ -228,6 +231,7 @@ F 0 "J24" H 7200 6700 50  0000 C CNN
 F 1 "Conn_01x04" H 7118 6716 50  0001 C CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 7200 7050 50  0001 C CNN
 F 3 "~" H 7200 7050 50  0001 C CNN
+F 4 "N/A" H 7200 7050 50  0001 C CNN "MPN"
 	1    7200 7050
 	1    0    0    1   
 $EndComp
@@ -278,6 +282,7 @@ F 0 "J26" H 10950 6700 50  0000 C CNN
 F 1 "Conn_01x04" H 10868 6716 50  0001 C CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 10950 7050 50  0001 C CNN
 F 3 "~" H 10950 7050 50  0001 C CNN
+F 4 "N/A" H 10950 7050 50  0001 C CNN "MPN"
 	1    10950 7050
 	1    0    0    1   
 $EndComp
@@ -328,6 +333,7 @@ F 0 "J27" H 14700 6700 50  0000 C CNN
 F 1 "Conn_01x04" H 14618 6716 50  0001 C CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 14700 7050 50  0001 C CNN
 F 3 "~" H 14700 7050 50  0001 C CNN
+F 4 "N/A" H 14700 7050 50  0001 C CNN "MPN"
 	1    14700 7050
 	1    0    0    1   
 $EndComp
