@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP Artemis_Module
+D Sparkfun Artemis Module
+K Sparkfun; Artemis; Apollo3
+F https://cdn.sparkfun.com/assets/learn_tutorials/9/0/9/Apollo3_Blue_MCU_Data_Sheet_v0_9_1.pdf
+$ENDCMP
+#
+#End Doc Library
