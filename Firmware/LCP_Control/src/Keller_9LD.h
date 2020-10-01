@@ -1,19 +1,19 @@
-/** @file Keller_9LD.h
-* @brief Keller Series 9LD OEM Pressure Sensor
-*
-* @author Matt Casari, matthew.casari@noaa.gov
-* @date September 29, 2020
-* @version 1.0.0
-*
-* @copyright National Oceanic and Atmospheric Administration
-* @copyright Pacific Marine Environmental Lab
-* @copyright Environmental Development Division
-*
-* @note Controls the Keller 9LD Pressure Sensors
-*
-*
-* @bug  No known bugs
-*/
+/**! @file Keller_9LD.h
+ * @brief Keller Series 9LD OEM Pressure Sensor
+ *
+ * @author Matt Casari, matthew.casari@noaa.gov
+ * @date September 29, 2020
+ * @version 1.0.0
+ *
+ * @copyright National Oceanic and Atmospheric Administration
+ * @copyright Pacific Marine Environmental Lab
+ * @copyright Environmental Development Division
+ *
+ * @note Controls the Keller 9LD Pressure Sensors
+ *
+ *
+ * @bug  No known bugs
+ */
 #ifndef _Keller_9LD_H
 #define _Keller_9LD_H
 
@@ -40,10 +40,15 @@
 *						STANDARD LIBRARIES
 ************************************************************************/
 #include <stdint.h>
-
+#include <math.h>
+#include <stdbool.h>
 /************************************************************************
 *							HEADER FILES
 ************************************************************************/
+#ifndef TEST
+#include "am_hal_status.h"
+#include "am_hal_gpio.h"
+#endif
 
 /************************************************************************
 *							MACROS
@@ -52,6 +57,12 @@
 /************************************************************************
 *							Structs & Enums
 ************************************************************************/
+typedef enum 
+{
+    K9LD_OK = true,
+    K9LD_FAIL = false
+}K9LD_status;
+
 typedef struct Keller_9LD
 {
     /* data */
@@ -72,8 +83,37 @@ typedef struct Keller_9LD
 /************************************************************************
 *					   Functions Prototypes
 ************************************************************************/
+/**
+ * 
+ * Initialize the Keller 9LD
+ * 
+ */
+K9LD_status K9LD_Init(void);
+
+/**
+ * 
+ * Read the Keller 9LD
+ *
+ */
+K9LD_status K9LD_Read(float *pressure, float *temperature);
+
+/**
+ * 
+ * Power On the Keller 9LD
+ * 
+ */
+void K9LD_PowerON(void);
+
+/**
+ * 
+ * Powerr OFF the Keller 9LD
+ * 
+ */
+void K9LD_PowerOFF(void);
 
 #ifdef TEST
+STATIC float _convert_bytes_to_pressure(uint8_t *data, sKeller_9LD_t *p);
+STATIC float _convert_bytes_to_temperature(uint8_t *data);
 STATIC void _convert_user_information_bytes_to_struct( uint8_t *data, sKeller_9LD_t *p);
 STATIC float _convert_bytes_to_fp(uint8_t *data);
 STATIC void _convert_bytes_to_cal_date(

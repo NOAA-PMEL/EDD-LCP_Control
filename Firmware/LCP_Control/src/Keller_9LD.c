@@ -2,6 +2,39 @@
 
 
 
+/**
+ * 
+ * P [bar] = ( P [u16] – 16384 ) x ( P@49152 – P@16384 ) / 32768 + P@16384
+ * 
+ */
+STATIC float _convert_bytes_to_pressure(uint8_t *data, sKeller_9LD_t *p)
+{
+    uint16_t p_u16 = (uint16_t) ( (*data++ << 8) | *data);
+    float pressure = p_u16 - 16384;
+    pressure *= (p->p_max - p->p_min);
+    pressure /= 32768;
+    pressure += p->p_min;
+
+    return pressure;
+}
+
+/** 
+ * 
+ * T[°C] = ( floor( T[u16] / 16 ) – 24 ) x 0.05°C – 50°C
+ *
+ */
+STATIC float _convert_bytes_to_temperature(uint8_t *data)
+{
+    uint16_t value = (uint16_t) (*data++ << 8 | *data);
+
+    float temperature = (float) (value / 16);
+    temperature -= 24;
+    temperature = floor(temperature);
+    temperature *= 0.05;
+    temperature -= 50.0;
+
+    return temperature;
+}
 
 STATIC void _convert_user_information_bytes_to_struct( uint8_t *data, sKeller_9LD_t *p)
 {
@@ -59,3 +92,15 @@ STATIC uint32_t _convert_product_codes( uint8_t *data )
 
     return codes;
 }
+
+STATIC void _gpio_init()
+{
+    
+}
+
+STATIC void _i2c_init(void)
+{
+
+}
+
+STATIC void _

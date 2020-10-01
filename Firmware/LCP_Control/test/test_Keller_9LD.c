@@ -1,5 +1,12 @@
 #include "unity.h"
 #include "Keller_9LD.h"
+#include <stdbool.h>
+
+#include "mock_am_hal_status.h"
+#include "mock_am_hal_gpio.h"
+
+
+
 
 void setUp(void)
 {
@@ -70,13 +77,6 @@ void test_Keller_9LD_convert_bytes_to_unique_product_code(void)
     TEST_ASSERT_EQUAL_UINT32(expected_id, actual_id);
 }
 
-void test_Keller_9LD_convert_bytes_to_pmax_pmin(void)
-{
-
-
-}
-
-
 void test_Keller_9LD_convert_user_information_to_struct(void)
 {
     /* Given */
@@ -112,4 +112,146 @@ void test_Keller_9LD_convert_user_information_to_struct(void)
     TEST_ASSERT_EQUAL_FLOAT(expected_pmax, p_keller->p_max);
     
 
+}
+
+void test_Keller_9LD_convert_bytes_to_temperature_minus_50C(void)
+{
+    /* Given */
+    
+    uint8_t data[] = {0x01, 0x80};
+    float actual_temp = 0;
+    float expected_temp = -50.0;
+
+    /* When */
+    actual_temp = _convert_bytes_to_temperature(data);
+
+    /* Then */
+    TEST_ASSERT_EQUAL_FLOAT(expected_temp, actual_temp);
+    
+}
+
+void test_Keller_9LD_convert_bytes_to_temperature_minus_150C(void)
+{
+    /* Given */
+    
+    uint8_t data[] = {0xFB, 0x80};
+    float actual_temp = 0;
+    float expected_temp = 150.0;
+
+    /* When */
+    actual_temp = _convert_bytes_to_temperature(data);
+
+    /* Then */
+    TEST_ASSERT_EQUAL_FLOAT(expected_temp, actual_temp);
+    
+}
+
+
+void test_Keller_9LD_convert_bytes_to_temperature_23_85C(void)
+{
+    /* Given */
+    
+    uint8_t data[] = {0x5D, 0xD1};
+    float actual_temp = 0;
+    float expected_temp = 23.85 ;
+
+    /* When */
+    actual_temp = _convert_bytes_to_temperature(data);
+
+    /* Then */
+    TEST_ASSERT_EQUAL_FLOAT(expected_temp, actual_temp);
+    
+}
+void test_Keller_9LD_convert_bytes_to_pressure_minus_1bar(void)
+{
+    /* Given */
+    /* Given */
+    sKeller_9LD_t keller = {
+        .id = 0,
+        .p_max = 10.0,
+        .p_min = -1.0,
+        .date.day = 0,
+        .date.month = 0,
+        .date.year = 0
+    };
+    uint8_t data[] = {0x40, 0x00};
+    float actual_pressure = 0;
+    float expected_pressure = -1.0;
+
+    /* When */
+    actual_pressure = _convert_bytes_to_pressure(data, &keller);
+    
+    /* Then */
+    TEST_ASSERT_EQUAL_FLOAT(expected_pressure, actual_pressure);
+}
+
+void test_Keller_9LD_convert_bytes_to_pressure_minus_partial_bar(void)
+{
+    /* Given */
+    /* Given */
+    sKeller_9LD_t keller = {
+        .id = 0,
+        .p_max = 10.0,
+        .p_min = -1.0,
+        .date.day = 0,
+        .date.month = 0,
+        .date.year = 0
+    };
+    uint8_t data[] = {0x4E, 0x20};
+    float actual_pressure = 0;
+    float expected_pressure =  0.213867;
+
+    /* When */
+    actual_pressure = _convert_bytes_to_pressure(data, &keller);
+    
+    /* Then */
+    TEST_ASSERT_EQUAL_FLOAT(expected_pressure, actual_pressure);
+}
+
+
+
+ void test_Keller_9LD_convert_bytes_to_pressure_minus_3_3_bar(void)
+{
+    /* Given */
+    /* Given */
+    sKeller_9LD_t keller = {
+        .id = 0,
+        .p_max = 30.0,
+        .p_min = 0.0,
+        .date.day = 0,
+        .date.month = 0,
+        .date.year = 0
+    };
+    uint8_t data[] = {0x4E, 0x20};
+    float actual_pressure = 0;
+    float expected_pressure = 3.31055;
+
+    /* When */
+    actual_pressure = _convert_bytes_to_pressure(data, &keller);
+    
+    /* Then */
+    TEST_ASSERT_EQUAL_FLOAT(expected_pressure, actual_pressure);
+}
+
+void test_Keller_9LD_convert_bytes_to_pressure_minus_0_33_bar(void)
+{
+    /* Given */
+    /* Given */
+    sKeller_9LD_t keller = {
+        .id = 0,
+        .p_max = 3.0,
+        .p_min = 0.0,
+        .date.day = 0,
+        .date.month = 0,
+        .date.year = 0
+    };
+    uint8_t data[] = {0x4E, 0x20};
+    float actual_pressure = 0;
+    float expected_pressure = 0.331055;
+
+    /* When */
+    actual_pressure = _convert_bytes_to_pressure(data, &keller);
+    
+    /* Then */
+    TEST_ASSERT_EQUAL_FLOAT(expected_pressure, actual_pressure);
 }
