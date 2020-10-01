@@ -36,7 +36,7 @@ float S9T_Read_R(void)
 
 float S9T_Read(float *t, float *r)
 {
-    
+
 }
 
 /** @brief Parse S9 Temperature response
@@ -76,10 +76,12 @@ STATIC void _parse_msg(char *data, uint8_t len, sS9_t *p)
         return;
     }
 
+    /* Copy Resistance */
     char temp[32];
     strncpy(temp, &data[0],comma);
     p->resistance = atof(temp);
 
+    /* Copy Temperature */
     strncpy(temp, &data[comma+1], end-comma);
     p->temperature = atof(temp);
 
@@ -121,9 +123,7 @@ STATIC void _parse_version(char *data, sS9_t *p )
     /** @todo strtok needs RTOS case!!! */
     /* Find MID */
     tok = strtok(temp,"=");
-    // printf("%s\n", tok);
     tok = strtok(NULL, "\r");
-    // printf("%s\n", tok);
     strcpy(p->info.MID, tok);
 
     /* Find C0 */
