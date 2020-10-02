@@ -83,17 +83,23 @@ typedef struct Keller_9LD
 /************************************************************************
 *					   Functions Prototypes
 ************************************************************************/
-/**
+/** @brief Init the Keller 9LD
  * 
  * Initialize the Keller 9LD
  * 
  */
 K9LD_status K9LD_Init(void);
 
-/**
+/** @brief Read the Keller 9LD
  * 
  * Read the Keller 9LD
+ * 
+ * @param *pressure Pointer to pressure value (bar)
+ * @param *temperature Pointer to temperature (degC)s 
  *
+ * @return Status
+ * @retval K9LD_OK: Sensor Read with no problems
+ * @retval K9LD_FAIL: Sensor Failed to read
  */
 K9LD_status K9LD_Read(float *pressure, float *temperature);
 

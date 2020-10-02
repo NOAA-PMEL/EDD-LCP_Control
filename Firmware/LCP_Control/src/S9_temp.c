@@ -1,3 +1,18 @@
+/** @file S9_temp.c
+ *  @brief SoundNine OEM Temperature Sensor
+ *
+ *  @author Matt Casari, matthew.casari@noaa.gov
+ *  @date September 30, 2020
+ *  @version 0.0.1
+ *
+ *  @copyright National Oceanic and Atmospheric Administration
+ *  @copyright Pacific Marine Environmental Lab
+ *  @copyright Environmental Development Division
+ *
+ *  @note
+ *
+ *  @bug  No known bugs
+ */
 #include "S9_temp.h"
 
 
