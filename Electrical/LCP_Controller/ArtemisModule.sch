@@ -21,7 +21,7 @@ AR Path="/5EC7245E/5EDF2CAD" Ref="U?"  Part="1"
 AR Path="/5EDA42A9/5EDF2CAD" Ref="U12"  Part="1" 
 F 0 "U12" H 10000 6950 60  0000 C CNN
 F 1 "Artemis_Module" H 8000 6900 60  0000 C CNN
-F 2 "Artemis:Artemis" H 7750 6800 60  0001 L CNN
+F 2 "PMEL_Modules:Artemis" H 7750 6800 60  0001 L CNN
 F 3 "https://cdn.sparkfun.com/assets/learn_tutorials/9/0/9/Apollo3_Blue_MCU_Data_Sheet_v0_9_1.pdf" H 15850 2450 60  0001 L CNN
 F 4 "WRL-15484" H 9100 5200 50  0001 C CNN "MPN"
 	1    9100 5200
@@ -35,7 +35,7 @@ AR Path="/5EC7245E/5EDF2CB4" Ref="Y?"  Part="1"
 AR Path="/5EDA42A9/5EDF2CB4" Ref="Y1"  Part="1" 
 F 0 "Y1" V 6354 5281 50  0000 L CNN
 F 1 "Crystal" V 6445 5281 50  0000 L CNN
-F 2 "Crystal:Crystal_SMD_MicroCrystal_CM9V-T1A-2Pin_1.6x1.0mm_HandSoldering" H 6400 5150 50  0001 C CNN
+F 2 "Crystal:Crystal_SMD_MicroCrystal_CC7V-T1A-2Pin_3.2x1.5mm" H 6400 5150 50  0001 C CNN
 F 3 "~" H 6400 5150 50  0001 C CNN
 F 4 "ECS-.327-12.5-12R-C-TR" V 6400 5150 50  0001 C CNN "MPN"
 	1    6400 5150
@@ -1003,7 +1003,7 @@ ARTEMIS_BOOT
 Wire Wire Line
 	4850 1950 4600 1950
 Text Notes 7200 7900 0    100  Italic 20
-Alex: Please check pinout & footprint on U12, J11
+Alex: Please check pinout & footprint on U12, J11\nChecked- AT
 Wire Wire Line
 	14600 8000 15300 8000
 Wire Wire Line

@@ -146,23 +146,17 @@ Wire Wire Line
 $Comp
 L Device:C_Small C?
 U 1 1 5EECBAA4
-P 5600 3250
+P 5600 3150
 AR Path="/60F8228B/5EECBAA4" Ref="C?"  Part="1" 
 AR Path="/5EDB548E/5EECBAA4" Ref="C32"  Part="1" 
-F 0 "C32" H 5692 3296 50  0000 L CNN
-F 1 "0.1uF" H 5692 3205 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 5600 3250 50  0001 C CNN
-F 3 "~" H 5600 3250 50  0001 C CNN
-F 4 "885012207016" H 5600 3250 50  0001 C CNN "MPN"
-	1    5600 3250
+F 0 "C32" H 5692 3196 50  0000 L CNN
+F 1 "0.1uF" H 5692 3105 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 5600 3150 50  0001 C CNN
+F 3 "~" H 5600 3150 50  0001 C CNN
+F 4 "885012207016" H 5600 3150 50  0001 C CNN "MPN"
+	1    5600 3150
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	5450 3150 5600 3150
-Wire Wire Line
-	5450 3650 5450 3150
-Wire Wire Line
-	5750 3650 5450 3650
 $Comp
 L power:GND #PWR?
 U 1 1 5EECBAAD
@@ -179,14 +173,14 @@ $EndComp
 $Comp
 L power:+3.3V #PWR?
 U 1 1 5EECBAB3
-P 6200 2950
+P 6250 2950
 AR Path="/60F8228B/5EECBAB3" Ref="#PWR?"  Part="1" 
 AR Path="/5EDB548E/5EECBAB3" Ref="#PWR055"  Part="1" 
-F 0 "#PWR055" H 6200 2800 50  0001 C CNN
-F 1 "+3.3V" H 6215 3123 50  0000 C CNN
-F 2 "" H 6200 2950 50  0001 C CNN
-F 3 "" H 6200 2950 50  0001 C CNN
-	1    6200 2950
+F 0 "#PWR055" H 6250 2800 50  0001 C CNN
+F 1 "+3.3V" H 6265 3123 50  0000 C CNN
+F 2 "" H 6250 2950 50  0001 C CNN
+F 3 "" H 6250 2950 50  0001 C CNN
+	1    6250 2950
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -197,14 +191,12 @@ Wire Wire Line
 	7150 2950 7150 3050
 Connection ~ 6800 2950
 Wire Wire Line
-	6200 2950 6800 2950
-Connection ~ 6200 2950
+	6250 2950 6800 2950
+Connection ~ 6250 2950
 Wire Wire Line
-	6200 3350 6200 2950
+	6250 3350 6250 2950
 Wire Wire Line
 	7150 3300 7150 3250
-Wire Wire Line
-	5600 3350 5600 3400
 $Comp
 L PMEL_Sensors:LIS2DW12 U?
 U 1 1 5EECBAC2
@@ -286,5 +278,16 @@ Wire Wire Line
 Wire Wire Line
 	3750 4150 5450 4150
 Text Notes 4050 5750 0    100  Italic 20
-Alex: Please check pinout & footprint on U10
+Alex: Please check pinout & footprint on U10\nFootprint looks good. Should pin 10 also be connected to +3.3V?\nYes. Checked: -AT\n
+Wire Wire Line
+	5600 3250 5600 3400
+Wire Wire Line
+	5600 2950 5600 3050
+Wire Wire Line
+	5600 2950 6100 2950
+Wire Wire Line
+	6100 3350 6100 2950
+Connection ~ 6100 2950
+Wire Wire Line
+	6100 2950 6250 2950
 $EndSCHEMATC

@@ -32,43 +32,36 @@ $EndComp
 $Comp
 L Jumper:SolderJumper_2_Bridged JP?
 U 1 1 5EED9FCB
-P 6050 5750
+P 6000 5750
 AR Path="/60F8228B/5EED9FCB" Ref="JP?"  Part="1" 
 AR Path="/5EDA4305/5EED9FCB" Ref="JP3"  Part="1" 
-F 0 "JP3" H 6050 5650 50  0000 C CNN
-F 1 "ADC_GND_JMPR" H 6100 5550 50  0000 C CNN
-F 2 "Jumper:SolderJumper-2_P1.3mm_Bridged_RoundedPad1.0x1.5mm" H 6050 5750 50  0001 C CNN
-F 3 "~" H 6050 5750 50  0001 C CNN
-F 4 "N/A" H 6050 5750 50  0001 C CNN "MPN"
-	1    6050 5750
+F 0 "JP3" H 6000 5650 50  0000 C CNN
+F 1 "ADC_GND_JMPR" H 6050 5550 50  0000 C CNN
+F 2 "Jumper:SolderJumper-2_P1.3mm_Bridged_RoundedPad1.0x1.5mm" H 6000 5750 50  0001 C CNN
+F 3 "~" H 6000 5750 50  0001 C CNN
+F 4 "N/A" H 6000 5750 50  0001 C CNN "MPN"
+	1    6000 5750
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6000 5400 5950 5400
-Wire Wire Line
 	5950 5400 5950 5550
 Wire Wire Line
-	5950 5550 5850 5550
+	5950 5550 5750 5550
 Wire Wire Line
-	5850 5550 5850 5750
+	5750 5550 5750 5750
 Wire Wire Line
-	5850 5750 5900 5750
-Connection ~ 5950 5400
+	5750 5750 5850 5750
 Wire Wire Line
-	6100 5400 6100 5500
+	6100 5400 6100 5550
 Wire Wire Line
-	6100 5500 6200 5500
+	6100 5550 6200 5550
 Wire Wire Line
-	6200 5500 6200 5400
+	6200 5550 6200 5400
 Wire Wire Line
-	6200 5750 6250 5750
+	6150 5750 6200 5750
 Wire Wire Line
-	6250 5750 6250 5550
-Wire Wire Line
-	6250 5550 6200 5550
-Wire Wire Line
-	6200 5550 6200 5500
-Connection ~ 6200 5500
+	6200 5750 6200 5550
+Connection ~ 6200 5550
 $Comp
 L power:GND #PWR?
 U 1 1 5EED9FDF
@@ -96,15 +89,15 @@ F 3 "" H 6550 5850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6250 5750 6550 5750
+	6200 5750 6550 5750
 Wire Wire Line
 	6550 5750 6550 5850
-Connection ~ 6250 5750
+Connection ~ 6200 5750
 Wire Wire Line
-	5850 5750 5550 5750
+	5750 5750 5550 5750
 Wire Wire Line
 	5550 5750 5550 5850
-Connection ~ 5850 5750
+Connection ~ 5750 5750
 Wire Wire Line
 	7150 4450 7150 4400
 Wire Wire Line
@@ -230,7 +223,7 @@ AR Path="/60F8228B/5EEDA044" Ref="Q?"  Part="1"
 AR Path="/5EDA4305/5EEDA044" Ref="Q1"  Part="1" 
 F 0 "Q1" H 4065 2855 45  0000 L CNN
 F 1 "DMG2305UX-7" H 4065 2939 45  0000 L CNN
-F 2 "SOT23-3" H 3900 3200 20  0001 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 3900 3200 20  0001 C CNN
 F 3 "" H 3900 2950 50  0001 C CNN
 F 4 "DMG2305UX-7" H 3900 2950 50  0001 C CNN "MPN"
 	1    3900 2950
@@ -487,7 +480,7 @@ Text HLabel 8050 4550 2    50   Input ~ 0
 ADC24_IN2
 Text HLabel 8050 4650 2    50   Input ~ 0
 ADC24_IN3
-Text HLabel 8050 4900 2    50   Output ~ 0
+Text HLabel 8050 4750 2    50   Output ~ 0
 ADC24_GND
 $Comp
 L power:GNDA #PWR?
@@ -503,9 +496,9 @@ F 3 "" H 7900 4950 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	8050 4900 7900 4900
+	8050 4750 7900 4750
 Wire Wire Line
-	7900 4900 7900 4950
+	7900 4750 7900 4950
 Wire Wire Line
 	7250 4650 8050 4650
 Wire Wire Line
@@ -517,15 +510,14 @@ Wire Wire Line
 $Comp
 L power:PWR_FLAG #FLG01
 U 1 1 5FF814C1
-P 6550 5750
-F 0 "#FLG01" H 6550 5825 50  0001 C CNN
-F 1 "PWR_FLAG" H 6550 5923 50  0000 C CNN
-F 2 "" H 6550 5750 50  0001 C CNN
-F 3 "~" H 6550 5750 50  0001 C CNN
-	1    6550 5750
+P 6550 5600
+F 0 "#FLG01" H 6550 5675 50  0001 C CNN
+F 1 "PWR_FLAG" H 6550 5773 50  0000 C CNN
+F 2 "" H 6550 5600 50  0001 C CNN
+F 3 "~" H 6550 5600 50  0001 C CNN
+	1    6550 5600
 	1    0    0    -1  
 $EndComp
-Connection ~ 6550 5750
 Text Notes 2750 5400 0    50   ~ 0
 I2C Addressing Scheme
 Text Notes 3650 4800 0    50   ~ 0
@@ -540,8 +532,8 @@ Text Notes 3250 5900 0    50   ~ 0
 I2C Address:\n100 0000\n100 0001\n100 0100\n100 0101
 Text Notes 5250 6150 0    50   ~ 0
 Cut Jumper for isolation of AGND & DGND
-Text Notes 4000 6450 0    100  Italic 20
-Alex: Please check pinout & footprint on U1
+Text Notes 4000 6500 0    100  Italic 20
+Alex: Please check pinout & footprint on U1\nChecked: AT\n
 Text Notes 2350 5650 0    50   ~ 0
 (DEFAULT)
 $Comp
@@ -747,4 +739,7 @@ $EndComp
 Wire Wire Line
 	4450 4500 4450 4650
 Connection ~ 4450 4650
+Wire Wire Line
+	6550 5600 6550 5750
+Connection ~ 6550 5750
 $EndSCHEMATC

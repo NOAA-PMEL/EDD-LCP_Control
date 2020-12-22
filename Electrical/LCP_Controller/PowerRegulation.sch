@@ -75,7 +75,7 @@ F 0 "U3" H 5800 3550 50  0000 C CNN
 F 1 "LMR50410" H 5500 3550 50  0000 C CNN
 F 2 "Package_TO_SOT_SMD:SOT-23-6_Handsoldering" H 5700 2850 50  0001 C CNN
 F 3 "https://www.ti.com/lit/ds/symlink/lmr50410.pdf?ts=1591402847494&ref_url=https://www.ti.com/product/LMR50410" H 5600 3300 50  0001 C CNN
-F 4 "PLMR50410XDBVR" H 5600 3300 50  0001 C CNN "MPN"
+F 4 "LMR50410XDBVR" H 5600 3300 50  0001 C CNN "MPN"
 	1    5600 3300
 	1    0    0    -1  
 $EndComp
@@ -425,7 +425,7 @@ AR Path="/5EDA436D/5EE8EB0F" Ref="Q?"  Part="1"
 AR Path="/5EDA4333/5EE8EB0F" Ref="Q13"  Part="1" 
 F 0 "Q13" H 4715 6158 45  0000 L CNN
 F 1 "DMG2305UX-7" H 4715 6242 45  0000 L CNN
-F 2 "SOT23-3" H 4550 6450 20  0001 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 4550 6450 20  0001 C CNN
 F 3 "" H 4550 6200 50  0001 C CNN
 F 4 "DMG2305UX-7" H 4550 6200 50  0001 C CNN "MPN"
 	1    4550 6200
@@ -439,7 +439,7 @@ AR Path="/5EDA436D/5EE8EB15" Ref="Q?"  Part="1"
 AR Path="/5EDA4333/5EE8EB15" Ref="Q12"  Part="1" 
 F 0 "Q12" H 3894 6542 45  0000 L CNN
 F 1 "MMBT2222AL" H 3894 6458 45  0000 L CNN
-F 2 "SOT23-3" H 3750 6750 20  0001 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 3750 6750 20  0001 C CNN
 F 3 "" H 3750 6500 50  0001 C CNN
 F 4 "	MMBT2222ALT3G" H 3750 6500 50  0001 C CNN "MPN"
 	1    3750 6500
@@ -589,7 +589,7 @@ Wire Wire Line
 Text Notes 5100 7200 0    50   ~ 0
 0-32V DC Power\nResistor Divider 0 - 1.488VDC\nApprox 1.953mV/Bit
 Text Notes 3800 4550 0    100  Italic 20
-Alex: Please check pinout & footprint on U3, L1, L3
+Alex: Please check pinout & footprint on U3, L1, L3\n-Checked -AT\n
 Text Notes 8150 2600 0    50   ~ 0
 For 3.5V output, use:\nL3 - 15.0uH, 18.4mOhm, MPN: SLF12575T-150M4R7-PF\nR3 - 54.9k, 63.0mW, MPN: CRCW040254K9FKED\nC9,C10 - 22.0uF, 1mOhm (x2), MPN: GRM21BD70J226ME44L
 Wire Wire Line

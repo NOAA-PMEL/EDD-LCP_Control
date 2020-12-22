@@ -74,34 +74,34 @@ IMU
 $Comp
 L Connector_Generic:Conn_01x04 J?
 U 1 1 5EEE762D
-P 7000 4100
+P 7200 4200
 AR Path="/60F8228B/5EEE762D" Ref="J?"  Part="1" 
 AR Path="/5EEDF256/5EEE762D" Ref="J9"  Part="1" 
-F 0 "J9" H 6918 3675 50  0000 C CNN
-F 1 "Conn_01x04" H 6918 3766 50  0000 C CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical" H 7000 4100 50  0001 C CNN
-F 3 "~" H 7000 4100 50  0001 C CNN
-F 4 "N/A" H 7000 4100 50  0001 C CNN "MPN"
-	1    7000 4100
+F 0 "J9" H 7118 3775 50  0000 C CNN
+F 1 "Conn_01x04" H 7118 3866 50  0000 C CNN
+F 2 "Connector_JST:JST_SH_BM04B-SRSS-TB_1x04-1MP_P1.00mm_Vertical" H 7200 4200 50  0001 C CNN
+F 3 "~" H 7200 4200 50  0001 C CNN
+F 4 "BM04B-SRSS-TB" H 7200 4200 50  0001 C CNN "MPN"
+	1    7200 4200
 	1    0    0    1   
 $EndComp
 $Comp
 L power:GND #PWR?
 U 1 1 5EEE7633
-P 6650 4300
+P 6650 4400
 AR Path="/60F8228B/5EEE7633" Ref="#PWR?"  Part="1" 
 AR Path="/5EEDF256/5EEE7633" Ref="#PWR065"  Part="1" 
-F 0 "#PWR065" H 6650 4050 50  0001 C CNN
-F 1 "GND" H 6750 4200 50  0000 C CNN
-F 2 "" H 6650 4300 50  0001 C CNN
-F 3 "" H 6650 4300 50  0001 C CNN
-	1    6650 4300
+F 0 "#PWR065" H 6650 4150 50  0001 C CNN
+F 1 "GND" H 6750 4300 50  0000 C CNN
+F 2 "" H 6650 4400 50  0001 C CNN
+F 3 "" H 6650 4400 50  0001 C CNN
+	1    6650 4400
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6800 4200 6650 4200
+	7000 4300 6650 4300
 Wire Wire Line
-	6650 4200 6650 4300
+	6650 4300 6650 4400
 $Comp
 L SparkFun-DiscreteSemi:MOSFET_PCH-DMG2307L Q?
 U 1 1 5EEE763C
@@ -110,7 +110,7 @@ AR Path="/60F8228B/5EEE763C" Ref="Q?"  Part="1"
 AR Path="/5EEDF256/5EEE763C" Ref="Q8"  Part="1" 
 F 0 "Q8" H 5615 3155 45  0000 L CNN
 F 1 "DMG2305UX-7" H 5615 3239 45  0001 L CNN
-F 2 "SOT23-3" H 5450 3500 20  0001 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 5450 3500 20  0001 C CNN
 F 3 "" H 5450 3250 50  0001 C CNN
 F 4 "TRANS-11308" H 5615 3334 60  0001 L CNN "Field4"
 F 5 "DMG2305UX-7" H 5450 3250 50  0001 C CNN "MPN"
@@ -121,8 +121,6 @@ Wire Wire Line
 	5550 3500 5550 3450
 Wire Wire Line
 	5800 4000 5800 3950
-Wire Wire Line
-	6800 4100 6650 4100
 Wire Wire Line
 	5700 4100 5700 3950
 $Comp
@@ -180,8 +178,8 @@ F 4 "EXB-V4V103JV" H 5700 3750 50  0001 C CNN "MPN"
 	1    5700 3750
 	-1   0    0    1   
 $EndComp
-Text Notes 4650 5050 0    50   ~ 0
-ToDo: Validate the Hole Size and Spacing for the Sparkfun Razor IMU
+Text Notes 4600 5250 0    50   ~ 0
+ToDo: Validate the Hole Size and Spacing for the Sparkfun Razor IMU\n1) https://www.sparkfun.com/products/15335     1"x1" board with 0.8" by 0.8" mounting holes\n2) https://www.sparkfun.com/products/16832  1.2"x1.2" board with 1"x1" mounting holes\n
 $Comp
 L power:GND #PWR?
 U 1 1 5EEE766B
@@ -239,8 +237,6 @@ Connection ~ 6550 4000
 Wire Wire Line
 	6550 4000 5800 4000
 Wire Wire Line
-	6800 4000 6550 4000
-Wire Wire Line
 	6500 2850 6650 2850
 Wire Wire Line
 	6650 2850 6650 4100
@@ -253,7 +249,7 @@ Wire Wire Line
 	6100 3900 6750 3900
 Connection ~ 6750 3900
 Wire Wire Line
-	6750 3900 6800 3900
+	6750 3900 6750 4200
 NoConn ~ 6500 3050
 Text HLabel 3000 3150 0    50   Input ~ 0
 IMU_ON
@@ -416,4 +412,12 @@ Connection ~ 4300 4100
 Wire Wire Line
 	4300 4100 5700 4100
 NoConn ~ 3900 4750
+Wire Wire Line
+	6750 4200 7000 4200
+Wire Wire Line
+	6650 4100 7000 4100
+Wire Wire Line
+	6550 4000 7000 4000
+Text Notes 7400 4350 0    50   ~ 0
+Qwiic Cable:\n1- Black - GND\n2- Red - 3.3V\n3- Blue - SDA\n4- Yellow - SCL
 $EndSCHEMATC

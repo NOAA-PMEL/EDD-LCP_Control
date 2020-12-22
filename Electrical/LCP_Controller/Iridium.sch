@@ -227,8 +227,8 @@ Wire Wire Line
 	8250 3750 8750 3750
 Text Notes 8150 4250 0    100  Italic 0
 This requires some impedance\n matching calculation for PCB!!!
-Text Notes 4400 5750 0    100  Italic 20
-Alex: Please check pinout & footprint on U14
+Text Notes 3150 5900 0    100  Italic 20
+Alex: Please check pinout & footprint on U14\n9603N Brochure with layout: \nhttps://www.beamcommunications.com/document/37-brochure-iridium-9603-9603n-transceiver\nHad to move connector on footprint 3mm
 $Comp
 L Connector:TestPoint TP54
 U 1 1 5EE03645

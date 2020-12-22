@@ -790,7 +790,7 @@ AR Path="/5EEDF256/5F70A6FE" Ref="Q?"  Part="1"
 AR Path="/5EDB3B1A/5F70A6FE" Ref="Q11"  Part="1" 
 F 0 "Q11" H 1965 1505 45  0000 L CNN
 F 1 "DMG2305UX-7" H 1965 1589 45  0000 L CNN
-F 2 "SOT23-3" H 1800 1850 20  0001 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1800 1850 20  0001 C CNN
 F 3 "" H 1800 1600 50  0001 C CNN
 F 4 "TRANS-11308" H 1965 1684 60  0001 L CNN "Field4"
 F 5 "DMG2305UX-7" H 1800 1600 50  0001 C CNN "MPN"
@@ -946,7 +946,7 @@ Wire Wire Line
 NoConn ~ 8550 4000
 NoConn ~ 8600 2100
 Text Notes 2250 7450 0    100  Italic 20
-Alex: Please check pinout & footprint on U15
+Alex: Please check pinout & footprint on U15\nChecked: AT
 $Comp
 L Connector:TestPoint TP58
 U 1 1 5EF7C0C1

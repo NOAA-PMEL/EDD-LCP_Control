@@ -224,7 +224,7 @@ AR Path="/60F8228B/5EE9311D" Ref="Q?"  Part="1"
 AR Path="/5EDB3949/5EE9311D" Ref="Q10"  Part="1" 
 F 0 "Q10" H 4965 2455 45  0000 L CNN
 F 1 "DMG2305UX-7" H 4965 2539 45  0000 L CNN
-F 2 "SOT23-3" H 4800 2800 20  0001 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 4800 2800 20  0001 C CNN
 F 3 "" H 4800 2550 50  0001 C CNN
 F 4 "DMG2305UX-7" H 4800 2550 50  0001 C CNN "MPN"
 	1    4800 2550
@@ -589,9 +589,9 @@ Wire Wire Line
 	6550 1900 6550 2050
 Connection ~ 6550 2050
 Text Notes 8400 3500 0    50   ~ 0
-Add U.FL with Jumper to prototype\n
+Add U.FL with Jumper to prototype\n3 way jumper to distinguish between ant switch and hard wired connector.
 Text Notes 4700 6350 0    100  Italic 20
-Alex: Please check pinout & footprint on U13
+Alex: Please check pinout & footprint on U13\n-Checked- AT
 $Comp
 L Connector:TestPoint TP50
 U 1 1 5EE097BD

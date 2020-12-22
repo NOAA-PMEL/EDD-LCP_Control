@@ -101,7 +101,7 @@ AR Path="/5EDA42CC/5EE394B7" Ref="Q?"  Part="1"
 AR Path="/5EDA499C/5EE394B7" Ref="Q2"  Part="1" 
 F 0 "Q2" H 5415 3605 45  0000 L CNN
 F 1 "DMG2305UX-7" H 5415 3689 45  0000 L CNN
-F 2 "SOT23-3" H 5250 3950 20  0001 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 5250 3950 20  0001 C CNN
 F 3 "" H 5250 3700 50  0001 C CNN
 F 4 "DMG2305UX-7" H 5250 3700 50  0001 C CNN "MPN"
 	1    5250 3700
@@ -221,8 +221,8 @@ Wire Wire Line
 Wire Wire Line
 	3300 3600 3750 3600
 Connection ~ 4900 3600
-Text Notes 4200 5750 0    100  Italic 20
-Alex: Please check pinout & footprint on U2
+Text Notes 4900 5800 0    100  Italic 20
+Alex: Please check pinout & footprint on U2\nChecked: AT\n
 $Comp
 L Connector:TestPoint TP20
 U 1 1 5EE24E0F
