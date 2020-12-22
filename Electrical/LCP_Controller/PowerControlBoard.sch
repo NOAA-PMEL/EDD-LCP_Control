@@ -147,4 +147,6 @@ Connection ~ 6800 4100
 Wire Wire Line
 	6800 4100 7500 4100
 NoConn ~ 6400 4900
+Text Notes 4850 3700 0    50   ~ 0
+VIN: <32V\nFrom Power Control Board
 $EndSCHEMATC

@@ -362,4 +362,6 @@ Wire Wire Line
 Connection ~ 3750 3600
 Wire Wire Line
 	3750 3600 4900 3600
+Text Notes 5400 4400 1    50   ~ 0
+RN4 DNP\n
 $EndSCHEMATC

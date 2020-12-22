@@ -687,4 +687,6 @@ Wire Wire Line
 	4800 4700 4800 4800
 Wire Wire Line
 	4800 4800 5500 4800
+Text Notes 5000 3250 1    50   ~ 0
+RN19 DNP
 $EndSCHEMATC

@@ -420,4 +420,6 @@ Wire Wire Line
 	6550 4000 7000 4000
 Text Notes 7400 4350 0    50   ~ 0
 Qwiic Cable:\n1- Black - GND\n2- Red - 3.3V\n3- Blue - SDA\n4- Yellow - SCL
+Text Notes 5600 4000 1    50   ~ 0
+RN17 DNP
 $EndSCHEMATC
