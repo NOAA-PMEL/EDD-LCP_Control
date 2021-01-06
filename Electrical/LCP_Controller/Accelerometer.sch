@@ -30,7 +30,7 @@ F 1 "5002" V 7245 4088 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 7400 3900 50  0001 C CNN
 F 3 "~" H 7400 3900 50  0001 C CNN
 F 4 "Accel Int" V 7350 4250 50  0000 C CNN "TestPoint"
-F 5 "5002" H 7200 3900 50  0001 C CNN "MPN"
+F 5 "" H 7200 3900 50  0001 C CNN "MPN"
 	1    7200 3900
 	0    1    1    0   
 $EndComp

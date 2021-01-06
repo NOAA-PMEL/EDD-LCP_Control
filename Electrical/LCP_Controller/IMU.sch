@@ -15,34 +15,6 @@ Comment4 "Current design by: Matt Casari"
 $EndDescr
 $Comp
 L Mechanical:MountingHole H?
-U 1 1 5EEE7614
-P 4850 4550
-AR Path="/60F8228B/5EEE7614" Ref="H?"  Part="1" 
-AR Path="/5EEDF256/5EEE7614" Ref="H1"  Part="1" 
-F 0 "H1" H 4950 4596 50  0000 L CNN
-F 1 "IMU Mounting Hole #1" H 4950 4505 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2.5mm_Pad" H 4850 4550 50  0001 C CNN
-F 3 "~" H 4850 4550 50  0001 C CNN
-F 4 "N/A" H 4850 4550 50  0001 C CNN "MPN"
-	1    4850 4550
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mechanical:MountingHole H?
-U 1 1 5EEE761A
-P 4850 4800
-AR Path="/60F8228B/5EEE761A" Ref="H?"  Part="1" 
-AR Path="/5EEDF256/5EEE761A" Ref="H2"  Part="1" 
-F 0 "H2" H 4950 4846 50  0000 L CNN
-F 1 "IMU Mounting Hole #2" H 4950 4755 50  0000 L CNN
-F 2 "MountingHole:MountingHole_2.5mm_Pad" H 4850 4800 50  0001 C CNN
-F 3 "~" H 4850 4800 50  0001 C CNN
-F 4 "N/A" H 4850 4800 50  0001 C CNN "MPN"
-	1    4850 4800
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mechanical:MountingHole H?
 U 1 1 5EEE7620
 P 5900 4550
 AR Path="/60F8228B/5EEE7620" Ref="H?"  Part="1" 
@@ -51,7 +23,7 @@ F 0 "H3" H 6000 4596 50  0000 L CNN
 F 1 "IMU Mounting Hole #3" H 6000 4505 50  0000 L CNN
 F 2 "MountingHole:MountingHole_2.5mm_Pad" H 5900 4550 50  0001 C CNN
 F 3 "~" H 5900 4550 50  0001 C CNN
-F 4 "N/A" H 5900 4550 50  0001 C CNN "MPN"
+F 4 "" H 5900 4550 50  0001 C CNN "MPN"
 	1    5900 4550
 	1    0    0    -1  
 $EndComp
@@ -65,7 +37,7 @@ F 0 "H4" H 6000 4846 50  0000 L CNN
 F 1 "IMU Mounting Hole #4" H 6000 4755 50  0000 L CNN
 F 2 "MountingHole:MountingHole_2.5mm_Pad" H 5900 4800 50  0001 C CNN
 F 3 "~" H 5900 4800 50  0001 C CNN
-F 4 "N/A" H 5900 4800 50  0001 C CNN "MPN"
+F 4 "" H 5900 4800 50  0001 C CNN "MPN"
 	1    5900 4800
 	1    0    0    -1  
 $EndComp
@@ -81,7 +53,7 @@ F 0 "J9" H 7118 3775 50  0000 C CNN
 F 1 "Conn_01x04" H 7118 3866 50  0000 C CNN
 F 2 "Connector_JST:JST_SH_BM04B-SRSS-TB_1x04-1MP_P1.00mm_Vertical" H 7200 4200 50  0001 C CNN
 F 3 "~" H 7200 4200 50  0001 C CNN
-F 4 "BM04B-SRSS-TB" H 7200 4200 50  0001 C CNN "MPN"
+F 4 "BM04B-SRSS-TBT(LF)(SN)" H 7200 4200 50  0001 C CNN "MPN"
 	1    7200 4200
 	1    0    0    1   
 $EndComp
@@ -133,7 +105,7 @@ F 0 "R24" V 5093 2950 50  0000 C CNN
 F 1 "10k" V 5184 2950 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 5230 2950 50  0001 C CNN
 F 3 "~" H 5300 2950 50  0001 C CNN
-F 4 "	EXB-V4V103JV" H 5300 2950 50  0001 C CNN "MPN"
+F 4 "ERA-6AEB103V" H 5300 2950 50  0001 C CNN "MPN"
 	1    5300 2950
 	0    1    1    0   
 $EndComp
@@ -289,7 +261,7 @@ F 1 "5004" H 6158 3572 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 6300 3500 50  0001 C CNN
 F 3 "~" H 6300 3500 50  0001 C CNN
 F 4 "IMU_PWR" H 6158 3481 50  0000 L CNN "TestPoint"
-F 5 "5004" H 6100 3500 50  0001 C CNN "MPN"
+F 5 "" H 6100 3500 50  0001 C CNN "MPN"
 	1    6100 3500
 	1    0    0    -1  
 $EndComp
@@ -303,7 +275,7 @@ F 1 "5004" H 8208 3527 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 8350 3500 50  0001 C CNN
 F 3 "~" H 8350 3500 50  0001 C CNN
 F 4 "IMU_PWR" H 8150 3500 50  0001 C CNN "TestPoint"
-F 5 "5004" H 8150 3500 50  0001 C CNN "MPN"
+F 5 "" H 8150 3500 50  0001 C CNN "MPN"
 	1    8150 3500
 	1    0    0    -1  
 $EndComp
@@ -381,7 +353,7 @@ F 1 "5002" H 3808 3122 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 3950 3050 50  0001 C CNN
 F 3 "~" H 3950 3050 50  0001 C CNN
 F 4 "IMU_ON" H 3808 3031 50  0000 L CNN "TestPoint"
-F 5 "5002" H 3750 3050 50  0001 C CNN "MPN"
+F 5 "" H 3750 3050 50  0001 C CNN "MPN"
 	1    3750 3050
 	1    0    0    -1  
 $EndComp
@@ -422,4 +394,32 @@ Text Notes 7400 4350 0    50   ~ 0
 Qwiic Cable:\n1- Black - GND\n2- Red - 3.3V\n3- Blue - SDA\n4- Yellow - SCL
 Text Notes 5600 4000 1    50   ~ 0
 RN17 DNP
+$Comp
+L Mechanical:MountingHole H?
+U 1 1 5EEE761A
+P 4850 4800
+AR Path="/60F8228B/5EEE761A" Ref="H?"  Part="1" 
+AR Path="/5EEDF256/5EEE761A" Ref="H2"  Part="1" 
+F 0 "H2" H 4950 4846 50  0000 L CNN
+F 1 "IMU Mounting Hole #2" H 4950 4755 50  0000 L CNN
+F 2 "MountingHole:MountingHole_2.5mm_Pad" H 4850 4800 50  0001 C CNN
+F 3 "~" H 4850 4800 50  0001 C CNN
+F 4 "" H 4850 4800 50  0001 C CNN "MPN"
+	1    4850 4800
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H?
+U 1 1 5EEE7614
+P 4850 4550
+AR Path="/60F8228B/5EEE7614" Ref="H?"  Part="1" 
+AR Path="/5EEDF256/5EEE7614" Ref="H1"  Part="1" 
+F 0 "H1" H 4950 4596 50  0000 L CNN
+F 1 "IMU Mounting Hole #1" H 4950 4505 50  0000 L CNN
+F 2 "MountingHole:MountingHole_2.5mm_Pad" H 4850 4550 50  0001 C CNN
+F 3 "~" H 4850 4550 50  0001 C CNN
+F 4 "" H 4850 4550 50  0001 C CNN "MPN"
+	1    4850 4550
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

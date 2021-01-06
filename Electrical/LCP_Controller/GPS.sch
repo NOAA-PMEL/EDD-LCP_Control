@@ -13,44 +13,12 @@ Comment2 ""
 Comment3 ""
 Comment4 "Current design by: Matt Casari"
 $EndDescr
-NoConn ~ 5500 5000
-NoConn ~ 5500 4000
-NoConn ~ 5500 3900
-Text Notes 7750 4350 0    100  Italic 0
+Text Notes 7700 4500 0    100  Italic 0
 This requires some impedance\n matching calculation for PCB!!!
 Text GLabel 8100 2400 2    50   Input ~ 0
 GPS_BATT_BCKP
-$Comp
-L PMEL_Sensors:ZOE-M8Q U?
-U 1 1 5EE930AF
-P 7050 4650
-AR Path="/60F8228B/5EE930AF" Ref="U?"  Part="1" 
-AR Path="/5EDB3949/5EE930AF" Ref="U13"  Part="1" 
-F 0 "U13" H 7400 5950 50  0000 C CNN
-F 1 "ZOE-M8Q" H 6650 4850 50  0000 C CNN
-F 2 "PMEL_LGA:BGA-81_9x9_4.5x4.5mm" H 7050 4650 50  0001 C CNN
-F 3 "https://www.u-blox.com/sites/default/files/ZOE-M8_DataSheet_%28UBX-16008094%29.pdf" H 7050 4650 50  0001 C CNN
-F 4 "ZOE-M8Q-0-10" H 7050 4650 50  0001 C CNN "MPN"
-	1    7050 4650
-	1    0    0    -1  
-$EndComp
 Text GLabel 6150 2800 2    50   Input ~ 0
 GPS_3V3
-$Comp
-L Device:Crystal Y?
-U 1 1 5EE930B8
-P 4650 5250
-AR Path="/5EC7245E/5EE930B8" Ref="Y?"  Part="1" 
-AR Path="/60F8228B/5EE930B8" Ref="Y?"  Part="1" 
-AR Path="/5EDB3949/5EE930B8" Ref="Y2"  Part="1" 
-F 0 "Y2" V 4604 5381 50  0000 L CNN
-F 1 "Crystal" V 4695 5381 50  0000 L CNN
-F 2 "Crystal:Crystal_SMD_MicroCrystal_CM9V-T1A-2Pin_1.6x1.0mm_HandSoldering" H 4650 5250 50  0001 C CNN
-F 3 "~" H 4650 5250 50  0001 C CNN
-F 4 "ECS-.327-12.5-12R-C-TR" V 4650 5250 50  0001 C CNN "MPN"
-	1    4650 5250
-	0    1    1    0   
-$EndComp
 $Comp
 L Connector_Generic:Conn_02x04_Odd_Even J?
 U 1 1 5EE930BE
@@ -83,50 +51,15 @@ F 4 "EXB-V4V103JV" H 5050 3050 50  0001 C CNN "MPN"
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	4950 5350 5500 5350
-Wire Wire Line
-	4950 5450 4950 5350
-Wire Wire Line
-	4650 5450 4950 5450
-Wire Wire Line
-	4650 5400 4650 5450
-Wire Wire Line
-	4650 5050 4650 5100
-Wire Wire Line
-	4950 5050 4650 5050
-Wire Wire Line
-	4950 5150 4950 5050
-Wire Wire Line
-	5500 5150 4950 5150
-NoConn ~ 5500 4900
-NoConn ~ 5500 4700
-$Comp
-L Connector:TestPoint TP?
-U 1 1 5EE930D5
-P 4800 4700
-AR Path="/60F8228B/5EE930D5" Ref="TP?"  Part="1" 
-AR Path="/5EDB3949/5EE930D5" Ref="TP10"  Part="1" 
-F 0 "TP10" H 5000 4850 50  0000 C CNN
-F 1 "5002" H 5000 4750 50  0000 C CNN
-F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 5000 4700 50  0001 C CNN
-F 3 "~" H 5000 4700 50  0001 C CNN
-F 4 "Safeboot" H 5050 4650 50  0000 C CNN "TestPoint"
-F 5 "5002" H 4800 4700 50  0001 C CNN "MPN"
-	1    4800 4700
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
 	4900 3150 4900 2800
 Wire Wire Line
 	4550 3150 4900 3150
 Wire Wire Line
 	4550 3250 5050 3250
 Wire Wire Line
-	5150 3350 5150 3800
+	5150 3350 5150 4200
 Wire Wire Line
 	4550 3350 5150 3350
-Wire Wire Line
-	4700 4400 5500 4400
 Wire Wire Line
 	4700 3450 4700 4400
 Wire Wire Line
@@ -163,18 +96,14 @@ F 3 "" H 3750 3500 50  0001 C CNN
 	1    3750 3500
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	5150 3800 5500 3800
 Connection ~ 5150 3350
 Wire Wire Line
 	5150 3250 5150 3350
-Wire Wire Line
-	5050 3700 5500 3700
 Connection ~ 5050 3250
 Wire Wire Line
-	5050 3250 5050 3700
-Connection ~ 5150 3800
-Connection ~ 5050 3700
+	5050 3250 5050 4100
+Connection ~ 5150 4200
+Connection ~ 5050 4100
 Wire Wire Line
 	5150 2850 5150 2800
 Connection ~ 5150 2800
@@ -206,7 +135,7 @@ F 0 "R26" V 4443 2250 50  0000 C CNN
 F 1 "10k" V 4534 2250 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 4580 2250 50  0001 C CNN
 F 3 "~" H 4650 2250 50  0001 C CNN
-F 4 "	EXB-V4V103JV" H 4650 2250 50  0001 C CNN "MPN"
+F 4 "ERA-6AEB103V" H 4650 2250 50  0001 C CNN "MPN"
 	1    4650 2250
 	0    1    1    0   
 $EndComp
@@ -231,181 +160,11 @@ F 4 "DMG2305UX-7" H 4800 2550 50  0001 C CNN "MPN"
 	1    0    0    1   
 $EndComp
 Connection ~ 4700 4400
-NoConn ~ 5500 4100
-NoConn ~ 5500 4300
-NoConn ~ 5500 4500
-NoConn ~ 7650 5300
-NoConn ~ 7650 5200
-NoConn ~ 7650 5100
-NoConn ~ 7650 5000
-NoConn ~ 7650 4900
-NoConn ~ 7650 4800
-$Comp
-L Device:L L?
-U 1 1 5EE93131
-P 7200 3050
-AR Path="/60F8228B/5EE93131" Ref="L?"  Part="1" 
-AR Path="/5EDB3949/5EE93131" Ref="L2"  Part="1" 
-F 0 "L2" H 7253 3096 50  0000 L CNN
-F 1 "2.2uH" H 7253 3005 50  0000 L CNN
-F 2 "Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 7200 3050 50  0001 C CNN
-F 3 "~" H 7200 3050 50  0001 C CNN
-F 4 "74479775222" H 7200 3050 50  0001 C CNN "MPN"
-	1    7200 3050
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7200 3300 7200 3200
-Wire Wire Line
-	7200 2800 7050 2800
-Wire Wire Line
-	7200 2900 7200 2800
-Wire Wire Line
-	7050 2800 7050 3300
-Connection ~ 7200 2800
-Wire Wire Line
-	7650 2800 7450 2800
-Wire Wire Line
-	7650 2950 7650 2800
-Wire Wire Line
-	7650 3200 7650 3150
-$Comp
-L power:GND #PWR?
-U 1 1 5EE9313F
-P 7650 3200
-AR Path="/60F8228B/5EE9313F" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3949/5EE9313F" Ref="#PWR078"  Part="1" 
-F 0 "#PWR078" H 7650 2950 50  0001 C CNN
-F 1 "GND" H 7750 3100 50  0000 C CNN
-F 2 "" H 7650 3200 50  0001 C CNN
-F 3 "" H 7650 3200 50  0001 C CNN
-	1    7650 3200
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:C_Small C?
-U 1 1 5EE93145
-P 7650 3050
-AR Path="/60F8228B/5EE93145" Ref="C?"  Part="1" 
-AR Path="/5EDB3949/5EE93145" Ref="C46"  Part="1" 
-F 0 "C46" H 7742 3096 50  0000 L CNN
-F 1 "4.7uF" H 7742 3005 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 7650 3050 50  0001 C CNN
-F 3 "~" H 7650 3050 50  0001 C CNN
-F 4 "GRM21BR71C475KE51L" H 7650 3050 50  0001 C CNN "MPN"
-	1    7650 3050
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7350 5800 7450 5800
-Connection ~ 7350 5800
-Wire Wire Line
-	7350 5700 7350 5800
-Wire Wire Line
-	7250 5800 7350 5800
-Connection ~ 7250 5800
-Wire Wire Line
-	7250 5700 7250 5800
-Wire Wire Line
-	7150 5800 7250 5800
-Connection ~ 7150 5800
-Wire Wire Line
-	7150 5700 7150 5800
-Wire Wire Line
-	7050 5800 7150 5800
-Connection ~ 7050 5800
-Wire Wire Line
-	7050 5700 7050 5800
-Wire Wire Line
-	6950 5800 7050 5800
-Connection ~ 6950 5800
-Wire Wire Line
-	6950 5700 6950 5800
-Wire Wire Line
-	6850 5800 6950 5800
-Connection ~ 6850 5800
-Wire Wire Line
-	6850 5700 6850 5800
-Wire Wire Line
-	6750 5800 6850 5800
-Connection ~ 6750 5800
-Wire Wire Line
-	6750 5700 6750 5800
-Wire Wire Line
-	6650 5700 6650 5800
-Wire Wire Line
-	6450 5800 6550 5800
-Connection ~ 6550 5800
-Wire Wire Line
-	6550 5700 6550 5800
-Wire Wire Line
-	6450 5700 6450 5800
-Connection ~ 6450 5800
-Wire Wire Line
-	6350 5800 6450 5800
-Wire Wire Line
-	6350 5700 6350 5800
-Connection ~ 6350 5800
-Wire Wire Line
-	6250 5800 6350 5800
-Wire Wire Line
-	6250 5700 6250 5800
-Connection ~ 6250 5800
-Wire Wire Line
-	6150 5800 6250 5800
-Wire Wire Line
-	6150 5700 6150 5800
-Connection ~ 6150 5800
-Wire Wire Line
-	6050 5800 6150 5800
-Wire Wire Line
-	6050 5700 6050 5800
-Connection ~ 6050 5800
-Wire Wire Line
-	5950 5800 6050 5800
-Wire Wire Line
-	5950 5700 5950 5800
-Connection ~ 5950 5800
-Wire Wire Line
-	5850 5800 5950 5800
-Wire Wire Line
-	5850 5700 5850 5800
-Wire Wire Line
-	6550 5800 6650 5800
-Wire Wire Line
-	6650 5800 6750 5800
-Connection ~ 6650 5800
-Wire Wire Line
-	6650 5900 6650 5800
-Wire Wire Line
-	7450 5800 7450 5700
-Connection ~ 5850 5800
-Wire Wire Line
-	5750 5800 5850 5800
-Wire Wire Line
-	5750 5700 5750 5800
-$Comp
-L power:GND #PWR?
-U 1 1 5EE9317F
-P 6650 5900
-AR Path="/60F8228B/5EE9317F" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3949/5EE9317F" Ref="#PWR077"  Part="1" 
-F 0 "#PWR077" H 6650 5650 50  0001 C CNN
-F 1 "GND" H 6750 5800 50  0000 C CNN
-F 2 "" H 6650 5900 50  0001 C CNN
-F 3 "" H 6650 5900 50  0001 C CNN
-	1    6650 5900
-	1    0    0    -1  
-$EndComp
 Connection ~ 5800 2800
 Wire Wire Line
 	5800 2950 5800 2800
 Wire Wire Line
-	6150 3200 6150 3300
-Wire Wire Line
 	6250 3200 6150 3200
-Wire Wire Line
-	6250 3300 6250 3200
 Connection ~ 6150 3200
 Wire Wire Line
 	6150 2800 6150 3200
@@ -466,9 +225,9 @@ Text Notes 6700 1400 2    200  ~ 0
 GPS
 Text HLabel 2300 2450 0    50   Input ~ 0
 GPS_POWER
-Text HLabel 2300 3700 0    50   BiDi ~ 0
+Text HLabel 2300 4100 0    50   BiDi ~ 0
 GPS_SDA
-Text HLabel 2300 3800 0    50   Input ~ 0
+Text HLabel 2300 4200 0    50   Input ~ 0
 GPS_SCL
 Text HLabel 2300 4400 0    50   BiDi ~ 0
 GPS_GPIO
@@ -477,27 +236,11 @@ Wire Wire Line
 Wire Wire Line
 	2300 4400 4700 4400
 Wire Wire Line
-	2300 3800 5150 3800
+	2300 4200 5150 4200
 Wire Wire Line
-	2300 3700 5050 3700
-Text HLabel 8600 3900 2    50   Output ~ 0
+	2300 4100 5050 4100
+Text HLabel 8600 4200 2    50   Output ~ 0
 GPS_SIGNAL
-Wire Wire Line
-	7650 3900 8600 3900
-$Comp
-L power:PWR_FLAG #FLG013
-U 1 1 6015A556
-P 7450 2800
-F 0 "#FLG013" H 7450 2875 50  0001 C CNN
-F 1 "PWR_FLAG" H 7450 2973 50  0000 C CNN
-F 2 "" H 7450 2800 50  0001 C CNN
-F 3 "~" H 7450 2800 50  0001 C CNN
-	1    7450 2800
-	1    0    0    -1  
-$EndComp
-Connection ~ 7450 2800
-Wire Wire Line
-	7450 2800 7200 2800
 $Comp
 L power:PWR_FLAG #FLG012
 U 1 1 6015B569
@@ -517,7 +260,7 @@ F 0 "D7" H 7550 2604 45  0000 C CNN
 F 1 "PMEG4005EJ" H 7550 2520 45  0000 C CNN
 F 2 "SOD-323" H 7550 2600 20  0001 C CNN
 F 3 "" H 7550 2400 50  0001 C CNN
-F 4 "PMEG4005EJF" H 7550 2400 50  0001 C CNN "MPN"
+F 4 "PMEG4005EJ,115" H 7550 2400 50  0001 C CNN "MPN"
 	1    7550 2400
 	-1   0    0    -1  
 $EndComp
@@ -533,7 +276,7 @@ F 0 "D6" H 7550 2254 45  0000 C CNN
 F 1 "PMEG4005EJ" H 7550 2170 45  0000 C CNN
 F 2 "SOD-323" H 7550 2250 20  0001 C CNN
 F 3 "" H 7550 2050 50  0001 C CNN
-F 4 "PMEG4005EJF" H 7550 2050 50  0001 C CNN "MPN"
+F 4 "PMEG4005EJ,115" H 7550 2050 50  0001 C CNN "MPN"
 	1    7550 2050
 	-1   0    0    -1  
 $EndComp
@@ -601,7 +344,7 @@ F 1 "5000" H 5858 2672 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 6000 2600 50  0001 C CNN
 F 3 "~" H 6000 2600 50  0001 C CNN
 F 4 "GPS_3V3" H 5858 2581 50  0000 L CNN "TestPoint"
-F 5 "5000" H 5800 2600 50  0001 C CNN "MPN"
+F 5 "" H 5800 2600 50  0001 C CNN "MPN"
 	1    5800 2600
 	1    0    0    -1  
 $EndComp
@@ -616,7 +359,7 @@ F 1 "5000" H 6858 2022 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 7000 1950 50  0001 C CNN
 F 3 "~" H 7000 1950 50  0001 C CNN
 F 4 "GPS_BCKP" H 6858 1931 50  0000 L CNN "TestPoint"
-F 5 "5000" H 6800 1950 50  0001 C CNN "MPN"
+F 5 "" H 6800 1950 50  0001 C CNN "MPN"
 	1    6800 1950
 	1    0    0    -1  
 $EndComp
@@ -634,7 +377,7 @@ F 1 "5001" H 9408 2022 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 9550 1950 50  0001 C CNN
 F 3 "~" H 9550 1950 50  0001 C CNN
 F 4 "GND" H 9408 1931 50  0000 L CNN "TestPoint"
-F 5 "5001" H 9350 1950 50  0001 C CNN "MPN"
+F 5 "" H 9350 1950 50  0001 C CNN "MPN"
 	1    9350 1950
 	1    0    0    -1  
 $EndComp
@@ -664,7 +407,7 @@ F 1 "5001" H 9808 2022 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 9950 1950 50  0001 C CNN
 F 3 "~" H 9950 1950 50  0001 C CNN
 F 4 "GND" H 9808 1931 50  0000 L CNN "TestPoint"
-F 5 "5001" H 9750 1950 50  0001 C CNN "MPN"
+F 5 "" H 9750 1950 50  0001 C CNN "MPN"
 	1    9750 1950
 	1    0    0    -1  
 $EndComp
@@ -683,10 +426,55 @@ F 3 "" H 9750 2100 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	9750 1950 9750 2100
-Wire Wire Line
-	4800 4700 4800 4800
-Wire Wire Line
-	4800 4800 5500 4800
 Text Notes 5000 3250 1    50   ~ 0
 RN19 DNP
+$Comp
+L RF_GPS:MAX-M8Q U13
+U 1 1 5FF8D1F2
+P 6350 4200
+F 0 "U13" H 6950 3450 50  0000 C CNN
+F 1 "MAX-M8Q" H 7000 3350 50  0000 C CNN
+F 2 "RF_GPS:ublox_MAX" H 6750 3550 50  0001 C CNN
+F 3 "https://www.u-blox.com/sites/default/files/MAX-M8-FW3_DataSheet_%28UBX-15031506%29.pdf" H 6350 4200 50  0001 C CNN
+	1    6350 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5EE9317F
+P 6350 5050
+AR Path="/60F8228B/5EE9317F" Ref="#PWR?"  Part="1" 
+AR Path="/5EDB3949/5EE9317F" Ref="#PWR077"  Part="1" 
+F 0 "#PWR077" H 6350 4800 50  0001 C CNN
+F 1 "GND" H 6450 4950 50  0000 C CNN
+F 2 "" H 6350 5050 50  0001 C CNN
+F 3 "" H 6350 5050 50  0001 C CNN
+	1    6350 5050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5050 4100 5750 4100
+Wire Wire Line
+	5150 4200 5750 4200
+Wire Wire Line
+	4700 4400 5750 4400
+Wire Wire Line
+	6350 5050 6350 4900
+Wire Wire Line
+	6950 4200 8600 4200
+Wire Wire Line
+	6150 3200 6150 3500
+Wire Wire Line
+	6250 3200 6250 3500
+Wire Wire Line
+	6550 3300 6350 3300
+Wire Wire Line
+	6350 3300 6350 3500
+NoConn ~ 6950 4000
+NoConn ~ 6950 4500
+NoConn ~ 6550 3500
+NoConn ~ 5750 3800
+NoConn ~ 5750 3900
+NoConn ~ 5750 4500
+NoConn ~ 5750 4600
 $EndSCHEMATC

@@ -141,9 +141,9 @@ U 1 1 5FD36E51
 P 5100 4750
 F 0 "J33" H 5200 4725 50  0000 L CNN
 F 1 "Conn_Coaxial" H 5200 4634 50  0000 L CNN
-F 2 "Connector_Coaxial:SMA_Amphenol_132134_Vertical" H 5100 4750 50  0001 C CNN
+F 2 "Connector_Coaxial:U.FL_Hirose_U.FL-R-SMT-1_Vertical" H 5100 4750 50  0001 C CNN
 F 3 " ~" H 5100 4750 50  0001 C CNN
-F 4 "132134" H 5100 4750 50  0001 C CNN "MPN"
+F 4 "U.FL-R-SMT-1(10)" H 5100 4750 50  0001 C CNN "MPN"
 	1    5100 4750
 	1    0    0    -1  
 $EndComp

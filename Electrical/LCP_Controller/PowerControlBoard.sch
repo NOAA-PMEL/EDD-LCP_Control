@@ -65,7 +65,7 @@ F 0 "J1" H 3918 3575 50  0000 C CNN
 F 1 "Conn_01x05" H 3918 3666 50  0000 C CNN
 F 2 "Connector_PinSocket_2.54mm:PinSocket_1x05_P2.54mm_Vertical" H 4000 4000 50  0001 C CNN
 F 3 "~" H 4000 4000 50  0001 C CNN
-F 4 "N/A" H 4000 4000 50  0001 C CNN "MPN"
+F 4 "" H 4000 4000 50  0001 C CNN "MPN"
 	1    4000 4000
 	-1   0    0    1   
 $EndComp
