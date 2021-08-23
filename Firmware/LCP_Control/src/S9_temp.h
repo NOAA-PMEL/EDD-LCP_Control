@@ -49,8 +49,10 @@
 /************************************************************************
 *							HEADER FILES
 ************************************************************************/
-
-
+#include "am_hal_status.h"
+#include "am_hal_gpio.h"
+#include "bsp_uart.h"
+#include "am_hal_gpio.h"
 /************************************************************************
 *							MACROS
 ************************************************************************/
@@ -58,6 +60,10 @@
 /************************************************************************
 *							Structs & Enums
 ************************************************************************/
+//typedef struct {
+//  
+//  
+//}sS9Uart_t;
 typedef struct {
     float temperature;
     float resistance;
@@ -75,8 +81,21 @@ typedef struct {
             uint8_t minor;
         }firmware;
         char status[16];
+        
     }info;
+    struct {
+        struct {
+            am_hal_gpio_pincfg_t *pin;
+            uint32_t pin_number;
+        }power;
+        struct {
+            e_uart_t port;
+            uint32_t baudrate;
+        }uart;
+    }device;
+
 }sS9_t;
+
 
 /************************************************************************
 *					               Extern Variables
@@ -92,7 +111,7 @@ typedef struct {
  * @return None
  * 
  */
-void S9T_init(void);
+void S9T_init( const e_uart_t port, const am_hal_gpio_pincfg_t *power, const uint32_t power_pin);
 
 /** @brief S9 Temp ON 
  * 
@@ -101,6 +120,10 @@ void S9T_init(void);
  * @return None
  * 
  */
+
+void S9T_enable(void);
+void S9T_disable(void);
+
 void S9T_ON(void);
 
 /** @brief S9 Temp OFF

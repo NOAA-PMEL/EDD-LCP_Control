@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iarUserArgVars>
+    <group name="Ambiq Tools" active="true">
+        <variable>
+            <name>AMBIQ_SDK</name>
+            <value>C:\Tools\Ambiq\AmbiqSuite-R2.5.1</value>
+        </variable>
+    </group>
+</iarUserArgVars>

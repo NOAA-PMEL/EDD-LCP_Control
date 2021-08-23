@@ -1,0 +1,348 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         23/Aug/2021  13:04:38
+# Copyright 1999-2020 IAR Systems AB.
+#
+#    Cpu mode                        
+#    Endian                       =  little
+#    Source file                  =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\src\main.c
+#    Command line                 =
+#        -f C:\Users\casari\AppData\Local\Temp\1\EW7DE2.tmp
+#        ("C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\src\main.c" -D iar -D
+#        AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D AM_DEBUG_PRINTF -D
+#        AM_UTIL_FAULTISR_PRINT -lcN "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --diag_suppress Pa050 -o
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --no_clustering --no_scheduling
+#        --debug --endian=little --cpu=Cortex-M4 --no_path_in_file_macros -e
+#        --fpu=VFPv4_sp --dlib_config "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.4\arm\inc\c\DLib_Config_Normal.h" -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\include\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\AmbiqMicro\Include\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\\ -I "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\\" -I
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\RTOS\\" -I
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\bsp\\" -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\boards\apollo3_evb\bsp\\ -I
+#        $PROJ_DIR\src\RTOS\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -Ol)
+#    Locale                       =  C
+#    List file                    =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\main.lst
+#    Object file                  =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\main.o
+#    Runtime model:                  
+#      __SystemLibrary            =  DLib
+#      __dlib_file_descriptor     =  0
+#      __dlib_full_locale_support =  0
+#      __dlib_version             =  6
+#      __iar_require _Printf      =  floats,widths
+#
+###############################################################################
+
+C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\src\main.c
+      1          //*****************************************************************************
+      2          //
+      3          //! @file freertos_lowpower.c
+      4          //!
+      5          //! @brief Example of the app running under FreeRTOS.
+      6          //!
+      7          //! This example implements LED task within the FreeRTOS framework. It monitors
+      8          //! three On-board buttons, and toggles respective on-board LEDs in response.
+      9          //! To save power, this application is compiled without print
+     10          //! statements by default. To enable them, add the following project-level
+     11          //! macro definitions.
+     12          //!
+     13          //! AM_DEBUG_PRINTF
+     14          //!
+     15          //! If enabled, debug messages will be sent over ITM.
+     16          //
+     17          //*****************************************************************************
+     18          
+     19          //*****************************************************************************
+     20          //
+     21          // Copyright (c) 2020, Ambiq Micro, Inc.
+     22          // All rights reserved.
+     23          //
+     24          // Redistribution and use in source and binary forms, with or without
+     25          // modification, are permitted provided that the following conditions are met:
+     26          //
+     27          // 1. Redistributions of source code must retain the above copyright notice,
+     28          // this list of conditions and the following disclaimer.
+     29          //
+     30          // 2. Redistributions in binary form must reproduce the above copyright
+     31          // notice, this list of conditions and the following disclaimer in the
+     32          // documentation and/or other materials provided with the distribution.
+     33          //
+     34          // 3. Neither the name of the copyright holder nor the names of its
+     35          // contributors may be used to endorse or promote products derived from this
+     36          // software without specific prior written permission.
+     37          //
+     38          // Third party software included in this distribution is subject to the
+     39          // additional license terms as defined in the /docs/licenses directory.
+     40          //
+     41          // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     42          // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     43          // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     44          // ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+     45          // LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+     46          // CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+     47          // SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+     48          // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+     49          // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+     50          // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+     51          // POSSIBILITY OF SUCH DAMAGE.
+     52          //
+     53          // This is part of revision 2.5.1 of the AmbiqSuite Development Package.
+     54          //
+     55          //*****************************************************************************
+     56          
+     57          //*****************************************************************************
+     58          //
+     59          // This application has a large number of common include files. For
+     60          // convenience, we'll collect them all together in a single header and include
+     61          // that everywhere.
+     62          //
+     63          //*****************************************************************************
+     64          #include "main.h"
+     65          #include "rtos.h"
+     66          #include "stdio.h"
+     67          #include "MAX14830.h"
+     68          #include "S9_temp.h"
+     69          
+     70          
+     71          #define IOM_MODULE  ( 0 )
+     72          
+     73          //*****************************************************************************
+     74          //
+     75          // Enable printing to the console.
+     76          //
+     77          //*****************************************************************************
+     78          void
+     79          enable_print_interface(void)
+     80          {
+     81              //
+     82              // Initialize a debug printing interface.
+     83              //
+     84              am_bsp_itm_printf_enable();
+     85          }
+     86          
+     87          //*****************************************************************************
+     88          //
+     89          // Disable printing to the console.
+     90          //
+     91          //*****************************************************************************
+     92          void
+     93          disable_print_interface(void)
+     94          {
+     95              //
+     96              // Deinitialize a debug printing interface.
+     97              //
+     98              am_bsp_itm_printf_disable();
+     99          }
+    100          //static void 
+    101          //iom_set_up(void)
+    102          //{
+    103          //    //
+    104          //    // Enable power to IOM.
+    105          //    //
+    106          //    
+    107          //
+    108          //    //
+    109          //    // Set the required configuration settings for the IOM.
+    110          //    //
+    111          //    am_hal_iom_config(IOM_MODULE, &g_sIOMI2cConfig);
+    112          //
+    113          //    //
+    114          //    // Set pins high to prevent bus dips.
+    115          //    //
+    116          ////     am_hal_gpio_out_bit_set(5);
+    117          ////     am_hal_gpio_out_bit_set(6);
+    118          //
+    119          //// #ifdef INTERNAL_LOOPBACK
+    120          ////     am_hal_gpio_pin_config(5, AM_HAL_PIN_5_M0SCLLB | AM_HAL_GPIO_PULLUP);
+    121          ////     am_hal_gpio_pin_config(6, AM_HAL_PIN_6_SLSDALB | AM_HAL_GPIO_PULLUP);
+    122          ////     AM_REG(GPIO, LOOPBACK) = IOM_MODULE;
+    123          //// #else
+    124          ////     am_hal_gpio_pin_config(5, AM_HAL_PIN_5_M0SCL | AM_HAL_GPIO_PULLUP);
+    125          ////     am_hal_gpio_pin_config(6, AM_HAL_PIN_6_M0SDA | AM_HAL_GPIO_PULLUP);
+    126          //// #endif
+    127          //
+    128          //    am_hal_iom_int_enable(IOM_MODULE, 0xFF);
+    129          //    am_hal_interrupt_enable(AM_HAL_INTERRUPT_IOMASTER0);
+    130          //
+    131          //    //
+    132          //    // Turn on the IOM for this operation.
+    133          //    //
+    134          //    am_bsp_iom_enable(IOM_MODULE);
+    135          //}
+    136          //*****************************************************************************
+    137          //
+    138          // Main Function
+    139          //
+    140          //*****************************************************************************
+    141          int
+    142          main(void)
+    143          {
+    144              am_hal_wdt_halt();
+    145              am_hal_wdt_int_disable();
+    146              
+    147              // Set the clock frequency.
+    148              
+    149              am_hal_clkgen_control(AM_HAL_CLKGEN_CONTROL_SYSCLK_MAX, 0);
+    150          
+    151              //
+    152              // Set the default cache configuration
+    153              //
+    154              am_hal_cachectrl_config(&am_hal_cachectrl_defaults);
+    155              am_hal_cachectrl_enable();
+    156          
+    157          
+    158          #ifndef NOFPU
+    159              //
+    160              // Enable the floating point module, and configure the core for lazy
+    161              // stacking.
+    162              //
+    163              am_hal_sysctrl_fpu_enable();
+    164              am_hal_sysctrl_fpu_stacking_enable(true);
+    165          #else
+    166              am_hal_sysctrl_fpu_disable();
+    167          #endif
+    168          
+    169              //
+    170              // Configure the board for low power.
+    171              //
+    172              am_bsp_low_power_init();
+    173          
+    174              //
+    175              // Turn off unneeded Flash & SRAM
+    176              //
+    177          #if defined(AM_PART_APOLLO3)
+    178              am_hal_pwrctrl_memory_enable(AM_HAL_PWRCTRL_MEM_SRAM_96K);
+    179          #endif
+    180          #if defined(AM_PART_APOLLO3P)
+    181              am_hal_pwrctrl_memory_enable(AM_HAL_PWRCTRL_MEM_SRAM_32K_DTCM);
+    182          #endif
+    183          
+    184              am_hal_pwrctrl_memory_enable(AM_HAL_PWRCTRL_MEM_FLASH_MIN);
+    185          
+    186              //
+    187              // Enable printing to the console.
+    188              //
+    189          #ifdef AM_DEBUG_PRINTF
+    190              enable_print_interface();
+    191          #endif
+    192          
+    193              am_bsp_itm_printf_enable();
+    194              //
+    195              // Initialize plotting interface.
+    196              //
+    197              am_util_stdio_printf("Hello World!\n\n");
+    198              printf("Program start\n");
+    199              
+    200              // Initi the IOM
+    201          //    iom_set_up();
+    202              
+    203              // Turn the COM0 Power Pin On (SoundNine Temperature Power)
+    204              S9T_init(BSP_UART_COM0, &g_LCP_BSP_COM0_POWER_ON, AM_HAL_PIN_11_GPIO);
+    205              S9T_enable();
+    206          //    
+    207          //    printf("The power to COM0 has been se\r\nt");
+    208              
+    209          //    S9T_disable();
+    210              
+    211              /** Test the MAX Startups */
+    212          //    MAX14830_init();
+    213          //    MAX14830_enable(MAX14830_COM_PORT0);
+    214          //    MAX14830_disable(MAX14830_COM_PORT0);
+    215                //
+    216              // Run the application.
+    217              //
+    218          //    run_tasks();
+    219          //    vTaskStartScheduler();
+    220              
+    221              //
+    222              // We shouldn't ever get here.
+    223              //
+    224              while (1)
+    225              {
+    226                float t, r;
+    227                t=1;
+    228                r=2;
+    229          //      S9T_Read(&t, &r);
+    230                BSP_UART_Test();
+    231                printf("t=%.3f, r=%.3f\r\n", t, r);
+    232                
+    233          //      am_util_delay_ms(3000);
+    234                
+    235              }
+    236          
+    237          }
+    238          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   disable_print_interface
+         8   -> am_bsp_itm_printf_disable
+       8   enable_print_interface
+         8   -> am_bsp_itm_printf_enable
+      24   main
+        24   -> BSP_UART_Test
+        24   -> S9T_enable
+        24   -> S9T_init
+        24   -> __aeabi_f2d
+        24   -> am_bsp_itm_printf_enable
+        24   -> am_bsp_low_power_init
+        24   -> am_hal_cachectrl_config
+        24   -> am_hal_cachectrl_enable
+        24   -> am_hal_clkgen_control
+        24   -> am_hal_pwrctrl_memory_enable
+        24   -> am_hal_sysctrl_fpu_enable
+        24   -> am_hal_sysctrl_fpu_stacking_enable
+        24   -> am_hal_wdt_halt
+        24   -> am_hal_wdt_int_disable
+        24   -> am_util_stdio_printf
+        24   -> enable_print_interface
+        24   -> printf
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable1
+       4  ??DataTable1_1
+       4  ??DataTable1_2
+       4  ??DataTable1_3
+       4  ??DataTable1_4
+      16  ?_0
+      16  ?_1
+      20  ?_2
+       8  disable_print_interface
+       8  enable_print_interface
+     138  main
+
+ 
+  52 bytes in section .rodata
+ 174 bytes in section .text
+ 
+ 174 bytes of CODE  memory
+  52 bytes of CONST memory
+
+Errors: none
+Warnings: none

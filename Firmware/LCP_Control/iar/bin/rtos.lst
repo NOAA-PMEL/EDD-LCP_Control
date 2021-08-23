@@ -1,0 +1,395 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         23/Aug/2021  11:53:26
+# Copyright 1999-2020 IAR Systems AB.
+#
+#    Cpu mode                        
+#    Endian                       =  little
+#    Source file                  =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\src\RTOS\rtos.c
+#    Command line                 =
+#        -f C:\Users\casari\AppData\Local\Temp\1\EW4A2A.tmp
+#        ("C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\src\RTOS\rtos.c" -D iar -D
+#        AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D AM_DEBUG_PRINTF -D
+#        AM_UTIL_FAULTISR_PRINT -lcN "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --diag_suppress Pa050 -o
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --no_clustering --no_scheduling
+#        --debug --endian=little --cpu=Cortex-M4 --no_path_in_file_macros -e
+#        --fpu=VFPv4_sp --dlib_config "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.4\arm\inc\c\DLib_Config_Normal.h" -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\include\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\AmbiqMicro\Include\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\\ -I "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\\" -I
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\RTOS\\" -I
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\bsp\\" -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\boards\apollo3_evb\bsp\\ -I
+#        $PROJ_DIR\src\RTOS\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -Ol)
+#    Locale                       =  C
+#    List file                    =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\rtos.lst
+#    Object file                  =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\rtos.o
+#    Runtime model:                  
+#      __SystemLibrary            =  DLib
+#      __dlib_file_descriptor     =  0
+#      __dlib_full_locale_support =  0
+#      __dlib_version             =  6
+#      __iar_require _Printf         
+#
+###############################################################################
+
+C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\src\RTOS\rtos.c
+      1          //*****************************************************************************
+      2          //
+      3          //! @file rtos.c
+      4          //!
+      5          //! @brief Essential functions to make the RTOS run correctly.
+      6          //!
+      7          //! These functions are required by the RTOS for ticking, sleeping, and basic
+      8          //! error checking.
+      9          //
+     10          //*****************************************************************************
+     11          
+     12          //*****************************************************************************
+     13          //
+     14          // Copyright (c) 2020, Ambiq Micro, Inc.
+     15          // All rights reserved.
+     16          //
+     17          // Redistribution and use in source and binary forms, with or without
+     18          // modification, are permitted provided that the following conditions are met:
+     19          //
+     20          // 1. Redistributions of source code must retain the above copyright notice,
+     21          // this list of conditions and the following disclaimer.
+     22          //
+     23          // 2. Redistributions in binary form must reproduce the above copyright
+     24          // notice, this list of conditions and the following disclaimer in the
+     25          // documentation and/or other materials provided with the distribution.
+     26          //
+     27          // 3. Neither the name of the copyright holder nor the names of its
+     28          // contributors may be used to endorse or promote products derived from this
+     29          // software without specific prior written permission.
+     30          //
+     31          // Third party software included in this distribution is subject to the
+     32          // additional license terms as defined in the /docs/licenses directory.
+     33          //
+     34          // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     35          // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     36          // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     37          // ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+     38          // LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+     39          // CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+     40          // SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+     41          // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+     42          // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+     43          // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+     44          // POSSIBILITY OF SUCH DAMAGE.
+     45          //
+     46          // This is part of revision 2.5.1 of the AmbiqSuite Development Package.
+     47          //
+     48          //*****************************************************************************
+     49          
+     50          #include <stdint.h>
+     51          #include <stdbool.h>
+     52          #include <stdio.h>
+     53          
+     54          #include "am_mcu_apollo.h"
+     55          #include "am_bsp.h"
+     56          
+     57          #include "FreeRTOS.h"
+     58          #include "task.h"
+     59          #include "queue.h"
+     60          #include "portmacro.h"
+     61          #include "portable.h"
+     62          #include "main.h"
+     63          #include "assert.h"
+     64          
+     65          #define STACK_SIZE  ( 200 )
+     66          
+     67          typedef enum {
+     68            STATE_IDLE                    = 0,
+     69            STATE_GREEN_FAST_BLUE_SLOW    = 1,
+     70            STATE_BLUE_FAST_GREEN_SLOW    = 2,
+     71            STATE_GREEN_FAST_BLUE_FAST    = 3,
+     72            STATE_GREEN_SLOW_BLUE_SLOW    = 4
+     73          }eState_t;
+     74          
+     75          
+     76          //*****************************************************************************
+     77          //
+     78          // Task handle for the initial setup task.
+     79          //
+     80          //*****************************************************************************
+     81          TaskHandle_t xSetupTask;
+     82          TaskHandle_t xStateTask;
+     83          StaticTask_t xTaskBuffer;
+     84          StackType_t xStack[ STACK_SIZE ];
+     85          
+     86          TaskHandle_t xBlueLedHandle = NULL;
+     87          TaskHandle_t xGreenLedHandle = NULL;
+     88          TaskHandle_t xNothingHandle = NULL;
+     89          //*****************************************************************************
+     90          //
+     91          // Interrupt handler for the CTIMER module.
+     92          //
+     93          //*****************************************************************************
+     94          void
+     95          am_ctimer_isr(void)
+     96          {
+     97              uint32_t ui32Status;
+     98          
+     99              //
+    100              // Check the timer interrupt status.
+    101              //
+    102              ui32Status = am_hal_ctimer_int_status_get(false);
+    103              am_hal_ctimer_int_clear(ui32Status);
+    104          
+    105              //
+    106              // Run handlers for the various possible timer events.
+    107              //
+    108              am_hal_ctimer_int_service(ui32Status);
+    109          }
+    110          
+    111          //*****************************************************************************
+    112          //
+    113          // Sleep function called from FreeRTOS IDLE task.
+    114          // Do necessary application specific Power down operations here
+    115          // Return 0 if this function also incorporates the WFI, else return value same
+    116          // as idleTime
+    117          //
+    118          //*****************************************************************************
+    119          uint32_t am_freertos_sleep(uint32_t idleTime)
+    120          {
+    121              am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_DEEP);
+    122              return 0;
+    123          }
+    124          
+    125          //*****************************************************************************
+    126          //
+    127          // Recovery function called from FreeRTOS IDLE task, after waking up from Sleep
+    128          // Do necessary 'wakeup' operations here, e.g. to power up/enable peripherals etc.
+    129          //
+    130          //*****************************************************************************
+    131          void am_freertos_wakeup(uint32_t idleTime)
+    132          {
+    133              return;
+    134          }
+    135          
+    136          
+    137          //*****************************************************************************
+    138          //
+    139          // FreeRTOS debugging functions.
+    140          //
+    141          //*****************************************************************************
+    142          void
+    143          vApplicationMallocFailedHook(void)
+    144          {
+    145              //
+    146              // Called if a call to pvPortMalloc() fails because there is insufficient
+    147              // free memory available in the FreeRTOS heap.  pvPortMalloc() is called
+    148              // internally by FreeRTOS API functions that create tasks, queues, software
+    149              // timers, and semaphores.  The size of the FreeRTOS heap is set by the
+    150              // configTOTAL_HEAP_SIZE configuration constant in FreeRTOSConfig.h.
+    151              //
+    152              while (1);
+    153          }
+    154          
+    155          void
+    156          vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName)
+    157          {
+    158              (void) pcTaskName;
+    159              (void) pxTask;
+    160          
+    161              //
+    162              // Run time stack overflow checking is performed if
+    163              // configconfigCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2.  This hook
+    164              // function is called if a stack overflow is detected.
+    165              //
+    166              while (1)
+    167              {
+    168                  __asm("BKPT #0\n") ; // Break into the debugger
+    169              }
+    170          }
+    171          
+    172          
+    173          //*****************************************************************************
+    174          //
+    175          // Example state task that switches between state setups.
+    176          //
+    177          //*****************************************************************************
+    178          void 
+    179          test_state_led_tasks(void *pvParameters)
+    180          {
+    181            static eState_t volatile next_state = STATE_GREEN_FAST_BLUE_SLOW;
+    182            printf("Setting up state_tasks\r\n");
+    183            /** Get the current time */
+    184            TickType_t xLastWakeTime;
+    185            xLastWakeTime = xTaskGetTickCount();
+    186            
+    187            while(true) 
+    188            {
+    189              
+    190              /** Delay*/
+    191              vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(4000UL));
+    192              
+    193              /** Kill the current tasks */
+    194              if((green_led_task_handle != NULL) && 
+    195                 (blue_led_task_handle != NULL))
+    196              {
+    197                  vTaskSuspend(green_led_task_handle);
+    198                  vTaskSuspend(blue_led_task_handle); 
+    199                  vTaskDelete(green_led_task_handle);
+    200                  vTaskDelete(blue_led_task_handle);
+    201                  green_led_task_handle = NULL;
+    202                  blue_led_task_handle = NULL;
+    203              }else{
+    204                LED_Toggle(LED_GREEN);
+    205              }
+    206              /** LEDs OFF */
+    207              LED_Off(LED_GREEN);
+    208              LED_Off(LED_BLUE);
+    209              
+    210              
+    211              switch(next_state)
+    212              {
+    213                case STATE_IDLE:
+    214                  next_state = STATE_GREEN_FAST_BLUE_SLOW;
+    215                  break;
+    216                case STATE_GREEN_FAST_BLUE_SLOW:
+    217                  xTaskCreate(GreenLedTask, "Green LED", STACK_SIZE, (void*)100UL, tskIDLE_PRIORITY + 5, &green_led_task_handle);
+    218                  xTaskCreate(BlueLedTask, "Blue LED", STACK_SIZE, (void*)500UL, tskIDLE_PRIORITY + 4, &blue_led_task_handle);
+    219                  next_state = STATE_BLUE_FAST_GREEN_SLOW;
+    220                  break;
+    221                case STATE_BLUE_FAST_GREEN_SLOW:
+    222                  xTaskCreate(GreenLedTask, "Green LED", STACK_SIZE, (void*)500UL, tskIDLE_PRIORITY + 5, &green_led_task_handle);
+    223                  xTaskCreate(BlueLedTask, "Blue LED", STACK_SIZE, (void*)100UL, tskIDLE_PRIORITY + 4, &blue_led_task_handle);
+    224                  next_state = STATE_GREEN_FAST_BLUE_FAST;
+    225                  break;
+    226                case STATE_GREEN_FAST_BLUE_FAST:
+    227                  xTaskCreate(GreenLedTask, "Green LED", STACK_SIZE, (void*)100UL, tskIDLE_PRIORITY + 5, &green_led_task_handle);
+    228                  xTaskCreate(BlueLedTask, "Blue LED", STACK_SIZE, (void*)100UL, tskIDLE_PRIORITY + 4, &blue_led_task_handle);
+    229                  next_state = STATE_GREEN_SLOW_BLUE_SLOW;
+    230                  break;
+    231                case STATE_GREEN_SLOW_BLUE_SLOW:
+    232                  xTaskCreate(GreenLedTask, "Green LED", STACK_SIZE, (void*)500UL, tskIDLE_PRIORITY + 5, &green_led_task_handle);
+    233                  xTaskCreate(BlueLedTask, "Blue LED", STACK_SIZE, (void*)500UL, tskIDLE_PRIORITY + 4, &blue_led_task_handle);
+    234                  next_state = STATE_IDLE;
+    235                  break;
+    236                default:
+    237                  break;
+    238              }
+    239            }  
+    240          }
+    241          //*****************************************************************************
+    242          //
+    243          // Initializes all tasks
+    244          //
+    245          //*****************************************************************************
+    246          void
+    247          run_tasks(void)
+    248          {
+    249              /** Setup the LEDs */
+    250              LED_Init();
+    251              
+    252              /** Disable print interface*/
+    253              disable_print_interface();
+    254              
+    255              // Create the functional tasks
+    256              xTaskCreate(test_state_led_tasks, "System State", STACK_SIZE, NULL, tskIDLE_PRIORITY + 5, &xStateTask);
+    257              
+    258              //
+    259              // Start the scheduler.
+    260              //
+    261              vTaskStartScheduler();
+    262          }
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   am_ctimer_isr
+         8   -> am_hal_ctimer_int_clear
+         8   -> am_hal_ctimer_int_service
+         8   -> am_hal_ctimer_int_status_get
+       8   am_freertos_sleep
+         8   -> am_hal_sysctrl_sleep
+       0   am_freertos_wakeup
+      16   run_tasks
+        16   -> LED_Init
+        16   -> disable_print_interface
+        16   -> vTaskStartScheduler
+        16   -> xTaskCreate
+      24   test_state_led_tasks
+        24   -> LED_Off
+        24   -> LED_Toggle
+        24   -> printf
+        24   -> vTaskDelayUntil
+        24   -> vTaskDelete
+        24   -> vTaskSuspend
+        24   -> xTaskCreate
+        24   -> xTaskGetTickCount
+       0   vApplicationMallocFailedHook
+       0   vApplicationStackOverflowHook
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable2
+       4  ??DataTable2_1
+       4  ??DataTable2_10
+       4  ??DataTable2_2
+       4  ??DataTable2_3
+       4  ??DataTable2_4
+       4  ??DataTable2_5
+       4  ??DataTable2_6
+       4  ??DataTable2_7
+       4  ??DataTable2_8
+       4  ??DataTable2_9
+      28  ?_0
+      12  ?_1
+      12  ?_2
+      16  ?_3
+      24  am_ctimer_isr
+      12  am_freertos_sleep
+       2  am_freertos_wakeup
+       1  next_state
+      36  run_tasks
+     306  test_state_led_tasks
+       2  vApplicationMallocFailedHook
+       4  vApplicationStackOverflowHook
+       4  xBlueLedHandle
+       4  xGreenLedHandle
+       4  xNothingHandle
+       4  xSetupTask
+     800  xStack
+       4  xStateTask
+      84  xTaskBuffer
+
+ 
+ 904 bytes in section .bss
+   1 byte  in section .data
+  68 bytes in section .rodata
+ 430 bytes in section .text
+ 
+ 430 bytes of CODE  memory
+  68 bytes of CONST memory
+ 905 bytes of DATA  memory
+
+Errors: none
+Warnings: none

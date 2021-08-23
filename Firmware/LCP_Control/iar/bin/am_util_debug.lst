@@ -1,0 +1,109 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         23/Aug/2021  11:53:24
+# Copyright 1999-2020 IAR Systems AB.
+#
+#    Cpu mode             
+#    Endian            =  little
+#    Source file       =
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\am_util_debug.c
+#    Command line      =
+#        -f C:\Users\casari\AppData\Local\Temp\1\EW3C04.tmp
+#        (C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\am_util_debug.c -D iar -D
+#        AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D AM_DEBUG_PRINTF -D
+#        AM_UTIL_FAULTISR_PRINT -lcN "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --diag_suppress Pa050 -o
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --no_clustering --no_scheduling
+#        --debug --endian=little --cpu=Cortex-M4 --no_path_in_file_macros -e
+#        --fpu=VFPv4_sp --dlib_config "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.4\arm\inc\c\DLib_Config_Normal.h" -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\include\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\AmbiqMicro\Include\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\\ -I "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\\" -I
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\RTOS\\" -I
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\bsp\\" -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\boards\apollo3_evb\bsp\\ -I
+#        $PROJ_DIR\src\RTOS\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -Ol)
+#    Locale            =  C
+#    List file         =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\am_util_debug.lst
+#    Object file       =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\am_util_debug.o
+#    Runtime model:       
+#      __SystemLibrary =  DLib
+#
+###############################################################################
+
+C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\am_util_debug.c
+      1          //*****************************************************************************
+      2          //
+      3          //! @file am_util_debug.c
+      4          //!
+      5          //! @brief Useful functions for debugging.
+      6          //!
+      7          //! These functions and macros were created to assist with debugging. They are
+      8          //! intended to be as unintrusive as possible and designed to be removed from
+      9          //! the compilation of a project when they are no longer needed.
+     10          //
+     11          //*****************************************************************************
+     12          
+     13          //*****************************************************************************
+     14          //
+     15          // Copyright (c) 2020, Ambiq Micro, Inc.
+     16          // All rights reserved.
+     17          //
+     18          // Redistribution and use in source and binary forms, with or without
+     19          // modification, are permitted provided that the following conditions are met:
+     20          //
+     21          // 1. Redistributions of source code must retain the above copyright notice,
+     22          // this list of conditions and the following disclaimer.
+     23          //
+     24          // 2. Redistributions in binary form must reproduce the above copyright
+     25          // notice, this list of conditions and the following disclaimer in the
+     26          // documentation and/or other materials provided with the distribution.
+     27          //
+     28          // 3. Neither the name of the copyright holder nor the names of its
+     29          // contributors may be used to endorse or promote products derived from this
+     30          // software without specific prior written permission.
+     31          //
+     32          // Third party software included in this distribution is subject to the
+     33          // additional license terms as defined in the /docs/licenses directory.
+     34          //
+     35          // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     36          // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     37          // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     38          // ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+     39          // LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+     40          // CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+     41          // SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+     42          // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+     43          // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+     44          // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+     45          // POSSIBILITY OF SUCH DAMAGE.
+     46          //
+     47          // This is part of revision 2.5.1 of the AmbiqSuite Development Package.
+     48          //
+     49          //*****************************************************************************
+     50          
+     51          #include "am_util_debug.h"
+
+
+ 
+ 
+ 0 bytes of memory
+
+Errors: none
+Warnings: none

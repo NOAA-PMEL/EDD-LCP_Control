@@ -1,0 +1,445 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         23/Aug/2021  13:04:38
+# Copyright 1999-2020 IAR Systems AB.
+#
+#    Cpu mode             
+#    Endian            =  little
+#    Source file       =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\src\bsp\bsp_uart.c
+#    Command line      =
+#        -f C:\Users\casari\AppData\Local\Temp\1\EW7DE1.tmp
+#        ("C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\src\bsp\bsp_uart.c" -D iar -D
+#        AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D AM_DEBUG_PRINTF -D
+#        AM_UTIL_FAULTISR_PRINT -lcN "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --diag_suppress Pa050 -o
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --no_clustering --no_scheduling
+#        --debug --endian=little --cpu=Cortex-M4 --no_path_in_file_macros -e
+#        --fpu=VFPv4_sp --dlib_config "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.4\arm\inc\c\DLib_Config_Normal.h" -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\include\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\AmbiqMicro\Include\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\\ -I "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\\" -I
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\RTOS\\" -I
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\bsp\\" -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\boards\apollo3_evb\bsp\\ -I
+#        $PROJ_DIR\src\RTOS\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -Ol)
+#    Locale            =  C
+#    List file         =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\bsp_uart.lst
+#    Object file       =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\bsp_uart.o
+#    Runtime model:       
+#      __SystemLibrary =  DLib
+#      __dlib_version  =  6
+#
+###############################################################################
+
+C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\src\bsp\bsp_uart.c
+      1          #include "am_bsp.h"
+      2          #include "am_util.h"
+      3          #include "MAX14830.h"
+      4          
+      5          #include "bsp_uart.h"
+      6          
+      7          #define MAX_UART_PACKET_SIZE        ( 256 )
+      8          uint8_t g_pui8UARTTXBuffer[MAX_UART_PACKET_SIZE];
+      9          void *g_pvLOG;
+     10          static am_hal_uart_config_t sUartConfig =
+     11              {
+     12                  //
+     13                  // Standard UART settings: 115200-8-N-1
+     14                  //
+     15                  .ui32BaudRate    = 115200,
+     16                  .ui32DataBits    = AM_HAL_UART_DATA_BITS_8,
+     17                  .ui32Parity      = AM_HAL_UART_PARITY_NONE,
+     18                  .ui32StopBits    = AM_HAL_UART_ONE_STOP_BIT,
+     19                  .ui32FlowControl = AM_HAL_UART_FLOW_CTRL_NONE,
+     20          
+     21                  //
+     22                  // Set TX and RX FIFOs to interrupt at three-quarters full.
+     23                  //
+     24                  .ui32FifoLevels = (AM_HAL_UART_TX_FIFO_3_4 |
+     25                                     AM_HAL_UART_RX_FIFO_3_4),
+     26          
+     27                  //
+     28                  // This code will use the standard interrupt handling for UART TX, but
+     29                  // we will have a custom routine for UART RX.
+     30                  //
+     31                  .pui8TxBuffer = g_pui8UARTTXBuffer,
+     32                  .ui32TxBufferSize = sizeof(g_pui8UARTTXBuffer),
+     33                  .pui8RxBuffer = 0,
+     34                  .ui32RxBufferSize = 0,
+     35              };
+     36          
+     37          void bsp_uart_init(void)
+     38          {
+     39              /** Init All MAX1430 COM ports */
+     40              MAX14830_init();
+     41              
+     42          
+     43              /** Init all HAL COM ports */
+     44              am_hal_uart_initialize(0, &g_pvLOG);
+     45              am_hal_uart_power_control(g_pvLOG, AM_HAL_SYSCTRL_WAKE, false);
+     46              am_hal_uart_configure(g_pvLOG, &sUartConfig);
+     47              am_hal_gpio_pinconfig(BSP_UART_CONSOLE_TX, g_LCP_BSP_UART_CONSOLE_TX);
+     48              am_hal_gpio_pinconfig(BSP_UART_CONSOLE_RX, g_LCP_BSP_UART_CONSOLE_RX);
+     49          
+     50              /** Start the RTOS tasks? */
+     51          }
+     52          
+     53          void bsp_uart_enable(e_uart_t port)
+     54          {
+     55              switch(port)
+     56              {
+     57                  case BSP_UART_COM0:
+     58                      MAX14830_enable(MAX14830_COM_PORT0);
+     59                      break;
+     60                  case BSP_UART_COM1:
+     61                      MAX14830_enable(MAX14830_COM_PORT1);
+     62                      break;
+     63                  case BSP_UART_COM2:
+     64                      MAX14830_enable(MAX14830_COM_PORT2);
+     65                      break;
+     66                  case BSP_UART_COM3:
+     67                      MAX14830_enable(MAX14830_COM_PORT3);
+     68                      break;
+     69                  case BSP_UART_LOG:
+     70          //            sUartConfig.ui32BaudRate = baudrate;
+     71          //            am_hal_uart_configure(g_pvLOG, &sUartConfig);
+     72                      break;
+     73                  case BSP_UART_DEBUG:
+     74                      break;
+     75                  default:
+     76                      break;
+     77              }
+     78          }
+     79          
+     80          void bsp_uart_diable(e_uart_t port)
+     81          {
+     82              switch(port)
+     83              {
+     84                  case BSP_UART_COM0:
+     85                      MAX14830_disable(MAX14830_COM_PORT0);
+     86                      break;
+     87                  case BSP_UART_COM1:
+     88                      MAX14830_disable(MAX14830_COM_PORT1);
+     89                      break;
+     90                  case BSP_UART_COM2:
+     91                      MAX14830_disable(MAX14830_COM_PORT2);
+     92                      break;
+     93                  case BSP_UART_COM3:
+     94                      MAX14830_disable(MAX14830_COM_PORT3);
+     95                      break;
+     96                  case BSP_UART_LOG:
+     97          //            sUartConfig.ui32BaudRate = baudrate;
+     98          //            am_hal_uart_configure(g_pvLOG, &sUartConfig);
+     99                      break;
+    100                  case BSP_UART_DEBUG:
+    101                      break;
+    102                  default:
+    103                      break;
+    104              }
+    105          }
+    106          
+    107          void bsp_uart_low_power(e_uart_t port)
+    108          {
+    109              switch(port)
+    110              {
+    111                  case BSP_UART_COM0:
+    112                      break;
+    113                  case BSP_UART_COM1:
+    114                      break;
+    115                  case BSP_UART_COM2:
+    116                      break;
+    117                  case BSP_UART_COM3:
+    118                      break;
+    119                  case BSP_UART_LOG:
+    120          //            sUartConfig.ui32BaudRate = baudrate;
+    121          //            am_hal_uart_power_control(g_pvLOG, AM_HAL_SYSCTRL_DEEPSLEEP, true);
+    122                      break;
+    123                  case BSP_UART_DEBUG:
+    124                      break;
+    125                  default:
+    126                      break;
+    127              }
+    128          }
+    129          
+    130          void bsp_uart_set_baudrate(e_uart_t port, uint32_t baudrate )
+    131          {
+    132              switch(port)
+    133              {
+    134                  case BSP_UART_COM0:
+    135                      MAX14830_Set_baudrate(MAX14830_COM_PORT0, (eMAX14830_Baudrate_t)baudrate);
+    136                      break;
+    137                  case BSP_UART_COM1:
+    138                      MAX14830_Set_baudrate(MAX14830_COM_PORT1, (eMAX14830_Baudrate_t)baudrate);
+    139                      break;
+    140                  case BSP_UART_COM2:
+    141                      MAX14830_Set_baudrate(MAX14830_COM_PORT2, (eMAX14830_Baudrate_t)baudrate);
+    142                      break;
+    143                  case BSP_UART_COM3:
+    144                      MAX14830_Set_baudrate(MAX14830_COM_PORT3, (eMAX14830_Baudrate_t)baudrate);
+    145                      break;
+    146                  case BSP_UART_LOG:
+    147                      sUartConfig.ui32BaudRate = baudrate;
+    148                      am_hal_uart_configure(g_pvLOG, &sUartConfig);
+    149                      break;
+    150                  case BSP_UART_DEBUG:
+    151                      break;
+    152                  default:
+    153                      break;
+    154              }
+    155          }
+    156          
+    157          void bsp_uart_putc(e_uart_t port, char c)
+    158          {
+    159              uint32_t numTx = 0;
+    160              am_hal_uart_transfer_t tx = {
+    161                          .ui32Direction = AM_HAL_UART_WRITE,
+    162                          .pui8Data = (uint8_t*)&c,
+    163                          .ui32NumBytes = 1,
+    164                          .ui32TimeoutMs = 0,
+    165                          .pui32BytesTransferred = &numTx,
+    166                      };
+    167              switch(port)
+    168              {
+    169                  case BSP_UART_COM0:
+    170                      MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+    171                      break;
+    172                  case BSP_UART_COM1:
+    173                      MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+    174                      break;
+    175                  case BSP_UART_COM2:
+    176                      MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+    177                      break;
+    178                  case BSP_UART_COM3:
+    179                      MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+    180                      break;
+    181                  case BSP_UART_LOG:
+    182                      
+    183                      
+    184                      am_hal_uart_transfer(g_pvLOG, &tx);
+    185                      break;
+    186                  case BSP_UART_DEBUG:
+    187                      break;
+    188                  default:
+    189                      break;
+    190              }
+    191          }
+    192          
+    193          void bsp_uart_puts(e_uart_t port, char *pStr, uint32_t len)
+    194          {
+    195              uint32_t numTx = 0;
+    196              am_hal_uart_transfer_t tx = {
+    197                  .ui32Direction = AM_HAL_UART_WRITE,
+    198                  .pui8Data = (uint8_t*) pStr,
+    199                  .ui32NumBytes = len,
+    200                  .ui32TimeoutMs = 0,
+    201                  .pui32BytesTransferred = &numTx
+    202              };
+    203              switch(port)
+    204              {
+    205                  case BSP_UART_COM0:
+    206                      MAX14830_UART_Write_direct(MAX14830_COM_PORT0, pStr, len);
+    207                      break;
+    208                  case BSP_UART_COM1:
+    209                      MAX14830_UART_Write_direct(MAX14830_COM_PORT0, pStr, len);
+    210                      break;
+    211                  case BSP_UART_COM2:
+    212                      MAX14830_UART_Write_direct(MAX14830_COM_PORT0, pStr, len);
+    213                      break;
+    214                  case BSP_UART_COM3:
+    215                      MAX14830_UART_Write_direct(MAX14830_COM_PORT0, pStr, len);
+    216                      break;
+    217                  case BSP_UART_LOG:
+    218                      
+    219                      am_hal_uart_transfer(g_pvLOG, &tx);
+    220                      break;
+    221                  case BSP_UART_DEBUG:
+    222                      break;
+    223                  default:
+    224                      break;
+    225              }
+    226          }
+    227          
+    228          char bsp_uart_getc(e_uart_t port)
+    229          {
+    230              char c = NULL;
+    231              uint32_t numTx = 0;
+    232              am_hal_uart_transfer_t tx = {
+    233                  .ui32Direction = AM_HAL_UART_READ,
+    234                  .pui8Data = (uint8_t*)&c,
+    235                  .ui32NumBytes = 1,
+    236                  .ui32TimeoutMs = 0,
+    237                  .pui32BytesTransferred = &numTx
+    238              };
+    239              switch(port)
+    240              {
+    241                  case BSP_UART_COM0:
+    242                      MAX14830_UART_Read(MAX14830_COM_PORT0, &c, 1);
+    243                      break;
+    244                  case BSP_UART_COM1:
+    245                      MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+    246                      break;
+    247                  case BSP_UART_COM2:
+    248                      MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+    249                      break;
+    250                  case BSP_UART_COM3:
+    251                      MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+    252                      break;
+    253                  case BSP_UART_LOG:
+    254                      
+    255                      am_hal_uart_transfer(g_pvLOG, &tx);
+    256                      break;
+    257                  case BSP_UART_DEBUG:
+    258                      break;
+    259                  default:
+    260                      break;
+    261              }
+    262          
+    263              return (char) c;
+    264          }
+    265          
+    266          uint32_t bsp_uart_gets(e_uart_t port, char *pStr, uint32_t len)
+    267          {
+    268              uint32_t rxLen = 0;
+    269              am_hal_uart_transfer_t tx = {
+    270                  .ui32Direction = AM_HAL_UART_READ,
+    271                  .pui8Data = (uint8_t*)pStr,
+    272                  .ui32NumBytes = 1,
+    273                  .ui32TimeoutMs = 0,
+    274                  .pui32BytesTransferred = &rxLen
+    275              };
+    276              char c = NULL;
+    277              switch(port)
+    278              {
+    279                  case BSP_UART_COM0:
+    280                      rxLen = MAX14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
+    281                      break;
+    282                  case BSP_UART_COM1:
+    283                      rxLen = MAX14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
+    284                      break;
+    285                  case BSP_UART_COM2:
+    286                      rxLen = MAX14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
+    287                      break;
+    288                  case BSP_UART_COM3:
+    289                      rxLen = MAX14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
+    290                      break;
+    291                  case BSP_UART_LOG:
+    292                      
+    293                      am_hal_uart_transfer(g_pvLOG, &tx);
+    294                      break;
+    295                  case BSP_UART_DEBUG:
+    296                      break;
+    297                  default:
+    298                      break;
+    299              }
+    300          
+    301              return c;
+    302          }
+    303          
+    304          
+    305          void BSP_UART_Test(void)
+    306          {
+    307            char data[256];
+    308            
+    309            MAX14830_UART_Read_direct(MAX14830_COM_PORT0, data, 256);
+    310            
+    311          }
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+     264   BSP_UART_Test
+       264   -> MAX14830_UART_Read_direct
+       8   bsp_uart_diable
+         8   -> MAX14830_disable
+       8   bsp_uart_enable
+         8   -> MAX14830_enable
+      40   bsp_uart_getc
+        40   -> MAX14830_UART_Read
+        40   -> MAX14830_UART_Write
+        40   -> __aeabi_memcpy4
+        40   -> am_hal_uart_transfer
+      48   bsp_uart_gets
+        48   -> MAX14830_UART_Read
+        48   -> __aeabi_memcpy4
+        48   -> am_hal_uart_transfer
+       8   bsp_uart_init
+         8   -> MAX14830_init
+         8   -> am_hal_gpio_pinconfig
+         8   -> am_hal_uart_configure
+         8   -> am_hal_uart_initialize
+         8   -> am_hal_uart_power_control
+       0   bsp_uart_low_power
+      40   bsp_uart_putc
+        40   -> MAX14830_UART_Write
+        40   -> __aeabi_memcpy4
+        40   -> am_hal_uart_transfer
+      40   bsp_uart_puts
+        40   -> MAX14830_UART_Write_direct
+        40   -> __aeabi_memclr4
+        40   -> am_hal_uart_transfer
+       8   bsp_uart_set_baudrate
+         8   -> MAX14830_Set_baudrate
+         8   -> am_hal_uart_configure
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable5
+       4  ??DataTable5_1
+       4  ??DataTable5_2
+       4  ??DataTable5_3
+       4  ??DataTable5_4
+       4  ??DataTable5_5
+       4  ??DataTable5_6
+      20  ?_0
+      20  ?_1
+      20  ?_2
+      20  ?_3
+      20  BSP_UART_Test
+      68  bsp_uart_diable
+      68  bsp_uart_enable
+     132  bsp_uart_getc
+     138  bsp_uart_gets
+      64  bsp_uart_init
+      42  bsp_uart_low_power
+     122  bsp_uart_putc
+     124  bsp_uart_puts
+      82  bsp_uart_set_baudrate
+     256  g_pui8UARTTXBuffer
+       4  g_pvLOG
+      40  sUartConfig
+
+ 
+ 260 bytes in section .bss
+  40 bytes in section .data
+  80 bytes in section .rodata
+ 888 bytes in section .text
+ 
+ 888 bytes of CODE  memory
+  80 bytes of CONST memory
+ 300 bytes of DATA  memory
+
+Errors: none
+Warnings: none

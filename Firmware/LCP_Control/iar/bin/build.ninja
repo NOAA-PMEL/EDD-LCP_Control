@@ -1,0 +1,54 @@
+#Generating source browse information for project freertos_lowpower
+
+
+#Abbreviations
+cc = C$:\Program$ Files$ (x86)\IAR$ Systems\Embedded$ Workbench$ 8.4\common\bin\SourceIndexer.exe
+ll = C$:\Program$ Files$ (x86)\IAR$ Systems\Embedded$ Workbench$ 8.4\common\bin\PbdLink.exe
+bd = C$:\Program$ Files$ (x86)\IAR$ Systems\Embedded$ Workbench$ 8.4\common\bin\makeBrowseData.exe
+
+
+
+#Rules
+rule index
+  depfile = $out.dep
+  command = $cc -out=$out -f $in
+rule link
+  command = $ll -M $out $in
+rule browsedata
+  command = $bd $in -output  $out
+
+
+
+#Build steps
+build am_devices_button.pbi : index am_devices_button.xcl
+build am_devices_led.pbi : index am_devices_led.xcl
+build am_util_debug.pbi : index am_util_debug.xcl
+build am_util_delay.pbi : index am_util_delay.xcl
+build am_util_faultisr.pbi : index am_util_faultisr.xcl
+build am_util_stdio.pbi : index am_util_stdio.xcl
+build am_bsp.pbi : index am_bsp.xcl
+build am_bsp_pins.pbi : index am_bsp_pins.xcl
+build bsp_uart.pbi : index bsp_uart.xcl
+build event_groups.pbi : index event_groups.xcl
+build heap_2.pbi : index heap_2.xcl
+build list.pbi : index list.xcl
+build port.pbi : index port.xcl
+build queue.pbi : index queue.xcl
+build rtos.pbi : index rtos.xcl
+build tasks.pbi : index tasks.xcl
+build timers.pbi : index timers.xcl
+build buffer_c.pbi : index buffer_c.xcl
+build LED.pbi : index LED.xcl
+build MAX14830.pbi : index MAX14830.xcl
+build S9_temp.pbi : index S9_temp.xcl
+build main.pbi : index main.xcl
+build startup_iar.pbi : index startup_iar.xcl
+build freertos_lowpower_part0.pbi : link am_devices_button.pbi am_devices_led.pbi am_util_debug.pbi am_util_delay.pbi am_util_faultisr.pbi
+build freertos_lowpower_part1.pbi : link am_util_stdio.pbi am_bsp.pbi am_bsp_pins.pbi bsp_uart.pbi event_groups.pbi
+build freertos_lowpower_part2.pbi : link heap_2.pbi list.pbi port.pbi queue.pbi rtos.pbi
+build freertos_lowpower_part3.pbi : link tasks.pbi timers.pbi buffer_c.pbi LED.pbi MAX14830.pbi
+build freertos_lowpower_part4.pbi : link S9_temp.pbi main.pbi startup_iar.pbi
+build freertos_lowpower.pbd : link freertos_lowpower_part0.pbi freertos_lowpower_part1.pbi freertos_lowpower_part2.pbi freertos_lowpower_part3.pbi freertos_lowpower_part4.pbi
+build freertos_lowpower.pbw : browsedata freertos_lowpower.pbd
+
+

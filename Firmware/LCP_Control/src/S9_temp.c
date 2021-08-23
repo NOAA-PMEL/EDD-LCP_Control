@@ -14,44 +14,129 @@
  *  @bug  No known bugs
  */
 #include "S9_temp.h"
+#include "bsp_uart.h"
+//*****************************************************************************
+//
+// Required built-ins.
+//
+//*****************************************************************************
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
+#include <assert.h>
+
+//*****************************************************************************
+//
+// Standard AmbiqSuite includes.
+//
+//*****************************************************************************
+#include "am_mcu_apollo.h"
+#include "am_bsp.h"
+#include "am_util.h"
+
+//*****************************************************************************
+//
+// FreeRTOS include files.
+//
+//*****************************************************************************
+#include "FreeRTOS.h"
+#include "task.h"
+#include "event_groups.h"
+#include "semphr.h"
 
 
+//*****************************************************************************
+//
+// Project Files
+//
+//*****************************************************************************
+#include "am_bsp_pins.h"
+#include "bsp_uart.h"
+#include "MAX14830.h"
+
+static sS9_t s9;
+static sS9_t *pS9 = &s9;
 
 
-
-
-void S9T_init(void)
+void S9T_init( const e_uart_t port, const am_hal_gpio_pincfg_t *power, const uint32_t power_pin)
 {
 
+  assert(
+          (port == BSP_UART_COM0) ||
+          (port == BSP_UART_COM1) ||
+          (port == BSP_UART_COM2) ||
+          (port == BSP_UART_COM3)
+            
+         );
+
+  /** Default Buadrate */
+  pS9->device.uart.baudrate = 9600;
+  
+  /** Attach values to struct */
+  pS9->device.power.pin = (am_hal_gpio_pincfg_t*)power;
+  pS9->device.power.pin_number = (uint32_t)power_pin;
+
+  pS9->device.uart.port = port;
+
+  /** Initialize the COM Port Power Pin */
+  am_hal_gpio_pinconfig(pS9->device.power.pin_number, *pS9->device.power.pin);// g_LCP_BSP_COM0_POWER_ON);
+  S9T_OFF();
+  
+  /** Initialize the COM Port UART */
+  bsp_uart_init();
+  bsp_uart_set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
+    
+}
+
+void S9T_enable(void)
+{
+  /** Enable the Power Pin */
+  S9T_ON();
+  
+}
+
+void S9T_disable(void)
+{
+  /** Disable the Power Pin */
+  S9T_OFF();
+  
 }
 
 
 void S9T_ON(void)
 {
-
+  am_hal_gpio_output_clear(pS9->device.power.pin_number);
 }
 
 
 void S9T_OFF(void)
 {
-
+  am_hal_gpio_output_set(pS9->device.power.pin_number);
 }
 
 
 float S9T_Read_T(void)
 {
-
+  float t;
+  S9T_Read(&t, NULL);
+  return t;
 }
 
 
 float S9T_Read_R(void)
 {
-
+  float r;
+  S9T_Read(NULL, &r);
+  return r;
 }
 
 float S9T_Read(float *t, float *r)
 {
-
+  bsp_uart_puts(pS9->device.uart.port, "SAMPLE\r", 7);
+  char sampleStr[256];
+//  bsp_uart_gets(pS9->device.uart.port, sampleStr, 256);
+  return 0;
 }
 
 /** @brief Parse S9 Temperature response
@@ -172,7 +257,7 @@ STATIC void _parse_version(char *data, sS9_t *p )
     tok = strtok(NULL, "\r");
     
     uint8_t len = strlen(tok);
-    uint8_t sub_val = 0;
+//    uint8_t sub_val = 0;
     uint8_t temp_hex[32];
     memset(temp,0,32);
 

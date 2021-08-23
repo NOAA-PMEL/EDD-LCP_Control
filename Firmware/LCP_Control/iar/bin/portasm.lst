@@ -1,0 +1,229 @@
+###############################################################################
+#                                                                             #
+#     IAR Assembler V8.50.9.278/W32 for ARM 23/Aug/2021  11:48:17             #
+#     Copyright 1999-2020 IAR Systems AB.                                     #
+#                                                                             #
+#           Source file   =  C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\portasm.s#
+#           List file     =  C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\bin\portasm.lst#
+#           Object file   =  C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\bin\portasm.o#
+#           Command line  =  -f                                               #
+#                            C:\Users\casari\AppData\Local\Temp\1\EW9589.tmp  #
+#                            (C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\portasm.s #
+#                            -OC:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\bin #
+#                            -s+ -M<> -w+ -r                                  #
+#                            -LC:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\bin #
+#                            -t8 --cpu Cortex-M4 --fpu VFPv4_sp               #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\include\\ #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\AmbiqMicro\Include\\ #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\ #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\\             #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices\\     #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\\       #
+#                            -IC:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\\ #
+#                            -IC:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\bsp\\ #
+#                            -IC:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\RTOS\\ #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\ #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\boards\apollo3_evb\bsp\\ #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\boards\apollo3_evb\bsp\iar\bin\\) #
+#                                                                             #
+###############################################################################
+
+    1                           /*
+    2                            * FreeRTOS Kernel V10.1.1
+    3                            * Copyright (C) 2018 Amazon.com, Inc. or its
+                                 affiliates.  All Rights Reserved.
+    4                            *
+    5                            * Permission is hereby granted, free of
+                                 charge, to any person obtaining a copy
+                                 of
+    6                            * this software and associated documentation
+                                 files (the "Software"), to deal in
+    7                            * the Software without restriction, including
+                                 without limitation the rights to
+    8                            * use, copy, modify, merge, publish,
+                                 distribute, sublicense, and/or sell copies
+                                 of
+    9                            * the Software, and to permit persons to whom
+                                 the Software is furnished to do so,
+   10                            * subject to the following conditions:
+   11                            *
+   12                            * The above copyright notice and this
+                                 permission notice shall be included in
+                                 all
+   13                            * copies or substantial portions of the
+                                 Software.
+   14                            *
+   15                            * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT
+                                 WARRANTY OF ANY KIND, EXPRESS OR
+   16                            * IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+                                 WARRANTIES OF MERCHANTABILITY, FITNESS
+   17                            * FOR A PARTICULAR PURPOSE AND NONINFRINGEMEN
+                                T. IN NO EVENT SHALL THE AUTHORS OR
+   18                            * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+                                 DAMAGES OR OTHER LIABILITY, WHETHER
+   19                            * IN AN ACTION OF CONTRACT, TORT OR
+                                 OTHERWISE, ARISING FROM, OUT OF OR IN
+   20                            * CONNECTION WITH THE SOFTWARE OR THE USE OR
+                                 OTHER DEALINGS IN THE SOFTWARE.
+   21                            *
+   22                            * http://www.FreeRTOS.org
+   23                            * http://aws.amazon.com/freertos
+   24                            *
+   25                            * 1 tab == 4 spaces!
+   26                            */
+   27                           
+   28                           #include <FreeRTOSConfig.h>
+   29                           
+   30                                   RSEG    CODE:CODE(2)
+   31                                   thumb
+   32                           
+   33                                   EXTERN pxCurrentTCB
+   34                                   EXTERN vTaskSwitchContext
+   35                           
+   36                                   PUBLIC xPortPendSVHandler
+   37                                   PUBLIC vPortSVCHandler
+   38                                   PUBLIC vPortStartFirstTask
+   39                                   PUBLIC vPortEnableVFP
+   40                           
+   41                           
+   42                           /*--------------------------------------------
+                                ---------------*/
+   43                           
+   44                           xPortPendSVHandler:
+   45    00000000 EFF30980              mrs r0, psp
+   46    00000004 BFF36F8F              isb
+   47                                   /* Get the location of the current
+                                 TCB. */
+   48    00000008 264B                  ldr     r3, =pxCurrentTCB
+   49    0000000A 1A68                  ldr     r2, [r3]
+   50                           
+   51                                   /* Is the task using the FPU context? 
+                                 If so, push high vfp registers. */
+   52    0000000C 1EF0100F              tst r14, #0x10
+   53    00000010 08BF                  it eq
+   54    00000012 20ED108A              vstmdbeq r0!, {s16-s31}
+   55                           
+   56                                   /* Save the core registers. */
+   57    00000016 20E9F04F              stmdb r0!, {r4-r11, r14}
+   58                           
+   59                                   /* Save the new top of stack into the
+                                 first member of the TCB. */
+   60    0000001A 1060                  str r0, [r2]
+   61                           
+   62    0000001C 09B4                  stmdb sp!, {r0, r3}
+   63    0000001E 4FF08000              mov r0, #configMAX_SYSCALL_INTERRUPT_PR
+                                                 IORITY
+   64    00000022 80F31188              msr basepri, r0
+   65    00000026 BFF34F8F              dsb
+   66    0000002A BFF36F8F              isb
+   67    0000002E ........              bl vTaskSwitchContext
+   68    00000032 4FF00000              mov r0, #0
+   69    00000036 80F31188              msr basepri, r0
+   70    0000003A 09BC                  ldmia sp!, {r0, r3}
+   71                           
+   72                                   /* The first item in pxCurrentTCB is
+                                 the task top of stack. */
+   73    0000003C 1968                  ldr r1, [r3]
+   74    0000003E 0868                  ldr r0, [r1]
+   75                           
+   76                                   /* Pop the core registers. */
+   77    00000040 B0E8F04F              ldmia r0!, {r4-r11, r14}
+   78                           
+   79                                   /* Is the task using the FPU context? 
+                                 If so, pop the high vfp registers
+   80                                   too. */
+   81    00000044 1EF0100F              tst r14, #0x10
+   82    00000048 08BF                  it eq
+   83    0000004A B0EC108A              vldmiaeq r0!, {s16-s31}
+   84                           
+   85    0000004E 80F30988              msr psp, r0
+   86    00000052 BFF36F8F              isb
+   87                                   #ifdef WORKAROUND_PMU_CM001 /* XMC4000
+                                 specific errata */
+   88                                           #if WORKAROUND_PMU_CM001 ==
+                                 1
+   91                                           #endif
+   92                                   #endif
+   93                           
+   94    00000056 7047                  bx r14
+   95                           
+   96                           
+   97                           /*--------------------------------------------
+                                ---------------*/
+   98                           
+   99                           vPortSVCHandler:
+  100                                   /* Get the location of the current
+                                 TCB. */
+  101    00000058 124B                  ldr     r3, =pxCurrentTCB
+  102    0000005A 1968                  ldr r1, [r3]
+  103    0000005C 0868                  ldr r0, [r1]
+  104                                   /* Pop the core registers. */
+  105    0000005E B0E8F04F              ldmia r0!, {r4-r11, r14}
+  106    00000062 80F30988              msr psp, r0
+  107    00000066 BFF36F8F              isb
+  108    0000006A 4FF00000              mov r0, #0
+  109    0000006E 80F31188              msr     basepri, r0
+  110    00000072 7047                  bx r14
+  111                           
+  112                           /*--------------------------------------------
+                                ---------------*/
+  113                           
+  114                           vPortStartFirstTask
+  115                                   /* Use the NVIC offset register to
+                                 locate the stack. */
+  116    00000074 0C48                  ldr r0, =0xE000ED08
+  117    00000076 0068                  ldr r0, [r0]
+  118    00000078 0068                  ldr r0, [r0]
+  119                                   /* Set the msp back to the start of
+                                 the stack. */
+  120    0000007A 80F30888              msr msp, r0
+  121                                   /* Clear the bit that indicates the
+                                 FPU is in use in case the FPU was used
+  122                                   before the scheduler was started -
+                                 which would otherwise result in the
+  123                                   unnecessary leaving of space in the
+                                 SVC stack for lazy saving of FPU
+  124                                   registers. */
+  125    0000007E 4FF00000              mov r0, #0
+  126    00000082 80F31488              msr control, r0
+  127                                   /* Call SVC to start the first task.
+                                 */
+  128    00000086 62B6                  cpsie i
+  129    00000088 61B6                  cpsie f
+  130    0000008A BFF34F8F              dsb
+  131    0000008E BFF36F8F              isb
+  132    00000092 00DF                  svc 0
+  133                           
+  134                           /*--------------------------------------------
+                                ---------------*/
+  135                           
+  136                           vPortEnableVFP:
+  137                                   /* The FPU enable bits are in the
+                                 CPACR. */
+  138    00000094 DFF81400              ldr.w r0, =0xE000ED88
+  139    00000098 0168                  ldr     r1, [r0]
+  140                           
+  141                                   /* Enable CP10 and CP11 coprocessors,
+                                 then save back. */
+  142    0000009A 41F47001              orr     r1, r1, #( 0xf << 20 )
+  143    0000009E 0160                  str r1, [r0]
+  144    000000A0 7047                  bx      r14
+  145                           
+  146                           
+  147                           
+  147.1                                  TABLE
+  147.2  000000A4 ........              Reference on line 48,101
+  147.3  000000A8 08ED00E0              Reference on line 116
+  147.4  000000AC 88ED00E0              Reference on line 138
+  148                                   END
+##############################
+#           CRC:0            #
+#        Errors:   0         #
+#        Warnings: 0         #
+#         Bytes: 176         #
+##############################
+
+
+
+

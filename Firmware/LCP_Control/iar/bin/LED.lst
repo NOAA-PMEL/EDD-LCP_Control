@@ -1,0 +1,273 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         23/Aug/2021  11:53:25
+# Copyright 1999-2020 IAR Systems AB.
+#
+#    Cpu mode                        
+#    Endian                       =  little
+#    Source file                  =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\src\LED.c
+#    Command line                 =
+#        -f C:\Users\casari\AppData\Local\Temp\1\EW47F1.tmp
+#        ("C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\src\LED.c" -D iar -D
+#        AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D AM_DEBUG_PRINTF -D
+#        AM_UTIL_FAULTISR_PRINT -lcN "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --diag_suppress Pa050 -o
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --no_clustering --no_scheduling
+#        --debug --endian=little --cpu=Cortex-M4 --no_path_in_file_macros -e
+#        --fpu=VFPv4_sp --dlib_config "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.4\arm\inc\c\DLib_Config_Normal.h" -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\include\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\AmbiqMicro\Include\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\\ -I "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\\" -I
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\RTOS\\" -I
+#        "C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\bsp\\" -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\boards\apollo3_evb\bsp\\ -I
+#        $PROJ_DIR\src\RTOS\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -Ol)
+#    Locale                       =  C
+#    List file                    =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\LED.lst
+#    Object file                  =
+#        C:\Sandbox\Ambiq\Apollo 3
+#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\LED.o
+#    Runtime model:                  
+#      __SystemLibrary            =  DLib
+#      __dlib_full_locale_support =  0
+#      __dlib_version             =  6
+#
+###############################################################################
+
+C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\src\LED.c
+      1          //#include "freertos_lowpower.h"
+      2          #include "FreeRTOS.h"
+      3          #include "main.h"
+      4          #include <assert.h>
+      5          //#include "LED.h"
+      6          //#include "am_devices_led.h"
+      7          //#include "am_bsp_pins.h"
+      8          
+      9          
+     10          const am_devices_led_t LED[3] = {
+     11            {
+     12              .ui32GPIONumber   = BSP_GPIO_LED1,
+     13              .ui32Polarity     = AM_DEVICES_LED_ON_LOW,
+     14            },
+     15            {
+     16              .ui32GPIONumber   = BSP_GPIO_LED2,
+     17              .ui32Polarity     = AM_DEVICES_LED_ON_LOW
+     18            },
+     19            {
+     20              .ui32GPIONumber   = BSP_GPIO_LED3,
+     21              .ui32Polarity     = AM_DEVICES_LED_ON_LOW
+     22            }   
+     23            
+     24          };
+     25          const am_devices_led_t *psLED = &LED[0];
+     26          
+     27          TaskHandle_t green_led_task_handle;
+     28          TaskHandle_t blue_led_task_handle;
+     29          
+     30          SemaphoreHandle_t xLedMutex = NULL;
+     31          StaticSemaphore_t xLedSemaphoreBuffer;
+     32          
+     33          const TickType_t xDelay1ms = pdMS_TO_TICKS( 1UL );
+     34          const TickType_t xDelay5ms = pdMS_TO_TICKS( 5UL );
+     35          const TickType_t xDelay10ms = pdMS_TO_TICKS( 10UL );
+     36          const TickType_t xDelay50ms = pdMS_TO_TICKS( 50UL );
+     37          const TickType_t xDelay100ms = pdMS_TO_TICKS( 100UL );
+     38          const TickType_t xDelay250ms = pdMS_TO_TICKS( 250UL );
+     39          const TickType_t xDelay500ms = pdMS_TO_TICKS( 500UL );
+     40          
+     41          SemaphoreHandle_t xSemaphore = NULL;
+     42          
+     43          
+     44          void LED_Init(void)
+     45          {
+     46            
+     47              /** Create the Mutex */
+     48              xLedMutex = xSemaphoreCreateMutex( );
+     49              configASSERT(xLedMutex);
+     50              
+     51              /** Initialize the LED Array */
+     52              am_devices_led_array_init((am_devices_led_t*)psLED, 3);
+     53              
+     54              /** Enable the interrupts */
+     55              am_hal_interrupt_master_enable();
+     56              
+     57              
+     58              /** Toggle the LEDs ON for the heck of it*/
+     59              LED_Toggle(LED_GREEN);
+     60              LED_Toggle(LED_BLUE);
+     61              
+     62              /** Mutex is ready */
+     63              xSemaphoreGive(xLedMutex);
+     64              
+     65          }   
+     66          
+     67          
+     68          void LED_Toggle(eLED_t led)
+     69          {
+     70          
+     71            uint8_t led_num = 0;
+     72            switch(led)
+     73            {
+     74            case LED_RED:
+     75              led_num = 1;
+     76              break;
+     77            case LED_GREEN:
+     78              led_num = 0;
+     79              break;
+     80            case LED_BLUE:
+     81              led_num = 2;
+     82              break;
+     83            default:
+     84              break;
+     85            }  
+     86          
+     87            am_devices_led_toggle((am_devices_led_t*)psLED, led_num);
+     88            
+     89          }
+     90          
+     91          void LED_Off(eLED_t led)
+     92          {
+     93            uint8_t led_num = 0;
+     94            switch(led)
+     95            {
+     96            case LED_RED:
+     97              led_num = 1;
+     98              break;
+     99            case LED_GREEN:
+    100              led_num = 0;
+    101              break;
+    102            case LED_BLUE:
+    103              led_num = 2;
+    104              break;
+    105            default:
+    106              break;
+    107            }  
+    108          
+    109            am_devices_led_off((am_devices_led_t*)psLED, led_num);
+    110          }
+    111          
+    112          
+    113          void GreenLedTask(void *pvParameters)
+    114          {
+    115              uint32_t time_ms = (uint32_t) pvParameters;
+    116              TickType_t xLastWakeTime;
+    117              xLastWakeTime = xTaskGetTickCount();
+    118              while(true)
+    119              {
+    120                vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS( time_ms));
+    121                if(xSemaphoreTake(xLedMutex, xDelay5ms) == pdPASS)
+    122                {
+    123                  LED_Toggle(LED_GREEN);
+    124                  xSemaphoreGive(xLedMutex);
+    125                } else {
+    126                  
+    127                }
+    128                
+    129              }  
+    130          }
+    131          
+    132          
+    133          void BlueLedTask(void *pvParameters)
+    134          {
+    135            
+    136              uint32_t time_ms = (uint32_t) pvParameters;
+    137              TickType_t xLastWakeTime;
+    138              xLastWakeTime = xTaskGetTickCount();
+    139              while(true)
+    140              {
+    141                vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS( time_ms ));
+    142                if(xSemaphoreTake(xLedMutex, xDelay5ms) == pdPASS)
+    143                {
+    144                  LED_Toggle(LED_BLUE);
+    145                  xSemaphoreGive(xLedMutex);
+    146                } else {
+    147                  
+    148                }
+    149                
+    150              }  
+    151          }
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      16   BlueLedTask
+        16   -> LED_Toggle
+        16   -> vTaskDelayUntil
+        16   -> xQueueGenericSend
+        16   -> xQueueSemaphoreTake
+        16   -> xTaskGetTickCount
+      16   GreenLedTask
+        16   -> LED_Toggle
+        16   -> vTaskDelayUntil
+        16   -> xQueueGenericSend
+        16   -> xQueueSemaphoreTake
+        16   -> xTaskGetTickCount
+       8   LED_Init
+         8   -> LED_Toggle
+         8   -> am_devices_led_array_init
+         8   -> am_hal_interrupt_master_enable
+         8   -> xQueueCreateMutex
+         8   -> xQueueGenericSend
+       8   LED_Off
+         8   -> am_devices_led_off
+       8   LED_Toggle
+         8   -> am_devices_led_toggle
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable4
+       4  ??DataTable4_1
+       4  ??DataTable4_2
+      68  BlueLedTask
+      68  GreenLedTask
+      24  LED
+      60  LED_Init
+      42  LED_Off
+      42  LED_Toggle
+       4  blue_led_task_handle
+       4  green_led_task_handle
+       4  psLED
+       4  xDelay100ms
+       4  xDelay10ms
+       4  xDelay1ms
+       4  xDelay250ms
+       4  xDelay500ms
+       4  xDelay50ms
+       4  xDelay5ms
+       4  xLedMutex
+      72  xLedSemaphoreBuffer
+       4  xSemaphore
+
+ 
+  88 bytes in section .bss
+   4 bytes in section .data
+  52 bytes in section .rodata
+ 292 bytes in section .text
+ 
+ 292 bytes of CODE  memory
+  52 bytes of CONST memory
+  92 bytes of DATA  memory
+
+Errors: none
+Warnings: none
