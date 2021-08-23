@@ -66,7 +66,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.50.1.24770</state>
+                    <state>8.50.9.33458</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -266,7 +266,7 @@
                 </option>
                 <option>
                     <name>CCDiagSuppress</name>
-                    <state></state>
+                    <state>Pe177</state>
                 </option>
                 <option>
                     <name>CCDiagRemark</name>
@@ -354,11 +354,11 @@
                     <state>$PROJ_DIR$\inc</state>
                     <state>$PROJ_DIR$\src</state>
                     <state>$PROJ_DIR$\bsp</state>
-                    <state>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\mcu\apollo3\</state>
-                    <state>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\utils</state>
-                    <state>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\CMSIS\AmbiqMicro\Include</state>
-                    <state>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\CMSIS\ARM\Include</state>
-                    <state>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\devices</state>
+                    <state>$AMBIQ_DIR$\mcu\apollo3</state>
+                    <state>$AMBIQ_DIR$\utils</state>
+                    <state>$AMBIQ_DIR$\CMSIS\AmbiqMicro\Include</state>
+                    <state>$AMBIQ_DIR$\CMSIS\ARM\Include</state>
+                    <state>$AMBIQ_DIR$\devices</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -486,7 +486,7 @@
             <name>AARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>10</version>
+                <version>11</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -631,11 +631,11 @@
                     <state>$PROJ_DIR$\inc</state>
                     <state>$PROJ_DIR$\src</state>
                     <state>$PROJ_DIR$\bsp</state>
-                    <state>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\mcu\apollo3\</state>
-                    <state>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\utils</state>
-                    <state>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\CMSIS\AmbiqMicro\Include</state>
-                    <state>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\CMSIS\ARM\Include</state>
-                    <state>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\devices</state>
+                    <state>$AMBIQ_DIR$\mcu\apollo3\</state>
+                    <state>$AMBIQ_DIR$\utils</state>
+                    <state>$AMBIQ_DIR$\CMSIS\AmbiqMicro\Include</state>
+                    <state>$AMBIQ_DIR$\CMSIS\ARM\Include</state>
+                    <state>$AMBIQ_DIR$\devices</state>
                 </option>
                 <option>
                     <name>AExtraOptionsCheckV2</name>
@@ -648,6 +648,10 @@
                 <option>
                     <name>AsmNoLiteralPool</name>
                     <state>0</state>
+                </option>
+                <option>
+                    <name>PreInclude</name>
+                    <state></state>
                 </option>
             </data>
         </settings>
@@ -836,8 +840,8 @@
                 </option>
                 <option>
                     <name>IlinkAdditionalLibs</name>
-                    <state>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\mcu\apollo3\hal\iar\bin\libam_hal.a</state>
-                    <state>$PROJ_DIR$\bsp\iar\bin\libam_bsp.a</state>
+                    <state>$AMBIQ_DIR$\mcu\apollo3\hal\iar\bin\libam_hal.a</state>
+                    <state>$AMBIQ_DIR$\boards\apollo3_evb\bsp\iar\bin\libam_bsp.a</state>
                 </option>
                 <option>
                     <name>IlinkOverrideProgramEntryLabel</name>
@@ -1549,7 +1553,7 @@
             <name>AARM</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>10</version>
+                <version>11</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -1704,6 +1708,10 @@
                 <option>
                     <name>AsmNoLiteralPool</name>
                     <state>0</state>
+                </option>
+                <option>
+                    <name>PreInclude</name>
+                    <state></state>
                 </option>
             </data>
         </settings>
@@ -2128,22 +2136,349 @@
             <data />
         </settings>
     </configuration>
+    <group>
+        <name>ambiq</name>
+        <group>
+            <name>devices</name>
+            <file>
+                <name>$AMBIQ_DIR$\devices\am_devices_led.c</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\devices\am_devices_led.h</name>
+            </file>
+        </group>
+        <group>
+            <name>mcu</name>
+            <group>
+                <name>apollo3</name>
+                <group>
+                    <name>hal</name>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_adc.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_adc.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_ble.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_ble.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_ble_patch.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_ble_patch.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_ble_patch_b0.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_ble_patch_b0.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_burst.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_burst.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_cachectrl.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_cachectrl.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_clkgen.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_clkgen.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_cmdq.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_cmdq.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_ctimer.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_ctimer.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_debug.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_debug.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_flash.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_flash.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_global.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_global.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_gpio.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_gpio.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_interrupt.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_interrupt.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_iom.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_iom.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_ios.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_ios.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_itm.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_itm.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_mcuctrl.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_mcuctrl.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_mspi.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_mspi.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_pdm.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_pdm.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_pin.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_pwrctrl.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_pwrctrl.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_pwrctrl_internal.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_queue.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_queue.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_reset.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_reset.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_rtc.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_rtc.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_scard.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_scard.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_secure_ota.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_secure_ota.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_security.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_security.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_status.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_stimer.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_stimer.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_sysctrl.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_sysctrl.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_systick.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_systick.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_tpiu.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_tpiu.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_uart.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_uart.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_wdt.c</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\hal\am_hal_wdt.h</name>
+                    </file>
+                </group>
+                <group>
+                    <name>regs</name>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\regs\am_reg.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\regs\am_reg_base_addresses.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\regs\am_reg_iomstr_cmd.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\regs\am_reg_jedec.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\regs\am_reg_m4.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\regs\am_reg_macros.h</name>
+                    </file>
+                    <file>
+                        <name>$AMBIQ_DIR$\mcu\apollo3\regs\am_reg_macros_asm.h</name>
+                    </file>
+                </group>
+                <file>
+                    <name>$AMBIQ_DIR$\mcu\apollo3\am_mcu_apollo.h</name>
+                </file>
+            </group>
+        </group>
+        <group>
+            <name>utils</name>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util.h</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_ble.c</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_ble.h</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_debug.c</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_debug.h</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_delay.c</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_delay.h</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_faultisr.c</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_id.c</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_id.h</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_regdump.c</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_regdump.h</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_stdio.c</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_stdio.h</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_string.c</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_string.h</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_time.c</name>
+            </file>
+            <file>
+                <name>$AMBIQ_DIR$\utils\am_util_time.h</name>
+            </file>
+        </group>
+    </group>
+    <group>
+        <name>bsp</name>
+        <file>
+            <name>$PROJ_DIR$\bsp\am_bsp.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\bsp\am_bsp.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\bsp\am_bsp_pins.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\bsp\am_bsp_pins.h</name>
+        </file>
+    </group>
+    <group>
+        <name>src</name>
+        <file>
+            <name>$PROJ_DIR$\src\LED.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\LED.h</name>
+        </file>
+    </group>
     <file>
-        <name>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\utils\am_util_delay.c</name>
-    </file>
-    <file>
-        <name>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\utils\am_util_faultisr.c</name>
-    </file>
-    <file>
-        <name>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\utils\am_util_id.c</name>
-    </file>
-    <file>
-        <name>$PROJ_DIR$\..\..\..\AmbiqSuite-R2.4.2\utils\am_util_stdio.c</name>
+        <name>$PROJ_DIR$\src\fast_gpio.c</name>
+        <excluded>
+            <configuration>Debug</configuration>
+        </excluded>
     </file>
     <file>
         <name>$PROJ_DIR$\main.c</name>
-    </file>
-    <file>
-        <name>$PROJ_DIR$\startup_iar.c</name>
     </file>
 </project>
