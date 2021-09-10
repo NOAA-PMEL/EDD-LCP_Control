@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\common\bin\cspybat" -f "C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\settings\freertos_lowpower.Debug.general.xcl" --backend -f "C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\settings\freertos_lowpower.Debug.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\common\bin\cspybat" -f "C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\settings\freertos_lowpower.Debug.general.xcl" --backend -f "C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\settings\freertos_lowpower.Debug.driver.xcl" 
 }
 else
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\common\bin\cspybat" -f "C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\settings\freertos_lowpower.Debug.general.xcl" --debug_file=$debugfile --backend -f "C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\settings\freertos_lowpower.Debug.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\common\bin\cspybat" -f "C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\settings\freertos_lowpower.Debug.general.xcl" --debug_file=$debugfile --backend -f "C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\settings\freertos_lowpower.Debug.driver.xcl" 
 }

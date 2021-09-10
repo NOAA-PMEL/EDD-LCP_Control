@@ -20,12 +20,52 @@ rule browsedata
 
 
 #Build steps
+build am_hal_adc.pbi : index am_hal_adc.xcl
+build am_hal_ble.pbi : index am_hal_ble.xcl
+build am_hal_ble_patch.pbi : index am_hal_ble_patch.xcl
+build am_hal_ble_patch_b0.pbi : index am_hal_ble_patch_b0.xcl
+build am_hal_burst.pbi : index am_hal_burst.xcl
+build am_hal_cachectrl.pbi : index am_hal_cachectrl.xcl
+build am_hal_clkgen.pbi : index am_hal_clkgen.xcl
+build am_hal_cmdq.pbi : index am_hal_cmdq.xcl
+build am_hal_ctimer.pbi : index am_hal_ctimer.xcl
+build am_hal_debug.pbi : index am_hal_debug.xcl
+build am_hal_flash.pbi : index am_hal_flash.xcl
+build am_hal_global.pbi : index am_hal_global.xcl
+build am_hal_gpio.pbi : index am_hal_gpio.xcl
+build am_hal_interrupt.pbi : index am_hal_interrupt.xcl
+build am_hal_iom.pbi : index am_hal_iom.xcl
+build am_hal_ios.pbi : index am_hal_ios.xcl
+build am_hal_itm.pbi : index am_hal_itm.xcl
+build am_hal_mcuctrl.pbi : index am_hal_mcuctrl.xcl
+build am_hal_mspi.pbi : index am_hal_mspi.xcl
+build am_hal_pdm.pbi : index am_hal_pdm.xcl
+build am_hal_pwrctrl.pbi : index am_hal_pwrctrl.xcl
+build am_hal_queue.pbi : index am_hal_queue.xcl
+build am_hal_reset.pbi : index am_hal_reset.xcl
+build am_hal_rtc.pbi : index am_hal_rtc.xcl
+build am_hal_scard.pbi : index am_hal_scard.xcl
+build am_hal_secure_ota.pbi : index am_hal_secure_ota.xcl
+build am_hal_security.pbi : index am_hal_security.xcl
+build am_hal_stimer.pbi : index am_hal_stimer.xcl
+build am_hal_sysctrl.pbi : index am_hal_sysctrl.xcl
+build am_hal_systick.pbi : index am_hal_systick.xcl
+build am_hal_tpiu.pbi : index am_hal_tpiu.xcl
+build am_hal_uart.pbi : index am_hal_uart.xcl
+build am_hal_wdt.pbi : index am_hal_wdt.xcl
 build am_devices_button.pbi : index am_devices_button.xcl
 build am_devices_led.pbi : index am_devices_led.xcl
 build am_util_debug.pbi : index am_util_debug.xcl
 build am_util_delay.pbi : index am_util_delay.xcl
 build am_util_faultisr.pbi : index am_util_faultisr.xcl
 build am_util_stdio.pbi : index am_util_stdio.xcl
+build artemis_debug.pbi : index artemis_debug.xcl
+build artemis_iom.pbi : index artemis_iom.xcl
+build artemis_max14830.pbi : index artemis_max14830.xcl
+build artemis_mcu.pbi : index artemis_mcu.xcl
+build artemis_spi.pbi : index artemis_spi.xcl
+build artemis_stream.pbi : index artemis_stream.xcl
+build artemis_time.pbi : index artemis_time.xcl
 build am_bsp.pbi : index am_bsp.xcl
 build am_bsp_pins.pbi : index am_bsp_pins.xcl
 build bsp_uart.pbi : index bsp_uart.xcl
@@ -39,16 +79,18 @@ build tasks.pbi : index tasks.xcl
 build timers.pbi : index timers.xcl
 build buffer_c.pbi : index buffer_c.xcl
 build LED.pbi : index LED.xcl
-build MAX14830.pbi : index MAX14830.xcl
 build S9_temp.pbi : index S9_temp.xcl
 build main.pbi : index main.xcl
 build startup_iar.pbi : index startup_iar.xcl
-build freertos_lowpower_part0.pbi : link am_devices_button.pbi am_devices_led.pbi am_util_debug.pbi am_util_delay.pbi am_util_faultisr.pbi
-build freertos_lowpower_part1.pbi : link am_util_stdio.pbi am_bsp.pbi am_bsp_pins.pbi bsp_uart.pbi event_groups.pbi
-build freertos_lowpower_part2.pbi : link heap_2.pbi list.pbi port.pbi queue.pbi rtos.pbi
-build freertos_lowpower_part3.pbi : link tasks.pbi timers.pbi buffer_c.pbi LED.pbi MAX14830.pbi
-build freertos_lowpower_part4.pbi : link S9_temp.pbi main.pbi startup_iar.pbi
-build freertos_lowpower.pbd : link freertos_lowpower_part0.pbi freertos_lowpower_part1.pbi freertos_lowpower_part2.pbi freertos_lowpower_part3.pbi freertos_lowpower_part4.pbi
+build freertos_lowpower_part0.pbi : link am_hal_adc.pbi am_hal_ble.pbi am_hal_ble_patch.pbi am_hal_ble_patch_b0.pbi am_hal_burst.pbi am_hal_cachectrl.pbi am_hal_clkgen.pbi am_hal_cmdq.pbi
+build freertos_lowpower_part1.pbi : link am_hal_ctimer.pbi am_hal_debug.pbi am_hal_flash.pbi am_hal_global.pbi am_hal_gpio.pbi am_hal_interrupt.pbi am_hal_iom.pbi am_hal_ios.pbi
+build freertos_lowpower_part2.pbi : link am_hal_itm.pbi am_hal_mcuctrl.pbi am_hal_mspi.pbi am_hal_pdm.pbi am_hal_pwrctrl.pbi am_hal_queue.pbi am_hal_reset.pbi am_hal_rtc.pbi
+build freertos_lowpower_part3.pbi : link am_hal_scard.pbi am_hal_secure_ota.pbi am_hal_security.pbi am_hal_stimer.pbi am_hal_sysctrl.pbi am_hal_systick.pbi am_hal_tpiu.pbi am_hal_uart.pbi
+build freertos_lowpower_part4.pbi : link am_hal_wdt.pbi am_devices_button.pbi am_devices_led.pbi am_util_debug.pbi am_util_delay.pbi am_util_faultisr.pbi am_util_stdio.pbi artemis_debug.pbi
+build freertos_lowpower_part5.pbi : link artemis_iom.pbi artemis_max14830.pbi artemis_mcu.pbi artemis_spi.pbi artemis_stream.pbi artemis_time.pbi am_bsp.pbi am_bsp_pins.pbi
+build freertos_lowpower_part6.pbi : link bsp_uart.pbi event_groups.pbi heap_2.pbi list.pbi port.pbi queue.pbi rtos.pbi tasks.pbi
+build freertos_lowpower_part7.pbi : link timers.pbi buffer_c.pbi LED.pbi S9_temp.pbi main.pbi startup_iar.pbi
+build freertos_lowpower.pbd : link freertos_lowpower_part0.pbi freertos_lowpower_part1.pbi freertos_lowpower_part2.pbi freertos_lowpower_part3.pbi freertos_lowpower_part4.pbi freertos_lowpower_part5.pbi freertos_lowpower_part6.pbi freertos_lowpower_part7.pbi
 build freertos_lowpower.pbw : browsedata freertos_lowpower.pbd
 
 

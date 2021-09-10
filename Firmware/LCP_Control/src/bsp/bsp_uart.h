@@ -3,6 +3,7 @@
 
 #include "am_bsp_pins.h"
 
+
 typedef enum{
     BSP_UART_COM0,
     BSP_UART_COM1,

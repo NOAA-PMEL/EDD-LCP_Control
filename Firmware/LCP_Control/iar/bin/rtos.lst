@@ -1,49 +1,47 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         23/Aug/2021  11:53:26
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         02/Sep/2021  17:06:31
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode                        
 #    Endian                       =  little
 #    Source file                  =
-#        C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\src\RTOS\rtos.c
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\RTOS\rtos.c
 #    Command line                 =
-#        -f C:\Users\casari\AppData\Local\Temp\1\EW4A2A.tmp
-#        ("C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\src\RTOS\rtos.c" -D iar -D
-#        AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D AM_DEBUG_PRINTF -D
-#        AM_UTIL_FAULTISR_PRINT -lcN "C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --diag_suppress Pa050 -o
-#        "C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --no_cse --no_unroll
-#        --no_inline --no_code_motion --no_tbaa --no_clustering --no_scheduling
-#        --debug --endian=little --cpu=Cortex-M4 --no_path_in_file_macros -e
-#        --fpu=VFPv4_sp --dlib_config "C:\Program Files (x86)\IAR
-#        Systems\Embedded Workbench 8.4\arm\inc\c\DLib_Config_Normal.h" -I
+#        -f C:\Users\casari\AppData\Local\Temp\2\EW1CA5.tmp
+#        (C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\RTOS\rtos.c
+#        -D iar -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D
+#        AM_DEBUG_PRINTF -D AM_UTIL_FAULTISR_PRINT -lcN
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin
+#        --diag_suppress Pa050 -o
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 --no_path_in_file_macros -e --fpu=VFPv4_sp
+#        --dlib_config "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.4\arm\inc\c\DLib_Config_Normal.h" -I
 #        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\include\\
 #        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\AmbiqMicro\Include\\ -I
 #        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\
 #        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\\ -I
 #        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices\\ -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\\ -I "C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\\" -I
-#        "C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\RTOS\\" -I
-#        "C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\bsp\\" -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\\ -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\\
+#        -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\RTOS\\
+#        -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\artemis\\
+#        -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\bsp\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ -I
 #        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\ -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\boards\apollo3_evb\bsp\\ -I
 #        $PROJ_DIR\src\RTOS\\ -I
 #        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -Ol)
 #    Locale                       =  C
 #    List file                    =
-#        C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\rtos.lst
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\rtos.lst
 #    Object file                  =
-#        C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\rtos.o
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\rtos.o
 #    Runtime model:                  
 #      __SystemLibrary            =  DLib
 #      __dlib_file_descriptor     =  0
@@ -53,7 +51,7 @@
 #
 ###############################################################################
 
-C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\src\RTOS\rtos.c
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\RTOS\rtos.c
       1          //*****************************************************************************
       2          //
       3          //! @file rtos.c

@@ -1,15 +1,15 @@
-"C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\src\MAX14830.c"
+"C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\MAX14830.c"
 -std=c11
 -ferror-limit=0
 -fbracket-depth=512
 -funsigned-char
 -MD
 -MF
-C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\bin\MAX14830.pbi.dep
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\MAX14830.pbi.dep
 -o
 MAX14830.pbi
 -I
-C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\src
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src
 -I
 C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\include\
 -I
@@ -23,11 +23,13 @@ C:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices\
 -I
 C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\
 -I
-C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\
 -I
-C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\RTOS\
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\RTOS\
 -I
-C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\bsp\
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\artemis\
+-I
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\bsp\
 -I
 C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\
 -I
@@ -55,11 +57,13 @@ C:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices
 -I
 C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils
 -I
-C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\src
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src
 -I
-C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\src\RTOS
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\RTOS
 -I
-C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\src\bsp
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\artemis
+-I
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\bsp
 -I
 C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3
 -I

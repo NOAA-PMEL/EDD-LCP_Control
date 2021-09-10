@@ -9,15 +9,15 @@
 
 const am_devices_led_t LED[3] = {
   {
-    .ui32GPIONumber   = BSP_GPIO_LED1,
+    .ui32GPIONumber   = AM_BSP_GPIO_LED_GREEN,
     .ui32Polarity     = AM_DEVICES_LED_ON_LOW,
   },
   {
-    .ui32GPIONumber   = BSP_GPIO_LED2,
+    .ui32GPIONumber   = AM_BSP_GPIO_LED_RED,
     .ui32Polarity     = AM_DEVICES_LED_ON_LOW
   },
   {
-    .ui32GPIONumber   = BSP_GPIO_LED3,
+    .ui32GPIONumber   = AM_BSP_GPIO_LED_BLUE,
     .ui32Polarity     = AM_DEVICES_LED_ON_LOW
   }   
   

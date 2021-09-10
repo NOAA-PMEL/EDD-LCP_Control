@@ -53,10 +53,14 @@
 //*****************************************************************************
 #include "am_bsp_pins.h"
 #include "bsp_uart.h"
-#include "MAX14830.h"
+//#include "MAX14830.h"
 
 static sS9_t s9;
 static sS9_t *pS9 = &s9;
+
+
+
+STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p);
 
 
 void S9T_init( const e_uart_t port, const am_hal_gpio_pincfg_t *power, const uint32_t power_pin)
@@ -86,7 +90,12 @@ void S9T_init( const e_uart_t port, const am_hal_gpio_pincfg_t *power, const uin
   /** Initialize the COM Port UART */
   bsp_uart_init();
   bsp_uart_set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
-    
+  bsp_uart_puts(pS9->device.uart.port, "\r", 1);
+  bsp_uart_puts(pS9->device.uart.port, "\r", 1);
+  bsp_uart_puts(pS9->device.uart.port, "stop\r", 5);
+//  bsp_uart_puts(pS9->device.uart.port, "STOP\r", 5);
+  
+  
 }
 
 void S9T_enable(void)
@@ -133,9 +142,20 @@ float S9T_Read_R(void)
 
 float S9T_Read(float *t, float *r)
 {
-  bsp_uart_puts(pS9->device.uart.port, "SAMPLE\r", 7);
+  bsp_uart_puts(pS9->device.uart.port, "sample\r", 7);
+  am_hal_systick_delay_us(750000);
   char sampleStr[256];
-//  bsp_uart_gets(pS9->device.uart.port, sampleStr, 256);
+  bsp_uart_gets(pS9->device.uart.port, sampleStr, 256);
+  
+  
+  /** Find values */
+  uint8_t *pStr = strstr(sampleStr, "sample\r\n");
+  pStr += 8;
+  
+  module_s9_parse_msg(pStr, strlen(sampleStr), pS9);
+  *t = pS9->temperature;
+  *r = pS9->resistance;
+ 
   return 0;
 }
 
@@ -152,10 +172,12 @@ float S9T_Read(float *t, float *r)
  * @param len length of string
  * @param *p Pointer to S9 Temperature structure
  */
-STATIC void _parse_msg(char *data, uint8_t len, sS9_t *p)
+STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p)
 {
     uint8_t comma, end;
     uint8_t i;
+    
+    
 
     for(i=0;i<len;i++)
     {

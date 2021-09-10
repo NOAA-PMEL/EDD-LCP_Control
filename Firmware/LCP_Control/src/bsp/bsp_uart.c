@@ -1,8 +1,10 @@
 #include "am_bsp.h"
 #include "am_util.h"
-#include "MAX14830.h"
+//#include "MAX14830.h"
 
 #include "bsp_uart.h"
+#include "artemis_max14830.h"
+
 
 #define MAX_UART_PACKET_SIZE        ( 256 )
 uint8_t g_pui8UARTTXBuffer[MAX_UART_PACKET_SIZE];
@@ -37,15 +39,27 @@ static am_hal_uart_config_t sUartConfig =
 void bsp_uart_init(void)
 {
     /** Init All MAX1430 COM ports */
-    MAX14830_init();
+    artemis_max14830_init();
     
 
     /** Init all HAL COM ports */
     am_hal_uart_initialize(0, &g_pvLOG);
     am_hal_uart_power_control(g_pvLOG, AM_HAL_SYSCTRL_WAKE, false);
     am_hal_uart_configure(g_pvLOG, &sUartConfig);
-    am_hal_gpio_pinconfig(BSP_UART_CONSOLE_TX, g_LCP_BSP_UART_CONSOLE_TX);
-    am_hal_gpio_pinconfig(BSP_UART_CONSOLE_RX, g_LCP_BSP_UART_CONSOLE_RX);
+    am_hal_gpio_pinconfig(AM_BSP_GPIO_CONSOLE_UART_TX, g_AM_BSP_GPIO_CONSOLE_UART_TX);
+    am_hal_gpio_pinconfig(AM_BSP_GPIO_CONSOLE_UART_RX, g_AM_BSP_GPIO_CONSOLE_UART_RX);
+    
+    
+    /** Init the MAX14830 GPIO Outputs */
+    artemis_max14830_gpio_configure_output(1, 0);
+    artemis_max14830_gpio_configure_output(2, 0);
+//    artemis_max14830_gpio_configure_output(3, 0);
+    artemis_max14830_gpio_set(1);
+//    artemis_max14830_gpio_clear(1);
+    artemis_max14830_gpio_set(2);
+//    artemis_max14830_gpio_clear(2);
+//    artemis_max14830_gpio_set(3);
+//    artemis_max14830_gpio_clear(3);
 
     /** Start the RTOS tasks? */
 }
@@ -55,16 +69,16 @@ void bsp_uart_enable(e_uart_t port)
     switch(port)
     {
         case BSP_UART_COM0:
-            MAX14830_enable(MAX14830_COM_PORT0);
+            artemis_max14830_enable(MAX14830_COM_PORT0);
             break;
         case BSP_UART_COM1:
-            MAX14830_enable(MAX14830_COM_PORT1);
+            artemis_max14830_enable(MAX14830_COM_PORT1);
             break;
         case BSP_UART_COM2:
-            MAX14830_enable(MAX14830_COM_PORT2);
+            artemis_max14830_enable(MAX14830_COM_PORT2);
             break;
         case BSP_UART_COM3:
-            MAX14830_enable(MAX14830_COM_PORT3);
+            artemis_max14830_enable(MAX14830_COM_PORT3);
             break;
         case BSP_UART_LOG:
 //            sUartConfig.ui32BaudRate = baudrate;
@@ -82,16 +96,16 @@ void bsp_uart_diable(e_uart_t port)
     switch(port)
     {
         case BSP_UART_COM0:
-            MAX14830_disable(MAX14830_COM_PORT0);
+            artemis_max14830_disable(MAX14830_COM_PORT0);
             break;
         case BSP_UART_COM1:
-            MAX14830_disable(MAX14830_COM_PORT1);
+            artemis_max14830_disable(MAX14830_COM_PORT1);
             break;
         case BSP_UART_COM2:
-            MAX14830_disable(MAX14830_COM_PORT2);
+            artemis_max14830_disable(MAX14830_COM_PORT2);
             break;
         case BSP_UART_COM3:
-            MAX14830_disable(MAX14830_COM_PORT3);
+            artemis_max14830_disable(MAX14830_COM_PORT3);
             break;
         case BSP_UART_LOG:
 //            sUartConfig.ui32BaudRate = baudrate;
@@ -132,16 +146,16 @@ void bsp_uart_set_baudrate(e_uart_t port, uint32_t baudrate )
     switch(port)
     {
         case BSP_UART_COM0:
-            MAX14830_Set_baudrate(MAX14830_COM_PORT0, (eMAX14830_Baudrate_t)baudrate);
+            artemis_max14830_Set_baudrate(MAX14830_COM_PORT0, (eMAX14830_Baudrate_t)baudrate);
             break;
         case BSP_UART_COM1:
-            MAX14830_Set_baudrate(MAX14830_COM_PORT1, (eMAX14830_Baudrate_t)baudrate);
+            artemis_max14830_Set_baudrate(MAX14830_COM_PORT1, (eMAX14830_Baudrate_t)baudrate);
             break;
         case BSP_UART_COM2:
-            MAX14830_Set_baudrate(MAX14830_COM_PORT2, (eMAX14830_Baudrate_t)baudrate);
+            artemis_max14830_Set_baudrate(MAX14830_COM_PORT2, (eMAX14830_Baudrate_t)baudrate);
             break;
         case BSP_UART_COM3:
-            MAX14830_Set_baudrate(MAX14830_COM_PORT3, (eMAX14830_Baudrate_t)baudrate);
+            artemis_max14830_Set_baudrate(MAX14830_COM_PORT3, (eMAX14830_Baudrate_t)baudrate);
             break;
         case BSP_UART_LOG:
             sUartConfig.ui32BaudRate = baudrate;
@@ -167,16 +181,16 @@ void bsp_uart_putc(e_uart_t port, char c)
     switch(port)
     {
         case BSP_UART_COM0:
-            MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+            artemis_max14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
             break;
         case BSP_UART_COM1:
-            MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+            artemis_max14830_UART_Write(MAX14830_COM_PORT1, &c, 1);
             break;
         case BSP_UART_COM2:
-            MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+            artemis_max14830_UART_Write(MAX14830_COM_PORT2, &c, 1);
             break;
         case BSP_UART_COM3:
-            MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+            artemis_max14830_UART_Write(MAX14830_COM_PORT3, &c, 1);
             break;
         case BSP_UART_LOG:
             
@@ -203,16 +217,16 @@ void bsp_uart_puts(e_uart_t port, char *pStr, uint32_t len)
     switch(port)
     {
         case BSP_UART_COM0:
-            MAX14830_UART_Write_direct(MAX14830_COM_PORT0, pStr, len);
+            artemis_max14830_UART_Write(MAX14830_COM_PORT0, pStr, len);
             break;
         case BSP_UART_COM1:
-            MAX14830_UART_Write_direct(MAX14830_COM_PORT0, pStr, len);
+            artemis_max14830_UART_Write(MAX14830_COM_PORT0, pStr, len);
             break;
         case BSP_UART_COM2:
-            MAX14830_UART_Write_direct(MAX14830_COM_PORT0, pStr, len);
+            artemis_max14830_UART_Write(MAX14830_COM_PORT0, pStr, len);
             break;
         case BSP_UART_COM3:
-            MAX14830_UART_Write_direct(MAX14830_COM_PORT0, pStr, len);
+            artemis_max14830_UART_Write(MAX14830_COM_PORT0, pStr, len);
             break;
         case BSP_UART_LOG:
             
@@ -239,16 +253,16 @@ char bsp_uart_getc(e_uart_t port)
     switch(port)
     {
         case BSP_UART_COM0:
-            MAX14830_UART_Read(MAX14830_COM_PORT0, &c, 1);
+            artemis_max14830_UART_Read(MAX14830_COM_PORT0, &c, 1);
             break;
         case BSP_UART_COM1:
-            MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+            artemis_max14830_UART_Read(MAX14830_COM_PORT1, &c, 1);
             break;
         case BSP_UART_COM2:
-            MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+            artemis_max14830_UART_Read(MAX14830_COM_PORT2, &c, 1);
             break;
         case BSP_UART_COM3:
-            MAX14830_UART_Write(MAX14830_COM_PORT0, &c, 1);
+            artemis_max14830_UART_Read(MAX14830_COM_PORT3, &c, 1);
             break;
         case BSP_UART_LOG:
             
@@ -277,16 +291,16 @@ uint32_t bsp_uart_gets(e_uart_t port, char *pStr, uint32_t len)
     switch(port)
     {
         case BSP_UART_COM0:
-            rxLen = MAX14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
+            rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
             break;
         case BSP_UART_COM1:
-            rxLen = MAX14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
+            rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
             break;
         case BSP_UART_COM2:
-            rxLen = MAX14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
+            rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
             break;
         case BSP_UART_COM3:
-            rxLen = MAX14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
+            rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
             break;
         case BSP_UART_LOG:
             
@@ -306,6 +320,6 @@ void BSP_UART_Test(void)
 {
   char data[256];
   
-  MAX14830_UART_Read_direct(MAX14830_COM_PORT0, data, 256);
+  artemis_max14830_UART_Read(MAX14830_COM_PORT0, data, 256);
   
 }

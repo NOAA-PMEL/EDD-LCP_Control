@@ -1,56 +1,54 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         23/Aug/2021  11:53:25
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         31/Aug/2021  13:53:33
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode             
 #    Endian            =  little
 #    Source file       =
-#        C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\startup_iar.c
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\startup_iar.c
 #    Command line      =
-#        -f C:\Users\casari\AppData\Local\Temp\1\EW4AF7.tmp
-#        ("C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\startup_iar.c" -D iar -D
-#        AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D AM_DEBUG_PRINTF -D
-#        AM_UTIL_FAULTISR_PRINT -lcN "C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --diag_suppress Pa050 -o
-#        "C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin" --no_cse --no_unroll
-#        --no_inline --no_code_motion --no_tbaa --no_clustering --no_scheduling
-#        --debug --endian=little --cpu=Cortex-M4 --no_path_in_file_macros -e
-#        --fpu=VFPv4_sp --dlib_config "C:\Program Files (x86)\IAR
-#        Systems\Embedded Workbench 8.4\arm\inc\c\DLib_Config_Normal.h" -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\include\\
-#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\AmbiqMicro\Include\\ -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\
-#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\\ -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices\\ -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\\ -I "C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\\" -I
-#        "C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\RTOS\\" -I
-#        "C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\..\src\bsp\\" -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\ -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\boards\apollo3_evb\bsp\\ -I
+#        -f C:\Users\casari\AppData\Local\Temp\1\EWE1B.tmp
+#        (C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\startup_iar.c
+#        -D iar -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D
+#        AM_DEBUG_PRINTF -D AM_UTIL_FAULTISR_PRINT -lcN
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin
+#        --diag_suppress Pa050 -o
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 --no_path_in_file_macros -e --fpu=VFPv4_sp
+#        --dlib_config "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.4\arm\inc\c\DLib_Config_Normal.h" -I
+#        C:\version-control\AmbiqSuiteSDK\third_party\FreeRTOSv10.1.1\Source\include\\
+#        -I C:\version-control\AmbiqSuiteSDK\CMSIS\AmbiqMicro\Include\\ -I
+#        C:\version-control\AmbiqSuiteSDK\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\
+#        -I C:\version-control\AmbiqSuiteSDK\\ -I
+#        C:\version-control\AmbiqSuiteSDK\devices\\ -I
+#        C:\version-control\AmbiqSuiteSDK\utils\\ -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\\
+#        -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\RTOS\\
+#        -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\artemis\\
+#        -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\bsp\\
+#        -I C:\version-control\AmbiqSuiteSDK\mcu\apollo3\\ -I
+#        C:\version-control\AmbiqSuiteSDK\CMSIS\ARM\Include\\ -I
 #        $PROJ_DIR\src\RTOS\\ -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -Ol)
+#        C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\\ -Ol)
 #    Locale            =  C
 #    List file         =
-#        C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\startup_iar.lst
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\startup_iar.lst
 #    Object file       =
-#        C:\Sandbox\Ambiq\Apollo 3
-#        Blue\RTOS\Test1\temperature_sensor_2\iar\bin\startup_iar.o
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\startup_iar.o
 #    Runtime model:       
 #      __SystemLibrary =  DLib
 #      __dlib_version  =  6
 #
 ###############################################################################
 
-C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\startup_iar.c
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\startup_iar.c
       1          //*****************************************************************************
       2          //
       3          //! @file startup_iar.c
@@ -510,52 +508,52 @@ C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\startup_iar.c
        4  ??DataTable0_1
        2  NMI_Handler
        6  Reset_Handler
-       2  UsageFault_Handler
+       2  SecureFault_Handler
           BusFault_Handler
-          HardFault_Handler
-          SecureFault_Handler
+          UsageFault_Handler
           MemManage_Handler
+          HardFault_Handler
       64  __Patchable
       10  __low_level_init
      192  __vector_table
-       2  am_adc_isr
-          am_scard_isr
-          am_iomaster1_isr
-          am_stimer_cmpr4_isr
-          am_stimer_cmpr0_isr
-          am_rtc_isr
-          am_ioslave_ios_isr
-          am_pdm0_isr
-          am_brownout_isr
-          am_iomaster0_isr
-          am_ble_isr
+       2  am_iomaster3_isr
           am_iomaster4_isr
-          am_ctimer_isr
           am_gpio_isr
+          SVC_Handler
+          PendSV_Handler
+          am_rtc_isr
           am_iomaster5_isr
+          am_ble_isr
+          am_ioslave_acc_isr
+          am_ctimer_isr
           am_uart_isr
-          am_uart1_isr
-          am_stimer_cmpr2_isr
-          am_iomaster2_isr
-          am_mspi0_isr
-          am_stimer_cmpr6_isr
-          am_stimer_cmpr7_isr
           am_watchdog_isr
-          am_iomaster3_isr
+          am_ioslave_ios_isr
+          DebugMon_Handler
+          am_brownout_isr
+          SysTick_Handler
+          am_iomaster0_isr
+          am_iomaster1_isr
+          am_vcomp_isr
+          am_iomaster2_isr
+          am_default_isr
+          am_uart1_isr
+          am_pdm0_isr
+          am_stimer_cmpr7_isr
+          am_clkgen_isr
           am_software0_isr
           am_stimer_isr
           am_stimer_cmpr1_isr
-          am_vcomp_isr
-          am_stimer_cmpr3_isr
-          am_stimer_cmpr5_isr
           am_flash_isr
-          am_ioslave_acc_isr
-          SVC_Handler
-          PendSV_Handler
-          DebugMon_Handler
-          SysTick_Handler
-          am_clkgen_isr
-          am_default_isr
+          am_adc_isr
+          am_mspi0_isr
+          am_stimer_cmpr0_isr
+          am_stimer_cmpr2_isr
+          am_stimer_cmpr3_isr
+          am_stimer_cmpr4_isr
+          am_scard_isr
+          am_stimer_cmpr5_isr
+          am_stimer_cmpr6_isr
    8'960  pui32Stack
 
  

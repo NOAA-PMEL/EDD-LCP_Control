@@ -28,7 +28,7 @@
 
 "--reset_style=\"4,SystemReset,1,System\"" 
 
-"--drv_communication_log=C:\Sandbox\Ambiq\Apollo 3 Blue\RTOS\Test1\temperature_sensor_2\iar\cspycomm.log" 
+"--drv_communication_log=C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\cspycomm.log" 
 
 "--drv_interface=SWD" 
 
