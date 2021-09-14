@@ -95,3 +95,4 @@ pkg/*
 *.eww
 
 /bin/*
+/iar/bin/
