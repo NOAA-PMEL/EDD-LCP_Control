@@ -94,5 +94,5 @@ pkg/*
 *.dep
 *.eww
 
-/bin/*
-/iar/bin/
+bin/
+iar/bin/
