@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <settings>
     <DebugChecksum>
-        <Checksum>2074446191</Checksum>
+        <Checksum>3902118649</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -206,7 +206,8 @@
         <Bp3>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\bsp\bsp_uart.c}.65.1" 0 0 1 "" 0 "" 0</Bp3>
         <Bp4>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\bsp\bsp_uart.c}.65.1" 0 0 1 "" 0 "" 0</Bp4>
         <Bp5>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\bsp\bsp_uart.c}.54.5" 0 0 1 "" 0 "" 0</Bp5>
-        <Count>6</Count>
+        <Bp6>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\artemis\artemis_pa9ld.h}.11.1" 0 0 1 "" 0 "" 0</Bp6>
+        <Count>7</Count>
     </Breakpoints2>
     <PowerProbe>
         <Frequency>10000</Frequency>

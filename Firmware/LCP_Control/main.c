@@ -10,6 +10,7 @@
 #include "artemis_mcu.h"
 //#include "artemis_scheduler.h"
 //#include "artemis_time.h"
+#include "artemis_pa9ld.h"
 #include <stdlib.h>
 
 ///
@@ -32,14 +33,18 @@ int main(void)
     // run the application
 //    artemis_scheduler_run();
 
-    S9T_init(BSP_UART_COM0, &g_AM_BSP_GPIO_COM0_POWER_PIN, AM_BSP_GPIO_COM0_POWER_PIN);
-    S9T_enable();
+//    S9T_init(BSP_UART_COM0, &g_AM_BSP_GPIO_COM0_POWER_PIN, AM_BSP_GPIO_COM0_POWER_PIN);
+//    S9T_enable();
     
-    float r, t;
+    artemis_pa9ld_initialize(&g_AM_BSP_GPIO_PRES_ON, AM_BSP_GPIO_PRES_ON);
+
+    float p, r, t;
     while(true)
     {
-      S9T_Read(&t, &r);
-      printf("t=%.3f, r=%.3f\n", t, r); 
+      artemis_pa9ld_read(&p, &t);
+      printf("p=%0.3f, t=%0.3f\n", p, t);
+//      S9T_Read(&t, &r);
+//      printf("t=%.3f, r=%.3f\n", t, r); 
 //      bsp_uart_putc(BSP_UART_COM0, 'C');
 //      printf("%c", bsp_uart_getc(BSP_UART_COM0));
       am_hal_systick_delay_us(500000);

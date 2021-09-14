@@ -1,0 +1,1 @@
+export BOARDS="LCP_Control"

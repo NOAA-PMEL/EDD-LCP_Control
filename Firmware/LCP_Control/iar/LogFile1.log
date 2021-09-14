@@ -38314,3 +38314,63 @@ Fri Sep 10, 2021 14:24:14: INFO: Configuring trace using 'None' setting ...
 
 Fri Sep 10, 2021 14:24:14: INFO: Trace 'None' mode is used - trace is disabled.
 
+
+
+ << Logging to file resumes >> 
+
+Mon Sep 13, 2021 20:40:22: Loaded macro file: C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\arm\config\debugger\AmbiqMicro\apollo3.dmac
+Mon Sep 13, 2021 20:40:22: Loading the I-jet driver
+Mon Sep 13, 2021 20:40:23: Probe: Probe SW module ver 1.66
+
+Mon Sep 13, 2021 20:40:23: Probe: Option: trace(None)
+
+Mon Sep 13, 2021 20:40:23: Probe: Found I-jet, SN=81827
+
+Mon Sep 13, 2021 20:40:23: Probe: Opened connection to I-jet:81827
+
+Mon Sep 13, 2021 20:40:23: Probe: USB connection verified (8803 packets/sec)
+
+Mon Sep 13, 2021 20:40:23: Probe: I-jet, FW ver 4.2, HW Ver:A
+
+Mon Sep 13, 2021 20:40:23: Probe: None or IJET-MIPI10 adapter detected
+
+Mon Sep 13, 2021 20:40:23: Probe: Versions: JTAG=1.87 SWO=1.41 A2D=1.74 Stream=1.52 SigCom=2.45
+
+Mon Sep 13, 2021 20:40:23: Emulation layer version 4.74
+Mon Sep 13, 2021 20:40:23: SWD clock detected: 12MHz
+
+Mon Sep 13, 2021 20:40:23: Notification to core-connect hookup.
+
+Mon Sep 13, 2021 20:40:23: Connected DAP v1 on SWD. Detected DP ID=0x2ba01477.
+
+Mon Sep 13, 2021 20:40:23: Connecting to TAP#0 DAP AHB-AP-CM port 0x0 (IDR=0x24770011).
+
+Mon Sep 13, 2021 20:40:23: Recognized CPUID=0x410fc241 Cortex-M4 r0p1 arch ARMv7-M
+
+Mon Sep 13, 2021 20:40:23: Debug resources: 6 instruction comparators, 4 data watchpoints.
+
+Mon Sep 13, 2021 20:40:23: CPU status OK
+Mon Sep 13, 2021 20:40:23: LowLevelReset(system, delay 200)
+Mon Sep 13, 2021 20:40:23: Calling reset script: SystemReset
+Mon Sep 13, 2021 20:40:23: DMAC/Reset: Custom System Reset Strategy
+Mon Sep 13, 2021 20:40:23: DMAC/Reset: Secure part.
+Mon Sep 13, 2021 20:40:23: DMAC/Reset: Device halted after 0 tries.
+Mon Sep 13, 2021 20:40:23: Loaded debugee: C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\arm\config\flashloader\AmbiqMicro\FlashApollo3_RAM256K.out
+Mon Sep 13, 2021 20:40:24: Target reset
+Mon Sep 13, 2021 20:40:24: Downloaded C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\freertos_lowpower.out to flash memory.
+Mon Sep 13, 2021 20:40:24: 22976 bytes downloaded into FLASH (11.80 Kbytes/sec)
+Mon Sep 13, 2021 20:40:24: DMAC/Reset: Custom System Reset Strategy
+Mon Sep 13, 2021 20:40:24: DMAC/Reset: Secure part.
+Mon Sep 13, 2021 20:40:24: DMAC/Reset: Device halted after 0 tries.
+Mon Sep 13, 2021 20:40:24: Loaded debugee: C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\freertos_lowpower.out
+Mon Sep 13, 2021 20:40:24: LowLevelReset(software, delay 200)
+Mon Sep 13, 2021 20:40:24: LowLevelReset(system, delay 200)
+Mon Sep 13, 2021 20:40:24: Calling reset script: SystemReset
+Mon Sep 13, 2021 20:40:24: 22976 bytes verified (498.61 Kbytes/sec)
+Mon Sep 13, 2021 20:40:24: Download completed and verification successful.
+Mon Sep 13, 2021 20:40:24: LowLevelReset(software, delay 200)
+Mon Sep 13, 2021 20:40:25: Target reset
+Mon Sep 13, 2021 20:40:25: INFO: Configuring trace using 'None' setting ...
+
+Mon Sep 13, 2021 20:40:25: INFO: Trace 'None' mode is used - trace is disabled.
+
