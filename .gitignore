@@ -93,3 +93,5 @@ pkg/*
 # IAR Embedded Workbench Files
 *.dep
 *.eww
+
+/bin/*
