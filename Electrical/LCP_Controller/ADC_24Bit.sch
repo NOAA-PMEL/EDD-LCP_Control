@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 20
+Sheet 2 19
 Title "LCP Controller "
 Date "2020-06-09"
 Rev "0.1"
@@ -222,10 +222,10 @@ P 3900 2950
 AR Path="/60F8228B/5EEDA044" Ref="Q?"  Part="1" 
 AR Path="/5EDA4305/5EEDA044" Ref="Q1"  Part="1" 
 F 0 "Q1" H 4065 2855 45  0000 L CNN
-F 1 "DMG2305UX-7" H 4065 2939 45  0000 L CNN
+F 1 "TSM500P02CX RFG" H 4065 2939 45  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23" H 3900 3200 20  0001 C CNN
 F 3 "" H 3900 2950 50  0001 C CNN
-F 4 "DMG2305UX-7" H 3900 2950 50  0001 C CNN "MPN"
+F 4 "TSM500P02CX RFG" H 3900 2950 50  0001 C CNN "MPN"
 	1    3900 2950
 	1    0    0    1   
 $EndComp
@@ -468,10 +468,6 @@ Text HLabel 2100 4150 0    50   BiDi ~ 0
 ADC24_SDA
 Text HLabel 2100 4250 0    50   Output ~ 0
 ~ADC24_DRDY
-Wire Wire Line
-	2100 4050 2800 4050
-Wire Wire Line
-	2100 4250 3000 4250
 Text HLabel 8050 4350 2    50   Input ~ 0
 ADC24_IN0
 Text HLabel 8050 4450 2    50   Input ~ 0
@@ -552,34 +548,6 @@ $EndComp
 Wire Wire Line
 	5050 3050 5050 3200
 $Comp
-L Connector:TestPoint TP17
-U 1 1 5EE2F4F0
-P 9450 3400
-F 0 "TP17" H 9508 3518 50  0000 L CNN
-F 1 "5001" H 9508 3427 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 9650 3400 50  0001 C CNN
-F 3 "~" H 9650 3400 50  0001 C CNN
-F 4 "GND" H 9450 3400 50  0001 C CNN "TestPoint"
-F 5 "" H 9450 3400 50  0001 C CNN "MPN"
-	1    9450 3400
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 5EE2F9C9
-P 9450 3600
-AR Path="/60F8228B/5EE2F9C9" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA4305/5EE2F9C9" Ref="#PWR0107"  Part="1" 
-F 0 "#PWR0107" H 9450 3350 50  0001 C CNN
-F 1 "GND" H 9550 3500 50  0000 C CNN
-F 2 "" H 9450 3600 50  0001 C CNN
-F 3 "" H 9450 3600 50  0001 C CNN
-	1    9450 3600
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	9450 3600 9450 3400
-$Comp
 L Connector:TestPoint TP18
 U 1 1 5EE339BB
 P 9800 3400
@@ -607,86 +575,9 @@ F 3 "" H 9800 3550 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	9800 3400 9800 3550
-$Comp
-L Connector_Generic:Conn_02x04_Odd_Even J?
-U 1 1 5EF22271
-P 2300 4750
-AR Path="/5ED049DE/5EF22271" Ref="J?"  Part="1" 
-AR Path="/60F8228B/5EF22271" Ref="J?"  Part="1" 
-AR Path="/5EDB3949/5EF22271" Ref="J?"  Part="1" 
-AR Path="/5EDA4305/5EF22271" Ref="J28"  Part="1" 
-F 0 "J28" H 2400 4950 50  0000 R CNN
-F 1 "SALEAE_TEST" H 2550 4450 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 2300 4750 50  0001 C CNN
-F 3 "~" H 2300 4750 50  0001 C CNN
-F 4 "GPS Test" H 2350 4350 50  0000 C CNN "TestPoint"
-F 5 "0010897080" H 2300 4750 50  0001 C CNN "MPN"
-	1    2300 4750
-	-1   0    0    -1  
-$EndComp
-Wire Wire Line
-	1700 4950 1700 5000
-Connection ~ 1700 4950
-Wire Wire Line
-	2000 4950 1700 4950
-Wire Wire Line
-	1700 4850 1700 4950
-Connection ~ 1700 4850
-Wire Wire Line
-	2000 4850 1700 4850
-Wire Wire Line
-	1700 4750 1700 4850
-Wire Wire Line
-	1700 4750 1700 4650
-Connection ~ 1700 4750
-Wire Wire Line
-	2000 4750 1700 4750
-Wire Wire Line
-	1700 4650 2000 4650
-$Comp
-L power:GND #PWR?
-U 1 1 5EF22282
-P 1700 5000
-AR Path="/60F8228B/5EF22282" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3949/5EF22282" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA4305/5EF22282" Ref="#PWR0102"  Part="1" 
-F 0 "#PWR0102" H 1700 4750 50  0001 C CNN
-F 1 "GND" H 1600 4900 50  0000 C CNN
-F 2 "" H 1700 5000 50  0001 C CNN
-F 3 "" H 1700 5000 50  0001 C CNN
-	1    1700 5000
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2100 4150 2900 4150
-Wire Wire Line
-	2500 4650 2700 4650
-Wire Wire Line
-	2700 4650 2700 3200
 Wire Wire Line
 	2700 3200 4000 3200
 Connection ~ 4000 3200
-Wire Wire Line
-	2500 4750 2800 4750
-Wire Wire Line
-	2800 4750 2800 4050
-Connection ~ 2800 4050
-Wire Wire Line
-	2800 4050 4500 4050
-Wire Wire Line
-	2500 4850 2900 4850
-Wire Wire Line
-	2900 4850 2900 4150
-Connection ~ 2900 4150
-Wire Wire Line
-	2900 4150 4600 4150
-Wire Wire Line
-	2500 4950 3000 4950
-Wire Wire Line
-	3000 4950 3000 4250
-Connection ~ 3000 4250
-Wire Wire Line
-	3000 4250 5050 4250
 $Comp
 L Connector:TestPoint TP7
 U 1 1 5EF493CC
@@ -742,4 +633,10 @@ Connection ~ 4450 4650
 Wire Wire Line
 	6550 5600 6550 5750
 Connection ~ 6550 5750
+Wire Wire Line
+	2100 4250 5050 4250
+Wire Wire Line
+	2100 4150 4600 4150
+Wire Wire Line
+	2100 4050 4500 4050
 $EndSCHEMATC

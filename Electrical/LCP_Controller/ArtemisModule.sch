@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr B 17000 11000
 encoding utf-8
-Sheet 15 20
+Sheet 17 19
 Title "LCP Controller "
 Date "2020-06-09"
 Rev "0.1"
@@ -585,7 +585,7 @@ Wire Wire Line
 	14450 2200 15400 2200
 Text GLabel 14400 3400 0    50   Input ~ 0
 ARTEMIS_D37
-Text GLabel 14400 3300 0    50   Input ~ 0
+Text GLabel 14500 6350 0    50   Input ~ 0
 ARTEMIS_D36
 Text GLabel 14650 3200 0    50   Input ~ 0
 ARTEMIS_D6_MISO(0)
@@ -609,8 +609,6 @@ Wire Wire Line
 	14650 3100 15350 3100
 Wire Wire Line
 	15350 3200 14650 3200
-Wire Wire Line
-	14400 3300 15350 3300
 Wire Wire Line
 	15350 3400 14400 3400
 Text GLabel 14650 4600 0    50   Input ~ 0
@@ -669,16 +667,14 @@ Text GLabel 14650 3950 0    50   Input ~ 0
 ARTEMIS_D8_SCL(1)
 Text GLabel 14650 4050 0    50   Input ~ 0
 ARTEMIS_D9_SDA(1)
-Text GLabel 14450 3850 0    50   Input ~ 0
+Text GLabel 14400 3300 0    50   Input ~ 0
 ARTEMIS_AD16
 Text HLabel 15350 3850 2    50   Output ~ 0
-CRYPTO_ON
+PRESSURE_ON
 Text HLabel 15350 4050 2    50   BiDi ~ 0
-CRYPTO_SDA
+PRESSURE_SDA
 Text HLabel 15350 3950 2    50   Output ~ 0
-CRYPTO_SCL
-Wire Wire Line
-	14450 3850 15350 3850
+PRESSURE_SCL
 Wire Wire Line
 	14650 4050 15350 4050
 Wire Wire Line
@@ -701,7 +697,7 @@ Text GLabel 14800 6150 0    50   Input ~ 0
 ARTEMIS_D38_MOSI(3)
 Text GLabel 14800 6250 0    50   Input ~ 0
 ARTEMIS_D42_SCK(3)
-Text GLabel 14500 6350 0    50   Input ~ 0
+Text GLabel 14400 3850 0    50   Input ~ 0
 ARTEMIS_D17
 Text GLabel 14500 6450 0    50   Input ~ 0
 ARTEMIS_D18
@@ -723,8 +719,6 @@ Wire Wire Line
 	14800 6150 15300 6150
 Wire Wire Line
 	15300 6250 14800 6250
-Wire Wire Line
-	14500 6350 15300 6350
 Wire Wire Line
 	15300 6450 14500 6450
 Wire Wire Line
@@ -828,11 +822,11 @@ GPS Nets
 Text Notes 14500 2850 0    50   ~ 0
 ACCELEROMETER Nets
 Text Notes 14650 3750 0    50   ~ 0
-CRYPTO Nets
+PRESSURE Nets
 Text Notes 14650 4400 0    50   ~ 0
 ADC24 Nets
 Text Notes 14400 5200 0    50   ~ 0
-SPARE I2C/PRESSURE Nets
+SPARE I2C Nets
 Text Notes 14150 5850 0    50   ~ 0
 SPI to UART/RS232/RS485 & COM Ports
 Text Notes 14600 7750 0    50   ~ 0
@@ -1012,4 +1006,10 @@ Text GLabel 14600 8000 0    50   Input ~ 0
 ARTEMIS_D9_SDA(1)
 Text GLabel 14600 8100 0    50   Input ~ 0
 ARTEMIS_D8_SCL(1)
+Wire Wire Line
+	14500 6350 15300 6350
+Wire Wire Line
+	14400 3300 15350 3300
+Wire Wire Line
+	14400 3850 15350 3850
 $EndSCHEMATC

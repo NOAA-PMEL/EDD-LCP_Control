@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 17 20
+Sheet 14 19
 Title "LCP Controller "
 Date "2020-06-09"
 Rev "0.1"
@@ -60,68 +60,6 @@ Wire Wire Line
 Connection ~ 6450 3400
 Wire Wire Line
 	6450 3400 6450 3500
-$Comp
-L Connector_Generic:Conn_02x04_Odd_Even J?
-U 1 1 5EE2A49B
-P 5100 3200
-AR Path="/5ED049DE/5EE2A49B" Ref="J?"  Part="1" 
-AR Path="/60F8228B/5EE2A49B" Ref="J?"  Part="1" 
-AR Path="/5EC7245E/5EE2A49B" Ref="J?"  Part="1" 
-AR Path="/5EDA42CC/5EE2A49B" Ref="J13"  Part="1" 
-F 0 "J13" V 5250 2900 50  0000 R CNN
-F 1 "SALEAE_TEST" V 5150 2900 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 5100 3200 50  0001 C CNN
-F 3 "~" H 5100 3200 50  0001 C CNN
-F 4 "Iridium COM Test" V 5050 2600 50  0000 C CNN "TestPoint"
-F 5 "0010897080" H 5100 3200 50  0001 C CNN "MPN"
-	1    5100 3200
-	0    -1   -1   0   
-$EndComp
-Wire Wire Line
-	5000 3400 5000 3750
-Connection ~ 5000 3750
-Connection ~ 5100 3850
-Wire Wire Line
-	5100 3400 5100 3850
-Wire Wire Line
-	5200 3400 5200 3950
-Connection ~ 5200 3950
-Wire Wire Line
-	5300 3400 5300 4450
-$Comp
-L power:GND #PWR?
-U 1 1 5EE2A4AD
-P 4700 3050
-AR Path="/5EC7245E/5EE2A4AD" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA42CC/5EE2A4AD" Ref="#PWR079"  Part="1" 
-F 0 "#PWR079" H 4700 2800 50  0001 C CNN
-F 1 "GND" H 4705 2877 50  0000 C CNN
-F 2 "" H 4700 3050 50  0001 C CNN
-F 3 "" H 4700 3050 50  0001 C CNN
-	1    4700 3050
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	4700 3050 4700 2800
-Wire Wire Line
-	5300 2800 5300 2900
-Wire Wire Line
-	5200 2900 5200 2800
-Connection ~ 5200 2800
-Wire Wire Line
-	5200 2800 5300 2800
-Wire Wire Line
-	5100 2900 5100 2800
-Connection ~ 5100 2800
-Wire Wire Line
-	5100 2800 5200 2800
-Wire Wire Line
-	5000 2900 5000 2800
-Wire Wire Line
-	4700 2800 5000 2800
-Connection ~ 5000 2800
-Wire Wire Line
-	5000 2800 5100 2800
 NoConn ~ 7200 3900
 NoConn ~ 7200 4000
 NoConn ~ 7200 4100
@@ -144,7 +82,7 @@ Wire Wire Line
 Wire Wire Line
 	5500 4150 5800 4150
 NoConn ~ 5800 4050
-Text Notes 5100 2700 0    200  ~ 0
+Text Notes 4900 2600 0    200  ~ 0
 Iridium
 Text HLabel 4050 3750 0    50   Input ~ 0
 IRIDIUM_ON
@@ -156,23 +94,6 @@ Text HLabel 4050 4350 0    50   Output ~ 0
 IRIDIUM_RING_IND
 Text HLabel 4050 4450 0    50   Output ~ 0
 IRIDIUM_NET_AVAIL
-Wire Wire Line
-	4050 4450 5300 4450
-Connection ~ 5300 4450
-Wire Wire Line
-	4050 3950 5200 3950
-Wire Wire Line
-	4050 3850 5100 3850
-Wire Wire Line
-	4050 3750 5000 3750
-Wire Wire Line
-	5800 3950 5200 3950
-Wire Wire Line
-	5100 3850 5800 3850
-Wire Wire Line
-	5000 3750 5800 3750
-Wire Wire Line
-	5300 4450 5800 4450
 Wire Wire Line
 	5800 4350 4050 4350
 $Comp
@@ -242,34 +163,14 @@ F 5 "" H 6450 3300 50  0001 C CNN "MPN"
 	1    6450 3300
 	1    0    0    -1  
 $EndComp
-$Comp
-L Connector:TestPoint TP55
-U 1 1 5EE03EFE
-P 7400 3300
-F 0 "TP55" H 7458 3418 50  0000 L CNN
-F 1 "5001" H 7458 3327 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 7600 3300 50  0001 C CNN
-F 3 "~" H 7600 3300 50  0001 C CNN
-F 4 "GND" H 7400 3300 50  0001 C CNN "TestPoint"
-F 5 "" H 7400 3300 50  0001 C CNN "MPN"
-	1    7400 3300
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 5EE04D38
-P 7400 3350
-AR Path="/5EC7245E/5EE04D38" Ref="#PWR?"  Part="1" 
-AR Path="/5EDA42CC/5EE04D38" Ref="#PWR0125"  Part="1" 
-F 0 "#PWR0125" H 7400 3100 50  0001 C CNN
-F 1 "GND" H 7405 3177 50  0000 C CNN
-F 2 "" H 7400 3350 50  0001 C CNN
-F 3 "" H 7400 3350 50  0001 C CNN
-	1    7400 3350
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7400 3300 7400 3350
 Wire Wire Line
 	6450 3300 6450 3400
+Wire Wire Line
+	4050 3750 5800 3750
+Wire Wire Line
+	4050 3850 5800 3850
+Wire Wire Line
+	4050 3950 5800 3950
+Wire Wire Line
+	4050 4450 5800 4450
 $EndSCHEMATC

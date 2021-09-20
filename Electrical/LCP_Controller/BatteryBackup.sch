@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 20 20
+Sheet 16 20
 Title "LCP Controller "
 Date "2020-06-09"
 Rev "0.1"
@@ -13,91 +13,4 @@ Comment2 ""
 Comment3 ""
 Comment4 "Current design by: Matt Casari"
 $EndDescr
-Text GLabel 6800 3350 2    50   Input ~ 0
-GPS_BATT_BCKP
-$Comp
-L Device:Battery_Cell BT1
-U 1 1 6015D405
-P 5750 3700
-F 0 "BT1" H 5868 3796 50  0000 L CNN
-F 1 "Battery_Cell" H 5868 3705 50  0000 L CNN
-F 2 "Batteries:BATTCOM_20MM_PTH" V 5750 3760 50  0001 C CNN
-F 3 "~" V 5750 3760 50  0001 C CNN
-F 4 "CR-2032/HFN" H 5750 3700 50  0001 C CNN "MPN"
-	1    5750 3700
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR099
-U 1 1 6015D832
-P 5750 4000
-F 0 "#PWR099" H 5750 3750 50  0001 C CNN
-F 1 "GND" H 5755 3827 50  0000 C CNN
-F 2 "" H 5750 4000 50  0001 C CNN
-F 3 "" H 5750 4000 50  0001 C CNN
-	1    5750 4000
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	5750 4000 5750 3800
-Wire Wire Line
-	5750 3500 5750 3350
-Wire Wire Line
-	5750 3350 6300 3350
-$Comp
-L power:PWR_FLAG #FLG016
-U 1 1 6015EC71
-P 5750 3350
-F 0 "#FLG016" H 5750 3425 50  0001 C CNN
-F 1 "PWR_FLAG" H 5750 3523 50  0000 C CNN
-F 2 "" H 5750 3350 50  0001 C CNN
-F 3 "~" H 5750 3350 50  0001 C CNN
-	1    5750 3350
-	1    0    0    -1  
-$EndComp
-Connection ~ 5750 3350
-$Comp
-L Connector:TestPoint TP59
-U 1 1 5EEED73F
-P 6300 3250
-F 0 "TP59" H 6358 3413 50  0000 L CNN
-F 1 "5000" H 6358 3322 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 6500 3250 50  0001 C CNN
-F 3 "~" H 6500 3250 50  0001 C CNN
-F 4 "GPS_BATT_BCKP" H 6358 3231 50  0000 L CNN "TestPoint"
-F 5 "" H 6300 3250 50  0001 C CNN "MPN"
-	1    6300 3250
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	6300 3250 6300 3350
-Connection ~ 6300 3350
-Wire Wire Line
-	6300 3350 6800 3350
-$Comp
-L Connector:TestPoint TP60
-U 1 1 5EEEDD38
-P 9150 3900
-F 0 "TP60" H 9208 4063 50  0000 L CNN
-F 1 "5001" H 9208 3972 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 9350 3900 50  0001 C CNN
-F 3 "~" H 9350 3900 50  0001 C CNN
-F 4 "GND" H 9208 3881 50  0000 L CNN "TestPoint"
-F 5 "" H 9150 3900 50  0001 C CNN "MPN"
-	1    9150 3900
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR0127
-U 1 1 5EEEE26A
-P 9150 4050
-F 0 "#PWR0127" H 9150 3800 50  0001 C CNN
-F 1 "GND" H 9155 3877 50  0000 C CNN
-F 2 "" H 9150 4050 50  0001 C CNN
-F 3 "" H 9150 4050 50  0001 C CNN
-	1    9150 4050
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	9150 4050 9150 3900
 $EndSCHEMATC

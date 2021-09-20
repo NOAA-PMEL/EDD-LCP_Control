@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 16 20
+Sheet 13 19
 Title "LCP Controller "
 Date "2020-06-09"
 Rev "0.1"
@@ -15,26 +15,8 @@ Comment4 "Current design by: Matt Casari"
 $EndDescr
 Text Notes 7700 4500 0    100  Italic 0
 This requires some impedance\n matching calculation for PCB!!!
-Text GLabel 8100 2400 2    50   Input ~ 0
-GPS_BATT_BCKP
 Text GLabel 6150 2800 2    50   Input ~ 0
 GPS_3V3
-$Comp
-L Connector_Generic:Conn_02x04_Odd_Even J?
-U 1 1 5EE930BE
-P 4350 3250
-AR Path="/5ED049DE/5EE930BE" Ref="J?"  Part="1" 
-AR Path="/60F8228B/5EE930BE" Ref="J?"  Part="1" 
-AR Path="/5EDB3949/5EE930BE" Ref="J12"  Part="1" 
-F 0 "J12" H 4450 3450 50  0000 R CNN
-F 1 "SALEAE_TEST" H 4600 2950 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 4350 3250 50  0001 C CNN
-F 3 "~" H 4350 3250 50  0001 C CNN
-F 4 "GPS Test" H 4400 2850 50  0000 C CNN "TestPoint"
-F 5 "0010897080" H 4350 3250 50  0001 C CNN "MPN"
-	1    4350 3250
-	-1   0    0    -1  
-$EndComp
 $Comp
 L Device:R_Pack02 RN?
 U 1 1 5EE930C4
@@ -50,56 +32,6 @@ F 4 "EXB-V4V103JV" H 5050 3050 50  0001 C CNN "MPN"
 	1    5050 3050
 	-1   0    0    1   
 $EndComp
-Wire Wire Line
-	4900 3150 4900 2800
-Wire Wire Line
-	4550 3150 4900 3150
-Wire Wire Line
-	4550 3250 5050 3250
-Wire Wire Line
-	5150 3350 5150 4200
-Wire Wire Line
-	4550 3350 5150 3350
-Wire Wire Line
-	4700 3450 4700 4400
-Wire Wire Line
-	4550 3450 4700 3450
-Wire Wire Line
-	3750 3450 3750 3500
-Connection ~ 3750 3450
-Wire Wire Line
-	4050 3450 3750 3450
-Wire Wire Line
-	3750 3350 3750 3450
-Connection ~ 3750 3350
-Wire Wire Line
-	4050 3350 3750 3350
-Wire Wire Line
-	3750 3250 3750 3350
-Wire Wire Line
-	3750 3250 3750 3150
-Connection ~ 3750 3250
-Wire Wire Line
-	4050 3250 3750 3250
-Wire Wire Line
-	3750 3150 4050 3150
-$Comp
-L power:GND #PWR?
-U 1 1 5EE930EE
-P 3750 3500
-AR Path="/60F8228B/5EE930EE" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3949/5EE930EE" Ref="#PWR074"  Part="1" 
-F 0 "#PWR074" H 3750 3250 50  0001 C CNN
-F 1 "GND" H 3650 3400 50  0000 C CNN
-F 2 "" H 3750 3500 50  0001 C CNN
-F 3 "" H 3750 3500 50  0001 C CNN
-	1    3750 3500
-	1    0    0    -1  
-$EndComp
-Connection ~ 5150 3350
-Wire Wire Line
-	5150 3250 5150 3350
-Connection ~ 5050 3250
 Wire Wire Line
 	5050 3250 5050 4100
 Connection ~ 5150 4200
@@ -142,7 +74,6 @@ $EndComp
 Connection ~ 4900 2250
 Wire Wire Line
 	4900 2150 4900 2250
-Connection ~ 4900 2800
 Wire Wire Line
 	4900 2800 4900 2750
 $Comp
@@ -152,14 +83,13 @@ P 4800 2550
 AR Path="/60F8228B/5EE9311D" Ref="Q?"  Part="1" 
 AR Path="/5EDB3949/5EE9311D" Ref="Q10"  Part="1" 
 F 0 "Q10" H 4965 2455 45  0000 L CNN
-F 1 "DMG2305UX-7" H 4965 2539 45  0000 L CNN
+F 1 "TSM500P02CX RFG" H 4965 2539 45  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23" H 4800 2800 20  0001 C CNN
 F 3 "" H 4800 2550 50  0001 C CNN
-F 4 "DMG2305UX-7" H 4800 2550 50  0001 C CNN "MPN"
+F 4 "TSM500P02CX RFG" H 4800 2550 50  0001 C CNN "MPN"
 	1    4800 2550
 	1    0    0    1   
 $EndComp
-Connection ~ 4700 4400
 Connection ~ 5800 2800
 Wire Wire Line
 	5800 2950 5800 2800
@@ -234,8 +164,6 @@ GPS_GPIO
 Wire Wire Line
 	2300 2450 4450 2450
 Wire Wire Line
-	2300 4400 4700 4400
-Wire Wire Line
 	2300 4200 5150 4200
 Wire Wire Line
 	2300 4100 5050 4100
@@ -252,22 +180,6 @@ F 3 "~" H 5450 2800 50  0001 C CNN
 	1    5450 2800
 	1    0    0    -1  
 $EndComp
-$Comp
-L SparkFun-DiscreteSemi:DIODE-SCHOTTKY-PMEG4005EJ D7
-U 1 1 5EEF36CE
-P 7550 2400
-F 0 "D7" H 7550 2604 45  0000 C CNN
-F 1 "PMEG4005EJ" H 7550 2520 45  0000 C CNN
-F 2 "SOD-323" H 7550 2600 20  0001 C CNN
-F 3 "" H 7550 2400 50  0001 C CNN
-F 4 "PMEG4005EJ,115" H 7550 2400 50  0001 C CNN "MPN"
-	1    7550 2400
-	-1   0    0    -1  
-$EndComp
-Wire Wire Line
-	8100 2400 7650 2400
-Wire Wire Line
-	6550 2400 7450 2400
 $Comp
 L SparkFun-DiscreteSemi:DIODE-SCHOTTKY-PMEG4005EJ D6
 U 1 1 5EF0CA88
@@ -312,11 +224,6 @@ Wire Wire Line
 	8100 2050 7650 2050
 Wire Wire Line
 	7450 2050 6800 2050
-Wire Wire Line
-	6550 2050 6550 2400
-Connection ~ 6550 2400
-Wire Wire Line
-	6550 2400 6550 3300
 $Comp
 L power:PWR_FLAG #FLG0102
 U 1 1 5EF3C090
@@ -368,64 +275,8 @@ Wire Wire Line
 Connection ~ 6800 2050
 Wire Wire Line
 	6800 2050 6550 2050
-$Comp
-L Connector:TestPoint TP52
-U 1 1 5EE1B93C
-P 9350 1950
-F 0 "TP52" H 9408 2113 50  0000 L CNN
-F 1 "5001" H 9408 2022 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 9550 1950 50  0001 C CNN
-F 3 "~" H 9550 1950 50  0001 C CNN
-F 4 "GND" H 9408 1931 50  0000 L CNN "TestPoint"
-F 5 "" H 9350 1950 50  0001 C CNN "MPN"
-	1    9350 1950
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 5EE1BF3A
-P 9350 2100
-AR Path="/60F8228B/5EE1BF3A" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3949/5EE1BF3A" Ref="#PWR0123"  Part="1" 
-F 0 "#PWR0123" H 9350 1850 50  0001 C CNN
-F 1 "GND" H 9450 2000 50  0000 C CNN
-F 2 "" H 9350 2100 50  0001 C CNN
-F 3 "" H 9350 2100 50  0001 C CNN
-	1    9350 2100
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	9350 1950 9350 2100
 Wire Wire Line
 	5800 2800 6150 2800
-$Comp
-L Connector:TestPoint TP53
-U 1 1 5EF0C4DD
-P 9750 1950
-F 0 "TP53" H 9808 2113 50  0000 L CNN
-F 1 "5001" H 9808 2022 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 9950 1950 50  0001 C CNN
-F 3 "~" H 9950 1950 50  0001 C CNN
-F 4 "GND" H 9808 1931 50  0000 L CNN "TestPoint"
-F 5 "" H 9750 1950 50  0001 C CNN "MPN"
-	1    9750 1950
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 5EF0C4E3
-P 9750 2100
-AR Path="/60F8228B/5EF0C4E3" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3949/5EF0C4E3" Ref="#PWR0124"  Part="1" 
-F 0 "#PWR0124" H 9750 1850 50  0001 C CNN
-F 1 "GND" H 9850 2000 50  0000 C CNN
-F 2 "" H 9750 2100 50  0001 C CNN
-F 3 "" H 9750 2100 50  0001 C CNN
-	1    9750 2100
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	9750 1950 9750 2100
 Text Notes 5000 3250 1    50   ~ 0
 RN19 DNP
 $Comp
@@ -457,8 +308,6 @@ Wire Wire Line
 Wire Wire Line
 	5150 4200 5750 4200
 Wire Wire Line
-	4700 4400 5750 4400
-Wire Wire Line
 	6350 5050 6350 4900
 Wire Wire Line
 	6950 4200 8600 4200
@@ -477,4 +326,10 @@ NoConn ~ 5750 3800
 NoConn ~ 5750 3900
 NoConn ~ 5750 4500
 NoConn ~ 5750 4600
+Wire Wire Line
+	5150 3250 5150 4200
+Wire Wire Line
+	2300 4400 5750 4400
+Wire Wire Line
+	6550 2050 6550 3300
 $EndSCHEMATC

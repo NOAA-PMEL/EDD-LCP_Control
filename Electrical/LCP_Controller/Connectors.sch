@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr B 17000 11000
 encoding utf-8
-Sheet 19 20
+Sheet 19 19
 Title "LCP Controller "
 Date "2020-06-09"
 Rev "0.1"
@@ -165,7 +165,7 @@ F 0 "J21" H 3300 1825 50  0000 L CNN
 F 1 "Conn_Coaxial" H 3300 1734 50  0000 L CNN
 F 2 "Connector_Coaxial:SMA_Amphenol_132134_Vertical" H 3200 1850 50  0001 C CNN
 F 3 " ~" H 3200 1850 50  0001 C CNN
-F 4 "132134-11" H 3200 1850 50  0001 C CNN "MPN"
+F 4 "132134-15" H 3200 1850 50  0001 C CNN "MPN"
 	1    3200 1850
 	1    0    0    -1  
 $EndComp
@@ -390,12 +390,67 @@ Wire Notes Line
 	8350 750  11900 750 
 Wire Notes Line
 	8350 3100 11900 3100
-Text Notes 11100 950  2    100  ~ 0
-Spare I2C / Pressure Sensor
+Text Notes 10350 1000 2    100  ~ 0
+Spare I2C
 Wire Wire Line
 	9650 1800 10600 1800
 Wire Wire Line
 	9650 1900 10600 1900
 Wire Wire Line
 	9650 2000 10600 2000
+$Comp
+L power:GND #PWR?
+U 1 1 614EB71F
+P 14150 2200
+AR Path="/60F8228B/614EB71F" Ref="#PWR?"  Part="1" 
+AR Path="/5EEE892C/614EB71F" Ref="#PWR?"  Part="1" 
+AR Path="/5EE033BE/614EB71F" Ref="#PWR012"  Part="1" 
+F 0 "#PWR012" H 14150 1950 50  0001 C CNN
+F 1 "GND" H 14250 2100 50  0000 C CNN
+F 2 "" H 14150 2200 50  0001 C CNN
+F 3 "" H 14150 2200 50  0001 C CNN
+	1    14150 2200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	14300 2100 14150 2100
+Wire Wire Line
+	14150 2100 14150 2200
+$Comp
+L Connector_Generic:Conn_01x04 J?
+U 1 1 614EB728
+P 14500 2000
+AR Path="/60F8228B/614EB728" Ref="J?"  Part="1" 
+AR Path="/5EEE892C/614EB728" Ref="J?"  Part="1" 
+AR Path="/5EE033BE/614EB728" Ref="J10"  Part="1" 
+F 0 "J10" H 14418 1575 50  0000 C CNN
+F 1 "Conn_01x04" H 14418 1666 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical" H 14500 2000 50  0001 C CNN
+F 3 "~" H 14500 2000 50  0001 C CNN
+F 4 "" H 14500 2000 50  0001 C CNN "MPN"
+	1    14500 2000
+	1    0    0    1   
+$EndComp
+Text HLabel 13350 1900 0    50   Input ~ 0
+PRESSURE_I2C_SCL
+Text HLabel 13350 2000 0    50   BiDi ~ 0
+PRESSURE_I2C_SDA
+Text HLabel 13350 1800 0    50   BiDi ~ 0
+PRESSURE_I2C_PWR
+Wire Notes Line
+	15600 750  15600 3100
+Wire Notes Line
+	12050 3100 12050 750 
+Wire Notes Line
+	12050 750  15600 750 
+Wire Notes Line
+	12050 3100 15600 3100
+Text Notes 14450 950  2    100  ~ 0
+Pressure Sensor I2C
+Wire Wire Line
+	13350 1800 14300 1800
+Wire Wire Line
+	13350 1900 14300 1900
+Wire Wire Line
+	13350 2000 14300 2000
 $EndSCHEMATC

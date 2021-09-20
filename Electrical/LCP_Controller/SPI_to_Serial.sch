@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 18 20
+Sheet 15 19
 Title "LCP Controller "
 Date "2020-06-09"
 Rev "0.1"
@@ -27,10 +27,6 @@ F 4 "MAX14830ETM+T" H 4900 3950 50  0001 C CNN "MPN"
 	1    4900 3950
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	5800 4250 6500 4250
-Wire Wire Line
-	5800 5150 6450 5150
 $Comp
 L power:GND #PWR?
 U 1 1 5F17081F
@@ -44,126 +40,6 @@ F 3 "" H 4450 6100 50  0001 C CNN
 	1    4450 6100
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	5800 4050 6300 4050
-Wire Wire Line
-	5800 4150 6400 4150
-Wire Wire Line
-	5800 4950 6250 4950
-Wire Wire Line
-	5800 5050 6350 5050
-Wire Wire Line
-	6300 4000 6300 4050
-Connection ~ 6300 4050
-Wire Wire Line
-	6400 4000 6400 4150
-Connection ~ 6400 4150
-Wire Wire Line
-	6500 4000 6500 4250
-Connection ~ 6500 4250
-Wire Wire Line
-	6250 5300 6250 4950
-Connection ~ 6250 4950
-Wire Wire Line
-	6350 5300 6350 5050
-Connection ~ 6350 5050
-Wire Wire Line
-	6450 5300 6450 5150
-Connection ~ 6450 5150
-$Comp
-L power:GND #PWR?
-U 1 1 5F17083D
-P 6250 5900
-AR Path="/5ED049DE/5F17083D" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3B1A/5F17083D" Ref="#PWR088"  Part="1" 
-F 0 "#PWR088" H 6250 5650 50  0001 C CNN
-F 1 "GND" H 6350 5800 50  0000 C CNN
-F 2 "" H 6250 5900 50  0001 C CNN
-F 3 "" H 6250 5900 50  0001 C CNN
-	1    6250 5900
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 5F170843
-P 7000 3500
-AR Path="/5ED049DE/5F170843" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3B1A/5F170843" Ref="#PWR089"  Part="1" 
-F 0 "#PWR089" H 7000 3250 50  0001 C CNN
-F 1 "GND" H 7100 3400 50  0000 C CNN
-F 2 "" H 7000 3500 50  0001 C CNN
-F 3 "" H 7000 3500 50  0001 C CNN
-	1    7000 3500
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7000 3500 7000 3400
-Wire Wire Line
-	6300 3400 6300 3500
-Wire Wire Line
-	6400 3500 6400 3400
-Connection ~ 6400 3400
-Wire Wire Line
-	6400 3400 6300 3400
-Wire Wire Line
-	6500 3500 6500 3400
-Wire Wire Line
-	6500 3400 6400 3400
-Connection ~ 6500 3400
-Wire Wire Line
-	7000 3400 6600 3400
-Wire Wire Line
-	6600 3400 6500 3400
-Connection ~ 6600 3400
-Wire Wire Line
-	6600 3500 6600 3400
-$Comp
-L power:GND #PWR?
-U 1 1 5F170855
-P 7150 1500
-AR Path="/5ED049DE/5F170855" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3B1A/5F170855" Ref="#PWR090"  Part="1" 
-F 0 "#PWR090" H 7150 1250 50  0001 C CNN
-F 1 "GND" H 7250 1400 50  0000 C CNN
-F 2 "" H 7150 1500 50  0001 C CNN
-F 3 "" H 7150 1500 50  0001 C CNN
-	1    7150 1500
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7150 1500 7150 1450
-Wire Wire Line
-	2550 2150 2550 2300
-Wire Wire Line
-	2650 2150 2550 2150
-Connection ~ 2550 2150
-Wire Wire Line
-	2300 2150 2550 2150
-Wire Wire Line
-	2650 2300 2650 2150
-Connection ~ 2650 2150
-Wire Wire Line
-	2650 2150 2750 2150
-Wire Wire Line
-	2750 2300 2750 2150
-Connection ~ 2750 2150
-Wire Wire Line
-	2750 2150 2850 2150
-$Comp
-L power:GND #PWR?
-U 1 1 5F170866
-P 2300 2300
-AR Path="/5ED049DE/5F170866" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3B1A/5F170866" Ref="#PWR084"  Part="1" 
-F 0 "#PWR084" H 2300 2050 50  0001 C CNN
-F 1 "GND" H 2400 2200 50  0000 C CNN
-F 2 "" H 2300 2300 50  0001 C CNN
-F 3 "" H 2300 2300 50  0001 C CNN
-	1    2300 2300
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2300 2300 2300 2150
 Wire Wire Line
 	4000 2500 3850 2500
 Wire Wire Line
@@ -334,84 +210,6 @@ Wire Wire Line
 Wire Wire Line
 	4000 4900 3200 4900
 $Comp
-L Connector_Generic:Conn_02x04_Odd_Even J?
-U 1 1 5F1708CD
-P 6350 5500
-AR Path="/5ED049DE/5F1708CD" Ref="J?"  Part="1" 
-AR Path="/5EDB3B1A/5F1708CD" Ref="J16"  Part="1" 
-F 0 "J16" V 6300 5100 50  0000 L CNN
-F 1 "SALEAE_TEST" V 6400 4800 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 6350 5500 50  0001 C CNN
-F 3 "~" H 6350 5500 50  0001 C CNN
-F 4 "COM3 UART Test Points" V 6500 4800 50  0000 C CNN "TestPoint"
-F 5 "0010897080" H 6350 5500 50  0001 C CNN "MPN"
-	1    6350 5500
-	0    -1   1    0   
-$EndComp
-Wire Wire Line
-	6250 5800 6350 5800
-Connection ~ 6350 5800
-Wire Wire Line
-	6350 5800 6450 5800
-Connection ~ 6450 5800
-Wire Wire Line
-	6450 5800 6550 5800
-$Comp
-L Connector_Generic:Conn_02x04_Odd_Even J?
-U 1 1 5F1708D9
-P 6400 3800
-AR Path="/5ED049DE/5F1708D9" Ref="J?"  Part="1" 
-AR Path="/5EDB3B1A/5F1708D9" Ref="J17"  Part="1" 
-F 0 "J17" V 6496 3512 50  0000 R CNN
-F 1 "SALEAE_TEST" V 6405 3512 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 6400 3800 50  0001 C CNN
-F 3 "~" H 6400 3800 50  0001 C CNN
-F 4 "COM2 UART Test Points" V 6300 3050 50  0000 C CNN "TestPoint"
-F 5 "0010897080" H 6400 3800 50  0001 C CNN "MPN"
-	1    6400 3800
-	0    -1   -1   0   
-$EndComp
-Connection ~ 6250 5800
-Wire Wire Line
-	6250 5800 6250 5900
-Wire Wire Line
-	2850 3250 4000 3250
-Connection ~ 2850 3250
-Wire Wire Line
-	2850 2800 2850 3250
-Wire Wire Line
-	2750 3150 4000 3150
-Connection ~ 2750 3150
-Wire Wire Line
-	2750 2800 2750 3150
-Wire Wire Line
-	2650 3050 4000 3050
-Connection ~ 2650 3050
-Wire Wire Line
-	2650 2800 2650 3050
-Wire Wire Line
-	2550 2950 4000 2950
-Connection ~ 2550 2950
-Wire Wire Line
-	2550 2800 2550 2950
-$Comp
-L Connector_Generic:Conn_02x04_Odd_Even J?
-U 1 1 5F1708F2
-P 2650 2600
-AR Path="/5ED049DE/5F1708F2" Ref="J?"  Part="1" 
-AR Path="/5EDB3B1A/5F1708F2" Ref="J15"  Part="1" 
-F 0 "J15" V 2650 2900 50  0000 R CNN
-F 1 "SALEAE_TEST" V 2550 3250 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 2650 2600 50  0001 C CNN
-F 3 "~" H 2650 2600 50  0001 C CNN
-F 4 "SPI to UART Test Points" V 2450 3250 50  0000 C CNN "TestPoint"
-F 5 "0010897080" H 2650 2600 50  0001 C CNN "MPN"
-	1    2650 2600
-	0    -1   -1   0   
-$EndComp
-Wire Wire Line
-	2850 2150 2850 2300
-$Comp
 L Jumper:SolderJumper_2_Bridged JP?
 U 1 1 5F1708F9
 P 4900 6100
@@ -439,62 +237,6 @@ Wire Wire Line
 Wire Wire Line
 	5050 6100 5100 6100
 Connection ~ 5100 6100
-Wire Wire Line
-	7150 1450 6850 1450
-Connection ~ 6850 1450
-Wire Wire Line
-	6850 1550 6850 1450
-Wire Wire Line
-	5800 3250 6850 3250
-Connection ~ 6850 3250
-Wire Wire Line
-	6850 2050 6850 3250
-Wire Wire Line
-	6850 1450 6750 1450
-Connection ~ 6750 1450
-Wire Wire Line
-	6750 1450 6750 1550
-Wire Wire Line
-	5800 3150 6750 3150
-Connection ~ 6750 3150
-Wire Wire Line
-	6750 2050 6750 3150
-Wire Wire Line
-	6650 1450 6550 1450
-Wire Wire Line
-	6750 1450 6650 1450
-Connection ~ 6650 1450
-Wire Wire Line
-	6650 1550 6650 1450
-Wire Wire Line
-	5800 2350 6650 2350
-Connection ~ 6650 2350
-Wire Wire Line
-	6650 2050 6650 2350
-Wire Wire Line
-	6550 1450 6550 1550
-Wire Wire Line
-	5800 2250 6550 2250
-Connection ~ 6550 2250
-Wire Wire Line
-	6550 2050 6550 2250
-$Comp
-L Connector_Generic:Conn_02x04_Odd_Even J?
-U 1 1 5F170924
-P 6650 1850
-AR Path="/5ED049DE/5F170924" Ref="J?"  Part="1" 
-AR Path="/5EDB3B1A/5F170924" Ref="J18"  Part="1" 
-F 0 "J18" V 6550 1600 50  0000 R CNN
-F 1 "SALEAE_TEST" V 6450 1600 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 6650 1850 50  0001 C CNN
-F 3 "~" H 6650 1850 50  0001 C CNN
-F 4 "COM0/COM1 UART Test Points" V 6350 1050 50  0000 C CNN "TestPoint"
-F 5 "0010897080" H 6650 1850 50  0001 C CNN "MPN"
-	1    6650 1850
-	0    -1   -1   0   
-$EndComp
-NoConn ~ 6550 5300
-NoConn ~ 6600 4000
 NoConn ~ 5800 2450
 NoConn ~ 5800 2550
 NoConn ~ 5800 2650
@@ -533,26 +275,6 @@ Text HLabel 10350 4250 2    50   Output ~ 0
 ~COM2_UART_RTS
 Text HLabel 10350 5150 2    50   Output ~ 0
 ~COM3_UART_RTS
-Wire Wire Line
-	6250 4950 10350 4950
-Wire Wire Line
-	6350 5050 10350 5050
-Wire Wire Line
-	6450 5150 10350 5150
-Wire Wire Line
-	6300 4050 10350 4050
-Wire Wire Line
-	6400 4150 10350 4150
-Wire Wire Line
-	6500 4250 10350 4250
-Wire Wire Line
-	6850 3250 10350 3250
-Wire Wire Line
-	6750 3150 10350 3150
-Wire Wire Line
-	6650 2350 10350 2350
-Wire Wire Line
-	6550 2250 10350 2250
 Text HLabel 10350 2750 2    50   Output ~ 0
 COM01_ON
 Text HLabel 10350 2850 2    50   Output ~ 0
@@ -565,18 +287,6 @@ Text HLabel 10350 4650 2    50   Output ~ 0
 COM23_OFF
 Text HLabel 10350 4750 2    50   Output ~ 0
 ~COM23_INV
-Wire Wire Line
-	5800 2750 8300 2750
-Wire Wire Line
-	5800 2850 8400 2850
-Wire Wire Line
-	5800 2950 8500 2950
-Wire Wire Line
-	5800 4550 8250 4550
-Wire Wire Line
-	5800 4650 8350 4650
-Wire Wire Line
-	5800 4750 8450 4750
 Text HLabel 1550 2950 0    50   Output ~ 0
 S2U_MISO
 Text HLabel 1550 3050 0    50   Input ~ 0
@@ -645,142 +355,10 @@ Wire Wire Line
 	6750 6800 6750 6400
 Wire Wire Line
 	6750 6400 10300 6400
-$Comp
-L power:GND #PWR?
-U 1 1 5F5D34D2
-P 8850 1500
-AR Path="/5ED049DE/5F5D34D2" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3B1A/5F5D34D2" Ref="#PWR092"  Part="1" 
-F 0 "#PWR092" H 8850 1250 50  0001 C CNN
-F 1 "GND" H 8950 1400 50  0000 C CNN
-F 2 "" H 8850 1500 50  0001 C CNN
-F 3 "" H 8850 1500 50  0001 C CNN
-	1    8850 1500
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	8850 1500 8850 1450
-Wire Wire Line
-	8850 1450 8600 1450
-Wire Wire Line
-	8400 1450 8300 1450
-Connection ~ 8500 1450
-Wire Wire Line
-	8500 1450 8400 1450
-Connection ~ 8600 1450
-Wire Wire Line
-	8600 1450 8500 1450
-Wire Wire Line
-	8600 1600 8600 1450
-Wire Wire Line
-	8500 1450 8500 1600
-Wire Wire Line
-	8400 1600 8400 1450
-Wire Wire Line
-	8300 1450 8300 1600
-$Comp
-L Connector_Generic:Conn_02x04_Odd_Even J?
-U 1 1 5F5D34E4
-P 8400 1900
-AR Path="/5ED049DE/5F5D34E4" Ref="J?"  Part="1" 
-AR Path="/5EDB3B1A/5F5D34E4" Ref="J20"  Part="1" 
-F 0 "J20" V 8300 1650 50  0000 R CNN
-F 1 "SALEAE_TEST" V 8200 1650 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 8400 1900 50  0001 C CNN
-F 3 "~" H 8400 1900 50  0001 C CNN
-F 4 "GPIO1/2/3 Test" V 8100 1350 50  0000 C CNN "TestPoint"
-F 5 "0010897080" H 8400 1900 50  0001 C CNN "MPN"
-	1    8400 1900
-	0    -1   -1   0   
-$EndComp
-Connection ~ 8400 1450
-$Comp
-L power:GND #PWR?
-U 1 1 5F5D34EB
-P 8800 3500
-AR Path="/5ED049DE/5F5D34EB" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3B1A/5F5D34EB" Ref="#PWR091"  Part="1" 
-F 0 "#PWR091" H 8800 3250 50  0001 C CNN
-F 1 "GND" H 8900 3400 50  0000 C CNN
-F 2 "" H 8800 3500 50  0001 C CNN
-F 3 "" H 8800 3500 50  0001 C CNN
-	1    8800 3500
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	8800 3500 8800 3350
-Wire Wire Line
-	8550 3500 8550 3350
-Wire Wire Line
-	8450 3350 8450 3500
-Wire Wire Line
-	8350 3500 8350 3350
-Wire Wire Line
-	8250 3350 8250 3500
-$Comp
-L Connector_Generic:Conn_02x04_Odd_Even J?
-U 1 1 5F5D34FD
-P 8350 3800
-AR Path="/5ED049DE/5F5D34FD" Ref="J?"  Part="1" 
-AR Path="/5EDB3B1A/5F5D34FD" Ref="J19"  Part="1" 
-F 0 "J19" V 8500 3500 50  0000 R CNN
-F 1 "SALEAE_TEST" V 8400 3500 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 8350 3800 50  0001 C CNN
-F 3 "~" H 8350 3800 50  0001 C CNN
-F 4 "GPIO9/10/11 Test" V 8300 3150 50  0000 C CNN "TestPoint"
-F 5 "0010897080" H 8350 3800 50  0001 C CNN "MPN"
-	1    8350 3800
-	0    -1   -1   0   
-$EndComp
-Connection ~ 8300 2750
-Wire Wire Line
-	8300 2750 10350 2750
-Connection ~ 8400 2850
-Wire Wire Line
-	8400 2850 10350 2850
-Connection ~ 8500 2950
-Wire Wire Line
-	8500 2950 10350 2950
-Wire Wire Line
-	1550 2950 2550 2950
-Wire Wire Line
-	1550 3050 2650 3050
-Wire Wire Line
-	1550 3150 2750 3150
-Wire Wire Line
-	1550 3250 2850 3250
 Wire Wire Line
 	1550 3500 2450 3500
 Wire Wire Line
 	1550 3600 2800 3600
-Wire Wire Line
-	8500 2100 8500 2950
-Wire Wire Line
-	8400 2100 8400 2850
-Wire Wire Line
-	8300 2100 8300 2750
-Wire Wire Line
-	8250 4000 8250 4550
-Wire Wire Line
-	8350 4000 8350 4650
-Wire Wire Line
-	8250 3350 8350 3350
-Connection ~ 8350 3350
-Wire Wire Line
-	8350 3350 8450 3350
-Connection ~ 8450 3350
-Wire Wire Line
-	8450 3350 8550 3350
-Connection ~ 8550 3350
-Wire Wire Line
-	8550 3350 8800 3350
-Connection ~ 8250 4550
-Connection ~ 8350 4650
-Connection ~ 8450 4750
-Wire Wire Line
-	8350 4650 10350 4650
-Wire Wire Line
-	8450 4750 10350 4750
 $Comp
 L SparkFun-DiscreteSemi:MOSFET_PCH-DMG2307L Q?
 U 1 1 5F70A6FE
@@ -789,11 +367,11 @@ AR Path="/60F8228B/5F70A6FE" Ref="Q?"  Part="1"
 AR Path="/5EEDF256/5F70A6FE" Ref="Q?"  Part="1" 
 AR Path="/5EDB3B1A/5F70A6FE" Ref="Q11"  Part="1" 
 F 0 "Q11" H 1965 1505 45  0000 L CNN
-F 1 "DMG2305UX-7" H 1965 1589 45  0000 L CNN
+F 1 "TSM500P02CX RFG" H 1965 1589 45  0000 L CNN
 F 2 "Package_TO_SOT_SMD:SOT-23" H 1800 1850 20  0001 C CNN
 F 3 "" H 1800 1600 50  0001 C CNN
 F 4 "TRANS-11308" H 1965 1684 60  0001 L CNN "Field4"
-F 5 "DMG2305UX-7" H 1800 1600 50  0001 C CNN "MPN"
+F 5 "TSM500P02CX RFG" H 1800 1600 50  0001 C CNN "MPN"
 	1    1800 1600
 	1    0    0    1   
 $EndComp
@@ -839,10 +417,6 @@ Wire Wire Line
 	1450 1500 1450 1300
 Wire Wire Line
 	1450 1300 1500 1300
-Wire Wire Line
-	8450 4000 8450 4750
-Wire Wire Line
-	8250 4550 10350 4550
 $Comp
 L Connector:TestPoint TP?
 U 1 1 5FC4DC9E
@@ -943,8 +517,6 @@ $EndComp
 Connection ~ 5200 6100
 Wire Wire Line
 	5200 6100 5500 6100
-NoConn ~ 8550 4000
-NoConn ~ 8600 2100
 Text Notes 2250 7450 0    100  Italic 20
 Alex: Please check pinout & footprint on U15\nChecked: AT
 $Comp
@@ -977,32 +549,44 @@ F 5 "" H 1450 850 50  0001 C CNN "MPN"
 $EndComp
 Wire Wire Line
 	1450 850  1450 1300
-$Comp
-L Connector:TestPoint TP57
-U 1 1 5EFA92BC
-P 2400 850
-F 0 "TP57" H 2458 1013 50  0000 L CNN
-F 1 "5001" H 2458 922 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 2600 850 50  0001 C CNN
-F 3 "~" H 2600 850 50  0001 C CNN
-F 4 "GND" H 2458 831 50  0000 L CNN "TestPoint"
-F 5 "" H 2400 850 50  0001 C CNN "MPN"
-	1    2400 850 
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR?
-U 1 1 5EFA9A14
-P 2400 950
-AR Path="/5ED049DE/5EFA9A14" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB3B1A/5EFA9A14" Ref="#PWR0126"  Part="1" 
-F 0 "#PWR0126" H 2400 700 50  0001 C CNN
-F 1 "GND" H 2500 850 50  0000 C CNN
-F 2 "" H 2400 950 50  0001 C CNN
-F 3 "" H 2400 950 50  0001 C CNN
-	1    2400 950 
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
-	2400 950  2400 850 
+	5800 4250 10350 4250
+Wire Wire Line
+	5800 4150 10350 4150
+Wire Wire Line
+	5800 4050 10350 4050
+Wire Wire Line
+	5800 4750 10350 4750
+Wire Wire Line
+	5800 4650 10350 4650
+Wire Wire Line
+	5800 4550 10350 4550
+Wire Wire Line
+	5800 4950 10350 4950
+Wire Wire Line
+	5800 5050 10350 5050
+Wire Wire Line
+	5800 5150 10350 5150
+Wire Wire Line
+	5800 3250 10350 3250
+Wire Wire Line
+	5800 3150 10350 3150
+Wire Wire Line
+	5800 2350 10350 2350
+Wire Wire Line
+	5800 2250 10350 2250
+Wire Wire Line
+	5800 2950 10350 2950
+Wire Wire Line
+	5800 2850 10350 2850
+Wire Wire Line
+	5800 2750 10350 2750
+Wire Wire Line
+	1550 3250 4000 3250
+Wire Wire Line
+	1550 3150 4000 3150
+Wire Wire Line
+	1550 3050 4000 3050
+Wire Wire Line
+	1550 2950 4000 2950
 $EndSCHEMATC

@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 10 20
+Sheet 8 19
 Title "LCP Controller "
 Date "2020-06-09"
 Rev "0.1"
@@ -33,74 +33,6 @@ F 4 "Accel Int" V 7350 4250 50  0000 C CNN "TestPoint"
 F 5 "" H 7200 3900 50  0001 C CNN "MPN"
 	1    7200 3900
 	0    1    1    0   
-$EndComp
-Wire Wire Line
-	5450 4150 5750 4150
-Wire Wire Line
-	5450 4850 5450 4150
-Wire Wire Line
-	5050 4850 5450 4850
-Wire Wire Line
-	5350 4750 5350 3850
-Wire Wire Line
-	5050 4750 5350 4750
-Wire Wire Line
-	5250 4050 5750 4050
-Wire Wire Line
-	5250 4650 5250 4050
-Wire Wire Line
-	5050 4650 5250 4650
-Wire Wire Line
-	5150 4550 5150 3950
-Wire Wire Line
-	5050 4550 5150 4550
-$Comp
-L Connector_Generic:Conn_02x04_Odd_Even J?
-U 1 1 5EECBA6E
-P 4850 4650
-AR Path="/5ED049DE/5EECBA6E" Ref="J?"  Part="1" 
-AR Path="/60F8228B/5EECBA6E" Ref="J?"  Part="1" 
-AR Path="/5EDB548E/5EECBA6E" Ref="J6"  Part="1" 
-F 0 "J6" H 4950 4850 50  0000 R CNN
-F 1 "SALEAE_TEST" H 5100 4350 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 4850 4650 50  0001 C CNN
-F 3 "~" H 4850 4650 50  0001 C CNN
-F 4 "Accelerometer" H 4850 4250 50  0000 C CNN "TestPoint"
-F 5 "0010897080" H 4850 4650 50  0001 C CNN "MPN"
-	1    4850 4650
-	-1   0    0    -1  
-$EndComp
-Wire Wire Line
-	4250 4850 4250 4900
-Connection ~ 4250 4850
-Wire Wire Line
-	4550 4850 4250 4850
-Wire Wire Line
-	4250 4750 4250 4850
-Connection ~ 4250 4750
-Wire Wire Line
-	4550 4750 4250 4750
-Wire Wire Line
-	4250 4650 4250 4750
-Wire Wire Line
-	4250 4650 4250 4550
-Connection ~ 4250 4650
-Wire Wire Line
-	4550 4650 4250 4650
-Wire Wire Line
-	4250 4550 4550 4550
-$Comp
-L power:GND #PWR?
-U 1 1 5EECBA7F
-P 4250 4900
-AR Path="/60F8228B/5EECBA7F" Ref="#PWR?"  Part="1" 
-AR Path="/5EDB548E/5EECBA7F" Ref="#PWR052"  Part="1" 
-F 0 "#PWR052" H 4250 4650 50  0001 C CNN
-F 1 "GND" H 4150 4800 50  0000 C CNN
-F 2 "" H 4250 4900 50  0001 C CNN
-F 3 "" H 4250 4900 50  0001 C CNN
-	1    4250 4900
-	1    0    0    -1  
 $EndComp
 NoConn ~ 6600 3750
 Wire Wire Line
@@ -135,14 +67,6 @@ F 3 "" H 6100 4850 50  0001 C CNN
 	1    6100 4850
 	1    0    0    -1  
 $EndComp
-Connection ~ 5450 4150
-Connection ~ 5250 4050
-Connection ~ 5150 3950
-Wire Wire Line
-	5750 3950 5150 3950
-Connection ~ 5350 3850
-Wire Wire Line
-	5750 3850 5350 3850
 $Comp
 L Device:C_Small C?
 U 1 1 5EECBAA4
@@ -269,15 +193,7 @@ Text HLabel 8000 3650 2    50   BiDi ~ 0
 ACCEL_INT
 Wire Wire Line
 	7050 3650 8000 3650
-Wire Wire Line
-	3750 3850 5350 3850
-Wire Wire Line
-	3750 3950 5150 3950
-Wire Wire Line
-	3750 4050 5250 4050
-Wire Wire Line
-	3750 4150 5450 4150
-Text Notes 4050 5750 0    100  Italic 20
+Text Notes 3900 5600 0    100  Italic 20
 Alex: Please check pinout & footprint on U10\nFootprint looks good. Should pin 10 also be connected to +3.3V?\nYes. Checked: -AT\n
 Wire Wire Line
 	5600 3250 5600 3400
@@ -290,4 +206,12 @@ Wire Wire Line
 Connection ~ 6100 2950
 Wire Wire Line
 	6100 2950 6250 2950
+Wire Wire Line
+	3750 4150 5750 4150
+Wire Wire Line
+	3750 3850 5750 3850
+Wire Wire Line
+	3750 4050 5750 4050
+Wire Wire Line
+	3750 3950 5750 3950
 $EndSCHEMATC
