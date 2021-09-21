@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <settings>
     <DebugChecksum>
-        <Checksum>3902118649</Checksum>
+        <Checksum>2162554651</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -114,17 +114,17 @@
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
     <PlDriver>
-        <FirstRun>0</FirstRun>
         <MemConfigValue>C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\arm\CONFIG\debugger\AmbiqMicro\AMA3B1KK-KBR.ddf</MemConfigValue>
+        <FirstRun>0</FirstRun>
     </PlDriver>
     <Jet>
-        <JetConnSerialNo>81827</JetConnSerialNo>
-        <JetConnFoundProbes />
-        <PrevWtdReset>System</PrevWtdReset>
         <DisableInterrupts>0</DisableInterrupts>
         <LeaveRunning>0</LeaveRunning>
         <MultiCoreRunAll>0</MultiCoreRunAll>
         <OnlineReset>Software</OnlineReset>
+        <JetConnSerialNo>81827</JetConnSerialNo>
+        <JetConnFoundProbes />
+        <PrevWtdReset>System</PrevWtdReset>
     </Jet>
     <ArmDriver>
         <EnableCache>1</EnableCache>
@@ -142,6 +142,30 @@
         <PowerForcePC>1</PowerForcePC>
         <PowerConnectPC>1</PowerConnectPC>
     </SWOManager>
+    <PowerProbe>
+        <Frequency>10000</Frequency>
+        <Probe0>I0</Probe0>
+        <ProbeSetup0>2 0 1 2 0 0</ProbeSetup0>
+    </PowerProbe>
+    <LogFile>
+        <LoggingEnabled>_ 1</LoggingEnabled>
+        <LogFile>_ "$PROJ_DIR$\LogFile1.log"</LogFile>
+        <Category>_ 0</Category>
+    </LogFile>
+    <Aliases>
+        <A0>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_cachectrl.c" ""</A0>
+        <A1>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_clkgen.c" ""</A1>
+        <A2>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_ctimer.c" ""</A2>
+        <A3>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_stimer.c" ""</A3>
+        <A4>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_sysctrl.c" ""</A4>
+        <A5>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_systick.c" ""</A5>
+        <Count>6</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
+    <TermIOLog>
+        <LoggingEnabled>_ 1</LoggingEnabled>
+        <LogFile>_ "$PROJ_DIR$\TermIO.log"</LogFile>
+    </TermIOLog>
     <array_types>
         <Fmt0>uint32_t[64]	4	0</Fmt0>
     </array_types>
@@ -153,9 +177,10 @@
         <Fmt4>{W}1:AM_HAL_STATUS_IN_USE	3	0</Fmt4>
         <Fmt5>{W}1:AM_HAL_STATUS_SUCCESS	3	0</Fmt5>
         <Fmt6>{W}1:AM_HAL_STATUS_TIMEOUT	3	0</Fmt6>
-        <Fmt7>{W}1:len	4	0</Fmt7>
-        <Fmt8>{W}1:port	4	0</Fmt8>
-        <Fmt9>{W}1:ui32Status	3	0</Fmt9>
+        <Fmt7>{W}1:cmd	4	0</Fmt7>
+        <Fmt8>{W}1:len	4	0</Fmt8>
+        <Fmt9>{W}1:port	4	0</Fmt9>
+        <Fmt10>{W}1:ui32Status	3	0</Fmt10>
     </watch_formats>
     <Trace1>
         <Enabled>0</Enabled>
@@ -201,36 +226,13 @@
     </DisassembleMode>
     <Breakpoints2>
         <Bp0>_ 0 "EMUL_DATA" "ui32Status" 0 0 1 4 4294967295</Bp0>
-        <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\bsp\am_bsp_pins.c}.653.1" 0 0 1 "" 0 "" 0</Bp1>
-        <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\bsp\bsp_uart.c}.65.1" 0 0 1 "" 0 "" 0</Bp2>
-        <Bp3>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\bsp\bsp_uart.c}.65.1" 0 0 1 "" 0 "" 0</Bp3>
-        <Bp4>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\bsp\bsp_uart.c}.65.1" 0 0 1 "" 0 "" 0</Bp4>
-        <Bp5>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\bsp\bsp_uart.c}.54.5" 0 0 1 "" 0 "" 0</Bp5>
-        <Bp6>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\artemis\artemis_pa9ld.h}.11.1" 0 0 1 "" 0 "" 0</Bp6>
-        <Count>7</Count>
+        <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\bsp\bsp_uart.c}.42.5" 0 0 1 "" 0 "" 0</Bp1>
+        <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\main.c}.56.7" 0 0 1 "" 0 "" 0</Bp2>
+        <Bp3>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\artemis\artemis_ublox_i2c.c}.247.5" 0 0 1 "" 0 "" 0</Bp3>
+        <Bp4>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\artemis\artemis_ublox_i2c.h}.47.1" 0 0 1 "" 0 "" 0</Bp4>
+        <Bp5>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\src\artemis\artemis_ublox_i2c.c}.903.5" 0 0 1 "" 0 "" 0</Bp5>
+        <Bp6>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\src\artemis\artemis_ublox_i2c.c}.940.1" 0 0 1 "" 0 "" 0</Bp6>
+        <Bp7>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\src\artemis\artemis_ublox_i2c.c}.351.5" 0 0 1 "" 0 "" 0</Bp7>
+        <Count>8</Count>
     </Breakpoints2>
-    <PowerProbe>
-        <Frequency>10000</Frequency>
-        <Probe0>I0</Probe0>
-        <ProbeSetup0>2 0 1 2 0 0</ProbeSetup0>
-    </PowerProbe>
-    <TermIOLog>
-        <LoggingEnabled>_ 1</LoggingEnabled>
-        <LogFile>_ "$PROJ_DIR$\TermIO.log"</LogFile>
-    </TermIOLog>
-    <LogFile>
-        <LoggingEnabled>_ 1</LoggingEnabled>
-        <LogFile>_ "$PROJ_DIR$\LogFile1.log"</LogFile>
-        <Category>_ 0</Category>
-    </LogFile>
-    <Aliases>
-        <A0>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_cachectrl.c" ""</A0>
-        <A1>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_clkgen.c" ""</A1>
-        <A2>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_ctimer.c" ""</A2>
-        <A3>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_stimer.c" ""</A3>
-        <A4>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_sysctrl.c" ""</A4>
-        <A5>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_systick.c" ""</A5>
-        <Count>6</Count>
-        <SuppressDialog>0</SuppressDialog>
-    </Aliases>
 </settings>

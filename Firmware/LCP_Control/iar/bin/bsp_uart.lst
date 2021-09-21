@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         10/Sep/2021  10:00:12
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         17/Sep/2021  14:49:30
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode             
@@ -8,7 +8,7 @@
 #    Source file       =
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\bsp\bsp_uart.c
 #    Command line      =
-#        -f C:\Users\casari\AppData\Local\Temp\1\EW380F.tmp
+#        -f C:\Users\casari\AppData\Local\Temp\1\EW8DD0.tmp
 #        (C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\bsp\bsp_uart.c
 #        -D iar -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D
 #        AM_DEBUG_PRINTF -D AM_UTIL_FAULTISR_PRINT -lcN
@@ -271,13 +271,13 @@ C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\bsp\bsp_uart.c
     220                      artemis_max14830_UART_Write(MAX14830_COM_PORT0, pStr, len);
     221                      break;
     222                  case BSP_UART_COM1:
-    223                      artemis_max14830_UART_Write(MAX14830_COM_PORT0, pStr, len);
+    223                      artemis_max14830_UART_Write(MAX14830_COM_PORT1, pStr, len);
     224                      break;
     225                  case BSP_UART_COM2:
-    226                      artemis_max14830_UART_Write(MAX14830_COM_PORT0, pStr, len);
+    226                      artemis_max14830_UART_Write(MAX14830_COM_PORT2, pStr, len);
     227                      break;
     228                  case BSP_UART_COM3:
-    229                      artemis_max14830_UART_Write(MAX14830_COM_PORT0, pStr, len);
+    229                      artemis_max14830_UART_Write(MAX14830_COM_PORT3, pStr, len);
     230                      break;
     231                  case BSP_UART_LOG:
     232                      
@@ -345,13 +345,13 @@ C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\bsp\bsp_uart.c
     294                      rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
     295                      break;
     296                  case BSP_UART_COM1:
-    297                      rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
+    297                      rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT1, pStr, len);
     298                      break;
     299                  case BSP_UART_COM2:
-    300                      rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
+    300                      rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT2, pStr, len);
     301                      break;
     302                  case BSP_UART_COM3:
-    303                      rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
+    303                      rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT3, pStr, len);
     304                      break;
     305                  case BSP_UART_LOG:
     306                      

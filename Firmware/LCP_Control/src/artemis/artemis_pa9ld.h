@@ -53,6 +53,8 @@ void artemis_pa9ld_initialize(const am_hal_gpio_pincfg_t *power,
 void artemis_pa9ld_power_on(void);
 void artemis_pa9ld_power_off(void);
 void artemis_pa9ld_read(float *pressure, float *temperature);
+void artemis_pa9ld_get_calibration(module_manufacturer_t *manufacturer, 
+                                  module_scaling_t *scaling );
 
 #ifdef __cplusplus
 }

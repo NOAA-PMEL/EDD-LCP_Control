@@ -1,29 +1,29 @@
 ###############################################################################
 #                                                                             #
-#     IAR Assembler V8.50.9.278/W32 for ARM 31/Aug/2021  13:53:31             #
+#     IAR Assembler V8.50.9.278/W32 for ARM 17/Sep/2021  09:35:54             #
 #     Copyright 1999-2020 IAR Systems AB.                                     #
 #                                                                             #
 #           Source file   =  C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\portasm.s#
 #           List file     =  C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\portasm.lst#
 #           Object file   =  C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\portasm.o#
 #           Command line  =  -f                                               #
-#                            C:\Users\casari\AppData\Local\Temp\1\EW6BE.tmp   #
+#                            C:\Users\casari\AppData\Local\Temp\1\EW7A56.tmp  #
 #                            (C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\portasm.s #
 #                            -OC:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin #
 #                            -s+ -M<> -w+ -r                                  #
 #                            -LC:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin #
 #                            -t8 --cpu Cortex-M4 --fpu VFPv4_sp               #
-#                            -IC:\version-control\AmbiqSuiteSDK\third_party\FreeRTOSv10.1.1\Source\include\\ #
-#                            -IC:\version-control\AmbiqSuiteSDK\CMSIS\AmbiqMicro\Include\\ #
-#                            -IC:\version-control\AmbiqSuiteSDK\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\ #
-#                            -IC:\version-control\AmbiqSuiteSDK\\             #
-#                            -IC:\version-control\AmbiqSuiteSDK\devices\\     #
-#                            -IC:\version-control\AmbiqSuiteSDK\utils\\       #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\include\\ #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\AmbiqMicro\Include\\ #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\ #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\\             #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices\\     #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\\       #
 #                            -IC:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\\ #
 #                            -IC:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\bsp\\ #
 #                            -IC:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\RTOS\\ #
-#                            -IC:\version-control\AmbiqSuiteSDK\mcu\apollo3\\ #
-#                            -IC:\version-control\AmbiqSuiteSDK\CMSIS\ARM\Include\\) #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ #
+#                            -IC:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\) #
 #                                                                             #
 ###############################################################################
 

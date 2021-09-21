@@ -86,6 +86,8 @@ void S9T_init( const e_uart_t port, const am_hal_gpio_pincfg_t *power, const uin
   /** Initialize the COM Port Power Pin */
   am_hal_gpio_pinconfig(pS9->device.power.pin_number, *pS9->device.power.pin);// g_LCP_BSP_COM0_POWER_ON);
   S9T_OFF();
+  S9T_ON();
+  am_hal_systick_delay_us(500000);
   
   /** Initialize the COM Port UART */
   bsp_uart_init();
@@ -151,8 +153,8 @@ float S9T_Read(float *t, float *r)
   /** Find values */
   uint8_t *pStr = strstr(sampleStr, "sample\r\n");
   pStr += 8;
-  
-  module_s9_parse_msg(pStr, strlen(sampleStr), pS9);
+  uint8_t len = strlen(pStr);
+  module_s9_parse_msg(pStr, len, pS9);
   *t = pS9->temperature;
   *r = pS9->resistance;
  
@@ -177,6 +179,12 @@ STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p)
     uint8_t comma, end;
     uint8_t i;
     
+    if(len <= 4)
+    {
+      p->temperature = NAN;
+      p->resistance = NAN;
+      return;
+    }
     
 
     for(i=0;i<len;i++)

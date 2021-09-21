@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         31/Aug/2021  13:53:31
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         17/Sep/2021  09:36:02
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode             
@@ -8,7 +8,7 @@
 #    Source file       =
 #        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\am_util_debug.c
 #    Command line      =
-#        -f C:\Users\casari\AppData\Local\Temp\1\EW72D.tmp
+#        -f C:\Users\casari\AppData\Local\Temp\1\EW994F.tmp
 #        (C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\am_util_debug.c -D iar -D
 #        AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D AM_DEBUG_PRINTF -D
 #        AM_UTIL_FAULTISR_PRINT -lcN
@@ -20,12 +20,12 @@
 #        --cpu=Cortex-M4 --no_path_in_file_macros -e --fpu=VFPv4_sp
 #        --dlib_config "C:\Program Files (x86)\IAR Systems\Embedded Workbench
 #        8.4\arm\inc\c\DLib_Config_Normal.h" -I
-#        C:\version-control\AmbiqSuiteSDK\third_party\FreeRTOSv10.1.1\Source\include\\
-#        -I C:\version-control\AmbiqSuiteSDK\CMSIS\AmbiqMicro\Include\\ -I
-#        C:\version-control\AmbiqSuiteSDK\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\
-#        -I C:\version-control\AmbiqSuiteSDK\\ -I
-#        C:\version-control\AmbiqSuiteSDK\devices\\ -I
-#        C:\version-control\AmbiqSuiteSDK\utils\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\include\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\AmbiqMicro\Include\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\\ -I
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\\
 #        -I
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\RTOS\\
@@ -33,10 +33,10 @@
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\artemis\\
 #        -I
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\bsp\\
-#        -I C:\version-control\AmbiqSuiteSDK\mcu\apollo3\\ -I
-#        C:\version-control\AmbiqSuiteSDK\CMSIS\ARM\Include\\ -I
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\ -I
 #        $PROJ_DIR\src\RTOS\\ -I
-#        C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\\ -Ol)
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -Ol)
 #    Locale            =  C
 #    List file         =
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\am_util_debug.lst

@@ -584,32 +584,57 @@ void artemis_max14830_gpio_clear(uint8_t pin)
 //*****************************************************************************
 static void module_max14830_init(void)
 {
-  uint8_t channel = MAX14830_COM_PORT0;
-  
-//  Max14830RegWrite(channel, MAX14830_MODE2_REG, MAX14830_MODE2_RST_BIT);
+  eMAX18430_ComPort_t channel = MAX14830_COM_PORT0;
   char data = MAX14830_MODE2_RST;
-  module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
   
-  data = 0u;
-  module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
-
-  // Wait until reset is cleared
-  uint32_t resetTimeout = 128;
-  while(--resetTimeout)
+  for(uint8_t i=0; i<4; i++)
   {
-    module_max14830_Read(MAX14830_COM_PORT0, MAX14830_REG_DIVLSB, 1, &data);
-    if(data == 1)
-    {
-      break;
-    }
-  }
+    channel = (eMAX18430_ComPort_t)i;
+      switch(channel)
+      {
+      case 0:
+        channel = MAX14830_COM_PORT0;
+        break;
+      case 1:
+        channel = MAX14830_COM_PORT1;
+        break;
+      case 2:
+        channel = MAX14830_COM_PORT2;
+        break;
+      case 3:
+        channel = MAX14830_COM_PORT3;
+        break;
+      default:
+        break;
+      }
+    //  Max14830RegWrite(channel, MAX14830_MODE2_REG, MAX14830_MODE2_RST_BIT);
+      data = MAX14830_MODE2_RST;
+//      module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
+      module_max14830_Write(channel, MAX14830_REG_MODE2, &data, 1);
+      
+      data = 0u;
+//      module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
+      module_max14830_Write(channel, MAX14830_REG_MODE2, &data, 1);
+
+      // Wait until reset is cleared
+      uint32_t resetTimeout = 128;
+      while(--resetTimeout)
+      {
+        am_hal_systick_delay_us(50);
+//        module_max14830_Read(MAX14830_COM_PORT0, MAX14830_REG_DIVLSB, 1, &data);
+        module_max14830_Read(channel, MAX14830_REG_DIVLSB, 1, &data);
+        if(data == 1)
+        {
+          break;
+        }
+      }
+      
+      data = 0;
+      module_max14830_Write(channel, MAX14830_REG_IRQEN, &data, 1);
+      data = MAX14830_CLK_PLL_BYPASS | MAX14830_CLK_CRYSTAL_EN;
+      module_max14830_Write(channel, MAX14830_REG_CLKSOURCE, &data, 1);
   
-  data = 0;
-  module_max14830_Write(channel, MAX14830_REG_IRQEN, &data, 1);
-  data = MAX14830_CLK_PLL_BYPASS | MAX14830_CLK_CRYSTAL_EN;
-  module_max14830_Write(channel, MAX14830_REG_CLKSOURCE, &data, 1);
-  
-  
+
 
   
 
@@ -626,11 +651,9 @@ static void module_max14830_init(void)
 //        channel->uartRefClock = channel->clockFreq;
 //
 //        /* set the baud rate */
-//        Max14830SerialSetBaudrate(channel, channel->baudRate);
   artemis_max14830_Set_baudrate(channel, 9600);
 //
 //        /* configure LCR register, 8N1 mode by default */
-//        Max14830RegWrite(channel, MAX14830_LCR_REG, MAX14830_LCR_WORD_LEN_8);  
   data = MAX14830_LCR_LENGTH_8;
   module_max14830_Write(channel, MAX14830_REG_LCR, &data, 1);
 //
@@ -642,10 +665,6 @@ static void module_max14830_init(void)
 //            Max14830RegWrite(channel, MAX14830_HDPIXDELAY_REG, 0x11);
 //        }
 //
-//        /* set IRQ signal to a regualr interrupt output */
-//        Max14830RegRead(channel, MAX14830_MODE1_REG, &regValue);
-//        regValue |= MAX14830_MODE1_IRQSEL_BIT;
-//        Max14830RegWrite(channel, MAX14830_MODE1_REG, regValue);
   
   /* RMW IRQ With interrupt out */
   module_max14830_Read(channel, MAX14830_REG_MODE1, 1, &data);
@@ -653,14 +672,11 @@ static void module_max14830_init(void)
   module_max14830_Write(channel, MAX14830_REG_MODE1, &data, 1);
   
   
-//
-//        /* Reset FIFOs and enable echo suppression */
-//        Max14830RegRead(channel, MAX14830_MODE2_REG, &regValue);
-//        regValue |= MAX14830_MODE2_FIFORST_BIT;
-//        Max14830RegWrite(channel, MAX14830_MODE2_REG, regValue);
-  module_max14830_Read(channel, MAX14830_REG_MODE2, 1, &data);
-  data |= MAX14830_MODE2_FIFO_RST;
-  module_max14830_Write(channel, MAX14830_REG_MODE2, &data, 1);
+
+    /* Reset FIFOs and enable echo suppression */
+    module_max14830_Read(channel, MAX14830_REG_MODE2, 1, &data);
+    data |= MAX14830_MODE2_FIFO_RST;
+    module_max14830_Write(channel, MAX14830_REG_MODE2, &data, 1);
   
 //
 //        /* configure FIFO trigger level register */
@@ -754,6 +770,7 @@ static void module_max14830_init(void)
 //        /* enable the channel */
 //        channel->isEnabled = TRUE;
 //    }
+  }
 }
 static void module_max14830_Power_On(void)
 {
@@ -795,8 +812,12 @@ static uint32_t module_max14830_Read(
     artemis_stream_reset(&txstream);
     artemis_stream_reset(&rxstream);
     
+    uint32_t inst = (uint32_t) port  & 0x03;
+    inst = inst << 5;
+    inst |= ui32Instr;
     
-    artemis_stream_put(&txstream, ui32Instr ); 
+    
+    artemis_stream_put(&txstream, inst); //ui32Instr ); 
     artemis_spi_send(&module.spi, false, &txstream);
     artemis_spi_receive(&module.spi, true, &rxstream, ui32NumBytes);
 

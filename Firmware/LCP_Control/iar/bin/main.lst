@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         09/Sep/2021  15:21:02
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         21/Sep/2021  11:39:12
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode                        
@@ -8,7 +8,7 @@
 #    Source file                  =
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\main.c
 #    Command line                 =
-#        -f C:\Users\casari\AppData\Local\Temp\1\EW8B00.tmp
+#        -f C:\Users\casari\AppData\Local\Temp\1\EWFD65.tmp
 #        (C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\main.c -D iar
 #        -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D AM_DEBUG_PRINTF
 #        -D AM_UTIL_FAULTISR_PRINT -lcN
@@ -64,72 +64,87 @@ C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\main.c
      10          #include "artemis_mcu.h"
      11          //#include "artemis_scheduler.h"
      12          //#include "artemis_time.h"
-     13          #include <stdlib.h>
-     14          
-     15          ///
-     16          ///
-     17          ///
-     18          int main(void)
-     19          {
-     20              // initialize mcu features
-     21              artemis_mcu_initialize();
-     22          
-     23              // initialize debug features
-     24              artemis_debug_initialize();
+     13          //#include "artemis_pa9ld.h"
+     14          #include "artemis_ublox_i2c.h"
+     15          
+     16          #include <stdlib.h>
+     17          
+     18          ///
+     19          ///
+     20          ///
+     21          int main(void)
+     22          {
+     23              // initialize mcu features
+     24              artemis_mcu_initialize();
      25          
-     26              // initialize time functions
-     27              artemis_time_initialize();
+     26              // initialize debug features
+     27              artemis_debug_initialize();
      28          
-     29              // initialize the scheduler
-     30          //    artemis_scheduler_initialize();
+     29              // initialize time functions
+     30              artemis_time_initialize();
      31          
-     32              // run the application
-     33          //    artemis_scheduler_run();
+     32              // initialize the scheduler
+     33          //    artemis_scheduler_initialize();
      34          
-     35              S9T_init(BSP_UART_COM0, &g_AM_BSP_GPIO_COM0_POWER_PIN, AM_BSP_GPIO_COM0_POWER_PIN);
-     36              S9T_enable();
-     37              
-     38              float r, t;
-     39              while(true)
-     40              {
-     41                S9T_Read(&t, &r);
-     42                printf("t=%.3f, r=%.3f\n", t, r); 
-     43          //      bsp_uart_putc(BSP_UART_COM0, 'C');
-     44          //      printf("%c", bsp_uart_getc(BSP_UART_COM0));
-     45                am_hal_systick_delay_us(500000);
-     46              }
-     47              return(EXIT_SUCCESS);
-     48          }
+     35              // run the application
+     36          //    artemis_scheduler_run();
+     37          
+     38              S9T_init(BSP_UART_COM1, &g_AM_BSP_GPIO_COM1_POWER_PIN, AM_BSP_GPIO_COM1_POWER_PIN);
+     39              S9T_enable();
+     40              
+     41          //    artemis_pa9ld_initialize(&g_AM_BSP_GPIO_PRES_ON, AM_BSP_GPIO_PRES_ON);
+     42              artemis_ublox_i2c_initialize(&g_AM_BSP_GPIO_PRES_ON, AM_BSP_GPIO_PRES_ON, &g_AM_BSP_GPIO_GPS_EXTINT, AM_BSP_GPIO_GPS_EXTINT);
+     43          //    
+     44          //    artemis_ublox_i2c_turn_off_nmea_output();
+     45          //    artemis_ublox_i2c_turn_on_nmea_output(NMEA_GGA);
+     46              float p, r, t;
+     47              
+     48              ublox_data_t gps;
+     49              while(true)
+     50              {
+     51          //      artemis_pa9ld_read(&p, &t);
+     52          //      printf("p=%0.3f, t=%0.3f\n", p, t);
+     53          //      S9T_Read(&t, &r);
+     54          //      printf("t=%.3f, r=%.3f\n", t, r); 
+     55          //      artemis_ublox_i2c_read_position(&gps);
+     56                artemis_ublox_read_data(&gps);
+     57                printf("lat=%.6f%c, lon=%.6f%c, alt=%.3f\n", gps.lat, gps.NS, gps.lon, gps.EW, gps.alt);
+     58          //      bsp_uart_putc(BSP_UART_COM0, 'C');
+     59          //      printf("%c", bsp_uart_getc(BSP_UART_COM0));
+     60          //      am_hal_systick_delay_us(500000);
+     61              }
+     62              return(EXIT_SUCCESS);
+     63          }
 
    Maximum stack usage in bytes:
 
    .cstack Function
    ------- --------
-      24   main
-        24   -> S9T_Read
-        24   -> S9T_enable
-        24   -> S9T_init
-        24   -> __aeabi_f2d
-        24   -> am_hal_systick_delay_us
-        24   -> artemis_debug_initialize
-        24   -> artemis_mcu_initialize
-        24   -> artemis_time_initialize
-        24   -> printf
+      56   main
+        56   -> S9T_enable
+        56   -> S9T_init
+        56   -> __aeabi_f2d
+        56   -> artemis_debug_initialize
+        56   -> artemis_mcu_initialize
+        56   -> artemis_time_initialize
+        56   -> artemis_ublox_i2c_initialize
+        56   -> artemis_ublox_read_data
+        56   -> printf
 
 
    Section sizes:
 
    Bytes  Function/Label
    -----  --------------
-      16  ?_0
-      84  main
+      36  ?_0
+     116  main
 
  
- 16 bytes in section .rodata
- 84 bytes in section .text
+  36 bytes in section .rodata
+ 116 bytes in section .text
  
- 84 bytes of CODE  memory
- 16 bytes of CONST memory
+ 116 bytes of CODE  memory
+  36 bytes of CONST memory
 
 Errors: none
-Warnings: 2
+Warnings: 5

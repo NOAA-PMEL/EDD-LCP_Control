@@ -60,12 +60,15 @@ build am_util_delay.pbi : index am_util_delay.xcl
 build am_util_faultisr.pbi : index am_util_faultisr.xcl
 build am_util_stdio.pbi : index am_util_stdio.xcl
 build artemis_debug.pbi : index artemis_debug.xcl
+build artemis_i2c.pbi : index artemis_i2c.xcl
 build artemis_iom.pbi : index artemis_iom.xcl
 build artemis_max14830.pbi : index artemis_max14830.xcl
 build artemis_mcu.pbi : index artemis_mcu.xcl
+build artemis_pa9ld.pbi : index artemis_pa9ld.xcl
 build artemis_spi.pbi : index artemis_spi.xcl
 build artemis_stream.pbi : index artemis_stream.xcl
 build artemis_time.pbi : index artemis_time.xcl
+build artemis_ublox_i2c.pbi : index artemis_ublox_i2c.xcl
 build am_bsp.pbi : index am_bsp.xcl
 build am_bsp_pins.pbi : index am_bsp_pins.xcl
 build bsp_uart.pbi : index bsp_uart.xcl
@@ -87,10 +90,11 @@ build freertos_lowpower_part1.pbi : link am_hal_ctimer.pbi am_hal_debug.pbi am_h
 build freertos_lowpower_part2.pbi : link am_hal_itm.pbi am_hal_mcuctrl.pbi am_hal_mspi.pbi am_hal_pdm.pbi am_hal_pwrctrl.pbi am_hal_queue.pbi am_hal_reset.pbi am_hal_rtc.pbi
 build freertos_lowpower_part3.pbi : link am_hal_scard.pbi am_hal_secure_ota.pbi am_hal_security.pbi am_hal_stimer.pbi am_hal_sysctrl.pbi am_hal_systick.pbi am_hal_tpiu.pbi am_hal_uart.pbi
 build freertos_lowpower_part4.pbi : link am_hal_wdt.pbi am_devices_button.pbi am_devices_led.pbi am_util_debug.pbi am_util_delay.pbi am_util_faultisr.pbi am_util_stdio.pbi artemis_debug.pbi
-build freertos_lowpower_part5.pbi : link artemis_iom.pbi artemis_max14830.pbi artemis_mcu.pbi artemis_spi.pbi artemis_stream.pbi artemis_time.pbi am_bsp.pbi am_bsp_pins.pbi
-build freertos_lowpower_part6.pbi : link bsp_uart.pbi event_groups.pbi heap_2.pbi list.pbi port.pbi queue.pbi rtos.pbi tasks.pbi
-build freertos_lowpower_part7.pbi : link timers.pbi buffer_c.pbi LED.pbi S9_temp.pbi main.pbi startup_iar.pbi
-build freertos_lowpower.pbd : link freertos_lowpower_part0.pbi freertos_lowpower_part1.pbi freertos_lowpower_part2.pbi freertos_lowpower_part3.pbi freertos_lowpower_part4.pbi freertos_lowpower_part5.pbi freertos_lowpower_part6.pbi freertos_lowpower_part7.pbi
+build freertos_lowpower_part5.pbi : link artemis_i2c.pbi artemis_iom.pbi artemis_max14830.pbi artemis_mcu.pbi artemis_pa9ld.pbi artemis_spi.pbi artemis_stream.pbi artemis_time.pbi
+build freertos_lowpower_part6.pbi : link artemis_ublox_i2c.pbi am_bsp.pbi am_bsp_pins.pbi bsp_uart.pbi event_groups.pbi heap_2.pbi list.pbi port.pbi
+build freertos_lowpower_part7.pbi : link queue.pbi rtos.pbi tasks.pbi timers.pbi buffer_c.pbi LED.pbi S9_temp.pbi main.pbi
+build freertos_lowpower_part8.pbi : link startup_iar.pbi
+build freertos_lowpower.pbd : link freertos_lowpower_part0.pbi freertos_lowpower_part1.pbi freertos_lowpower_part2.pbi freertos_lowpower_part3.pbi freertos_lowpower_part4.pbi freertos_lowpower_part5.pbi freertos_lowpower_part6.pbi freertos_lowpower_part7.pbi freertos_lowpower_part8.pbi
 build freertos_lowpower.pbw : browsedata freertos_lowpower.pbd
 
 

@@ -3079,6 +3079,12 @@
             <name>$PROJ_DIR$\..\src\artemis\artemis_debug.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_i2c.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_i2c.h</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\src\artemis\artemis_iom.c</name>
         </file>
         <file>
@@ -3097,6 +3103,12 @@
             <name>$PROJ_DIR$\..\src\artemis\artemis_mcu.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_pa9ld.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_pa9ld.h</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\src\artemis\artemis_spi.c</name>
         </file>
         <file>
@@ -3113,6 +3125,12 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\artemis\artemis_time.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_ublox_i2c.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_ublox_i2c.h</name>
         </file>
     </group>
     <group>

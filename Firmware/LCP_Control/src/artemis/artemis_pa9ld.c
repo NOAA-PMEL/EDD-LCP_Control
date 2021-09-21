@@ -11,15 +11,15 @@
     2 bytes from master
     2. Await the end of conversion (three ways)
     - Simple delay of 8 ms
-    - Polling of the «Busy?» flag [5] in the
+    - Polling of the ï¿½Busy?ï¿½ flag [5] in the
     status byte (only one byte reading needed)
-    - Event triggering by the additional «EOC»
+    - Event triggering by the additional ï¿½EOCï¿½
     handshake pin (goes to VDD)
     3. Read out measurement results
-    1 byte from master, 3…5 bytes from slave
+    1 byte from master, 3ï¿½5 bytes from slave
     4. Interpretation of new data
-    P [bar] = P min…P max 16384…49152
-    T [°C] = -50…150 °C 384…64384
+    P [bar] = P minï¿½P max 16384ï¿½49152
+    T [ï¿½C] = -50ï¿½150 ï¿½C 384ï¿½64384
 */
 
 //*****************************************************************************
@@ -154,19 +154,14 @@ static module_t module;
 //
 //*****************************************************************************
 static void module_pa9ld_read_sensor(pa9ld_data_t *data);
-
-
 static float module_pa9ld_convert_pressure(uint32_t u32Pressure);
 static float module_pa9ld_convert_temperature(uint32_t u32Temp);
 static bool module_pa9ld_read_status(void);
-//static void module_pad9ld_convert_msg(char *data);
 static int32_t module_pa9ld_read_with_status(artemis_i2c_t *i2c, 
                                              artemis_stream_t *rxstream, 
                                              uint32_t numBytes, 
                                              uint32_t attempts);
 static uint32_t module_pa9ld_read_unique_product_code(void);
-//static float module_pa9ld_read_low_pressure_limit(void);
-//static float module_pa9ld_read_high_pressure_limit(void);
 static void module_pa9ld_convert_memory_manufacturer(uint8_t *data, module_manufacturer_t *m);
 static void module_pa9ld_convert_memory_pressure( uint8_t *data, 
                                                   module_scaling_t *scaling);
@@ -174,11 +169,7 @@ static float module_pa9ld_convert_memory_pressure_value(uint8_t *data);
 static void module_pa9ld_read_memory_pressure(module_scaling_t *scaling);
 static void module_pa9ld_read_memory(module_scaling_t *scaling, 
                                 module_manufacturer_t *manufacturer);
-//static void module_pa9ld_read_manufacturer(module_manufacturer_t *manufacturer);
 
-///
-///
-///
 void artemis_pa9ld_initialize(const am_hal_gpio_pincfg_t *power, 
                               const uint32_t power_pin)
 {
@@ -205,11 +196,7 @@ void artemis_pa9ld_initialize(const am_hal_gpio_pincfg_t *power,
     artemis_pa9ld_power_off();
     artemis_pa9ld_power_on();
     
-    /** Read the module serial number & scaling coefficients */
-//    module.manufacturer.custom_id = module_pa9ld_read_unique_product_code();
-//    module.scaling.low = module_pa9ld_read_low_pressure_limit();
-//    module.scaling.high = module_pa9ld_read_high_pressure_limit();
-    
+    /** Read the module serial number & scaling coefficients */    
     module_pa9ld_read_memory(&module.scaling, &module.manufacturer);
     
     
@@ -226,6 +213,12 @@ void artemis_pa9ld_power_off(void)
   am_hal_gpio_output_set(module.power.pin);
 }
 
+void artemis_pa9ld_get_calibration(module_manufacturer_t *manufacturer, 
+                                  module_scaling_t *scaling )
+{
+  manufacturer = &module.manufacturer;
+  scaling = &module.scaling;
+}
 void artemis_pa9ld_read(float *pressure, float *temperature)
 {
   pa9ld_data_t data;

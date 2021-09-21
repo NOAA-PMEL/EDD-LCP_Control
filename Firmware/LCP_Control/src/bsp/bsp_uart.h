@@ -1,8 +1,9 @@
 #ifndef BSP_UART_H
 #define BSP_UART_H
 
+#ifndef TEST
 #include "am_bsp_pins.h"
-
+#endif
 
 typedef enum{
     BSP_UART_COM0,
