@@ -17,35 +17,6 @@ Text Notes 7700 4500 0    100  Italic 0
 This requires some impedance\n matching calculation for PCB!!!
 Text GLabel 6150 2800 2    50   Input ~ 0
 GPS_3V3
-$Comp
-L Device:R_Pack02 RN?
-U 1 1 5EE930C4
-P 5050 3050
-AR Path="/5ED049DE/5EE930C4" Ref="RN?"  Part="1" 
-AR Path="/60F8228B/5EE930C4" Ref="RN?"  Part="1" 
-AR Path="/5EDB3949/5EE930C4" Ref="RN19"  Part="1" 
-F 0 "RN19" V 4733 3050 50  0000 C CNN
-F 1 "10k" V 4824 3050 50  0000 C CNN
-F 2 "Resistor_SMD:R_Array_Concave_2x0603" V 5225 3050 50  0001 C CNN
-F 3 "~" H 5050 3050 50  0001 C CNN
-F 4 "EXB-V4V103JV" H 5050 3050 50  0001 C CNN "MPN"
-	1    5050 3050
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
-	5050 3250 5050 4100
-Connection ~ 5150 4200
-Connection ~ 5050 4100
-Wire Wire Line
-	5150 2850 5150 2800
-Connection ~ 5150 2800
-Wire Wire Line
-	5050 2800 5150 2800
-Wire Wire Line
-	5050 2850 5050 2800
-Connection ~ 5050 2800
-Wire Wire Line
-	4900 2800 5050 2800
 Wire Wire Line
 	4450 2250 4500 2250
 Wire Wire Line
@@ -67,7 +38,7 @@ F 0 "R26" V 4443 2250 50  0000 C CNN
 F 1 "10k" V 4534 2250 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 4580 2250 50  0001 C CNN
 F 3 "~" H 4650 2250 50  0001 C CNN
-F 4 "ERA-6AEB103V" H 4650 2250 50  0001 C CNN "MPN"
+F 4 "ERA-6ARW103V" H 4650 2250 50  0001 C CNN "MPN"
 	1    4650 2250
 	0    1    1    0   
 $EndComp
@@ -98,8 +69,6 @@ Wire Wire Line
 Connection ~ 6150 3200
 Wire Wire Line
 	6150 2800 6150 3200
-Wire Wire Line
-	5150 2800 5450 2800
 Wire Wire Line
 	5450 2800 5800 2800
 Connection ~ 5450 2800
@@ -163,10 +132,6 @@ Text HLabel 2300 4400 0    50   BiDi ~ 0
 GPS_GPIO
 Wire Wire Line
 	2300 2450 4450 2450
-Wire Wire Line
-	2300 4200 5150 4200
-Wire Wire Line
-	2300 4100 5050 4100
 Text HLabel 8600 4200 2    50   Output ~ 0
 GPS_SIGNAL
 $Comp
@@ -188,7 +153,7 @@ F 0 "D6" H 7550 2254 45  0000 C CNN
 F 1 "PMEG4005EJ" H 7550 2170 45  0000 C CNN
 F 2 "SOD-323" H 7550 2250 20  0001 C CNN
 F 3 "" H 7550 2050 50  0001 C CNN
-F 4 "PMEG4005EJ,115" H 7550 2050 50  0001 C CNN "MPN"
+F 4 "RB400VAM-50TR" H 7550 2050 50  0001 C CNN "MPN"
 	1    7550 2050
 	-1   0    0    -1  
 $EndComp
@@ -243,10 +208,10 @@ Add U.FL with Jumper to prototype\n3 way jumper to distinguish between ant switc
 Text Notes 4700 6350 0    100  Italic 20
 Alex: Please check pinout & footprint on U13\n-Checked- AT
 $Comp
-L Connector:TestPoint TP50
+L Connector:TestPoint GPS_3V3
 U 1 1 5EE097BD
 P 5800 2600
-F 0 "TP50" H 5858 2763 50  0000 L CNN
+F 0 "GPS_3V3" H 5858 2763 50  0000 L CNN
 F 1 "5000" H 5858 2672 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 6000 2600 50  0001 C CNN
 F 3 "~" H 6000 2600 50  0001 C CNN
@@ -258,10 +223,10 @@ $EndComp
 Wire Wire Line
 	5800 2600 5800 2800
 $Comp
-L Connector:TestPoint TP51
+L Connector:TestPoint GPS_BCKP1
 U 1 1 5EE0E319
 P 6800 1950
-F 0 "TP51" H 6858 2113 50  0000 L CNN
+F 0 "GPS_BCKP1" H 6858 2113 50  0000 L CNN
 F 1 "5000" H 6858 2022 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 7000 1950 50  0001 C CNN
 F 3 "~" H 7000 1950 50  0001 C CNN
@@ -277,14 +242,12 @@ Wire Wire Line
 	6800 2050 6550 2050
 Wire Wire Line
 	5800 2800 6150 2800
-Text Notes 5000 3250 1    50   ~ 0
-RN19 DNP
 $Comp
 L RF_GPS:MAX-M8Q U13
 U 1 1 5FF8D1F2
 P 6350 4200
 F 0 "U13" H 6950 3450 50  0000 C CNN
-F 1 "MAX-M8Q" H 7000 3350 50  0000 C CNN
+F 1 "MAX-M8C" H 7000 3350 50  0000 C CNN
 F 2 "RF_GPS:ublox_MAX" H 6750 3550 50  0001 C CNN
 F 3 "https://www.u-blox.com/sites/default/files/MAX-M8-FW3_DataSheet_%28UBX-15031506%29.pdf" H 6350 4200 50  0001 C CNN
 	1    6350 4200
@@ -303,10 +266,6 @@ F 3 "" H 6350 5050 50  0001 C CNN
 	1    6350 5050
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	5050 4100 5750 4100
-Wire Wire Line
-	5150 4200 5750 4200
 Wire Wire Line
 	6350 5050 6350 4900
 Wire Wire Line
@@ -327,9 +286,13 @@ NoConn ~ 5750 3900
 NoConn ~ 5750 4500
 NoConn ~ 5750 4600
 Wire Wire Line
-	5150 3250 5150 4200
-Wire Wire Line
 	2300 4400 5750 4400
 Wire Wire Line
 	6550 2050 6550 3300
+Wire Wire Line
+	2300 4100 5750 4100
+Wire Wire Line
+	2300 4200 5750 4200
+Wire Wire Line
+	4900 2800 5450 2800
 $EndSCHEMATC

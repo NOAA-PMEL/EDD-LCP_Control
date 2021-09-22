@@ -130,8 +130,8 @@ $EndSheet
 $Sheet
 S 8050 4650 1350 700 
 U 5EEE892C
-F0 "Pressure/Spare I2C" 50
-F1 "Pressure_SpareI2C.sch" 50
+F0 "Spare I2C" 50
+F1 "SpareI2C.sch" 50
 F2 "SPARE_ON" I L 8050 4800 50 
 F3 "SPARE_SCL" I L 8050 4900 50 
 F4 "SPARE_SDA" B L 8050 5000 50 
@@ -604,8 +604,8 @@ $EndSheet
 $Sheet
 S 8000 3700 1350 700 
 U 5EDA499C
-F0 "Crypto Authentication" 50
-F1 "Crypto.sch" 50
+F0 "Pressure Sensor" 50
+F1 "Pressure.sch" 50
 F2 "PRESSURE_ON" I L 8000 3800 50 
 F3 "PRESSURE_SCL" I L 8000 3900 50 
 F4 "PRESSURE_SDA" B L 8000 4000 50 

@@ -256,7 +256,7 @@ F 0 "R1" V 3543 2650 50  0000 C CNN
 F 1 "10k" V 3634 2650 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 3680 2650 50  0001 C CNN
 F 3 "~" H 3750 2650 50  0001 C CNN
-F 4 "ERA-6AEB103V" H 3750 2650 50  0001 C CNN "MPN"
+F 4 "ERA-6ARW103V" H 3750 2650 50  0001 C CNN "MPN"
 	1    3750 2650
 	0    1    1    0   
 $EndComp
@@ -363,24 +363,6 @@ Wire Wire Line
 Connection ~ 6550 3200
 Wire Wire Line
 	6550 3200 6600 3200
-Wire Wire Line
-	4000 3200 4500 3200
-$Comp
-L Device:R_Pack02 RN?
-U 1 1 5EEDA092
-P 4600 3600
-AR Path="/5ED049DE/5EEDA092" Ref="RN?"  Part="1" 
-AR Path="/60F8228B/5EEDA092" Ref="RN?"  Part="1" 
-AR Path="/5EC7245E/5EEDA092" Ref="RN?"  Part="1" 
-AR Path="/5EDA4305/5EEDA092" Ref="RN1"  Part="1" 
-F 0 "RN1" V 4283 3600 50  0000 C CNN
-F 1 "10k" V 4374 3600 50  0000 C CNN
-F 2 "Resistor_SMD:R_Array_Concave_2x0603" V 4775 3600 50  0001 C CNN
-F 3 "~" H 4600 3600 50  0001 C CNN
-F 4 "EXB-V4V103JV" H 4600 3600 50  0001 C CNN "MPN"
-	1    4600 3600
-	1    0    0    1   
-$EndComp
 $Comp
 L Device:R_Pack02 RN?
 U 1 1 5EEDA098
@@ -397,26 +379,6 @@ F 4 "EXB-V4V103JV" H 5050 3600 50  0001 C CNN "MPN"
 	1    5050 3600
 	1    0    0    1   
 $EndComp
-Wire Wire Line
-	4500 3800 4500 4050
-Connection ~ 4500 4050
-Wire Wire Line
-	4500 4050 5700 4050
-Wire Wire Line
-	4600 3800 4600 4150
-Connection ~ 4600 4150
-Wire Wire Line
-	4600 4150 5700 4150
-Connection ~ 4500 3200
-Wire Wire Line
-	4500 3200 4600 3200
-Wire Wire Line
-	4500 3200 4500 3400
-Wire Wire Line
-	4600 3400 4600 3200
-Connection ~ 4600 3200
-Wire Wire Line
-	4600 3200 4950 3200
 Wire Wire Line
 	4950 3400 4950 3200
 Connection ~ 4950 3200
@@ -533,10 +495,10 @@ Alex: Please check pinout & footprint on U1\nChecked: AT\n
 Text Notes 2350 5650 0    50   ~ 0
 (DEFAULT)
 $Comp
-L Connector:TestPoint TP16
+L Connector:TestPoint ADC24_3V3
 U 1 1 5EE2C27F
 P 5050 3050
-F 0 "TP16" H 5108 3213 50  0000 L CNN
+F 0 "ADC24_3V3" H 5108 3213 50  0000 L CNN
 F 1 "5004" H 5108 3122 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 5250 3050 50  0001 C CNN
 F 3 "~" H 5250 3050 50  0001 C CNN
@@ -548,10 +510,10 @@ $EndComp
 Wire Wire Line
 	5050 3050 5050 3200
 $Comp
-L Connector:TestPoint TP18
+L Connector:TestPoint GNDA1
 U 1 1 5EE339BB
 P 9800 3400
-F 0 "TP18" H 9858 3518 50  0000 L CNN
+F 0 "GNDA1" H 9858 3518 50  0000 L CNN
 F 1 "5001" H 9858 3427 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 10000 3400 50  0001 C CNN
 F 3 "~" H 10000 3400 50  0001 C CNN
@@ -575,14 +537,11 @@ F 3 "" H 9800 3550 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	9800 3400 9800 3550
-Wire Wire Line
-	2700 3200 4000 3200
-Connection ~ 4000 3200
 $Comp
-L Connector:TestPoint TP7
+L Connector:TestPoint ADC24_ON1
 U 1 1 5EF493CC
 P 2450 2700
-F 0 "TP7" H 2508 2863 50  0000 L CNN
+F 0 "ADC24_ON1" H 2508 2863 50  0000 L CNN
 F 1 "5004" H 2508 2772 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 2650 2700 50  0001 C CNN
 F 3 "~" H 2650 2700 50  0001 C CNN
@@ -599,10 +558,10 @@ Connection ~ 2450 2850
 Wire Wire Line
 	2450 2850 3550 2850
 $Comp
-L Connector:TestPoint TP14
+L Connector:TestPoint ADC24_A0
 U 1 1 5EF4EA6E
 P 3850 4500
-F 0 "TP14" H 3908 4663 50  0000 L CNN
+F 0 "ADC24_A0" H 3908 4663 50  0000 L CNN
 F 1 "5002" H 3908 4572 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 4050 4500 50  0001 C CNN
 F 3 "~" H 4050 4500 50  0001 C CNN
@@ -615,10 +574,10 @@ Wire Wire Line
 	3850 4500 3850 4550
 Connection ~ 3850 4550
 $Comp
-L Connector:TestPoint TP15
+L Connector:TestPoint ADC24_A1
 U 1 1 5EF53909
 P 4450 4500
-F 0 "TP15" H 4508 4663 50  0000 L CNN
+F 0 "ADC24_A1" H 4508 4663 50  0000 L CNN
 F 1 "5002" H 4508 4572 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 4650 4500 50  0001 C CNN
 F 3 "~" H 4650 4500 50  0001 C CNN
@@ -636,7 +595,9 @@ Connection ~ 6550 5750
 Wire Wire Line
 	2100 4250 5050 4250
 Wire Wire Line
-	2100 4150 4600 4150
+	4000 3200 4950 3200
 Wire Wire Line
-	2100 4050 4500 4050
+	2100 4050 5700 4050
+Wire Wire Line
+	2100 4150 5700 4150
 $EndSCHEMATC

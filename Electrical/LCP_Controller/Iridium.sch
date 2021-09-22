@@ -151,10 +151,10 @@ This requires some impedance\n matching calculation for PCB!!!
 Text Notes 3150 5900 0    100  Italic 20
 Alex: Please check pinout & footprint on U14\n9603N Brochure with layout: \nhttps://www.beamcommunications.com/document/37-brochure-iridium-9603-9603n-transceiver\nHad to move connector on footprint 3mm
 $Comp
-L Connector:TestPoint TP54
+L Connector:TestPoint EXT_PWR1
 U 1 1 5EE03645
 P 6450 3300
-F 0 "TP54" H 6508 3463 50  0000 L CNN
+F 0 "EXT_PWR1" H 6508 3463 50  0000 L CNN
 F 1 "5000" H 6508 3372 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 6650 3300 50  0001 C CNN
 F 3 "~" H 6650 3300 50  0001 C CNN

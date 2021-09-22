@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr B 17000 11000
 encoding utf-8
-Sheet 19 19
+Sheet 18 19
 Title "LCP Controller "
 Date "2020-06-09"
 Rev "0.1"
@@ -39,7 +39,7 @@ F 0 "J23" H 6850 2050 50  0000 R CNN
 F 1 "ANALOG_CONN" H 7050 1550 50  0000 R CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical" H 6750 1850 50  0001 C CNN
 F 3 "~" H 6750 1850 50  0001 C CNN
-F 4 "0010897080" H 6750 1850 50  0001 C CNN "MPN"
+F 4 "" H 6750 1850 50  0001 C CNN "MPN"
 	1    6750 1850
 	1    0    0    -1  
 $EndComp
@@ -109,7 +109,7 @@ AR Path="/5EEE892C/5F536642" Ref="J?"  Part="1"
 AR Path="/5EE033BE/5F536642" Ref="J25"  Part="1" 
 F 0 "J25" H 10718 1575 50  0000 C CNN
 F 1 "Conn_01x04" H 10718 1666 50  0000 C CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical" H 10800 2000 50  0001 C CNN
+F 2 "Connector_Hirose:Hirose_DF11-4DP-2DSA_2x02_P2.00mm_Vertical" H 10800 2000 50  0001 C CNN
 F 3 "~" H 10800 2000 50  0001 C CNN
 F 4 "" H 10800 2000 50  0001 C CNN "MPN"
 	1    10800 2000
@@ -129,7 +129,7 @@ AR Path="/5ED049DE/5F55B6FB" Ref="J?"  Part="1"
 AR Path="/5EE033BE/5F55B6FB" Ref="J22"  Part="1" 
 F 0 "J22" H 3450 6700 50  0000 C CNN
 F 1 "Conn_01x04" H 3368 6716 50  0001 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 3450 7050 50  0001 C CNN
+F 2 "Connector_Hirose:Hirose_DF11-4DP-2DSA_2x02_P2.00mm_Vertical" H 3450 7050 50  0001 C CNN
 F 3 "~" H 3450 7050 50  0001 C CNN
 F 4 "" H 3450 7050 50  0001 C CNN "MPN"
 	1    3450 7050
@@ -229,7 +229,7 @@ AR Path="/5ED049DE/5F7E3E6A" Ref="J?"  Part="1"
 AR Path="/5EE033BE/5F7E3E6A" Ref="J24"  Part="1" 
 F 0 "J24" H 7200 6700 50  0000 C CNN
 F 1 "Conn_01x04" H 7118 6716 50  0001 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 7200 7050 50  0001 C CNN
+F 2 "Connector_Hirose:Hirose_DF11-4DP-2DSA_2x02_P2.00mm_Vertical" H 7200 7050 50  0001 C CNN
 F 3 "~" H 7200 7050 50  0001 C CNN
 F 4 "" H 7200 7050 50  0001 C CNN "MPN"
 	1    7200 7050
@@ -280,7 +280,7 @@ AR Path="/5ED049DE/5F7E72CD" Ref="J?"  Part="1"
 AR Path="/5EE033BE/5F7E72CD" Ref="J26"  Part="1" 
 F 0 "J26" H 10950 6700 50  0000 C CNN
 F 1 "Conn_01x04" H 10868 6716 50  0001 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 10950 7050 50  0001 C CNN
+F 2 "Connector_Hirose:Hirose_DF11-4DP-2DSA_2x02_P2.00mm_Vertical" H 10950 7050 50  0001 C CNN
 F 3 "~" H 10950 7050 50  0001 C CNN
 F 4 "" H 10950 7050 50  0001 C CNN "MPN"
 	1    10950 7050
@@ -331,7 +331,7 @@ AR Path="/5ED049DE/5F7EAE71" Ref="J?"  Part="1"
 AR Path="/5EE033BE/5F7EAE71" Ref="J27"  Part="1" 
 F 0 "J27" H 14700 6700 50  0000 C CNN
 F 1 "Conn_01x04" H 14618 6716 50  0001 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 14700 7050 50  0001 C CNN
+F 2 "Connector_Hirose:Hirose_DF11-4DP-2DSA_2x02_P2.00mm_Vertical" H 14700 7050 50  0001 C CNN
 F 3 "~" H 14700 7050 50  0001 C CNN
 F 4 "" H 14700 7050 50  0001 C CNN "MPN"
 	1    14700 7050
@@ -425,7 +425,7 @@ AR Path="/5EEE892C/614EB728" Ref="J?"  Part="1"
 AR Path="/5EE033BE/614EB728" Ref="J10"  Part="1" 
 F 0 "J10" H 14418 1575 50  0000 C CNN
 F 1 "Conn_01x04" H 14418 1666 50  0000 C CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical" H 14500 2000 50  0001 C CNN
+F 2 "Connector_Hirose:Hirose_DF11-4DP-2DSA_2x02_P2.00mm_Vertical" H 14500 2000 50  0001 C CNN
 F 3 "~" H 14500 2000 50  0001 C CNN
 F 4 "" H 14500 2000 50  0001 C CNN "MPN"
 	1    14500 2000

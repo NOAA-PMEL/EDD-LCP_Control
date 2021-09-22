@@ -63,10 +63,6 @@ F 5 "TSM500P02CX RFG" H 5450 3250 50  0001 C CNN "MPN"
 $EndComp
 Wire Wire Line
 	5550 3500 5550 3450
-Wire Wire Line
-	5800 4000 5800 3950
-Wire Wire Line
-	5700 4100 5700 3950
 $Comp
 L Device:R R?
 U 1 1 5EEE764D
@@ -77,7 +73,7 @@ F 0 "R24" V 5093 2950 50  0000 C CNN
 F 1 "10k" V 5184 2950 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 5230 2950 50  0001 C CNN
 F 3 "~" H 5300 2950 50  0001 C CNN
-F 4 "ERA-6AEB103V" H 5300 2950 50  0001 C CNN "MPN"
+F 4 "ERA-6ARW103V" H 5300 2950 50  0001 C CNN "MPN"
 	1    5300 2950
 	0    1    1    0   
 $EndComp
@@ -96,33 +92,6 @@ Connection ~ 5100 3150
 Wire Wire Line
 	6100 3500 6100 3900
 Wire Wire Line
-	5550 3500 5700 3500
-Wire Wire Line
-	5700 3550 5700 3500
-Connection ~ 5700 3500
-Wire Wire Line
-	5700 3500 5800 3500
-Wire Wire Line
-	5800 3550 5800 3500
-Connection ~ 5800 3500
-Wire Wire Line
-	5800 3500 6100 3500
-$Comp
-L Device:R_Pack02 RN?
-U 1 1 5EEE7664
-P 5700 3750
-AR Path="/5ED049DE/5EEE7664" Ref="RN?"  Part="1" 
-AR Path="/60F8228B/5EEE7664" Ref="RN?"  Part="1" 
-AR Path="/5EEDF256/5EEE7664" Ref="RN17"  Part="1" 
-F 0 "RN17" V 5383 3750 50  0000 C CNN
-F 1 "10k" V 5474 3750 50  0000 C CNN
-F 2 "Resistor_SMD:R_Array_Concave_2x0603" V 5875 3750 50  0001 C CNN
-F 3 "~" H 5700 3750 50  0001 C CNN
-F 4 "EXB-V4V103JV" H 5700 3750 50  0001 C CNN "MPN"
-	1    5700 3750
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
 	6100 3900 6750 3900
 Wire Wire Line
 	6750 3900 6750 4200
@@ -132,8 +101,6 @@ Text HLabel 3000 4000 0    50   Input ~ 0
 IMU_SCL
 Text HLabel 3000 4100 0    50   BiDi ~ 0
 IMU_SDA
-Connection ~ 5700 4100
-Connection ~ 5800 4000
 Wire Wire Line
 	3000 3150 3750 3150
 $Comp
@@ -152,10 +119,10 @@ $EndComp
 Wire Wire Line
 	5550 2750 5550 2950
 $Comp
-L Connector:TestPoint TP46
+L Connector:TestPoint IMU_PWR1
 U 1 1 5EE382D0
 P 6100 3500
-F 0 "TP46" H 6158 3663 50  0000 L CNN
+F 0 "IMU_PWR1" H 6158 3663 50  0000 L CNN
 F 1 "5004" H 6158 3572 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 6300 3500 50  0001 C CNN
 F 3 "~" H 6300 3500 50  0001 C CNN
@@ -166,10 +133,10 @@ F 5 "" H 6100 3500 50  0001 C CNN "MPN"
 $EndComp
 Connection ~ 6100 3500
 $Comp
-L Connector:TestPoint TP45
+L Connector:TestPoint IMU_ON1
 U 1 1 5EF6A26C
 P 3750 3050
-F 0 "TP45" H 3808 3213 50  0000 L CNN
+F 0 "IMU_ON1" H 3808 3213 50  0000 L CNN
 F 1 "5002" H 3808 3122 50  0000 L CNN
 F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 3950 3050 50  0001 C CNN
 F 3 "~" H 3950 3050 50  0001 C CNN
@@ -187,16 +154,12 @@ Wire Wire Line
 	6750 4200 7000 4200
 Text Notes 7400 4350 0    50   ~ 0
 Qwiic Cable:\n1- Black - GND\n2- Red - 3.3V\n3- Blue - SDA\n4- Yellow - SCL
-Text Notes 5600 4000 1    50   ~ 0
-RN17 DNP
-Wire Wire Line
-	5800 4000 7000 4000
-Wire Wire Line
-	5700 4100 7000 4100
-Wire Wire Line
-	3000 4000 5800 4000
-Wire Wire Line
-	3000 4100 5700 4100
 Text Notes 4600 5250 0    50   ~ 0
 ToDo: Validate the Hole Size and Spacing for the Sparkfun Razor IMU\n1) https://www.sparkfun.com/products/15335     1"x1" board with 0.8" by 0.8" mounting holes\n2) https://www.sparkfun.com/products/16832  1.2"x1.2" board with 1"x1" mounting holes\n
+Wire Wire Line
+	3000 4000 7000 4000
+Wire Wire Line
+	3000 4100 7000 4100
+Wire Wire Line
+	5550 3500 6100 3500
 $EndSCHEMATC

@@ -62,7 +62,7 @@ F 0 "R2" V 4943 3150 50  0000 C CNN
 F 1 "10k" V 5034 3150 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 5080 3150 50  0001 C CNN
 F 3 "~" H 5150 3150 50  0001 C CNN
-F 4 "ERA-6AEB103V" H 5150 3150 50  0001 C CNN "MPN"
+F 4 "ERA-6ARW103V" H 5150 3150 50  0001 C CNN "MPN"
 	1    5150 3150
 	0    1    1    0   
 $EndComp
@@ -77,41 +77,6 @@ Wire Wire Line
 	4900 3400 4900 3150
 Wire Wire Line
 	4900 3150 5000 3150
-Wire Wire Line
-	5350 3750 5500 3750
-Wire Wire Line
-	5500 4000 5500 3750
-Connection ~ 5500 3750
-Wire Wire Line
-	5500 3750 5600 3750
-Wire Wire Line
-	5600 4000 5600 3750
-Connection ~ 5600 3750
-Wire Wire Line
-	5600 3750 6450 3750
-$Comp
-L Device:R_Pack02 RN?
-U 1 1 5EE394DB
-P 5500 4200
-AR Path="/5ED049DE/5EE394DB" Ref="RN?"  Part="1" 
-AR Path="/60F8228B/5EE394DB" Ref="RN?"  Part="1" 
-AR Path="/5EC7245E/5EE394DB" Ref="RN?"  Part="1" 
-AR Path="/5EDA42CC/5EE394DB" Ref="RN?"  Part="1" 
-AR Path="/5EDA499C/5EE394DB" Ref="RN4"  Part="1" 
-F 0 "RN4" V 5183 4200 50  0000 C CNN
-F 1 "10k" V 5274 4200 50  0000 C CNN
-F 2 "Resistor_SMD:R_Array_Concave_2x0603" V 5675 4200 50  0001 C CNN
-F 3 "~" H 5500 4200 50  0001 C CNN
-F 4 "EXB-V4V103JV" H 5500 4200 50  0001 C CNN "MPN"
-	1    5500 4200
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
-	5500 4400 5500 4500
-Connection ~ 5500 4500
-Wire Wire Line
-	5600 4400 5600 4600
-Connection ~ 5600 4600
 Text HLabel 3500 3400 0    50   Input ~ 0
 PRESSURE_ON
 Text HLabel 3300 4600 0    50   Input ~ 0
@@ -121,55 +86,19 @@ PRESSURE_SDA
 Wire Wire Line
 	3500 3400 3750 3400
 Connection ~ 4900 3400
-$Comp
-L Connector:TestPoint TP20
-U 1 1 5EE24E0F
-P 6450 3350
-F 0 "TP20" H 6508 3513 50  0000 L CNN
-F 1 "5004" H 6508 3422 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 6650 3350 50  0001 C CNN
-F 3 "~" H 6650 3350 50  0001 C CNN
-F 4 "PRESSURE_PWR" H 6508 3331 50  0000 L CNN "TestPoint"
-F 5 "" H 6450 3350 50  0001 C CNN "MPN"
-	1    6450 3350
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	6450 3350 6450 3750
-$Comp
-L Connector:TestPoint TP19
-U 1 1 5EF7984A
-P 3750 3200
-F 0 "TP19" H 3808 3363 50  0000 L CNN
-F 1 "5002" H 3808 3272 50  0000 L CNN
-F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 3950 3200 50  0001 C CNN
-F 3 "~" H 3950 3200 50  0001 C CNN
-F 4 "PRESSURE_ON" H 3808 3181 50  0000 L CNN "TestPoint"
-F 5 "" H 3750 3200 50  0001 C CNN "MPN"
-	1    3750 3200
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	3750 3200 3750 3400
 Connection ~ 3750 3400
 Wire Wire Line
 	3750 3400 4900 3400
-Text Notes 5400 4400 1    50   ~ 0
-RN4 DNP\n
-Wire Wire Line
-	3300 4600 5600 4600
-Wire Wire Line
-	3300 4500 5500 4500
 Text HLabel 8950 4400 2    50   Input ~ 0
 PRESSURE_PWR
 Text HLabel 8950 4600 2    50   Input ~ 0
 PRESSURE_I2C_SCL
-Wire Wire Line
-	5600 4600 8950 4600
 Text HLabel 8950 4500 2    50   Input ~ 0
 PRESSURE_I2C_SDA
-Wire Wire Line
-	5500 4500 8950 4500
 Wire Wire Line
 	6450 4400 7750 4400
 Wire Wire Line
@@ -191,4 +120,36 @@ Wire Wire Line
 Connection ~ 7750 4400
 Wire Wire Line
 	7750 4400 8950 4400
+Wire Wire Line
+	3300 4500 8950 4500
+Wire Wire Line
+	3300 4600 8950 4600
+Wire Wire Line
+	5350 3750 6450 3750
+$Comp
+L Connector:TestPoint PRES_PWR1
+U 1 1 5EE24E0F
+P 6450 3350
+F 0 "PRES_PWR1" H 6508 3513 50  0000 L CNN
+F 1 "5004" H 6508 3422 50  0000 L CNN
+F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 6650 3350 50  0001 C CNN
+F 3 "~" H 6650 3350 50  0001 C CNN
+F 4 "PRESSURE_PWR" H 6508 3331 50  0000 L CNN "TestPoint"
+F 5 "" H 6450 3350 50  0001 C CNN "MPN"
+	1    6450 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:TestPoint PRES_ON1
+U 1 1 5EF7984A
+P 3750 3200
+F 0 "PRES_ON1" H 3808 3363 50  0000 L CNN
+F 1 "5002" H 3808 3272 50  0000 L CNN
+F 2 "TestPoint:TestPoint_Keystone_5000-5004_Miniature" H 3950 3200 50  0001 C CNN
+F 3 "~" H 3950 3200 50  0001 C CNN
+F 4 "PRESSURE_ON" H 3808 3181 50  0000 L CNN "TestPoint"
+F 5 "" H 3750 3200 50  0001 C CNN "MPN"
+	1    3750 3200
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
