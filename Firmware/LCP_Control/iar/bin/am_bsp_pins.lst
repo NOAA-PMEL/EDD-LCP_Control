@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         17/Sep/2021  09:35:55
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         25/Sep/2021  16:52:45
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode             
@@ -8,7 +8,7 @@
 #    Source file       =
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\bsp\am_bsp_pins.c
 #    Command line      =
-#        -f C:\Users\casari\AppData\Local\Temp\1\EW7CBC.tmp
+#        -f C:\Users\casari\AppData\Local\Temp\1\EW1C37.tmp
 #        (C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\bsp\am_bsp_pins.c
 #        -D iar -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D
 #        AM_DEBUG_PRINTF -D AM_UTIL_FAULTISR_PRINT -lcN
@@ -848,7 +848,7 @@ C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\bsp\am_bsp_pins.c
     797          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_SCL =
     798          {
     799              .uFuncSel            = AM_HAL_PIN_39_M4SCL,
-    800              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_12K,
+    800              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
     801              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
     802              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
     803              .uIOMnum             = 4
@@ -862,7 +862,7 @@ C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\bsp\am_bsp_pins.c
     811          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_SDA =
     812          {
     813              .uFuncSel            = AM_HAL_PIN_40_M4SDAWIR3,
-    814              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_12K,
+    814              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
     815              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
     816              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
     817              .uIOMnum             = 4

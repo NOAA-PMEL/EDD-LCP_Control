@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         21/Sep/2021  11:39:12
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         25/Sep/2021  17:09:54
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode                        
@@ -8,7 +8,7 @@
 #    Source file                  =
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\main.c
 #    Command line                 =
-#        -f C:\Users\casari\AppData\Local\Temp\1\EWFD65.tmp
+#        -f C:\Users\casari\AppData\Local\Temp\1\EWD682.tmp
 #        (C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\main.c -D iar
 #        -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D AM_DEBUG_PRINTF
 #        -D AM_UTIL_FAULTISR_PRINT -lcN
@@ -47,7 +47,6 @@
 #      __dlib_file_descriptor     =  0
 #      __dlib_full_locale_support =  0
 #      __dlib_version             =  6
-#      __iar_require _Printf      =  floats,widths
 #
 ###############################################################################
 
@@ -107,44 +106,42 @@ C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\main.c
      53          //      S9T_Read(&t, &r);
      54          //      printf("t=%.3f, r=%.3f\n", t, r); 
      55          //      artemis_ublox_i2c_read_position(&gps);
-     56                artemis_ublox_read_data(&gps);
-     57                printf("lat=%.6f%c, lon=%.6f%c, alt=%.3f\n", gps.lat, gps.NS, gps.lon, gps.EW, gps.alt);
-     58          //      bsp_uart_putc(BSP_UART_COM0, 'C');
-     59          //      printf("%c", bsp_uart_getc(BSP_UART_COM0));
-     60          //      am_hal_systick_delay_us(500000);
-     61              }
-     62              return(EXIT_SUCCESS);
-     63          }
+     56          //      artemis_ublox_read_data(&gps);
+     57                artemis_ublox_test();
+     58          //    artemis_ublox_read_register(0x00, 240);
+     59          
+     60          //      printf("lat=%.6f%c, lon=%.6f%c, alt=%.3f\n", gps.lat, gps.NS, gps.lon, gps.EW, gps.alt);
+     61          //      bsp_uart_putc(BSP_UART_COM0, 'C');
+     62          //      printf("%c", bsp_uart_getc(BSP_UART_COM0));
+     63          //      am_hal_systick_delay_us(500000);
+     64              }
+     65              return(EXIT_SUCCESS);
+     66          }
 
    Maximum stack usage in bytes:
 
    .cstack Function
    ------- --------
-      56   main
-        56   -> S9T_enable
-        56   -> S9T_init
-        56   -> __aeabi_f2d
-        56   -> artemis_debug_initialize
-        56   -> artemis_mcu_initialize
-        56   -> artemis_time_initialize
-        56   -> artemis_ublox_i2c_initialize
-        56   -> artemis_ublox_read_data
-        56   -> printf
+       8   main
+         8   -> S9T_enable
+         8   -> S9T_init
+         8   -> artemis_debug_initialize
+         8   -> artemis_mcu_initialize
+         8   -> artemis_time_initialize
+         8   -> artemis_ublox_i2c_initialize
+         8   -> artemis_ublox_test
 
 
    Section sizes:
 
    Bytes  Function/Label
    -----  --------------
-      36  ?_0
-     116  main
+      60  main
 
  
-  36 bytes in section .rodata
- 116 bytes in section .text
+ 60 bytes in section .text
  
- 116 bytes of CODE  memory
-  36 bytes of CONST memory
+ 60 bytes of CODE memory
 
 Errors: none
-Warnings: 5
+Warnings: 6

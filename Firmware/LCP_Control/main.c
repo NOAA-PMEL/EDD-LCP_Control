@@ -53,8 +53,11 @@ int main(void)
 //      S9T_Read(&t, &r);
 //      printf("t=%.3f, r=%.3f\n", t, r); 
 //      artemis_ublox_i2c_read_position(&gps);
-      artemis_ublox_read_data(&gps);
-      printf("lat=%.6f%c, lon=%.6f%c, alt=%.3f\n", gps.lat, gps.NS, gps.lon, gps.EW, gps.alt);
+//      artemis_ublox_read_data(&gps);
+      artemis_ublox_test();
+//    artemis_ublox_read_register(0x00, 240);
+
+//      printf("lat=%.6f%c, lon=%.6f%c, alt=%.3f\n", gps.lat, gps.NS, gps.lon, gps.EW, gps.alt);
 //      bsp_uart_putc(BSP_UART_COM0, 'C');
 //      printf("%c", bsp_uart_getc(BSP_UART_COM0));
 //      am_hal_systick_delay_us(500000);

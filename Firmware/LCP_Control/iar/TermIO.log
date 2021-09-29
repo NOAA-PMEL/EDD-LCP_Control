@@ -14072,3 +14072,7960 @@ numBytes = 9287
 
  << Debugger has been reset >> 
 
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+UBlox bad write 0xFF on lsb of 0xFE
+24, 47
+numBytes = 9287
+Data: N
+ff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffff
+lat=-0.629380T, lon=0.000000™, alt=0.000
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+UBlox bad write 0xFF on lsb of 0xFE
+UBlox bad write 0xFF on lsb of 0xFE
+UBlox bad write 0xFF on lsb of 0xFE
+UBlox bad write 0xFF on lsb of 0xFE
+UBlox bad write 0xFF on lsb of 0xFE
+UBlox bad write 0xFF on lsb of 0xFE
+UBlox bad write 0xFF on lsb of 0xFE
+UBlox bad write 0xFF on lsb of 0xFE
+UBlox bad write 0xFF on lsb of 0xFE
+ff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffff
+lat=-0.629380T, lon=0.000000™, alt=0.000
+ff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffff
+lat=-0.629380T, lon=0.000000™, alt=0.000
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+ff
+ffffffffffff0000
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffff
+lat=-0.629380Ä, lon=0.000000	, alt=0.000
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+lat=-0.629380È, lon=0.000000, alt=0.000
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+0x00 0x00 0x00 0x00 0x00 0x00 0x00 
+lat=-0.629380Ì, lon=0.000000, alt=0.000
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line
+
+ << Debugger has been reset >> 
+
+
+
+ << Debugger has been reset >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 
+0xff 0xff 0xff 0xff 0xff 0xff 
+lat=-0.629380Ì, lon=0.000000, alt=0.000
+
+
+ << Debugger has been reset >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,190557.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,190606.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,190610.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+$GNRMC,190617.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+$GNRMC,190624.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+$GNRMC,190631.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,190858.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,190903.00,V,,,,,,,240921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,190907.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,190911.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,190915.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,190919.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,190923.00,V,,,,,,,240921,,,N*6F
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,190927.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,190931.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+$GNRMC,190949.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,190955.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,190959.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191003.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191007.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191011.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191015.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191019.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191024.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,191723.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191728.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191732.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191736.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191741.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191745.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191749.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191753.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191757.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,191811.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191816.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191821.00,V,,,,,,,240921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191825.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191829.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191833.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191837.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191842.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191846.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,191858.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191903.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191907.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191911.00,V,,,,,,,240921,,,N*6F
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191915.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191919.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191924.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191928.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191932.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,191938.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191943.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191947.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191951.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,191956.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192000.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192004.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192008.00,V,,,,,,,240921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192012.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,192018.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192023.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192027.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192032.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192036.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192040.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192044.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192048.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192052.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,192058.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192103.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192108.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192112.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192116.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192120.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192124.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192128.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192132.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,192138.00,V,,,,,,,240921,,,N*6F
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192144.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192148.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192152.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192156.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192200.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192204.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192208.00,V,,,,,,,240921,,,N*6F
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192213.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,192219.00,V,,,,,,,240921,,,N*6F
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192224.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192228.00,V,,,,,,,240921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192232.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192236.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192240.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192244.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192249.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192253.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,192259.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192304.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192308.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192312.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192316.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192320.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192325.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192329.00,V,,,,,,,240921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192333.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,192339.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192344.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192348.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192352.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192357.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192401.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192405.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192409.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192413.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,192419.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192424.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192428.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192433.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192437.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192441.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192445.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192449.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192453.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,192459.00,V,,,,,,,240921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192504.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192509.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192513.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192517.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192521.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192525.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192529.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192533.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,192540.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192545.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192549.00,V,,,,,,,240921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192553.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192557.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192601.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192605.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192609.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192614.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,192620.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192625.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192629.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192633.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192637.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192641.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192645.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192650.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192654.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,192700.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192705.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192709.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192713.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192717.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192721.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192726.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192730.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192734.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,192740.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192745.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,192749.00,V,,,,,,,240921,,,N*6F
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,193041.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193046.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193050.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193055.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193059.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193103
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+$GNRMC,193517.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193522.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193526.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193530.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193534.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193538.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193542.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193547.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193551.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,193557.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193602.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193606.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193610.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193614.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193619.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193623.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193627.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193631.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,193637.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193642.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193646.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193650.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193655.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193659.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193703.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193707.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193711.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,193717.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193722.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193726.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193731.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193735.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193739.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193743.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193747.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193751.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,193757.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193803.00,V,,,,,,,240921,,,N*6F
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193807.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193811.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193815.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193819.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193823.00,V,,,,,,,240921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193827.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193831.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,193838.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193843.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193847.00,V,,,,,,,240921,,,N*6F
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193851.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193855.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193859.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193903.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193908.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193912.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,193918.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193923.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193927.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193931.00,V,,,,,,,240921,,,N*6F
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193935.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193939.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193944.00,V,,,,,,,240921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193948.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,193952.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,193958.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194003.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194007.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194011.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194015.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194020.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194024.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194028.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194032.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,194038.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194043.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194047.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194052.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194056.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194100.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194104.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194108.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194112.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,194119.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194124.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194128.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194132.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194136.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194140.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194145.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194149.00,V,,,,,,,240921,,,N*6F
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194153.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,194159.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194204.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194208.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194212.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194216.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194221.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194225.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194229.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194233.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.000
+$GNRMC,194239.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194244.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194248.00,V,,,,,,,240921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194252.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194257.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194301.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194305.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194309.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GN
+$GNRMC,194313.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+lat=-0.629380¤, lon=0.000000é, alt=0.
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+ÿÿÿÿÿÿÿÿ
+$GNRMC,194533.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN=.
+$GNRMC,194539.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GN=.
+$GNRMC,194543.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN=.
+$GNRMC,194547.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN=.
+$GNRMC,194552.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN=.
+$GNRMC,194556.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN=.
+$GNRMC,194600.00,V,,,,,,,240921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GN=.
+$GNRMC,194604.00,V,,,,,,,240921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GN=.
+$GNRMC,194608.00,V,,,,,,,240921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GN=.
+$GNRMC,194613.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GN=.
+$GNRMC,194617.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GN=.
+$GNRMC,194621.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GN=.
+$GNRMC,194625.00,V,,,,,,,240921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$G
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,1
+94838.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,1948å-
+$GNRMC,194846.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194850.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194854.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194859.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194903.00,V,,,,,,,240921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194907.00,V,,,,,,,240921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194911.00,V,,,,,,,240921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194915.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194920.00,V,,,,,,,240921,,,N*68
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194924.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194928.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194932.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194937.00,V,,,,,,,240921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194941.00,V,,,,,,,240921,,,N*6F
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194945.00,V,,,,,,,240921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194949.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194953.00,V,,,,,,,240921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,194958.00,V,,,,,,,240921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,195002.00,V,,,,,,,240921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,195006.00,V,,,,,,,240921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,195010.00,V,,,,,,,240921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC,195015.00,V,,,,,,,240921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GNå-
+$GNRMC
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	2
+
+ << Debugger has been reset >> 
+
+
+
+ << Debugger has been reset >> 
+
+
+
+ << Debugger has been reset >> 
+
+
+
+ << Debugger has been reset >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217729
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+9.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNG
+SA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGS
+V,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+9.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNG
+SA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGS
+V,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+9.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNG
+SA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGS
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+
+lat=-0.629380$, lon=0.000000i, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,0
+
+ << Debugger has been reset >> 
+
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+
+lat=-0.629380Ð, lon=0.000000, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+9.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNG
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+
+lat=-0.629380Ä, lon=0.000000	, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+9.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNG
+SA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGS
+V,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG
+
+lat=-0.629380Ä, lon=0.000000	, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+
+lat=-0.629380Ä, lon=0.000000	, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+
+lat=-0.629380Ä, lon=0.000000	, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+
+lat=-0.629380Ä, lon=0.000000	, alt=0.000
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,9
+
+lat=-0.629380Ä, lon=0.000000	, alt=0.000
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+225
+1094
+2683
+2556
+2687
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0
+0
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0
+0
+0
+0
+0
+0
+0
+536
+0
+0
+0
+0
+0
+0
+0
+536
+0
+0
+0
+0
+0
+0
+536
+0
+0
+0
+0
+0
+0
+0
+536
+0
+0
+0
+0
+0
+0
+0
+536
+0
+0
+0
+0
+0
+0
+534
+0
+0
+0
+0
+0
+0
+0
+534
+0
+0
+0
+0
+0
+0
+534
+0
+0
+0
+0
+0
+0
+0
+534
+0
+0
+0
+0
+0
+0
+534
+0
+0
+0
+0
+0
+0
+0
+534
+0
+0
+0
+0
+0
+0
+534
+0
+0
+0
+0
+0
+0
+0
+534
+0
+0
+0
+0
+0
+0
+0
+534
+0
+0
+0
+0
+0
+0
+534
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+350
+148
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+350
+148
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+350
+148
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+193
+276
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+474
+20
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+193
+276
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+0
+532
+0
+0
+0
+0
+0
+0
+193
+276
+0
+0
+0
+0
+0
+0
+530
+0
+0
+0
+0
+0
+0
+530
+0
+0
+0
+0
+0
+0
+0
+530
+0
+0
+0
+0
+0
+0
+530
+0
+0
+0
+0
+0
+0
+0
+530
+0
+0
+0
+0
+0
+0
+530
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+193
+285
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+257
+221
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+348
+157
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+193
+285
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+348
+157
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+193
+285
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+193
+285
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+541
+0
+0
+0
+0
+0
+0
+0
+541
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0
+
+552
+$GNRMC,194054.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194054.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,04,305,,10,61,310,,12,07,128,,15,24,073,22*7D
+$GPGSV,3,2,10,18,31,188,,21,00,332,,23,79,102,,24,60,079,*70
+$GPGSV,3,3,10,27,05,277,,32,31,261,*7C
+$GLGSV,3,1,10,69,12,085,,70,61,034,,71,42,304,,72,00,281,*69
+$GLGSV,3,2,10,73,20,158,,79,25,036,,80,46,106,,85,21,223,*63
+$GLGSV,3,3,10,86,37,277,,87,11,341,*65
+$GNGLL,,,,,194054.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,194054.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194054.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,04,305,,10,61,310,,12,07,128,,15,24,073,22*7D
+$GPGSV,3,2,10,18,31,188,,21,00,332,,23,79,102,,24,60,079,*70
+$GPGSV,3,3,10,27,05,277,,32,31,261,*7C
+$GLGSV,3,1,10,69,12,085,,70,61,034,,71,42,304,,72,00,281,*69
+$GLGSV,3,2,10,73,20,158,,79,25,036,,80,46,106,,85,21,223,*63
+$GLGSV,3,3,10,86,37,277,,87,11,341,*65
+$GNGLL,,,,,194054.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,194054.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194054.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,04,305,,10,61,310,,12,07,128,,15,24,073,22*7D
+$GPGSV,3,2,10,18,31,188,,21,00,332,,23,79,102,,24,60,079,*70
+$GPGSV,3,3,10,27,05,277,,32,31,261,*7C
+$GLGSV,3,1,10,69,12,085,,70,61,034,,71,42,304,,72,00,281,*69
+$GLGSV,3,2,10,73,20,158,,79,25,036,,80,46,106,,85,21,223,*63
+$GLGSV,3,3,10,86,37,277,,87,11,341,*65
+$GNGLL,,,,,194054.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+0
+0
+0
+0
+0
+0
+0
+0
+0
+563
+$GNRMC,194426.00,V,,,,,,,250921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194426.00,,,,,0,00,99.99,,,,,,*74
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,04,303,,10,62,311,,12,08,127,,15,23,073,19*77
+$GPGSV,3,2,11,18,29,188,,21,01,331,,23,78,106,,24,59,076,*7A
+$GPGSV,3,3,11,25,00,154,,27,04,276,,32,33,262,*4B
+$GLGSV,3,1,10,69,11,086,,70,61,038,,71,43,306,,72,01,282,*64
+$GLGSV,3,2,10,73,22,158,,79,24,034,,80,47,103,,85,19,222,*6C
+$GLGSV,3,3,10,86,37,274,,87,12,340,*64
+$GNGLL,,,,,194426.00,V,N*58
+ÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+563
+$GNRMC,194445.00,V,,,,,,,250921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194445.00,,,,,0,00,99.99,,,,,,*71
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,04,303,,10,62,311,,12,08,127,,15,23,073,19*77
+$GPGSV,3,2,11,18,29,188,,21,01,331,,23,78,107,,24,59,075,*78
+$GPGSV,3,3,11,25,00,153,,27,04,275,,32,33,262,*4F
+$GLGSV,3,1,10,69,11,086,,70,61,038,,71,43,306,,72,01,282,*64
+$GLGSV,3,2,10,73,22,158,,79,24,034,,80,47,103,,85,19,222,*6C
+$GLGSV,3,3,10,86,37,274,,87,12,340,*64
+$GNGLL,,,,,194445.00,V,N*5D
+ÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+563
+$GNRMC,194504.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194504.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,04,303,,10,62,311,,12,08,127,,15,23,073,17*79
+$GPGSV,3,2,11,18,29,188,,21,01,331,,23,78,107,,24,59,075,*78
+$GPGSV,3,3,11,25,00,153,,27,04,275,,32,33,262,*4F
+$GLGSV,3,1,10,69,11,087,,70,60,040,,71,43,306,,72,02,283,*69
+$GLGSV,3,2,10,73,22,157,,79,24,034,,80,47,103,,85,19,222,*63
+$GLGSV,3,3,10,86,37,274,,87,12,340,*64
+$GNGLL,,,,,194504.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+563
+$GNRMC,194523.00,V,,,,,,,250921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194523.00,,,,,0,00,99.99,,,,,,*70
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,04,303,,10,62,311,,12,08,127,,15,23,073,19*77
+$GPGSV,3,2,11,18,29,188,,21,01,331,,23,78,107,,24,59,075,*78
+$GPGSV,3,3,11,25,00,153,,27,04,275,,32,33,262,*4F
+$GLGSV,3,1,10,69,11,087,,70,60,040,,71,43,306,,72,02,283,*69
+$GLGSV,3,2,10,73,22,157,,79,23,034,,80,47,103,,85,19,222,*64
+$GLGSV,3,3,10,86,36,274,,87,13,339,*6A
+$GNGLL,,,,,194523.00,V,N*5C
+ÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+563
+$GNRMC,194542.00,V,,,,,,,250921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194542.00,,,,,0,00,99.99,,,,,,*77
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,04,303,,10,63,311,,12,08,126,,15,22,074,20*7B
+$GPGSV,3,2,11,18,29,188,,21,01,331,,23,77,109,,24,58,074,*79
+$GPGSV,3,3,11,25,00,153,,27,03,275,,32,33,262,*48
+$GLGSV,3,1,10,69,11,087,,70,60,040,,71,43,306,,72,02,283,*69
+$GLGSV,3,2,10,73,22,157,,79,23,034,,80,47,103,,85,19,222,*64
+$GLGSV,3,3,10,86,36,274,,87,13,339,*6A
+$GNGLL,,,,,194542.00,V,N*5B
+ÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+563
+$GNRMC,194601.00,V,,,,,,,250921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194601.00,,,,,0,00,99.99,,,,,,*73
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,04,303,,10,63,311,,12,08,126,,15,22,074,16*7E
+$GPGSV,3,2,11,18,29,188,,21,01,331,,23,77,109,,24,58,074,*79
+$GPGSV,3,3,11,25,00,153,,27,03,275,,32,33,263,*49
+$GLGSV,3,1,10,69,11,087,,70,60,040,,71,43,306,,72,02,283,*69
+$GLGSV,3,2,10,73,22,157,,79,23,034,,80,47,103,,85,19,222,*64
+$GLGSV,3,3,10,86,36,274,,87,13,339,*6A
+$GNGLL,,,,,194601.00,V,N*5F
+ÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+563
+$GNRMC,194620.00,V,,,,,,,250921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194620.00,,,,,0,00,99.99,,,,,,*70
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,04,303,,10,63,311,,12,08,126,,15,22,074,16*7E
+$GPGSV,3,2,11,18,29,188,,21,01,331,,23,77,109,,24,58,074,*79
+$GPGSV,3,3,11,25,00,153,,27,03,275,,32,33,263,*49
+$GLGSV,3,1,10,69,10,087,,70,60,041,,71,44,307,,72,02,283,*6F
+$GLGSV,3,2,10,73,23,157,,79,23,033,,80,48,102,,85,19,222,*6C
+$GLGSV,3,3,10,86,36,274,,87,13,339,*6A
+$GNGLL,,,,,194620.00,V,N*5C
+ÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+563
+$GNRMC,194639.00,V,,,,,,,250921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194639.00,,,,,0,00,99.99,,,,,,*78
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,303,,10,63,311,,12,09,126,,15,22,074,16*78
+$GPGSV,3,2,11,18,29,188,,21,01,331,,23,77,109,,24,58,074,*79
+$GPGSV,3,3,11,25,00,153,,27,03,275,,32,33,263,*49
+$GLGSV,3,1,10,69,10,087,,70,60,041,,71,44,307,,72,02,283,*6F
+$GLGSV,3,2,10,73,23,157,,79,23,033,,80,48,102,,85,18,222,*6D
+$GLGSV,3,3,10,86,36,273,,87,13,339,*6D
+$GNGLL,,,,,194639.00,V,N*54
+ÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+563
+$GNRMC,194658.00,V,,,,,,,250921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194658.00,,,,,0,00,99.99,,,,,,*7F
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,303,,10,63,311,,12,09,126,,15,22,074,18*76
+$GPGSV,3,2,11,18,28,188,,21,02,331,,23,77,110,,24,58,074,*73
+$GPGSV,3,3,11,25,01,153,,27,03,274,,32,34,263,*4E
+$GLGSV,3,1,10,69,10,087,,70,60,041,,71,44,307,,72,02,283,*6F
+$GLGSV,3,2,10,73,23,157,,79,23,033,,80,48,102,,85,18,222,*6D
+$GLGSV,3,3,10,86,36,273,,87,13,339,*6D
+$GNGLL,,,,,194658.00,V,N*53
+ÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+563
+$GNRMC,194717.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194717.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,303,,10,63,311,,12,09,126,,15,22,074,19*77
+$GPGSV,3,2,11,18,28,188,,21,02,331,,23,77,110,,24,58,074,*73
+$GPGSV,3,3,11,25,01,153,,27,03,274,,32,34,263,*4E
+$GLGSV,3,1,10,69,10,087,,70,60,041,,71,44,307,,72,02,283,*6F
+$GLGSV,3,2,10,73,23,157,,79,23,033,,80,48,102,,85,18,222,*6D
+$GLGSV,3,3,10,86,36,273,,87,13,339,*6D
+$GNGLL,,,,,194717.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+563
+$GNRMC,194736.00,V,,,,,,,250921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194736.00,,,,,0,00,99.99,,,,,,*76
+$GNGSA
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0
+561
+$GNRMC,194900.00,V,,,,,,,250921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194900.00,,,,,0,00,99.99,,,,,,*7D
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,302,,10,65,311,,12,09,125,,15,21,074,*78
+$GPGSV,3,2,11,18,28,187,,21,02,331,,23,76,112,,24,58,073,*78
+$GPGSV,3,3,11,25,01,153,,27,03,274,,32,34,264,*49
+$GLGSV,3,1,10,69,09,088,,70,60,043,,71,44,308,,72,03,284,*63
+$GLGSV,3,2,10,73,24,157,,79,22,032,,80,48,100,,85,17,221,*64
+$GLGSV,3,3,10,86,36,272,,87,14,338,*6A
+$GNGLL,,,,,194900.00,V,N*51
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,194919.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194919.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,302,,10,65,311,,12,09,125,,15,21,075,*79
+$GPGSV,3,2,11,18,27,187,,21,02,331,,23,76,113,,24,57,072,*78
+$GPGSV,3,3,11,25,02,152,,27,02,274,,32,35,264,*4B
+$GLGSV,3,1,10,69,09,088,,70,60,043,,71,44,308,,72,03,284,*63
+$GLGSV,3,2,10,73,24,157,,79,22,032,,80,48,100,,85,17,221,*64
+$GLGSV,3,3,10,86,36,272,,87,14,338,*6A
+$GNGLL,,,,,194919.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,194938.00,V,,,,,,,250921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194938.00,,,,,0,00,99.99,,,,,,*76
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,302,,10,65,311,,12,09,125,,15,21,075,*79
+$GPGSV,3,2,11,18,27,187,,21,02,331,,23,76,113,,24,57,072,*78
+$GPGSV,3,3,11,25,02,152,,27,02,274,,32,35,264,*4B
+$GLGSV,3,1,10,69,09,088,,70,60,043,,71,44,308,,72,03,284,*63
+$GLGSV,3,2,10,73,24,157,,79,22,032,,80,48,100,,85,17,221,*64
+$GLGSV,3,3,10,86,36,272,,87,14,338,*6A
+$GNGLL,,,,,194938.00,V,N*5A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,194957.00,V,,,,,,,250921,,,N*69
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,194957.00,,,,,0,00,99.99,,,,,,*7F
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,302,,10,65,311,,12,09,125,,15,21,075,*79
+$GPGSV,3,2,11,18,27,187,,21,02,331,,23,76,113,,24,57,072,*78
+$GPGSV,3,3,11,25,02,152,,27,02,274,,32,35,264,*4B
+$GLGSV,3,1,10,69,09,088,,70,59,044,,71,45,309,,72,03,284,*6E
+$GLGSV,3,2,10,73,25,157,,79,22,032,,80,49,099,,85,16,221,*64
+$GLGSV,3,3,10,86,35,271,,87,14,338,*6A
+$GNGLL,,,,,194957.00,V,N*53
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195016.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195016.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,301,,10,65,311,,12,10,125,,15,21,075,*72
+$GPGSV,3,2,11,18,27,187,,21,02,331,,23,76,113,,24,57,072,*78
+$GPGSV,3,3,11,25,02,152,,27,02,274,,32,35,264,*4B
+$GLGSV,3,1,10,69,09,088,,70,59,044,,71,45,309,,72,03,284,*6E
+$GLGSV,3,2,10,73,25,157,,79,22,032,,80,49,099,,85,16,221,*64
+$GLGSV,3,3,10,86,35,271,,87,14,338,*6A
+$GNGLL,,,,,195016.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195035.00,V,,,,,,,250921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195035.00,,,,,0,00,99.99,,,,,,*73
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,301,,10,65,311,,12,10,125,,15,21,075,*72
+$GPGSV,3,2,11,18,26,187,,21,03,331,,23,75,114,,24,57,071,*7F
+$GPGSV,3,3,11,25,02,152,,27,02,273,,32,35,264,*4C
+$GLGSV,3,1,10,69,09,088,,70,59,044,,71,45,309,,72,03,284,*6E
+$GLGSV,3,2,10,73,25,157,,79,22,032,,80,49,099,,85,16,221,*64
+$GLGSV,3,3,10,86,35,271,,87,14,338,*6A
+$GNGLL,,,,,195035.00,V,N*5F
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195054.00,V,,,,,,,250921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195054.00,,,,,0,00,99.99,,,,,,*74
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,301,,10,65,311,,12,10,125,,15,21,075,*72
+$GPGSV,3,2,11,18,26,187,,21,03,331,,23,75,114,,24,57,071,*7F
+$GPGSV,3,3,11,25,02,152,,27,02,273,,32,35,264,*4C
+$GLGSV,3,1,10,69,09,089,,70,59,046,,71,45,310,,72,03,285,*64
+$GLGSV,3,2,10,73,25,157,,79,22,032,,80,49,099,,85,16,221,*64
+$GLGSV,3,3,10,86,35,271,,87,14,338,*6A
+$GNGLL,,,,,195054.00,V,N*58
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195113.00,V,,,,,,,250921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195113.00,,,,,0,00,99.99,,,,,,*76
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,301,,10,65,311,,12,10,125,,15,21,075,*72
+$GPGSV,3,2,11,18,26,187,,21,03,331,,23,75,114,,24,57,071,*7F
+$GPGSV,3,3,11,25,02,152,,27,02,273,,32,35,264,*4C
+$GLGSV,3,1,10,69,09,089,,70,59,046,,71,45,310,,72,03,285,*64
+$GLGSV,3,2,10,73,25,157,,79,21,032,,80,49,098,,85,16,221,*66
+$GLGSV,3,3,10,86,35,270,,87,15,337,*65
+$GNGLL,,,,,195113.00,V,N*5A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195132.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195132.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,301,,10,66,311,,12,10,125,,15,20,075,*70
+$GPGSV,3,2,11,18,26,187,,21,03,330,,23,75,114,,24,57,071,*7E
+$GPGSV,3,3,11,25,02,152,,27,02,273,,32,35,264,*4C
+$GLGSV,3,1,10,69,09,089,,70,59,046,,71,45,310,,72,03,285,*64
+$GLGSV,3,2,10,73,25,157,,79,21,032,,80,49,098,,85,16,221,*66
+$GLGSV,3,3,10,86,35,270,,87,15,337,*65
+$GNGLL,,,,,195132.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195151.00,V,,,,,,,250921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195151.00,,,,,0,00,99.99,,,,,,*70
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,301,,10,66,311,,12,10,125,,15,20,075,*70
+$GPGSV,3,2,11,18,26,187,,21,03,330,,23,75,115,,24,57,070,*7E
+$GPGSV,3,3,11,25,02,152,,27,02,273,,32,36,265,*4E
+$GLGSV,3,1,10,69,09,089,,70,59,046,,71,45,310,,72,03,285,*64
+$GLGSV,3,2,10,73,25,157,,79,21,032,,80,49,098,,85,16,221,*66
+$GLGSV,3,3,10,86,35,270,,87,15,337,*65
+$GNGLL,,,,,195151.00,V,N*5C
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+561
+$GNRMC,195210.00,V,,,,,,,250921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195210.00,,,,,0,00,99.99,,,,,,*76
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,301,,10,66,311,,12,10,125,,15,20,075,*70
+$GPGSV,3,2,11,18,26,187,,21,03,330,,23,75,115,,24,57,070,*7E
+$GPGSV,3,3,11,25,02,152,,27,02,273,,32,36,265,*4E
+$GLGSV,3,1,10,69,08,089,,70,59,047,,71,46,310,,72,04,285,*60
+$GLGSV,3,2,10,73,26,156,,79,21,032,,80,49,098,,85,16,221,*64
+$GLGSV,3,3,10,86,35,270,,87,15,337,*65
+$GNGLL,,,,,195210.00,V,N*5A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195229.00,V,,,,,,,250921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195229.00,,,,,0,00,99.99,,,,,,*7C
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,300,,10,66,311,,12,10,125,,15,20,075,*71
+$GPGSV,3,2,11,18,26,187,,21,03,330,,23,75,115,,24,57,070,*7E
+$GPGSV,3,3,11,25,02,152,,27,02,273,,32,36,265,*4E
+$GLGSV,3,1,10,69,08,089,,70,59,047,,71,46,310,,72,04,285,*60
+$GLGSV,3,2,10,73,26,156,,79,21,031,,80,49,097,,85,15,220,*6A
+$GLGSV,3,3,10,86,35,269,,87,15,337,*6D
+$GNGLL,,,,,195229.00,V,N*50
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195248.00,V,,,,,,,250921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195248.00,,,,,0,00,99.99,,,,,,*7B
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,300,,10,66,311,,12,11,124,,15,20,075,*71
+$GPGSV,3,2,11,18,25,187,,21,04,330,,23,74,116,,24,56,070,*79
+$GPGSV,3,3,11,25,03,151,,27,02,272,,32,36,265,*4D
+$GLGSV,3,1,10,69,08,089,,70,59,047,,71,46,310,,72,04,285,*60
+$GLGSV,3,2,10,73,26,156,,79,21,031,,80,49,097,,85,15,220,*6A
+$GLGSV,3,3,10,86,35,269,,87,15,337,*6D
+$GNGLL,,,,,195248.00,V,N*57
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195307.00,V,,,,,,,250921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195307.00,,,,,0,00,99.99,,,,,,*71
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,300,,10,66,311,,12,11,124,,15,20,075,*71
+$GPGSV,3,2,11,18,25,187,,21,04,330,,23,74,116,,24,56,070,*79
+$GPGSV,3,3,11,25,03,151,,27,02,272,,32,36,265,*4D
+$GLGSV,3,1,10,69,08,089,,70,59,047,,71,46,310,,72,04,285,*60
+$GLGSV,3,2,10,73,26,156,,79,21,031,,80,49,097,,85,15,220,*6A
+$GLGSV,3,3,10,86,35,269,,87,15,337,*6D
+$GNGLL,,,,,195307.00,V,N*5D
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195326.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195326.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,03,300,,10,66,311,,12,11,124,,15,20,075,*71
+$GPGSV,3,2,11,18,25,187,,21,04,330,,23,74,116,,24,56,070,*79
+$GPGSV,3,3,11,25,03,151,,27,02,272,,32,36,265,*4D
+$GLGSV,3,1,10,69,08,090,,70,59,048,,71,46,311,,72,04,286,*65
+$GLGSV,3,2,10,73,26,156,,79,21,031,,80,49,096,,85,15,220,*6B
+$GLGSV,3,3,10,86,35,269,,87,15,337,*6D
+$GNGLL,,,,,195326.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195345.00,V,,,,,,,250921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195345.00,,,,,0,00,99.99,,,,,,*77
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,300,,10,67,311,,12,11,124,,15,20,075,*71
+$GPGSV,3,2,11,18,25,187,,21,04,330,,23,74,116,,24,56,070,*79
+$GPGSV,3,3,11,25,03,151,,27,02,272,,32,36,265,*4D
+$GLGSV,3,1,10,69,08,090,,70,59,048,,71,46,311,,72,04,286,*65
+$GLGSV,3,2,10,73,26,156,,79,21,031,,80,49,096,,85,15,220,*6B
+$GLGSV,3,3,10,86,34,269,,87,15,336,*6D
+$GNGLL,,,,,195345.00,V,N*5B
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+561
+$GNRMC,195404.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195404.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,300,,10,67,311,,12,11,124,,15,19,076,*78
+$GPGSV,3,2,11,18,25,187,,21,04,330,,23,74,117,,24,56,069,*70
+$GPGSV,3,3,11,25,03,151,,27,01,272,,32,36,266,*4D
+$GLGSV,3,1,10,69,08,090,,70,59,048,,71,46,311,,72,04,286,*65
+$GLGSV,3,2,10,73,26,156,,79,21,031,,80,49,096,,85,15,220,*6B
+$GLGSV,3,3,10,86,34,269,,87,15,336,*6D
+$GNGLL,,,,,195404.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195423.00,V,,,,,,,250921,,,N*66
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195423.00,,,,,0,00,99.99,,,,,,*70
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,300,,10,67,311,,12,11,124,,15,19,076,*78
+$GPGSV,3,2,11,18,25,187,,21,04,330,,23,74,117,,24,56,069,*70
+$GPGSV,3,3,11,25,03,151,,27,01,272,,32,36,266,*4D
+$GLGSV,3,1,10,69,08,090,,70,59,048,,71,46,311,,72,04,286,*65
+$GLGSV,3,2,10,73,26,156,,79,21,031,,80,49,096,,85,15,220,*6B
+$GLGSV,3,3,10,86,34,269,,87,15,336,*6D
+$GNGLL,,,,,195423.00,V,N*5C
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195442.00,V,,,,,,,250921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195442.00,,,,,0,00,99.99,,,,,,*77
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,300,,10,67,311,,12,11,124,,15,19,076,*78
+$GPGSV,3,2,11,18,25,187,,21,04,330,,23,74,117,,24,56,069,*70
+$GPGSV,3,3,11,25,03,151,,27,01,272,,32,36,266,*4D
+$GLGSV,3,1,10,69,07,090,,70,58,049,,71,46,312,,72,05,286,*68
+$GLGSV,3,2,10,73,27,156,,79,20,030,,80,50,095,,85,14,220,*60
+$GLGSV,3,3,10,86,34,268,,87,16,336,*6F
+$GNGLL,,,,,195442.00,V,N*5B
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195501.00,V,,,,,,,250921,,,N*67
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195501.00,,,,,0,00,99.99,,,,,,*71
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,300,,10,67,311,,12,11,124,,15,19,076,*78
+$GPGSV,3,2,11,18,24,187,,21,04,330,,23,74,117,,24,56,069,*71
+$GPGSV,3,3,11,25,03,151,,27,01,272,,32,36,266,*4D
+$GLGSV,3,1,10,69,07,090,,70,58,049,,71,46,312,,72,05,286,*68
+$GLGSV,3,2,10,73,27,156,,79,20,030,,80,50,095,,85,14,220,*60
+$GLGSV,3,3,10,86,34,268,,87,16,336,*6F
+$GNGLL,,,,,195501.00,V,N*5D
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195520.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195520.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,300,,10,67,311,,12,11,124,,15,19,076,*78
+$GPGSV,3,2,11,18,24,187,,21,04,330,,23,73,118,,24,55,068,*7B
+$GPGSV,3,3,11,25,04,151,,27,01,272,,32,37,266,*4B
+$GLGSV,3,1,10,69,07,090,,70,58,049,,71,46,312,,72,05,286,*68
+$GLGSV,3,2,10,73,27,156,,79,20,030,,80,50,095,,85,14,220,*60
+$GLGSV,3,3,10,86,34,268,,87,16,336,*6F
+$GNGLL,,,,,195520.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195539.00,V,,,,,,,250921,,,N*6C
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195539.00,,,,,0,00,99.99,,,,,,*7A
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,300,,10,67,311,,12,11,124,,15,19,076,*78
+$GPGSV,3,2,11,18,24,187,,21,04,330,,23,73,118,,24,55,068,*7B
+$GPGSV,3,3,11,25,04,151,,27,01,272,,32,37,266,*4B
+$GLGSV,3,1,10,69,07,091,,70,58,050,,71,47,312,,72,05,286,*60
+$GLGSV,3,2,10,73,28,156,,79,20,030,,80,50,095,,85,14,220,*6F
+$GLGSV,3,3,10,86,34,268,,87,16,336,*6F
+$GNGLL,,,,,195539.00,V,N*56
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195558.00,V,,,,,,,250921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195558.00,,,,,0,00,99.99,,,,,,*7D
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,300,,10,67,311,,12,11,124,,15,19,076,*78
+$GPGSV,3,2,11,18,24,187,,21,04,330,,23,73,118,,24,55,068,*7B
+$GPGSV,3,3,11,25,04,151,,27,01,272,,32,37,266,*4B
+$GLGSV,3,1,10,69,07,091,,70,58,050,,71,47,312,,72,05,286,*60
+$GLGSV,3,2,10,73,28,156,,79,20,030,,80,50,094,,85,14,220,*6E
+$GLGSV,3,3,10,86,34,267,,87,16,335,*63
+$GNGLL,,,,,195558.00,V,N*51
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195617.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195617.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,299,,10,68,311,,12,12,123,,15,19,076,*72
+$GPGSV,3,2,11,18,24,187,,21,05,329,,23,73,119,,24,55,068,*73
+$GPGSV,3,3,11,25,04,151,,27,01,272,,32,37,266,*4B
+$GLGSV,3,1,10,69,07,091,,70,58,050,,71,47,312,,72,05,286,*60
+$GLGSV,3,2,10,73,28,156,,79,20,030,,80,50,094,,85,14,220,*6E
+$GLGSV,3,3,10,86,34,267,,87,16,335,*63
+$GNGLL,,,,,195617.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195636.00,V,,,,,,,250921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195636.00,,,,,0,00,99.99,,,,,,*76
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,299,,10,68,311,,12,12,123,,15,19,076,*72
+$GPGSV,3,2,11,18,24,187,,21,05,329,,23,73,119,,24,55,067,*7C
+$GPGSV,3,3,11,25,04,151,,27,01,271,,32,37,267,*49
+$GLGSV,3,1,10,69,07,091,,70,58,050,,71,47,312,,72,05,286,*60
+$GLGSV,3,2,10,73,28,156,,79,20,030,,80,50,094,,85,14,220,*6E
+$GLGSV,3,3,10,86,34,267,,87,16,335,*63
+$GNGLL,,,,,195636.00,V,N*5A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195655.00,V,,,,,,,250921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195655.00,,,,,0,00,99.99,,,,,,*73
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,299,,10,68,311,,12,12,123,,15,19,076,*72
+$GPGSV,3,2,11,18,24,187,,21,05,329,,23,73,119,,24,55,067,*7C
+$GPGSV,3,3,11,25,04,151,,27,01,271,,32,37,267,*49
+$GLGSV,3,1,10,69,07,091,,70,58,051,,71,47,313,,72,05,287,*61
+$GLGSV,3,2,10,73,28,156,,79,20,030,,80,50,094,,85,14,220,*6E
+$GLGSV,3,3,10,86,34,267,,87,16,335,*63
+$GNGLL,,,,,195655.00,V,N*5F
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195714.00,V,,,,,,,250921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195714.00,,,,,0,00,99.99,,,,,,*77
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,299,,10,68,311,,12,12,123,,15,19,076,*72
+$GPGSV,3,2,11,18,24,187,,21,05,329,,23,73,119,,24,55,067,*7C
+$GPGSV,3,3,11,25,04,151,,27,01,271,,32,37,267,*49
+$GLGSV,3,1,10,69,07,091,,70,58,051,,71,47,313,,72,05,287,*61
+$GLGSV,3,2,10,73,28,156,,79,19,030,,80,50,093,,85,13,219,*6E
+$GLGSV,3,3,10,86,33,267,,87,16,335,*64
+$GNGLL,,,,,195714.00,V,N*5B
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+430
+$GNRMC,195733.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195733.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,299,,10,68,311,,12,12,123,,15,18,077,*72
+$GPGSV,3,2,11,18,23,187,,21,05,329,,23,72,120,,24,55,067,*70
+$GPGSV,3,3,11,25,04,150,,27,00,271,,32,37,267,*49
+$GLGSV,3,1,10,69,07,091,,70,58,051,,71,47,313,,72,05,287,*61
+$GLGSV,3,2,10,73,28,156,,79,19,030,,80,50,093,,85,13,219,*6E
+$GLGSV,3,3,10,86,33,267,,87,16,335,*64
+$GNGLL,,,,,195714.00,V,N*5B
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+561
+$GNRMC,195752.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195752.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,299,,10,68,311,,12,12,123,,15,18,077,*72
+$GPGSV,3,2,11,18,23,187,,21,05,329,,23,72,120,,24,55,067,*70
+$GPGSV,3,3,11,25,04,150,,27,00,271,,32,38,267,*46
+$GLGSV,3,1,10,69,07,091,,70,58,051,,71,47,313,,72,05,287,*61
+$GLGSV,3,2,10,73,28,156,,79,19,030,,80,50,093,,85,13,219,*6E
+$GLGSV,3,3,10,86,33,267,,87,16,335,*64
+$GNGLL,,,,,195752.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+$GNRMC,195752.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195752.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,299,,10,68,311,,12,12,123,,15,18,077,*72
+$GPGSV,3,2,11,18,23,187,,21,05,329,,23,72,120,,24,55,067,*70
+$GPGSV,3,3,11,25,04,150,,27,00,271,,32,38,267,*46
+$GLGSV,3,1,10,69,07,091,,70,58,051,,71,47,313,,72,05,287,*61
+$GLGSV,3,2,10,73,28,156,,79,19,030,,80,50,093,,85,13,219,*6E
+$GLGSV,3,3,10,86,33,267,,87,16,335,*64
+$GNGLL,,,,,195752.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+$GNRMC,195752.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195752.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,299,,10,68,311,,12,12,123,,15,18,077,*72
+$GPGSV,3,2,11,18,23,187,,21,05,329,,23,72,120,,24,55,067,*70
+$GPGSV,3,3,11,25,04,150,,27,00,271,,32,38,267,*46
+$GLGSV,3,1,10,69,07,091,,70,58,051,,71,47,313,,72,05,287,*61
+$GLGSV,3,2,10,73,28,156,,79,19,030,,80,50,093,,85,13,219,*6E
+$GLGSV,3,3,10,86,33,267,,87,16,335,*64
+$GNGLL,,,,,195752.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+$GNRMC,195752.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195752.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,299,,10,68,311,,12,12,123,,15,18,077,*72
+$GPGSV,3,2,11,18,23,187,,21,05,329,,23,72,120,,24,55,067,*70
+$GPGSV,3,3,11,25,04,150,,27,00,271,,32,38,267,*46
+$GLGSV,3,1,10,69,07,091,,70,58,051,,71,47,313,,72,05,287,*61
+$GLGSV,3,2,10,73,28,156,,79,19,030,,80,50,093,,85,13,219,*6E
+$GLGSV,3,3,10,86,33,267,,87,16,335,*64
+$GNGLL,,,,,195752.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+$GNRMC,195752.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195752.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,299,,10,68,311,,12,12,123,,15,18,077,*72
+$GPGSV,3,2,11,18,23,187,,21,05,329,,23,72,120,,24,55,067,*70
+$GPGSV,3,3,11,25,04,150,,27,00,271,,32,38,267,*46
+$GLGSV,3,1,10,69,07,091,,70,58,051,,71,47,313,,72,05,287,*61
+$GLGSV,3,2,10,73,28,156,,79,19,030,,80,50,093,,85,13,219,*6E
+$GLGSV,3,3,10,86,33,267,,87,16,335,*64
+$GNGLL,,,,,195752.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+$GNRMC,195752.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195752.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,299,,10,68,311,,12,12,123,,15,18,077,*72
+$GPGSV,3,2,11,18,23,187,,21,05,329,,23,72,120,,24,55,067,*70
+$GPGSV,3,3,11,25,04,150,,27,00,271,,32,38,267,*46
+$GLGSV,3,1,10,69,07,091,,70,58,051,,71,47,313,,72,05,287,*61
+$GLGSV,3,2,10,73,28,156,,79,19,030,,80,50,093,,85,13,219,*6E
+$GLGSV,3,3,10,86,33,267,,87,16,335,*64
+$GNGLL,,,,,195752.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+$GNRMC,195752.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,195752.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,11,08,02,299,,10,68,311,,12,12,123,,15,18,077,*72
+$GPGSV,3,2
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+550
+$GNRMC,200421.00,V,,,,,,,250921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,200421.00,,,,,0,00,99.99,,,,,,*7D
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,01,296,,10,72,311,,12,14,121,,15,16,078,*71
+$GPGSV,3,2,10,18,21,186,,21,07,328,,23,70,124,,24,53,064,*72
+$GPGSV,3,3,10,25,06,149,,32,40,269,*7D
+$GLGSV,3,1,10,69,04,094,,70,56,058,,71,50,317,,72,08,289,*61
+$GLGSV,3,2,10,73,32,154,,79,17,028,,80,51,087,,85,10,218,*66
+$GLGSV,3,3,10,86,31,263,,87,18,332,*6B
+$GNGLL,,,,,200421.00,V,N*51
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,200421.00,V,,,,,,,250921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,200421.00,,,,,0,00,99.99,,,,,,*7D
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,01,296,,10,72,311,,12,14,121,,15,16,078,*71
+$GPGSV,3,2,10,18,21,186,,21,07,328,,23,70,124,,24,53,064,*72
+$GPGSV,3,3,10,25,06,149,,32,40,269,*7D
+$GLGSV,3,1,10,69,04,094,,70,56,058,,71,50,317,,72,08,289,*61
+$GLGSV,3,2,10,73,32,154,,79,17,028,,80,51,087,,85,10,218,*66
+$GLGSV,3,3,10,86,31,263,,87,18,332,*6B
+$GNGLL,,,,,200421.00,V,N*51
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,200421.00,V,,,,,,,250921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,200421.00,,,,,0,00,99.99,,,,,,*7D
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,01,296,,10,72,311,,12,14,121,,15,16,078,*71
+$GPGSV,3,2,10,18,21,186,,21,07,328,,23,70,124,,24,53,064,*72
+$GPGSV,3,3,10,25,06,149,,32,40,269,*7D
+$GLGSV,3,1,10,69,04,094,,70,56,058,,71,50,317,,72,08,289,*61
+$GLGSV,3,2,10,73,32,154,,79,17,028,,80,51,087,,85,10,218,*66
+$GLGSV,3,3,10,86,31,263,,87,18,332,*6B
+$GNGLL,,,,,200421.00,V,N*51
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,200421.00,V,,,,,,,250921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,200421.00,,,,,0,00,99.99,,,,,,*7D
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,01,296,,10,72,311,,12,14,121,,15,16,078,*71
+$GPGSV,3,2,10,18,21,186,,21,07,328,,23,70,124,,24,53,064,*72
+$GPGSV,3,3,10,25,06,149,,32,40,269,*7D
+$GLGSV,3,1,10,69,04,094,,70,56,058,,71,50,317,,72,08,289,*61
+$GLGSV,3,2,10,73,32,154,,79,17,028,,80,51,087,,85,10,218,*66
+$GLGSV,3,3,10,86,31,263,,87,18,332,*6B
+$GNGLL,,,,,200421.00,V,N*51
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,200421.00,V,,,,,,,250921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,200421.00,,,,,0,00,99.99,,,,,,*7D
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,01,296,,10,72,311,,12,14,121,,15,16,078,*71
+$GPGSV,3,2,10,18,21,186,,21,07,328,,23,70,124,,24,53,064,*72
+$GPGSV,3,3,10,25,06,149,,32,40,269,*7D
+$GLGSV,3,1,10,69,04,094,,70,56,058,,71,50,317,,72,08,289,*61
+$GLGSV,3,2,10,73,32,154,,79,17,028,,80,51,087,,85,10,218,*66
+$GLGSV,3,3,10,86,31,263,,87,18,332,*6B
+$GNGLL,,,,,20042
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0
+
+0
+
+0
+
+0
+
+0
+
+550
+$GNRMC,200609.00,V,,,,,,,250921,,,N*63
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,200609.00,,,,,0,00,99.99,,,,,,*75
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,00,296,,10,72,311,,12,15,120,,15,15,079,*72
+$GPGSV,3,2,10,18,20,186,,21,07,328,,23,68,126,,24,52,063,*7E
+$GPGSV,3,3,10,25,07,148,,32,41,270,*74
+$GLGSV,3,1,10,69,04,094,,70,56,059,,71,50,318,,72,08,290,*67
+$GLGSV,3,2,10,73,33,154,,79,16,027,,80,51,086,,85,09,217,*6F
+$GLGSV,3,3,10,86,31,262,,87,18,331,*69
+$GNGLL,,,,,200609.00,V,N*59
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,200609
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0
+
+0
+
+552
+$GNRMC,201009.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201009.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,00,294,,10,74,310,,12,16,119,,15,14,080,20*7B
+$GPGSV,3,2,10,18,18,185,,21,08,327,,23,67,128,,24,50,061,*77
+$GPGSV,3,3,10,25,08,148,,32,42,271,*79
+$GLGSV,3,1,10,69,02,096,,70,54,063,,71,52,321,,72,10,292,*6B
+$GLGSV,3,2,10,73,35,153,,79,14,026,,80,52,081,,85,07,216,*66
+$GLGSV,3,3,10,86,29,260,,87,19,329,*6A
+$GNGLL,,,,,201009.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201009.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201009.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,00,294,,10,74,310,,12,16,119,,15,14,080,20*7B
+$GPGSV,3,2,10,18,18,185,,21,08,327,,23,67,128,,24,50,061,*77
+$GPGSV,3,3,10,25,08,148,,32,42,271,*79
+$GLGSV,3,1,10,69,02,096,,70,54,063,,71,52,321,,72,10,292,*6B
+$GLGSV,3,2,10,73,35,153,,79,14,026,,80,52,081,,85,07,216,*66
+$GLGSV,3,3,10,86,29,260,,87,19,329,*6A
+$GNGLL,,,,,201009.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201009.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201009.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,00,294,,10,74,310,,12,16,119,,15,14,080,20*7B
+$GPGSV,3,2,10,18,18,185,,21,08,327,,23,67,128,,24,50,061,*77
+$GPGSV,3,3,10,25,08,148,,32,42,271,*79
+$GLGSV,3,1,10,69,02,096,,70,54,063,,71,52,321,,72,10,292,*6B
+$GLGSV,3,2,10,73,35,153,,79,14,026,,80,52,081,,85,07,216,*66
+$GLGSV,3,3,10,86,29,260,,87,19,329,*6A
+$GNGLL,,,,,201009.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201009.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201009.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,00,294,,10,74,310,,12,16,119,,15,14,080,20*7B
+$GPGSV,3,2,10,18,18,185,,21,08,327,,23,67,128,,24,50,061,*77
+$GPGSV,3,3,10,25,08,148,,32,42,271,*79
+$GLGSV,3,1,10,69,02,096,,70,54,063,,71,52,321,,72,10,292,*6B
+$GLGSV,3,2,10,73,35,153,,79,14,026,,80,52,081,,85,07,216,*66
+$GLGSV,3,3,10,86,29,260,,87,19,329,*6A
+$GNGLL,,,,,201009.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201009.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201009.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,00,294,,10,74,310,,12,16,119,,15,14,080,20*7B
+$GPGSV,3,2,10,18,18,185,,21,08,327,,23,67,128,,24,50,061,*77
+$GPGSV,3,3,10,25,08,148,,32,42,271,*79
+$GLGSV,3,1,10,69,02,096,,70,54,063,,71,52,321,,72,10,292,*6B
+$GLGSV,3,2,10,73,35,153,,79,14,026,,80,52,081,,85,07,216,*66
+$GLGSV,3,3,10,86,29,260,,87,19,329,*6A
+$GNGLL,,,,,201009.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201009.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201009.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,00,294,,10,74,310,,12,16,119,,15,14,080,20*7B
+$GPGSV,3,2,10,18,18,185,,21,08,327,,23,67,128,,24,50,061,*77
+$GPGSV,3,3,10,25,08,148,,32,42,271,*79
+$GLGSV,3,1,10,69,02,096,,70,54,063,,71,52,321,,72,10,292,*6B
+$GLGSV,3,2,10,73,35,153,,79,14,026,,80,52,081,,85,07,216,*66
+$GLGSV,3,3,10,86,29,260,,87,19,329,*6A
+$GNGLL,,,,,201009.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201009.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201009.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,00,294,,10,74,310,,12,16,119,,15,14,080,20*7B
+$GPGSV,3,2,10,18,18,185,,21,08,327,,23,67,128,,24,50,061,*77
+$GPGSV,3,3,10,25,08,148,,32,42,271,*79
+$GLGSV,3,1,10,69,02,096,,70,54,063,,71,52,321,,72,10,292,*6B
+$GLGSV,3,2,10,73,35,153,,79,14,026,,80,52,081,,85,07,216,*66
+$GLGSV,3,3,10,86,29,260,,87,19,329,*6A
+$GNGLL,,,,,201009.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201009.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201009.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,00,294,,10,74,310,,12,16,119,,15,14,080,20*7B
+$GPGSV,3,2,10,18,18,185,,21,08,327,,23,67,128,,24,50,061,*77
+$GPGSV,3,3,10,25,08,148,,32,42,271,*79
+$GLGSV,3,1,10,69,02,096,,70,54,063,,71,52,321,,72,10,292,*6B
+$GLGSV,3,2,10,73,35,153,,79,14,026,,80,52,081,,85,07,216,*66
+$GLGSV,3,3,10,86,29,260,,87,19,329,*6A
+$GNGLL,,,,,201009.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201009.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201009.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,00,294,,10,74,310,,12,16,119,,15,14,080,20*7B
+$GPGSV,3,2,10,18,18,185,,21,08,327,,23,67,128,,24,50,061,*77
+$GPGSV,3,3,10,25,08,148,,32,42,271,*79
+$GLGSV,3,1,10,69,02,096,,70,54,063,,71,52,321,,72,10,292,*6B
+$GLGSV,3,2,10,73,35,153,,79,14,026,,80,52,081,,85,07,216,*66
+$GLGSV,3,3,10,86,29,260,,87,19,329,*6A
+$GNGLL,,,,,201009.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201009.00,V,,,,,,,250921,,,N*64
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201009.00,,,,,0,00,99.99,,,,,,*72
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,08,00,294,,10,74,310,,12,16,119,,15,14,080,20*7B
+$GPGSV,3,2,10,18,18,185,,21,08,327,,23,67,128,,24,50,061,*77
+$GPGSV,3,3,10,25,08,148,,32,42,271,*79
+$GLGSV,3,1,10,69,02,096,,70,54,063,,71,52,321,,72,10,292,*6B
+$GLGSV,3,2,10,73,35,153,,79,14,026,,80,52,081,,85,07,216,*66
+$GLGSV,3,3,10,86,29,260,,87,19,329,*6A
+$GNGLL,,,,,201009.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+193
+$GNRMC,201314.00,V,,,,,,,250921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201314.00,,,,,0,00,99.99,,,,,,*7D
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,76,309,,12,17,118,,15,13,081,19,18,16,185,*70
+$GPGSV,3,2,10,18,18,185,,21,08,327,,23,67,128,,24,50,061,*77
+$GPGSV,3,3,10,25,08,148,,32,42,271,*79
+$GLGSV,3,1,10,69,02,096,,70,54,063,,71,52,321,,72,10,292,*6B
+$GLGSV,3,2,10,73,35,153,,79,14,026,,80,52,081,,85,07,216,*66
+$GLGSV,3,3,10,86,29,260,,87,19,329,*6A
+$GNGLL,,,,,201009.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201314.00,V,,,,,,,250921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201314.00,,,,,0,00,99.99,,,,,,*7D
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,76,309,,12,17,118,,15,13,081,19,18,16,185,*70
+$GPGSV,3,2,10,18,18,185,,21,08,327,,23,67,128,,24,50,061,*77
+$GPGSV,3,3,10,25,08,148,,32,42,271,*79
+$GLGSV,3,1,10,69,02,096,,70,54,063,,71,52,321,,72,10,292,*6B
+$GLGSV,3,2,10,73,35,153,,79,14,026,,80,52,081,,85,07,216,*66
+$GLGSV,3,3,10,86,29,260,,87,19,329,*6A
+$GNGLL,,,,,201009.00,V,N*5E
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+552
+$GNRMC,201351.00,V,,,,,,,250921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201351.00,,,,,0,00,99.99,,,,,,*7C
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,76,309,,12,18,118,,15,13,081,20,18,16,185,*75
+$GPGSV,3,2,09,21,09,326,,23,65,129,,24,49,060,,25,10,147,*7D
+$GPGSV,3,3,09,32,43,273,*40
+$GLGSV,3,1,11,69,01,097,,70,53,066,,71,53,323,,72,11,293,*69
+$GLGSV,3,2,11,73,37,152,,74,00,182,,79,13,025,,80,52,078,*61
+$GLGSV,3,3,11,85,05,216,,86,28,258,,87,20,327,*58
+$GNGLL,,,,,201351.00,V,N*50
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201351.00,V,,,,,,,250921,,,N*6A
+$GNVTG,,,,,,,,,N*2E
+$GN
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+0
+
+0
+
+552
+$GNRMC,201508.00,V,,,,,,,250921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201508.00,,,,,0,00,99.99,,,,,,*76
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,77,308,,12,18,117,,15,12,081,22,18,15,185,*7A
+$GPGSV,3,2,09,21,10,326,,23,65,130,,24,49,059,,25,10,146,*76
+$GPGSV,3,3,09,32,44,273,*47
+$GLGSV,3,1,11,69,01,098,,70,53,067,,71,54,324,,72,11,293,*67
+$GLGSV,3,2,11,73,38,152,,74,00,182,,79,13,025,,80,52,077,*61
+$GLGSV,3,3,11,85,05,215,,86,27,258,,87,20,327,*54
+$GNGLL,,,,,201508.00,V,N*5A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201508.00,V,,,,,,,250921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201508.00,,,,,0,00,99.99,,,,,,*76
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,77,308,,12,18,117,,15,12,081,22,18,15,185,*7A
+$GPGSV,3,2,09,21,10,326,,23,65,130,,24,49,059,,25,10,146,*76
+$GPGSV,3,3,09,32,44,273,*47
+$GLGSV,3,1,11,69,01,098,,70,53,067,,71,54,324,,72,11,293,*67
+$GLGSV,3,2,11,73,38,152,,74,00,182,,79,13,025,,80,52,077,*61
+$GLGSV,3,3,11,85,05,215,,86,27,258,,87,20,327,*54
+$GNGLL,,,,,201508.00,V,N*5A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201508.00,V,,,,,,,250921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201508.00,,,,,0,00,99.99,,,,,,*76
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,77,308,,12,18,117,,15,12,081,22,18,15,185,*7A
+$GPGSV,3,2,09,21,10,326,,23,65,130,,24,49,059,,25,10,146,*76
+$GPGSV,3,3,09,32,44,273,*47
+$GLGSV,3,1,11,69,01,098,,70,53,067,,71,54,324,,72,11,293,*67
+$GLGSV,3,2,11,73,38,152,,74,00,182,,79,13,025,,80,52,077,*61
+$GLGSV,3,3,11,85,05,215,,86,27,258,,87,20,327,*54
+$GNGLL,,,,,201508.00,V,N*5A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201508.00,V,,,,,,,250921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201508.00,,,,,0,00,99.99,,,,,,*76
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,77,308,,12,18,117,,15,12,081,22,18,15,185,*7A
+$GPGSV,3,2,09,21,10,326,,23,65,130,,24,49,059,,25,10,146,*76
+$GPGSV,3,3,09,32,44,273,*47
+$GLGSV,3,1,11,69,01,098,,70,53,067,,71,54,324,,72,11,293,*67
+$GLGSV,3,2,11,73,38,152,,74,00,182,,79,13,025,,80,52,077,*61
+$GLGSV,3,3,11,85,05,215,,86,27,258,,87,20,327,*54
+$GNGLL,,,,,201508.00,V,N*5A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201508.00,V,,,,,,,250921,,,N*60
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201508.00,,,,,0,00,99.99,,,,,,*76
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,77,308,,12,18,117,,15,12,081,22,18,15,185,*7A
+$GPGSV,3,2,09,21,10,326,,23,65,130,,24,49,059,,25,10,146,*76
+$GPGSV,3,3,09,32,44,273,*47
+$GLGSV,3,1,11,69,01,098,,70,53,067,,71,54,324,,72,11,293,*67
+$GLGSV,3,2,11,73,38,152,,74,00,182,,79,13,025,,80,52,077,*61
+$GLGSV,3,3,11,85,05,215,,86,27,258,,87,20,327,*54
+$GNGLL,,,,,201508.00,V,N*5A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+348
+$GNRMC,201641.00,V,,,,,,,250921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201641.00,,,,,0,00,99.99,,,,,,*78
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,77,308,,12,18,117,,15,12,081,18,18,15,185,*73
+$GPGSV,3,2,09,21,10,325,,23,64,131,,24,4
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+552
+552
+$GNRMC,201715.00,V,,,,,,,250921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201715.00,,,,,0,00,99.99,,,,,,*78
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,77,308,,12,18,117,,15,12,081,13,18,15,185,*78
+$GPGSV,3,2,09,21,10,325,,23,64,131,,24,48,059,,25,11,146,*75
+$GPGSV,3,3,09,32,44,274,*40
+$GLGSV,3,1,11,69,00,099,,70,52,069,,71,54,326,,72,12,294,*6E
+$GLGSV,3,2,11,73,39,152,,74,01,182,,79,12,024,,80,52,075,*63
+$GLGSV,3,3,11,85,04,215,,86,26,257,,87,20,326,*5A
+$GNGLL,,,,,201715.00,V,N*54
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201715.00,V,,,,,,,250921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201715.00,,,,,0,00,99.99,,,,,,*78
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,77,308,,12,18,117,,15,12,081,13,18,15,185,*78
+$GPGSV,3,2,09,21,10,325,,23,64,131,,24,48,059,,25,11,146,*75
+$GPGSV,3,3,09,32,44,274,*40
+$GLGSV,3,1,11,69,00,099,,70,52,069,,71,54,326,,72,12,294,*6E
+$GLGSV,3,2,11,73,39,152,,74,01,182,,79,12,024,,80,52,075,*63
+$GLGSV,3,3,11,85,04,215,,86,26,257,,87,20,326,*5A
+$GNGLL,,,,,201715.00,V,N*54
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201715.00,V,,,,,,,250921,,,N*6E
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201715.00,,,,,0,00,99.99,,,,,,*78
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,77,308,,12,18,117,,15,12,081,13,18,15,185,*78
+$GPGSV,3,2,09,21,10,325,,23,64,131,,24,48,059,,25,11,146,*75
+$GPGSV,3,3,09,32,44,274,*40
+$GLGSV,3,1,11,69,00,099,,70,52,069,,71,54,326,,72,12,294,*6E
+$GLGSV,3,2,11,73,39,152,,74,01,182,,79,12,024,,80,52,075,*63
+$GLGSV,3,3,11,85,04,215,,86,26,257,,87,20,326,*5A
+$GNGLL,,,,,201715.00,V,N*54
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+550
+$GNRMC,201811.00,V,,,,,,,250921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201811.00,,,,,0,00,99.99,,,,,,*73
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,78,307,,12,19,116,,15,11,082,,18,14,185,*7B
+$GPGSV,3,2,09,21,11,325,,23,63,131,,24,47,058,,25,11,146,*7D
+$GPGSV,3,3,09,32,45,275,*40
+$GLGSV,3,1,11,69,00,099,,70,52,069,,71,55,327,,72,13,294,*6F
+$GLGSV,3,2,11,73,40,151,,74,02,181,,79,12,024,,80,52,075,*6E
+$GLGSV,3,3,11,85,04,215,,86,26,257,,87,20,326,*5A
+$GNGLL,,,,,201811.00,V,N*5F
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201811.00,V,,,,,,,250921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201811.00,,,,,0,00,99.99,,,,,,*73
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,78,307,,12,19,116,,15,11,082,,18,14,185,*7B
+$GPGSV,3,2,09,21,11,325,,23,63,131,,24,47,058,,25,11,146,*7D
+$GPGSV,3,3,09,32,45,275,*40
+$GLGSV,3,1,11,69,00,099,,70,52,069,,71,55,327,,72,13,294,*6F
+$GLGSV,3,2,11,73,40,151,,74,02,181,,79,12,024,,80,52,075,*6E
+$GLGSV,3,3,11,85,04,215,,86,26,257,,87,20,326,*5A
+$GNGLL,,,,,201811.00,V,N*5F
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201811.00,V,,,,,,,250921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201811.00,,,,,0,00,99.99,,,,,,*73
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,78,307,,12,19,116,,15,11,082,,18,14,185,*7B
+$GPGSV,3,2,09,21,11,325,,23,63,131,,24,47,058,,25,11,146,*7D
+$GPGSV,3,3,09,32,45,275,*40
+$GLGSV,3,1,11,69,00,099,,70,52,069,,71,55,327,,72,13,294,*6F
+$GLGSV,3,2,11,73,40,151,,74,02,181,,79,12,024,,80,52,075,*6E
+$GLGSV,3,3,11,85,04,215,,86,26,257,,87,20,326,*5A
+$GNGLL,,,,,201811.00,V,N*5F
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201811.00,V,,,,,,,250921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201811.00,,,,,0,00,99.99,,,,,,*73
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,78,307,,12,19,116,,15,11,082,,18,14,185,*7B
+$GPGSV,3,2,09,21,11,325,,23,63,131,,24,47,058,,25,11,146,*7D
+$GPGSV,3,3,09,32,45,275,*40
+$GLGSV,3,1,11,69,00,099,,70,52,069,,71,55,327,,72,13,294,*6F
+$GLGSV,3,2,11,73,40,151,,74,02,181,,79,12,024,,80,52,075,*6E
+$GLGSV,3,3,11,85,04,215,,86,26,257,,87,20,326,*5A
+$GNGLL,,,,,201811.00,V,N*5F
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201811.00,V,,,,,,,250921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201811.00,,,,,0,00,99.99,,,,,,*73
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,78,307,,12,19,116,,15,11,082,,18,14,185,*7B
+$GPGSV,3,2,09,21,11,325,,23,63,131,,24,47,058,,25,11,146,*7D
+$GPGSV,3,3,09,32,45,275,*40
+$GLGSV,3,1,11,69,00,099,,70,52,069,,71,55,327,,72,13,294,*6F
+$GLGSV,3,2,11,73,40,151,,74,02,181,,79,12,024,,80,52,075,*6E
+$GLGSV,3,3,11,85,04,215,,86,26,257,,87,20,326,*5A
+$GNGLL,,,,,201811.00,V,N*5F
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201811.00,V,,,,,,,250921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201811.00,,,,,0,00,99.99,,,,,,*73
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,78,307,,12,19,116,,15,11,082,,18,14,185,*7B
+$GPGSV,3,2,09,21,11,325,,23,63,131,,24,47,058,,25,11,146,*7D
+$GPGSV,3,3,09,32,45,275,*40
+$GLGSV,3,1,11,69,00,099,,70,52,069,,71,55,327,,72,13,294,*6F
+$GLGSV,3,2,11,73,40,151,,74,02,181,,79,12,024,,80,52,075,*6E
+$GLGSV,3,3,11,85,04,215,,86,26,257,,87,20,326,*5A
+$GNGLL,,,,,201811.00,V,N*5F
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,201811.00,V,,,,,,,250921,,,N*65
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,201811.00,,,,,0,00,99.99,,,,,,*73
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,09,10,78,307,,12,19,116,,15,11,082,,18,14,185,*7B
+$GPGSV,3,2,09,21,11,325,,23,63,131,,24,47,058,,25,11,146,*7D
+$GPGSV,3,3,09,32,45,275,*40
+$GLGSV,3,1,11,69,00,099,,70,52,069,,71,55,327,,72,13,294,*6F
+$GLGSV,3,2,11,73,40,151,,74,02,181,,79,12,024,,80,52,075,*6E
+$GLGSV,3,3,11,85,04,215,,86,26,257,,87,20,326,*5A
+$GNGLL,,,,,201811.00,V,N*5F
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+521
+$GNRMC,202021.00,V,,,,,,,250921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,202021.00,,,,,0,00,99.99,,,,,,*7B
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,10,79,306,,12,19,115,,15,11,082,,18,13,184,*76
+$GPGSV,3,2,10,21,11,324,,23,62,132,,24,46,058,,25,12,145,*77
+$GPGSV,3,3,10,31,00,213,,32,46,276,*7A
+$GLGSV,3,1,10,70,52,070,,71,55,328,,72,13,295,,73,40,151,*62
+$GLGSV,3,2,10,74,03,181,,79,11,024,,80,51,073,,85,03,214,*64
+$GLGSV,3,3,10,86,25,256,,87,21,324,*65
+$GNGLL,,,,,202021.00,V,N*57
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,202021.00,V,,,,,,,250921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,202021.00,,,,,0,00,99.99,,,,,,*7B
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,10,79,306,,12,19,115,,15,11,082,,18,13,184,*76
+$GPGSV,3,2,10,21,11,324,,23,62,132,,24,46,058,,25,12,145,*77
+$GPGSV,3,3,10,31,00,213,,32,46,276,*7A
+$GLGSV,3,1,10,70,52,070,,71,55,328,,72,13,295,,73,40,151,*62
+$GLGSV,3,2,10,74,03,181,,79,11,024,,80,51,073,,85,03,214,*64
+$GLGSV,3,3,10,86,25,256,,87,21,324,*65
+$GNGLL,,,,,202021.00,V,N*57
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,202021.00,V,,,,,,,250921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,202021.00,,,,,0,00,99.99,,,,,,*7B
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,10,79,306,,12,19,115,,15,11,082,,18,13,184,*76
+$GPGSV,3,2,10,21,11,324,,23,62,132,,24,46,058,,25,12,145,*77
+$GPGSV,3,3,10,31,00,213,,32,46,276,*7A
+$GLGSV,3,1,10,70,52,070,,71,55,328,,72,13,295,,73,40,151,*62
+$GLGSV,3,2,10,74,03,181,,79,11,024,,80,51,073,,85,03,214,*64
+$GLGSV,3,3,10,86,25,256,,87,21,324,*65
+$GNGLL,,,,,202021.00,V,N*57
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,202021.00,V,,,,,,,250921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,202021.00,,,,,0,00,99.99,,,,,,*7B
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,10,79,306,,12,19,115,,15,11,082,,18,13,184,*76
+$GPGSV,3,2,10,21,11,324,,23,62,132,,24,46,058,,25,12,145,*77
+$GPGSV,3,3,10,31,00,213,,32,46,276,*7A
+$GLGSV,3,1,10,70,52,070,,71,55,328,,72,13,295,,73,40,151,*62
+$GLGSV,3,2,10,74,03,181,,79,11,024,,80,51,073,,85,03,214,*64
+$GLGSV,3,3,10,86,25,256,,87,21,324,*65
+$GNGLL,,,,,202021.00,V,N*57
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,202021.00,V,,,,,,,250921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,202021.00,,,,,0,00,99.99,,,,,,*7B
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,10,79,306,,12,19,115,,15,11,082,,18,13,184,*76
+$GPGSV,3,2,10,21,11,324,,23,62,132,,24,46,058,,25,12,145,*77
+$GPGSV,3,3,10,31,00,213,,32,46,276,*7A
+$GLGSV,3,1,10,70,52,070,,71,55,328,,72,13,295,,73,40,151,*62
+$GLGSV,3,2,10,74,03,181,,79,11,024,,80,51,073,,85,03,214,*64
+$GLGSV,3,3,10,86,25,256,,87,21,324,*65
+$GNGLL,,,,,202021.00,V,N*57
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,202021.00,V,,,,,,,250921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,202021.00,,,,,0,00,99.99,,,,,,*7B
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,10,79,306,,12,19,115,,15,11,082,,18,13,184,*76
+$GPGSV,3,2,10,21,11,324,,23,62,132,,24,46,058,,25,12,145,*77
+$GPGSV,3,3,10,31,00,213,,32,46,276,*7A
+$GLGSV,3,1,10,70,52,070,,71,55,328,,72,13,295,,73,40,151,*62
+$GLGSV,3,2,10,74,03,181,,79,11,024,,80,51,073,,85,03,214,*64
+$GLGSV,3,3,10,86,25,256,,87,21,324,*65
+$GNGLL,,,,,202021.00,V,N*57
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,202021.00,V,,,,,,,250921,,,N*6D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,202021.00,,,,,0,00,99.99,,,,,,*7B
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,10,79,306,,12,19,115,,15,11,082,,18,13,184,*76
+$GPGSV,3,2,10,21,11,324,,23,62,132,,24,46,058,,25,12,145,*77
+$GPGSV,3,3,10,31,00,213,,32,46,276,*7A
+$GLGSV,3,1,10,70,52,070,,71,55,328,,72,13,295,,73,40,151,*62
+$GLGSV,3,2,10,74,03,181,,79,11,024,,80,51,073,,85,03,214,*64
+$GLGSV,3,3,10,86,25,256,,87,21,32
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+317
+550
+550
+$GNRMC,202917.00,V,,,,,,,250921,,,N*61
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,202917.00,,,,,0,00,99.99,,,,,,*77
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,10,83,294,,12,22,112,,15,07,085,,18,10,184,*75
+$GPGSV,3,2,10,21,13,322,,23,58,135,,24,43,056,,25,15,143,*77
+$GPGSV,3,3,10,31,04,214,,32,49,279,*79
+$GLGSV,3,1,10,70,49,077,,71,58,335,,72,16,298,,73,45,148,*6B
+$GLGSV,3,2,10,74,07,181,,79,07,022,,80,50,065,,86,22,252,*65
+$GLGSV,3,3,10,87,22,319,,88,02,354,*60
+$GNGLL,,,,,202917.00,V,N*5B
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+550
+$GNRMC,202936.00,V,,,,,,,250921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,202936.00,,,,,0,00,99.99,,,,,,*74
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,10,83,294,,12,22,112,,15,07,085,,18,09,183,*7A
+$GPGSV,3,2,10,21,14,322,,23,57,136,,24,42,055,,25,16,143,*7D
+$GPGSV,3,3,10,31,04,214,,32,49,280,*7F
+$GLGSV,3,1,10,70,49,077,,71,58,335,,72,16,298,,73,45,148,*6B
+$GLGSV,3,2,10,74,07,181,,79,07,022,,80,50,065,,86,22,252,*65
+$GLGSV,3,3,10,87,22,319,,88,02,354,*60
+$GNGLL,,,,,202936.00,V,N*58
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,202936.00,V,,,,,,,250921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,202936.00,,,,,0,00,99.99,,,,,,*74
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,10,83,294,,12,22,112,,15,07,085,,18,09,183,*7A
+$GPGSV,3,2,10,21,14,322,,23,57,136,,24,42,055,,25,16,143,*7D
+$GPGSV,3,3,10,31,04,214,,32,49,280,*7F
+$GLGSV,3,1,10,70,49,077,,71,58,335,,72,16,298,,73,45,148,*6B
+$GLGSV,3,2,10,74,07,181,,79,07,022,,80,50,065,,86,22,252,*65
+$GLGSV,3,3,10,87,22,319,,88,02,354,*60
+$GNGLL,,,,,202936.00,V,N*58
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿOô€SHûQd
+0
+$GNRMC,202936.00,V,,,,,,,250921,,,N*62
+$GNVTG,,,,,,,,,N*2E
+$GNGGA
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+550
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+40
+$GNRMC,203421.00,V,,,,,,,250921,,,N*68
+ñÐñ
+
+1060
+1060
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,203421.00,,,,,0,00,99.99,,,,,,*7E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,10,85,280,,12,24,110,,15,06,086,,18,08,183,*7E
+$GPGSV,3,2,10,21,15,320,,23,55,137,,24,40,055,,25,18,141,*73
+$GPGSV,3,3,10,31,06,215,,32,51,282,*77
+$GLGSV,3,1,10,70,47,080,,71,60,339,,72,18,300,,73,48,147,*66
+$GLGSV,3,2,10,74,09,181,,79,05,022,,80,49,061,,86,20,250,*65
+$GLGSV,3,3,10,87,22,317,,88,03,353,*68
+$GNGLL,,,,,203421.00,V,N*52
+$GNRMC,203422.00,V,,,,,,,250921,,,N*6B
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,203422.00,,,,,0,00,99.99,,,,,,*7D
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,3,1,10,10,85,280,,12,24,110,,15,06,086,,18,08,183,*7E
+
+
+ << Debugger has been reset >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+561
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÐÅø
+225
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+169
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+0
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+*ÑÊh
+225
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿW
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿW
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿW
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+*ÑÊh
+225
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿW
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+*ÑÊh
+225
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿW
+ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿW
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+530
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+*ÑÊh
+225
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   233 00E9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,01,12,,,23*7A
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   233 00E9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+233
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,01,12,,,21*78
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+iŠhIhÿ÷¸ÿà
+h*ÑÊh
+233
+uBlox Length   233 00E9
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,01,12,,,17*7D
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   233 00E9
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+uBlox Length   225 00E1
+uBlox Length   450 01C2
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+uBlox Length   393 0189
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+uBlox Length   393 0189
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+uBlox Length   393 0189
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,,6
+uBlox Length   892 037C
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+uBlox Length   225 00E1
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+uBlox Length   225 00E1
+uBlox Length   225 00E1
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+uBlox Length   225 00E1
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+uBlox Length   225 00E1
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+µb
+ 
+Pause here
+µb
+ 
+Pause here
+µb
+ 
+Pause here
+µb
+ 
+Pause here
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+µb
+ 
+Pause here
+µb
+ 
+Pause here
+µb
+ 
+Pause here
+µb
+ 
+Pause here
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+µb
+ 
+Pause here
+µb
+ 
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+µb
+ 
+Pause here
+0xb5 0x62 0x0a 0x04 0xa0 0x00 0x52 0x4f 0x4d 0x20 0x43 0x4f 0x52 0x45 0x20 0x33 0x2e 0x30 0x31 0x20 0x28 0x31 0x30 0x37 0x38 0x38 0x38 0x29 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x30 0x30 0x30 0x38 0x30 0x30 0x30 0x30 0x00 0x00 0x46 0x57 0x56 0x45 0x52 0x3d 0x53 0x50 0x47 0x20 0x33 0x2e 0x30 0x31 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x50 0x52 0x4f 0x54 0x56 0x45 0x52 0x3d 0x31 0x38 0x2e 0x30 0x30 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x47 0x50 0x53 0x3b 0x47 0x4c 0x4f 0x3b 0x47 0x41 0x4c 0x3b 0x42 0x44 0x53 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x53 0x42 0x41 0x53 0x3b 0x49 0x4d 0x45 0x53 0x3b 0x51 0x5a 0x53 0x53 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x41 0xd2 µb
+ 
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+µb
+ 
+Pause here
+0xb5
+b 0x0a
+0x04
+0xa0
+0x00
+R O M 0x20
+C O R E 0x20
+3 . 0 1 0x20
+( 1 0 7 8 8 8 ) 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0 0 0 8 0 0 0 0 0x00
+0x00
+F W V E R = S P G 0x20
+3 . 0 1 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+P R O T V E R = 1 8 . 0 0 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+G P S ; G L O ; G A L ; B D S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+S B A S ; I M E S ; Q Z S S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+A 0xd2
+µb
+ 
+Pause here
+0xb5
+b 0x0a
+0x04
+0xa0
+0x00
+R O M 0x20
+C O R E 0x20
+3 . 0 1 0x20
+( 1 0 7 8 8 8 ) 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0 0 0 8 0 0 0 0 0x00
+0x00
+F W V E R = S P G 0x20
+3 . 0 1 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+P R O T V E R = 1 8 . 0 0 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+G P S ; G L O ; G A L ; B D S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+S B A S ; I M E S ; Q Z S S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+A 0xd2
+µb
+ 
+Pause here
+0xb5
+b 0x0a
+0x04
+0xa0
+0x00
+R O M 0x20
+C O R E 0x20
+3 . 0 1 0x20
+( 1 0 7 8 8 8 ) 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0 0 0 8 0 0 0 0 0x00
+0x00
+F W V E R = S P G 0x20
+3 . 0 1 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+P R O T V E R = 1 8 . 0 0 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+G P S ; G L O ; G A L ; B D S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+S B A S ; I M E S ; Q Z S S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+A 0xd2
+µb
+ 
+Pause here
+0xb5
+b 0x0a
+0x04
+0xa0
+0x00
+R O M 0x20
+C O R E 0x20
+3 . 0 1 0x20
+( 1 0 7 8 8 8 ) 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0 0 0 8 0 0 0 0 0x00
+0x00
+F W V E R = S P G 0x20
+3 . 0 1 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+P R O T V E R = 1 8 . 0 0 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+G P S ; G L O ; G A L ; B D S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+S B A S ; I M E S ; Q Z S S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+A 0xd2
+µb
+ 
+Pause here
+0xb5
+b 0x0a
+0x04
+0xa0
+0x00
+R O M 0x20
+C O R E 0x20
+3 . 0 1 0x20
+( 1 0 7 8 8 8 ) 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0 0 0 8 0 0 0 0 0x00
+0x00
+F W V E R = S P G 0x20
+3 . 0 1 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+P R O T V E R = 1 8 . 0 0 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+G P S ; G L O ; G A L ; B D S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+S B A S ; I M E S ; Q Z S S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+A 0xd2
+µb
+ 
+Pause here
+0xb5
+b 0x0a
+0x04
+0xa0
+0x00
+R O M 0x20
+C O R E 0x20
+3 . 0 1 0x20
+( 1 0 7 8 8 8 ) 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0 0 0 8 0 0 0 0 0x00
+0x00
+F W V E R = S P G 0x20
+3 . 0 1 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+P R O T V E R = 1 8 . 0 0 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+G P S ; G L O ; G A L ; B D S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+S B A S ; I M E S ; Q Z S S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+A 0xd2
+µb
+ 
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+µb
+ 
+Pause here
+0xb5
+b 0x0a
+0x04
+0xa0
+0x00
+R O M 0x20
+C O R E 0x20
+3 . 0 1 0x20
+( 1 0 7 8 8 8 ) 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0 0 0 8 0 0 0 0 0x00
+0x00
+F W V E R = S P G 0x20
+3 . 0 1 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+P R O T V E R = 1 8 . 0 0 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+G P S ; G L O ; G A L ; B D S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+S B A S ; I M E S ; Q Z S S 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+A 0xd2
+µb
+ 
+Pause here
+0xb5
+b 0x0a
+0x04
+0xa0
+0x00
+R O M 0x20
+C O R E 0x20
+3 . 0 1 0x20
+( 1 0 7 8 8 8 ) 0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0x00
+0 0 0 8 0 0 0 0 0x00
+0x00
+F W V E R = S P G 0x20
+3 . 0 1 0x00
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+
+$GNTXT,01,01,02,ANTSTATUS=OK*25
+,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+
+µb
+ 
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+µb
+ 
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,9
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	4
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+ROM CORE 3.01 (107888)
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+ROM CORE 3.01 (107888)
+ROM CORE 3.01 (107888)
+
+
+
+
+
+
+
+00080000
+
+FWVER=SPG 3.01
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PROTVER=18.00
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GPS;GLO;GAL;BDS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SBAS;IMES;QZSS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+ROM CORE 3.01 (107888)
+ROM CORE 3.01 (107888)
+00080000
+FWVER=SPG 3.01
+PROTVER=18.00
+GPS;GLO;GAL;BDS
+SBAS;IMES;QZSS
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+ROM CORE 3.01 (107888)
+00080000
+FWVER=SPG 3.01
+PROTVER=18.00
+GPS;GLO;GAL;BDS
+SBAS;IMES;QZSS
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+Valid ACK-ACK
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÐÅø
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	li
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+Valid ACK-ACK
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÐÅø
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	6
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+Valid ACK-ACK
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+Valid ACK-ACK
+225
+$GNRMC,,V,,,,,,,,,,N*4D
+$GNVTG,,,,,,,,,N*2E
+$GNGGA,,,,,,0,00,99.99,,,,,,*56
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GNGSA,A,1,,,,,,,,,,,,,99.99,99.99,99.99*2E
+$GPGSV,1,1,00*79
+$GLGSV,1,1,00*65
+$GNGLL,,,,,,V,N*7A
+ÐÅø
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+
+
+ << Debugger has been reset >> 
+
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &tran
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artem
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	
+
+ << Debugger has been reset >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+ROM CORE 3.01 (107888)
+00080000
+FWVER=SPG 3.01
+PROTVER=18.00
+GPS;GLO;GAL;BDS
+SBAS;IMES;QZSS
+ROM CORE 3.01 (107888)
+00080000
+FWVER=SPG 3.01
+PROTVER=18.00
+GPS;GLO;GAL;BDS
+SBAS;IMES;QZSS
+ROM CORE 3.01 (107888)
+00080000
+FWVER=SPG 3.01
+PROTVER=18.00
+GPS;GLO;GAL;BDS
+SBAS;IMES;QZSS
+ROM CORE 3.01 (107888)
+00080000
+FWVER=SPG 3.01
+PROTVER=18.00
+GPS;GLO;GAL;BDS
+SBAS;IMES;QZSS
+ROM CORE 3.01 (107888)
+00080000
+FWVER=SPG 3.01
+PROTVER=18.00
+GPS;GLO;GAL;BDS
+SBAS;IMES;QZSS
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_receive
+	file:	artemis_i2c.c
+	line:	42
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+ROM CORE 3.01 (107888)
+00080000
+FWVER=SPG 3.01
+PROTVER=18.00
+GPS;GLO;GAL;BDS
+SBAS;IMES;QZSS
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Logging of terminal I/O resumes >> 
+

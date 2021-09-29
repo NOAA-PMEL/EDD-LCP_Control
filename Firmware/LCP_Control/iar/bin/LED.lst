@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         17/Sep/2021  09:36:04
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         24/Sep/2021  12:59:04
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode                        
@@ -8,7 +8,7 @@
 #    Source file                  =
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\LED.c
 #    Command line                 =
-#        -f C:\Users\casari\AppData\Local\Temp\1\EW9F7B.tmp
+#        -f C:\Users\casari\AppData\Local\Temp\1\EW61A.tmp
 #        (C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\LED.c -D
 #        iar -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D
 #        AM_DEBUG_PRINTF -D AM_UTIL_FAULTISR_PRINT -lcN
@@ -59,148 +59,149 @@ C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\LED.c
       7          //#include "am_bsp_pins.h"
       8          
       9          
-     10          const am_devices_led_t LED[3] = {
-     11            {
-     12              .ui32GPIONumber   = AM_BSP_GPIO_LED_GREEN,
-     13              .ui32Polarity     = AM_DEVICES_LED_ON_LOW,
-     14            },
-     15            {
-     16              .ui32GPIONumber   = AM_BSP_GPIO_LED_RED,
-     17              .ui32Polarity     = AM_DEVICES_LED_ON_LOW
-     18            },
-     19            {
-     20              .ui32GPIONumber   = AM_BSP_GPIO_LED_BLUE,
-     21              .ui32Polarity     = AM_DEVICES_LED_ON_LOW
-     22            }   
-     23            
-     24          };
-     25          const am_devices_led_t *psLED = &LED[0];
-     26          
-     27          TaskHandle_t green_led_task_handle;
-     28          TaskHandle_t blue_led_task_handle;
-     29          
-     30          SemaphoreHandle_t xLedMutex = NULL;
-     31          StaticSemaphore_t xLedSemaphoreBuffer;
-     32          
-     33          const TickType_t xDelay1ms = pdMS_TO_TICKS( 1UL );
-     34          const TickType_t xDelay5ms = pdMS_TO_TICKS( 5UL );
-     35          const TickType_t xDelay10ms = pdMS_TO_TICKS( 10UL );
-     36          const TickType_t xDelay50ms = pdMS_TO_TICKS( 50UL );
-     37          const TickType_t xDelay100ms = pdMS_TO_TICKS( 100UL );
-     38          const TickType_t xDelay250ms = pdMS_TO_TICKS( 250UL );
-     39          const TickType_t xDelay500ms = pdMS_TO_TICKS( 500UL );
-     40          
-     41          SemaphoreHandle_t xSemaphore = NULL;
-     42          
+     10          
+     11          const am_devices_led_t LED[3] = {
+     12            {
+     13              .ui32GPIONumber   = AM_BSP_GPIO_LED_GREEN,
+     14              .ui32Polarity     = AM_DEVICES_LED_ON_LOW,
+     15            },
+     16            {
+     17              .ui32GPIONumber   = AM_BSP_GPIO_LED_RED,
+     18              .ui32Polarity     = AM_DEVICES_LED_ON_LOW
+     19            },
+     20            {
+     21              .ui32GPIONumber   = AM_BSP_GPIO_LED_BLUE,
+     22              .ui32Polarity     = AM_DEVICES_LED_ON_LOW
+     23            }   
+     24            
+     25          };
+     26          const am_devices_led_t *psLED = &LED[0];
+     27          
+     28          TaskHandle_t green_led_task_handle;
+     29          TaskHandle_t blue_led_task_handle;
+     30          
+     31          SemaphoreHandle_t xLedMutex = NULL;
+     32          StaticSemaphore_t xLedSemaphoreBuffer;
+     33          
+     34          const TickType_t xDelay1ms = pdMS_TO_TICKS( 1UL );
+     35          const TickType_t xDelay5ms = pdMS_TO_TICKS( 5UL );
+     36          const TickType_t xDelay10ms = pdMS_TO_TICKS( 10UL );
+     37          const TickType_t xDelay50ms = pdMS_TO_TICKS( 50UL );
+     38          const TickType_t xDelay100ms = pdMS_TO_TICKS( 100UL );
+     39          const TickType_t xDelay250ms = pdMS_TO_TICKS( 250UL );
+     40          const TickType_t xDelay500ms = pdMS_TO_TICKS( 500UL );
+     41          
+     42          SemaphoreHandle_t xSemaphore = NULL;
      43          
-     44          void LED_Init(void)
-     45          {
-     46            
-     47              /** Create the Mutex */
-     48              xLedMutex = xSemaphoreCreateMutex( );
-     49              configASSERT(xLedMutex);
-     50              
-     51              /** Initialize the LED Array */
-     52              am_devices_led_array_init((am_devices_led_t*)psLED, 3);
-     53              
-     54              /** Enable the interrupts */
-     55              am_hal_interrupt_master_enable();
-     56              
+     44          
+     45          void LED_Init(void)
+     46          {
+     47            
+     48              /** Create the Mutex */
+     49              xLedMutex = xSemaphoreCreateMutex( );
+     50              configASSERT(xLedMutex);
+     51              
+     52              /** Initialize the LED Array */
+     53              am_devices_led_array_init((am_devices_led_t*)psLED, 3);
+     54              
+     55              /** Enable the interrupts */
+     56              am_hal_interrupt_master_enable();
      57              
-     58              /** Toggle the LEDs ON for the heck of it*/
-     59              LED_Toggle(LED_GREEN);
-     60              LED_Toggle(LED_BLUE);
-     61              
-     62              /** Mutex is ready */
-     63              xSemaphoreGive(xLedMutex);
-     64              
-     65          }   
-     66          
+     58              
+     59              /** Toggle the LEDs ON for the heck of it*/
+     60              LED_Toggle(LED_GREEN);
+     61              LED_Toggle(LED_BLUE);
+     62              
+     63              /** Mutex is ready */
+     64              xSemaphoreGive(xLedMutex);
+     65              
+     66          }   
      67          
-     68          void LED_Toggle(eLED_t led)
-     69          {
-     70          
-     71            uint8_t led_num = 0;
-     72            switch(led)
-     73            {
-     74            case LED_RED:
-     75              led_num = 1;
-     76              break;
-     77            case LED_GREEN:
-     78              led_num = 0;
-     79              break;
-     80            case LED_BLUE:
-     81              led_num = 2;
-     82              break;
-     83            default:
-     84              break;
-     85            }  
-     86          
-     87            am_devices_led_toggle((am_devices_led_t*)psLED, led_num);
-     88            
-     89          }
-     90          
-     91          void LED_Off(eLED_t led)
-     92          {
-     93            uint8_t led_num = 0;
-     94            switch(led)
-     95            {
-     96            case LED_RED:
-     97              led_num = 1;
-     98              break;
-     99            case LED_GREEN:
-    100              led_num = 0;
-    101              break;
-    102            case LED_BLUE:
-    103              led_num = 2;
-    104              break;
-    105            default:
-    106              break;
-    107            }  
-    108          
-    109            am_devices_led_off((am_devices_led_t*)psLED, led_num);
-    110          }
-    111          
+     68          
+     69          void LED_Toggle(eLED_t led)
+     70          {
+     71          
+     72            uint8_t led_num = 0;
+     73            switch(led)
+     74            {
+     75            case LED_RED:
+     76              led_num = 1;
+     77              break;
+     78            case LED_GREEN:
+     79              led_num = 0;
+     80              break;
+     81            case LED_BLUE:
+     82              led_num = 2;
+     83              break;
+     84            default:
+     85              break;
+     86            }  
+     87          
+     88            am_devices_led_toggle((am_devices_led_t*)psLED, led_num);
+     89            
+     90          }
+     91          
+     92          void LED_Off(eLED_t led)
+     93          {
+     94            uint8_t led_num = 0;
+     95            switch(led)
+     96            {
+     97            case LED_RED:
+     98              led_num = 1;
+     99              break;
+    100            case LED_GREEN:
+    101              led_num = 0;
+    102              break;
+    103            case LED_BLUE:
+    104              led_num = 2;
+    105              break;
+    106            default:
+    107              break;
+    108            }  
+    109          
+    110            am_devices_led_off((am_devices_led_t*)psLED, led_num);
+    111          }
     112          
-    113          void GreenLedTask(void *pvParameters)
-    114          {
-    115              uint32_t time_ms = (uint32_t) pvParameters;
-    116              TickType_t xLastWakeTime;
-    117              xLastWakeTime = xTaskGetTickCount();
-    118              while(true)
-    119              {
-    120                vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS( time_ms));
-    121                if(xSemaphoreTake(xLedMutex, xDelay5ms) == pdPASS)
-    122                {
-    123                  LED_Toggle(LED_GREEN);
-    124                  xSemaphoreGive(xLedMutex);
-    125                } else {
-    126                  
-    127                }
-    128                
-    129              }  
-    130          }
-    131          
+    113          
+    114          void GreenLedTask(void *pvParameters)
+    115          {
+    116              uint32_t time_ms = (uint32_t) pvParameters;
+    117              TickType_t xLastWakeTime;
+    118              xLastWakeTime = xTaskGetTickCount();
+    119              while(true)
+    120              {
+    121                vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS( time_ms));
+    122                if(xSemaphoreTake(xLedMutex, xDelay5ms) == pdPASS)
+    123                {
+    124                  LED_Toggle(LED_GREEN);
+    125                  xSemaphoreGive(xLedMutex);
+    126                } else {
+    127                  
+    128                }
+    129                
+    130              }  
+    131          }
     132          
-    133          void BlueLedTask(void *pvParameters)
-    134          {
-    135            
-    136              uint32_t time_ms = (uint32_t) pvParameters;
-    137              TickType_t xLastWakeTime;
-    138              xLastWakeTime = xTaskGetTickCount();
-    139              while(true)
-    140              {
-    141                vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS( time_ms ));
-    142                if(xSemaphoreTake(xLedMutex, xDelay5ms) == pdPASS)
-    143                {
-    144                  LED_Toggle(LED_BLUE);
-    145                  xSemaphoreGive(xLedMutex);
-    146                } else {
-    147                  
-    148                }
-    149                
-    150              }  
-    151          }
+    133          
+    134          void BlueLedTask(void *pvParameters)
+    135          {
+    136            
+    137              uint32_t time_ms = (uint32_t) pvParameters;
+    138              TickType_t xLastWakeTime;
+    139              xLastWakeTime = xTaskGetTickCount();
+    140              while(true)
+    141              {
+    142                vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS( time_ms ));
+    143                if(xSemaphoreTake(xLedMutex, xDelay5ms) == pdPASS)
+    144                {
+    145                  LED_Toggle(LED_BLUE);
+    146                  xSemaphoreGive(xLedMutex);
+    147                } else {
+    148                  
+    149                }
+    150                
+    151              }  
+    152          }
 
    Maximum stack usage in bytes:
 
