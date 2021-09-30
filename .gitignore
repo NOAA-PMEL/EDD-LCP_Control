@@ -138,3 +138,10 @@ Firmware/LCP_Control/iar/bin/tasks.lst
 Firmware/LCP_Control/iar/bin/timers.lst
 Firmware/LCP_Control/iar/settings/freertos_lowpower.dnx
 Firmware/LCP_Control/iar/settings/freertos_lowpower.wsdt
+
+
+.venv/
+.vscode/
+build/
+src/artemis/artemis_ublox_i2c_old.c
+src/bsp_old/
