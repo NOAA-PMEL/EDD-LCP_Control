@@ -548,7 +548,7 @@ bool module_ublox_wait_for_ack_or_nak(  uint8_t expectedClass,
     {
         
         retVal = module_ublox_read_packet(&rxPacket);
-        if( (retVal == true) || (++cnt > attempts))
+        if( ((retVal == true) && (rxPacket.length > 0) )|| (++cnt > attempts))
         {
             endFlag = true;
         }
