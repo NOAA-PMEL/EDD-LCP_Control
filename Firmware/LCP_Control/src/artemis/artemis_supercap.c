@@ -17,24 +17,23 @@
 //*****************************************************************************
 #include <stdint.h>
 
-
+#include "artemis_mcu.h"
 
 //*****************************************************************************
 //
 // Standard AmbiqSuite includes.
 //
 //*****************************************************************************
-#include "am_bsp.h"
+#include "am_mcu_apollo.h"
 #include "am_bsp_pins.h"
-
 
 //*****************************************************************************
 //
 // Artemis specific files
 //
 //*****************************************************************************
+#include "artemis_debug.h"
 #include "artemis_supercap.h"
-
 
 
 //*****************************************************************************
@@ -80,15 +79,15 @@ void artemis_sc_initialize(void)
 {
 
     module.power.pin = AM_BSP_GPIO_SC_ON;
-    module.power.pinConfig = g_AM_BSP_GPIO_SC_ON;
+    module.power.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_SC_ON;
     module.shutdown.pin = AM_BSP_GPIO_SC_NSHDN;
-    module.shutdown.pinConfig = g_AM_BSP_GPIO_SC_NSHDN;
+    module.shutdown.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_SC_NSHDN;
     module.good.pin = AM_BSP_GPIO_SC_PGOOD;
-    module.good.pinConfig = g_AM_BSP_GPIO_SC_PGOOD;
+    module.good.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_SC_PGOOD;
 
-    ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, module.power.pinConfig));
-    ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.shutdown.pin, module.shutdown.pinConfig));
-    ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.good.pin, module.good.pinConfig));
+    ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
+    ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.shutdown.pin, *module.shutdown.pinConfig));
+    ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.good.pin, *module.good.pinConfig));
 
 }
 
@@ -96,7 +95,7 @@ void artemis_sc_initialize(void)
 bool artemis_sc_power_startup(void)
 {
     artemis_sc_power_on();
-    for(uint8_t i=0; i<ARTEMIS_SC_POWER_TIMEOUT_MS; i++)
+    for(uint16_t i=0; i<ARTEMIS_SC_POWER_TIMEOUT_MS; i++)
     {
         if(artemis_sc_power_good())
         {
@@ -110,14 +109,14 @@ bool artemis_sc_power_startup(void)
 
 void artemis_sc_power_on(void)
 {
-    am_hal_gpio_output_clear(module.power.pin);
+    am_hal_gpio_output_set(module.power.pin);
     am_hal_gpio_output_set(module.shutdown.pin);
 }
 
 void artemis_sc_power_off(void)
 {
     am_hal_gpio_output_clear(module.shutdown.pin);
-    am_hal_gpio_output_set(module.power.pin);
+    am_hal_gpio_output_clear(module.power.pin);
 }
 
 bool artemis_sc_power_good(void)

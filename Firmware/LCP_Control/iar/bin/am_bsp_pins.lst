@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         29/Sep/2021  08:01:31
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         30/Sep/2021  12:14:34
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode             
@@ -8,7 +8,7 @@
 #    Source file       =
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\bsp\am_bsp_pins.c
 #    Command line      =
-#        -f C:\Users\casari\AppData\Local\Temp\1\EWDA6.tmp
+#        -f C:\Users\casari\AppData\Local\Temp\1\EW2967.tmp
 #        (C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\bsp\am_bsp_pins.c
 #        -D iar -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D
 #        AM_DEBUG_PRINTF -D AM_UTIL_FAULTISR_PRINT -lcN
@@ -143,1057 +143,1066 @@ C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\bsp\am_bsp_pins.c
      92          //*****************************************************************************
      93          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_SC_NSHDN =
      94          {
-     95              .uFuncSel            = AM_HAL_PIN_0_GPIO,
-     96              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
-     97          };
-     98          
-     99          //*****************************************************************************
-    100          //
-    101          //  SC_PGOOD pin: This pin is the supercapacitor power-good pin.
-    102          //
-    103          //*****************************************************************************
-    104          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_SC_PGOOD =
-    105          {
-    106              .uFuncSel            = AM_HAL_PIN_28_GPIO,
-    107              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
-    108          };
-    109          
-    110          //*****************************************************************************
-    111          //
-    112          //  SC_ON pin: This pin is the supercapacitor on pin.
-    113          //
-    114          //*****************************************************************************
-    115          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_SC_ON =
-    116          {
-    117              .uFuncSel            = AM_HAL_PIN_1_GPIO,
-    118              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
-    119          };
-    120          
-    121          //*****************************************************************************
-    122          //
-    123          //  CONSOLE_UART_TX pin: This pin is the Console UART transmit pin.
-    124          //
-    125          //*****************************************************************************
-    126          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_CONSOLE_UART_TX =
-    127          {
-    128              .uFuncSel            = AM_HAL_PIN_48_UART0TX,
-    129              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
-    130          };
-    131          
-    132          //*****************************************************************************
+     95          //    .uFuncSel            = AM_HAL_PIN_0_GPIO,
+     96          //    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA
+     97              .uFuncSel            = AM_HAL_PIN_0_GPIO,
+     98              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+     99              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    100          };
+    101          
+    102          //*****************************************************************************
+    103          //
+    104          //  SC_PGOOD pin: This pin is the supercapacitor power-good pin.
+    105          //
+    106          //*****************************************************************************
+    107          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_SC_PGOOD =
+    108          {
+    109              .uFuncSel            = AM_HAL_PIN_28_GPIO,
+    110              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    111              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    112              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
+    113          };
+    114          
+    115          //*****************************************************************************
+    116          //
+    117          //  SC_ON pin: This pin is the supercapacitor on pin.
+    118          //
+    119          //*****************************************************************************
+    120          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_SC_ON =
+    121          {
+    122          //    .uFuncSel            = AM_HAL_PIN_1_GPIO,
+    123          ////    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    124          //    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA
+    125              .uFuncSel            = AM_HAL_PIN_1_GPIO,
+    126              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+    127              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    128          };
+    129          
+    130          //*****************************************************************************
+    131          //
+    132          //  CONSOLE_UART_TX pin: This pin is the Console UART transmit pin.
     133          //
-    134          //  CONSOLE_UART_RX pin: This pin is the Console UART receive pin.
-    135          //
-    136          //*****************************************************************************
-    137          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_CONSOLE_UART_RX =
-    138          {
-    139              .uFuncSel            = AM_HAL_PIN_49_UART0RX
-    140          };
-    141          
-    142          //*****************************************************************************
-    143          //
-    144          //  IRIDIUM_ON pin: This pin is the Iridium Module Power pin.
-    145          //
-    146          //*****************************************************************************
-    147          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IRIDIUM_ON =
-    148          {
-    149              .uFuncSel            = AM_HAL_PIN_4_GPIO,
-    150              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
-    151          };
-    152          
-    153          //*****************************************************************************
+    134          //*****************************************************************************
+    135          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_CONSOLE_UART_TX =
+    136          {
+    137              .uFuncSel            = AM_HAL_PIN_48_UART0TX,
+    138              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    139          };
+    140          
+    141          //*****************************************************************************
+    142          //
+    143          //  CONSOLE_UART_RX pin: This pin is the Console UART receive pin.
+    144          //
+    145          //*****************************************************************************
+    146          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_CONSOLE_UART_RX =
+    147          {
+    148              .uFuncSel            = AM_HAL_PIN_49_UART0RX
+    149          };
+    150          
+    151          //*****************************************************************************
+    152          //
+    153          //  IRIDIUM_ON pin: This pin is the Iridium Module Power pin.
     154          //
-    155          //  IRIDIUM_RING_IND pin: This pin is the Iridium Ring Indicator pin.
-    156          //
-    157          //*****************************************************************************
-    158          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IRIDIUM_RING_IND =
-    159          {
-    160              .uFuncSel            = AM_HAL_PIN_22_GPIO,
-    161              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
-    162              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
-    163          };
-    164          
-    165          //*****************************************************************************
-    166          //
-    167          //  IRIDIUM_NET_AVAIL pin: This pin is the Iridium Network Available pin.
-    168          //
-    169          //*****************************************************************************
-    170          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IRIDIUM_NET_AVAIL =
-    171          {
-    172              .uFuncSel            = AM_HAL_PIN_24_GPIO,
-    173              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
-    174              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
-    175          };
-    176          
-    177          //*****************************************************************************
-    178          //
-    179          //  IRIDIUM_UART_TX pin: This pin is the Console UART transmit pin.
-    180          //
-    181          //*****************************************************************************
-    182          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IRIDIUM_UART_TX =
-    183          {
-    184              .uFuncSel            = AM_HAL_PIN_14_UART1TX,
-    185              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
-    186          };
-    187          
-    188          //*****************************************************************************
+    155          //*****************************************************************************
+    156          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IRIDIUM_ON =
+    157          {
+    158              .uFuncSel            = AM_HAL_PIN_4_GPIO,
+    159              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    160          };
+    161          
+    162          //*****************************************************************************
+    163          //
+    164          //  IRIDIUM_RING_IND pin: This pin is the Iridium Ring Indicator pin.
+    165          //
+    166          //*****************************************************************************
+    167          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IRIDIUM_RING_IND =
+    168          {
+    169              .uFuncSel            = AM_HAL_PIN_22_GPIO,
+    170              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    171              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
+    172          };
+    173          
+    174          //*****************************************************************************
+    175          //
+    176          //  IRIDIUM_NET_AVAIL pin: This pin is the Iridium Network Available pin.
+    177          //
+    178          //*****************************************************************************
+    179          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IRIDIUM_NET_AVAIL =
+    180          {
+    181              .uFuncSel            = AM_HAL_PIN_24_GPIO,
+    182              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    183              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
+    184          };
+    185          
+    186          //*****************************************************************************
+    187          //
+    188          //  IRIDIUM_UART_TX pin: This pin is the Console UART transmit pin.
     189          //
-    190          //  IRIDIUM_UART_RX pin: This pin is the Console UART receive pin.
-    191          //
-    192          //*****************************************************************************
-    193          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IRIDIUM_UART_RX =
-    194          {
-    195              .uFuncSel            = AM_HAL_PIN_15_UART1RX
-    196          };
-    197          
-    198          //*****************************************************************************
-    199          //
-    200          //  GPS_ON pin: This pin is the GPS Module Power pin.
-    201          //
-    202          //*****************************************************************************
-    203          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_GPS_ON =
-    204          {
-    205              .uFuncSel            = AM_HAL_PIN_26_GPIO,
-    206              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
-    207          };
-    208          
-    209          //*****************************************************************************
+    190          //*****************************************************************************
+    191          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IRIDIUM_UART_TX =
+    192          {
+    193              .uFuncSel            = AM_HAL_PIN_14_UART1TX,
+    194              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    195          };
+    196          
+    197          //*****************************************************************************
+    198          //
+    199          //  IRIDIUM_UART_RX pin: This pin is the Console UART receive pin.
+    200          //
+    201          //*****************************************************************************
+    202          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IRIDIUM_UART_RX =
+    203          {
+    204              .uFuncSel            = AM_HAL_PIN_15_UART1RX
+    205          };
+    206          
+    207          //*****************************************************************************
+    208          //
+    209          //  GPS_ON pin: This pin is the GPS Module Power pin.
     210          //
-    211          //  GPS_EXTINT pin: This pin is the GPS Interrupt pin.
-    212          //
-    213          //*****************************************************************************
-    214          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_GPS_EXTINT =
-    215          {
-    216              .uFuncSel            = AM_HAL_PIN_10_GPIO,
-    217              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
-    218          };
-    219          
-    220          //*****************************************************************************
+    211          //*****************************************************************************
+    212          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_GPS_ON =
+    213          {
+    214              .uFuncSel            = AM_HAL_PIN_26_GPIO,
+    215              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    216          };
+    217          
+    218          //*****************************************************************************
+    219          //
+    220          //  GPS_EXTINT pin: This pin is the GPS Interrupt pin.
     221          //
-    222          //  ACCEL_INT pin: This pin is the Accelerometer Interrupt pin.
-    223          //
-    224          //*****************************************************************************
-    225          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_ACCEL_INT =
-    226          {
-    227              .uFuncSel            = AM_HAL_PIN_37_GPIO,
-    228              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
-    229          };
-    230          
-    231          //*****************************************************************************
+    222          //*****************************************************************************
+    223          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_GPS_EXTINT =
+    224          {
+    225              .uFuncSel            = AM_HAL_PIN_10_GPIO,
+    226              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    227          };
+    228          
+    229          //*****************************************************************************
+    230          //
+    231          //  ACCEL_INT pin: This pin is the Accelerometer Interrupt pin.
     232          //
-    233          //  ACCEL_SPI_CS pin: This pin is the Accelerometer SPI Chip Select pin.
-    234          //
-    235          //*****************************************************************************
-    236          //const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_ACCEL_SPI_CS =
-    237          //{
-    238          //    .uFuncSel            = AM_HAL_PIN_36_GPIO,
-    239          //    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
-    240          //    .uIOMnum             = 0,
-    241          //    .uNCE                = 0,
-    242          //    .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-    243          //};
-    244          
-    245          //*****************************************************************************
-    246          //
-    247          //  PRES_ON pin: This pin is the Pressure Sensor Power pin.
-    248          //
-    249          //*****************************************************************************
-    250          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_PRES_ON =
-    251          {
-    252              .uFuncSel            = AM_HAL_PIN_44_GPIO,
-    253              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    254              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
-    255          };
-    256          
-    257          //*****************************************************************************
-    258          //
-    259          //  S2U_ON pin: This pin is the SPI-to-UART Power pin.
-    260          //
-    261          //*****************************************************************************
-    262          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_S2U_ON =
-    263          {
-    264              .uFuncSel            = AM_HAL_PIN_45_GPIO,
-    265              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    266              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
-    267          };
-    268          
-    269          //*****************************************************************************
-    270          //
-    271          //  S2U_NRESET pin: This pin is the SPI-to-UART Reset pin.
-    272          //
-    273          //*****************************************************************************
-    274          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_S2U_NRESET =
-    275          {
-    276              .uFuncSel            = AM_HAL_PIN_19_GPIO,
-    277              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
-    278              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
-    279          };
-    280          
-    281          //*****************************************************************************
-    282          //
-    283          //  S2U_NIRQ pin: This pin is the SPI-to-UART Interrupt pin.
-    284          //
-    285          //*****************************************************************************
-    286          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_S2U_NIRQ =
-    287          {
-    288              .uFuncSel            = AM_HAL_PIN_18_GPIO,
-    289              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
-    290              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE,
-    291              .eGPRdZero           = AM_HAL_GPIO_PIN_RDZERO_ZERO
-    292          };
-    293          
+    233          //*****************************************************************************
+    234          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_ACCEL_INT =
+    235          {
+    236              .uFuncSel            = AM_HAL_PIN_37_GPIO,
+    237              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
+    238          };
+    239          
+    240          //*****************************************************************************
+    241          //
+    242          //  ACCEL_SPI_CS pin: This pin is the Accelerometer SPI Chip Select pin.
+    243          //
+    244          //*****************************************************************************
+    245          //const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_ACCEL_SPI_CS =
+    246          //{
+    247          //    .uFuncSel            = AM_HAL_PIN_36_GPIO,
+    248          //    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    249          //    .uIOMnum             = 0,
+    250          //    .uNCE                = 0,
+    251          //    .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
+    252          //};
+    253          
+    254          //*****************************************************************************
+    255          //
+    256          //  PRES_ON pin: This pin is the Pressure Sensor Power pin.
+    257          //
+    258          //*****************************************************************************
+    259          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_PRES_ON =
+    260          {
+    261              .uFuncSel            = AM_HAL_PIN_44_GPIO,
+    262              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    263              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    264          };
+    265          
+    266          //*****************************************************************************
+    267          //
+    268          //  S2U_ON pin: This pin is the SPI-to-UART Power pin.
+    269          //
+    270          //*****************************************************************************
+    271          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_S2U_ON =
+    272          {
+    273              .uFuncSel            = AM_HAL_PIN_45_GPIO,
+    274              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    275              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    276          };
+    277          
+    278          //*****************************************************************************
+    279          //
+    280          //  S2U_NRESET pin: This pin is the SPI-to-UART Reset pin.
+    281          //
+    282          //*****************************************************************************
+    283          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_S2U_NRESET =
+    284          {
+    285              .uFuncSel            = AM_HAL_PIN_19_GPIO,
+    286              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+    287              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    288          };
+    289          
+    290          //*****************************************************************************
+    291          //
+    292          //  S2U_NIRQ pin: This pin is the SPI-to-UART Interrupt pin.
+    293          //
     294          //*****************************************************************************
-    295          //
-    296          //  COM0_POWER_PIN pin: This pin is the COM0 Power pin.
-    297          //
-    298          //*****************************************************************************
-    299          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_COM0_POWER_PIN =
-    300          {
-    301              .uFuncSel            = AM_HAL_PIN_11_GPIO,
-    302              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    303              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
-    304          };
-    305          
-    306          //*****************************************************************************
-    307          //
-    308          //  COM1_POWER_PIN pin: This pin is the COM0 Power pin.
-    309          //
-    310          //*****************************************************************************
-    311          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_COM1_POWER_PIN =
-    312          {
-    313              .uFuncSel            = AM_HAL_PIN_12_GPIO,
-    314              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
-    315              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
-    316          };
-    317          
-    318          //*****************************************************************************
-    319          //
-    320          //  COM2_POWER_PIN pin: This pin is the COM0 Power pin.
-    321          //
-    322          //*****************************************************************************
-    323          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_COM2_POWER_PIN =
-    324          {
-    325              .uFuncSel            = AM_HAL_PIN_13_GPIO,
-    326              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
-    327              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
-    328          };
-    329          
-    330          //*****************************************************************************
-    331          //
-    332          //  COM3_POWER_PIN pin: This pin is the COM0 Power pin.
-    333          //
-    334          //*****************************************************************************
-    335          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_COM3_POWER_PIN =
-    336          {
-    337              .uFuncSel            = AM_HAL_PIN_34_GPIO,
-    338              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
-    339              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
-    340          };
-    341          
-    342          //*****************************************************************************
-    343          //
-    344          //  BUS_VOLT_ENABLE pin: This pin is the Bus Voltage Enable pin.
-    345          //
-    346          //*****************************************************************************
-    347          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_BUS_VOLT_ENABLE =
-    348          {
-    349              .uFuncSel            = AM_HAL_PIN_23_GPIO,
-    350              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
-    351          };
-    352          
-    353          //*****************************************************************************
+    295          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_S2U_NIRQ =
+    296          {
+    297              .uFuncSel            = AM_HAL_PIN_18_GPIO,
+    298              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    299              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE,
+    300              .eGPRdZero           = AM_HAL_GPIO_PIN_RDZERO_ZERO
+    301          };
+    302          
+    303          //*****************************************************************************
+    304          //
+    305          //  COM0_POWER_PIN pin: This pin is the COM0 Power pin.
+    306          //
+    307          //*****************************************************************************
+    308          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_COM0_POWER_PIN =
+    309          {
+    310              .uFuncSel            = AM_HAL_PIN_11_GPIO,
+    311              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    312              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
+    313          };
+    314          
+    315          //*****************************************************************************
+    316          //
+    317          //  COM1_POWER_PIN pin: This pin is the COM0 Power pin.
+    318          //
+    319          //*****************************************************************************
+    320          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_COM1_POWER_PIN =
+    321          {
+    322              .uFuncSel            = AM_HAL_PIN_12_GPIO,
+    323              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    324              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
+    325          };
+    326          
+    327          //*****************************************************************************
+    328          //
+    329          //  COM2_POWER_PIN pin: This pin is the COM0 Power pin.
+    330          //
+    331          //*****************************************************************************
+    332          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_COM2_POWER_PIN =
+    333          {
+    334              .uFuncSel            = AM_HAL_PIN_13_GPIO,
+    335              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    336              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
+    337          };
+    338          
+    339          //*****************************************************************************
+    340          //
+    341          //  COM3_POWER_PIN pin: This pin is the COM0 Power pin.
+    342          //
+    343          //*****************************************************************************
+    344          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_COM3_POWER_PIN =
+    345          {
+    346              .uFuncSel            = AM_HAL_PIN_34_GPIO,
+    347              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    348              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
+    349          };
+    350          
+    351          //*****************************************************************************
+    352          //
+    353          //  BUS_VOLT_ENABLE pin: This pin is the Bus Voltage Enable pin.
     354          //
-    355          //  BUS_VOLTAGE pin: This pin is the Bus Voltage Enable pin.
-    356          //
-    357          //*****************************************************************************
-    358          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_BUS_VOLTAGE =
-    359          {
-    360              .uFuncSel            = AM_HAL_PIN_35_ADCSE7
-    361          };
-    362          
-    363          //*****************************************************************************
-    364          //
-    365          //  PWR_CTRL_EN pin: This pin is the Power Control (Piston) Enable pin.
-    366          //
-    367          //*****************************************************************************
-    368          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_PWR_CTRL_EN =
-    369          {
-    370              .uFuncSel            = AM_HAL_PIN_2_GPIO,
-    371              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
-    372          };
-    373          
-    374          //*****************************************************************************
+    355          //*****************************************************************************
+    356          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_BUS_VOLT_ENABLE =
+    357          {
+    358              .uFuncSel            = AM_HAL_PIN_23_GPIO,
+    359              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    360          };
+    361          
+    362          //*****************************************************************************
+    363          //
+    364          //  BUS_VOLTAGE pin: This pin is the Bus Voltage Enable pin.
+    365          //
+    366          //*****************************************************************************
+    367          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_BUS_VOLTAGE =
+    368          {
+    369              .uFuncSel            = AM_HAL_PIN_35_ADCSE7
+    370          };
+    371          
+    372          //*****************************************************************************
+    373          //
+    374          //  PWR_CTRL_EN pin: This pin is the Power Control (Piston) Enable pin.
     375          //
-    376          //  IOM0_CS pin: I/O Master 0 chip select.
-    377          //
-    378          //*****************************************************************************
-    379          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_CS =
-    380          {
-    381              .uFuncSel            = AM_HAL_PIN_11_NCE11,
-    382              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    383              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
-    384              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
-    385              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    386              .uIOMnum             = 0,
-    387              .uNCE                = 0,
-    388              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-    389          };
-    390          
-    391          //*****************************************************************************
-    392          //
-    393          //  IOM0_CS3 pin: I/O Master 0 chip select.
-    394          //
-    395          //*****************************************************************************
-    396          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_CS3 =
-    397          {
-    398              .uFuncSel            = AM_HAL_PIN_15_NCE15,
-    399              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    400              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
-    401              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
-    402              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    403              .uIOMnum             = 0,
-    404              .uNCE                = 3,
-    405              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-    406          };
-    407          
-    408          //*****************************************************************************
-    409          //
-    410          //  IOM0_MISO pin: I/O Master 0 SPI MISO signal.
-    411          //
-    412          //*****************************************************************************
-    413          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_MISO =
-    414          {
-    415              .uFuncSel            = AM_HAL_PIN_6_M0MISO,
-    416              .uIOMnum             = 0
-    417          };
-    418          
-    419          //*****************************************************************************
+    376          //*****************************************************************************
+    377          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_PWR_CTRL_EN =
+    378          {
+    379              .uFuncSel            = AM_HAL_PIN_2_GPIO,
+    380              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    381          };
+    382          
+    383          //*****************************************************************************
+    384          //
+    385          //  IOM0_CS pin: I/O Master 0 chip select.
+    386          //
+    387          //*****************************************************************************
+    388          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_CS =
+    389          {
+    390              .uFuncSel            = AM_HAL_PIN_11_NCE11,
+    391              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    392              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+    393              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    394              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    395              .uIOMnum             = 0,
+    396              .uNCE                = 0,
+    397              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
+    398          };
+    399          
+    400          //*****************************************************************************
+    401          //
+    402          //  IOM0_CS3 pin: I/O Master 0 chip select.
+    403          //
+    404          //*****************************************************************************
+    405          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_CS3 =
+    406          {
+    407              .uFuncSel            = AM_HAL_PIN_15_NCE15,
+    408              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    409              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+    410              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    411              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    412              .uIOMnum             = 0,
+    413              .uNCE                = 3,
+    414              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
+    415          };
+    416          
+    417          //*****************************************************************************
+    418          //
+    419          //  IOM0_MISO pin: I/O Master 0 SPI MISO signal.
     420          //
-    421          //  IOM0_MOSI pin: I/O Master 0 SPI MOSI signal.
-    422          //
-    423          //*****************************************************************************
-    424          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_MOSI =
-    425          {
-    426              .uFuncSel            = AM_HAL_PIN_7_M0MOSI,
-    427              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    428              .uIOMnum             = 0
-    429          };
-    430          
-    431          //*****************************************************************************
-    432          //
-    433          //  IOM0_SCK pin: I/O Master 0 SPI SCK signal.
-    434          //
-    435          //*****************************************************************************
-    436          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_SCK =
-    437          {
-    438              .uFuncSel            = AM_HAL_PIN_5_M0SCK,
-    439              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    440              .uIOMnum             = 0
-    441          };
-    442          
-    443          //*****************************************************************************
-    444          //
-    445          //  IOM0_SCL pin: I/O Master 0 I2C clock signal.
-    446          //
-    447          //*****************************************************************************
-    448          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_SCL =
-    449          {
-    450              .uFuncSel            = AM_HAL_PIN_5_M0SCL,
-    451              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-    452              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    453              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    454              .uIOMnum             = 0
-    455          };
-    456          
-    457          //*****************************************************************************
-    458          //
-    459          //  IOM0_SDA pin: I/O Master 0 I2C data signal.
-    460          //
-    461          //*****************************************************************************
-    462          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_SDA =
-    463          {
-    464              .uFuncSel            = AM_HAL_PIN_6_M0SDAWIR3,
-    465              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-    466              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    467              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    468              .uIOMnum             = 0
-    469          };
-    470          
-    471          //*****************************************************************************
-    472          //
-    473          //  IOM1_CS pin: I/O Master 1 chip select.
-    474          //
-    475          //*****************************************************************************
-    476          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM1_CS =
-    477          {
-    478              .uFuncSel            = AM_HAL_PIN_14_NCE14,
-    479              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    480              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
-    481              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
-    482              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    483              .uIOMnum             = 1,
-    484              .uNCE                = 2,
-    485              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-    486          };
-    487          
-    488          //*****************************************************************************
-    489          //
-    490          //  IOM1_MISO pin: I/O Master 1 SPI MISO signal.
-    491          //
-    492          //*****************************************************************************
-    493          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM1_MISO =
-    494          {
-    495              .uFuncSel            = AM_HAL_PIN_9_M1MISO,
-    496              .uIOMnum             = 1
-    497          };
-    498          
-    499          //*****************************************************************************
+    421          //*****************************************************************************
+    422          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_MISO =
+    423          {
+    424              .uFuncSel            = AM_HAL_PIN_6_M0MISO,
+    425              .uIOMnum             = 0
+    426          };
+    427          
+    428          //*****************************************************************************
+    429          //
+    430          //  IOM0_MOSI pin: I/O Master 0 SPI MOSI signal.
+    431          //
+    432          //*****************************************************************************
+    433          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_MOSI =
+    434          {
+    435              .uFuncSel            = AM_HAL_PIN_7_M0MOSI,
+    436              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    437              .uIOMnum             = 0
+    438          };
+    439          
+    440          //*****************************************************************************
+    441          //
+    442          //  IOM0_SCK pin: I/O Master 0 SPI SCK signal.
+    443          //
+    444          //*****************************************************************************
+    445          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_SCK =
+    446          {
+    447              .uFuncSel            = AM_HAL_PIN_5_M0SCK,
+    448              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    449              .uIOMnum             = 0
+    450          };
+    451          
+    452          //*****************************************************************************
+    453          //
+    454          //  IOM0_SCL pin: I/O Master 0 I2C clock signal.
+    455          //
+    456          //*****************************************************************************
+    457          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_SCL =
+    458          {
+    459              .uFuncSel            = AM_HAL_PIN_5_M0SCL,
+    460              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+    461              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    462              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    463              .uIOMnum             = 0
+    464          };
+    465          
+    466          //*****************************************************************************
+    467          //
+    468          //  IOM0_SDA pin: I/O Master 0 I2C data signal.
+    469          //
+    470          //*****************************************************************************
+    471          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM0_SDA =
+    472          {
+    473              .uFuncSel            = AM_HAL_PIN_6_M0SDAWIR3,
+    474              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+    475              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    476              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    477              .uIOMnum             = 0
+    478          };
+    479          
+    480          //*****************************************************************************
+    481          //
+    482          //  IOM1_CS pin: I/O Master 1 chip select.
+    483          //
+    484          //*****************************************************************************
+    485          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM1_CS =
+    486          {
+    487              .uFuncSel            = AM_HAL_PIN_14_NCE14,
+    488              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    489              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+    490              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    491              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    492              .uIOMnum             = 1,
+    493              .uNCE                = 2,
+    494              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
+    495          };
+    496          
+    497          //*****************************************************************************
+    498          //
+    499          //  IOM1_MISO pin: I/O Master 1 SPI MISO signal.
     500          //
-    501          //  IOM1_MOSI pin: I/O Master 1 SPI MOSI signal.
-    502          //
-    503          //*****************************************************************************
-    504          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM1_MOSI =
-    505          {
-    506              .uFuncSel            = AM_HAL_PIN_10_M1MOSI,
-    507              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    508              .uIOMnum             = 1
-    509          };
-    510          
-    511          //*****************************************************************************
-    512          //
-    513          //  IOM1_SCK pin: I/O Master 1 SPI SCK signal.
-    514          //
-    515          //*****************************************************************************
-    516          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM1_SCK =
-    517          {
-    518              .uFuncSel            = AM_HAL_PIN_8_M1SCK,
-    519              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    520              .uIOMnum             = 1
-    521          };
-    522          
-    523          //*****************************************************************************
-    524          //
-    525          //  IOM1_SCL pin: I/O Master 1 I2C clock signal.
-    526          //
-    527          //*****************************************************************************
-    528          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM1_SCL =
-    529          {
-    530              .uFuncSel            = AM_HAL_PIN_8_M1SCL,
-    531              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-    532              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    533              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    534              .uIOMnum             = 1
-    535          };
-    536          
-    537          //*****************************************************************************
-    538          //
-    539          //  IOM1_SDA pin: I/O Master 1 I2C data signal.
-    540          //
-    541          //*****************************************************************************
-    542          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM1_SDA =
-    543          {
-    544              .uFuncSel            = AM_HAL_PIN_9_M1SDAWIR3,
-    545              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-    546              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    547              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    548              .uIOMnum             = 1
-    549          };
-    550          
-    551          //*****************************************************************************
-    552          //
-    553          //  IOM2_CS pin: I/O Master 2 chip select.
-    554          //
-    555          //*****************************************************************************
-    556          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM2_CS =
-    557          {
-    558              .uFuncSel            = AM_HAL_PIN_15_NCE15,
-    559              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    560              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
-    561              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
-    562              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    563              .uIOMnum             = 2,
-    564              .uNCE                = 3,
-    565              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-    566          };
-    567          
-    568          //*****************************************************************************
-    569          //
-    570          //  IOM2_MISO pin: I/O Master 2 SPI MISO signal.
-    571          //
-    572          //*****************************************************************************
-    573          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM2_MISO =
-    574          {
-    575              .uFuncSel            = AM_HAL_PIN_25_M2MISO,
-    576              .uIOMnum             = 2
-    577          };
-    578          
-    579          //*****************************************************************************
+    501          //*****************************************************************************
+    502          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM1_MISO =
+    503          {
+    504              .uFuncSel            = AM_HAL_PIN_9_M1MISO,
+    505              .uIOMnum             = 1
+    506          };
+    507          
+    508          //*****************************************************************************
+    509          //
+    510          //  IOM1_MOSI pin: I/O Master 1 SPI MOSI signal.
+    511          //
+    512          //*****************************************************************************
+    513          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM1_MOSI =
+    514          {
+    515              .uFuncSel            = AM_HAL_PIN_10_M1MOSI,
+    516              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    517              .uIOMnum             = 1
+    518          };
+    519          
+    520          //*****************************************************************************
+    521          //
+    522          //  IOM1_SCK pin: I/O Master 1 SPI SCK signal.
+    523          //
+    524          //*****************************************************************************
+    525          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM1_SCK =
+    526          {
+    527              .uFuncSel            = AM_HAL_PIN_8_M1SCK,
+    528              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    529              .uIOMnum             = 1
+    530          };
+    531          
+    532          //*****************************************************************************
+    533          //
+    534          //  IOM1_SCL pin: I/O Master 1 I2C clock signal.
+    535          //
+    536          //*****************************************************************************
+    537          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM1_SCL =
+    538          {
+    539              .uFuncSel            = AM_HAL_PIN_8_M1SCL,
+    540              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+    541              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    542              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    543              .uIOMnum             = 1
+    544          };
+    545          
+    546          //*****************************************************************************
+    547          //
+    548          //  IOM1_SDA pin: I/O Master 1 I2C data signal.
+    549          //
+    550          //*****************************************************************************
+    551          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM1_SDA =
+    552          {
+    553              .uFuncSel            = AM_HAL_PIN_9_M1SDAWIR3,
+    554              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+    555              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    556              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    557              .uIOMnum             = 1
+    558          };
+    559          
+    560          //*****************************************************************************
+    561          //
+    562          //  IOM2_CS pin: I/O Master 2 chip select.
+    563          //
+    564          //*****************************************************************************
+    565          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM2_CS =
+    566          {
+    567              .uFuncSel            = AM_HAL_PIN_15_NCE15,
+    568              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    569              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+    570              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    571              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    572              .uIOMnum             = 2,
+    573              .uNCE                = 3,
+    574              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
+    575          };
+    576          
+    577          //*****************************************************************************
+    578          //
+    579          //  IOM2_MISO pin: I/O Master 2 SPI MISO signal.
     580          //
-    581          //  IOM2_MOSI pin: I/O Master 2 SPI MOSI signal.
-    582          //
-    583          //*****************************************************************************
-    584          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM2_MOSI =
-    585          {
-    586              .uFuncSel            = AM_HAL_PIN_28_M2MOSI,
-    587              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    588              .uIOMnum             = 2
-    589          };
-    590          
-    591          //*****************************************************************************
-    592          //
-    593          //  IOM2_SCK pin: I/O Master 2 SPI SCK signal.
-    594          //
-    595          //*****************************************************************************
-    596          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM2_SCK =
-    597          {
-    598              .uFuncSel            = AM_HAL_PIN_27_M2SCK,
-    599              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    600              .uIOMnum             = 2
-    601          };
-    602          
-    603          //*****************************************************************************
-    604          //
-    605          //  IOM2_SCL pin: I/O Master 2 I2C clock signal.
-    606          //
-    607          //*****************************************************************************
-    608          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM2_SCL =
-    609          {
-    610              .uFuncSel            = AM_HAL_PIN_27_M2SCL,
-    611              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-    612              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    613              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    614              .uIOMnum             = 2
-    615          };
-    616          
-    617          //*****************************************************************************
-    618          //
-    619          //  IOM2_SDA pin: I/O Master 2 I2C data signal.
-    620          //
-    621          //*****************************************************************************
-    622          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM2_SDA =
-    623          {
-    624              .uFuncSel            = AM_HAL_PIN_25_M2SDAWIR3,
-    625              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-    626              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    627              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    628              .uIOMnum             = 2
-    629          };
-    630          
-    631          //*****************************************************************************
-    632          //
-    633          //  IOM3_CS pin: I/O Master 3 chip select.
-    634          //
-    635          //*****************************************************************************
-    636          //const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_CS =
-    637          //{
-    638          //    .uFuncSel            = AM_HAL_PIN_36_NCE36,
-    639          //    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    640          //    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
-    641          //    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
-    642          //    .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    643          //    .uIOMnum             = 3,
-    644          //    .uNCE                = 1,
-    645          //    .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-    646          //};
-    647          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_CS =
-    648          {
-    649              .uFuncSel            = AM_HAL_PIN_36_NCE36,
-    650              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    651              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
-    652              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
-    653              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    654              .uIOMnum             = 3,
-    655              .uNCE                = 1,
-    656              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-    657          };
-    658          
-    659          //*****************************************************************************
-    660          //
-    661          //  IOM3_MISO pin: I/O Master 3 SPI MISO signal.
-    662          //
-    663          //*****************************************************************************
-    664          //const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_MISO =
-    665          //{
-    666          //    .uFuncSel            = AM_HAL_PIN_43_M3MISO,
-    667          //    .ePullup             = AM_HAL_GPIO_PIN_PULLUP_24K,
-    668          //    .uIOMnum             = 3
-    669          //};
-    670          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_MISO =
-    671          {
-    672              .uFuncSel            = AM_HAL_PIN_43_M3MISO,
-    673              .uIOMnum             = 3
-    674          };
-    675          //*****************************************************************************
-    676          //
-    677          //  IOM3_MOSI pin: I/O Master 3 SPI MOSI signal.
-    678          //
-    679          //*****************************************************************************
-    680          //const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_MOSI =
-    681          //{
-    682          //    .uFuncSel            = AM_HAL_PIN_38_M3MOSI,
-    683          ////    .ePullup             = AM_HAL_GPIO_PIN_PULLUP_6K,
-    684          //    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    685          //    .uIOMnum             = 3
-    686          //};
-    687          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_MOSI =
-    688          {
-    689              .uFuncSel            = AM_HAL_PIN_38_M3MOSI,
-    690              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    691              .uIOMnum             = 3
-    692          };
-    693          
-    694          //*****************************************************************************
-    695          //
-    696          //  IOM3_SCK pin: I/O Master 3 SPI SCK signal.
-    697          //
-    698          //*****************************************************************************
-    699          //const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_SCK =
-    700          //{
-    701          //    .uFuncSel            = AM_HAL_PIN_42_M3SCK,
-    702          //    .ePullup             = AM_HAL_GPIO_PIN_PULLUP_6K,
-    703          //    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    704          //    .uIOMnum             = 3
-    705          //};
-    706          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_SCK =
-    707          {
-    708              .uFuncSel            = AM_HAL_PIN_42_M3SCK,
-    709              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    710              .uIOMnum             = 3
-    711          };
-    712          //*****************************************************************************
-    713          //
-    714          //  IOM3_SCL pin: I/O Master 3 I2C clock signal.
-    715          //
-    716          //*****************************************************************************
-    717          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_SCL =
-    718          {
-    719              .uFuncSel            = AM_HAL_PIN_42_M3SCL,
-    720              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-    721              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    722              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    723              .uIOMnum             = 3
-    724          };
-    725          
-    726          //*****************************************************************************
-    727          //
-    728          //  IOM3_SDA pin: I/O Master 3 I2C data signal.
-    729          //
-    730          //*****************************************************************************
-    731          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_SDA =
-    732          {
-    733              .uFuncSel            = AM_HAL_PIN_43_M3SDAWIR3,
-    734              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-    735              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    736              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    737              .uIOMnum             = 3
-    738          };
-    739          
-    740          //*****************************************************************************
-    741          //
-    742          //  IOM4_CS pin: I/O Master 4 chip select.
-    743          //
-    744          //*****************************************************************************
-    745          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_CS =
-    746          {
-    747              .uFuncSel            = AM_HAL_PIN_13_NCE13,
-    748              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    749              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
-    750              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
-    751              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    752              .uIOMnum             = 4,
-    753              .uNCE                = 1,
-    754              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-    755          };
-    756          
-    757          //*****************************************************************************
-    758          //
-    759          //  IOM4_MISO pin: I/O Master 4 SPI MISO signal.
-    760          //
-    761          //*****************************************************************************
-    762          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_MISO =
-    763          {
-    764              .uFuncSel            = AM_HAL_PIN_40_M4MISO,
-    765              .uIOMnum             = 4
-    766          };
-    767          
-    768          //*****************************************************************************
+    581          //*****************************************************************************
+    582          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM2_MISO =
+    583          {
+    584              .uFuncSel            = AM_HAL_PIN_25_M2MISO,
+    585              .uIOMnum             = 2
+    586          };
+    587          
+    588          //*****************************************************************************
+    589          //
+    590          //  IOM2_MOSI pin: I/O Master 2 SPI MOSI signal.
+    591          //
+    592          //*****************************************************************************
+    593          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM2_MOSI =
+    594          {
+    595              .uFuncSel            = AM_HAL_PIN_28_M2MOSI,
+    596              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    597              .uIOMnum             = 2
+    598          };
+    599          
+    600          //*****************************************************************************
+    601          //
+    602          //  IOM2_SCK pin: I/O Master 2 SPI SCK signal.
+    603          //
+    604          //*****************************************************************************
+    605          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM2_SCK =
+    606          {
+    607              .uFuncSel            = AM_HAL_PIN_27_M2SCK,
+    608              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    609              .uIOMnum             = 2
+    610          };
+    611          
+    612          //*****************************************************************************
+    613          //
+    614          //  IOM2_SCL pin: I/O Master 2 I2C clock signal.
+    615          //
+    616          //*****************************************************************************
+    617          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM2_SCL =
+    618          {
+    619              .uFuncSel            = AM_HAL_PIN_27_M2SCL,
+    620              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+    621              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    622              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    623              .uIOMnum             = 2
+    624          };
+    625          
+    626          //*****************************************************************************
+    627          //
+    628          //  IOM2_SDA pin: I/O Master 2 I2C data signal.
+    629          //
+    630          //*****************************************************************************
+    631          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM2_SDA =
+    632          {
+    633              .uFuncSel            = AM_HAL_PIN_25_M2SDAWIR3,
+    634              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+    635              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    636              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    637              .uIOMnum             = 2
+    638          };
+    639          
+    640          //*****************************************************************************
+    641          //
+    642          //  IOM3_CS pin: I/O Master 3 chip select.
+    643          //
+    644          //*****************************************************************************
+    645          //const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_CS =
+    646          //{
+    647          //    .uFuncSel            = AM_HAL_PIN_36_NCE36,
+    648          //    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    649          //    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+    650          //    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    651          //    .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    652          //    .uIOMnum             = 3,
+    653          //    .uNCE                = 1,
+    654          //    .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
+    655          //};
+    656          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_CS =
+    657          {
+    658              .uFuncSel            = AM_HAL_PIN_36_NCE36,
+    659              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    660              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+    661              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    662              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    663              .uIOMnum             = 3,
+    664              .uNCE                = 1,
+    665              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
+    666          };
+    667          
+    668          //*****************************************************************************
+    669          //
+    670          //  IOM3_MISO pin: I/O Master 3 SPI MISO signal.
+    671          //
+    672          //*****************************************************************************
+    673          //const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_MISO =
+    674          //{
+    675          //    .uFuncSel            = AM_HAL_PIN_43_M3MISO,
+    676          //    .ePullup             = AM_HAL_GPIO_PIN_PULLUP_24K,
+    677          //    .uIOMnum             = 3
+    678          //};
+    679          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_MISO =
+    680          {
+    681              .uFuncSel            = AM_HAL_PIN_43_M3MISO,
+    682              .uIOMnum             = 3
+    683          };
+    684          //*****************************************************************************
+    685          //
+    686          //  IOM3_MOSI pin: I/O Master 3 SPI MOSI signal.
+    687          //
+    688          //*****************************************************************************
+    689          //const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_MOSI =
+    690          //{
+    691          //    .uFuncSel            = AM_HAL_PIN_38_M3MOSI,
+    692          ////    .ePullup             = AM_HAL_GPIO_PIN_PULLUP_6K,
+    693          //    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    694          //    .uIOMnum             = 3
+    695          //};
+    696          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_MOSI =
+    697          {
+    698              .uFuncSel            = AM_HAL_PIN_38_M3MOSI,
+    699              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    700              .uIOMnum             = 3
+    701          };
+    702          
+    703          //*****************************************************************************
+    704          //
+    705          //  IOM3_SCK pin: I/O Master 3 SPI SCK signal.
+    706          //
+    707          //*****************************************************************************
+    708          //const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_SCK =
+    709          //{
+    710          //    .uFuncSel            = AM_HAL_PIN_42_M3SCK,
+    711          //    .ePullup             = AM_HAL_GPIO_PIN_PULLUP_6K,
+    712          //    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    713          //    .uIOMnum             = 3
+    714          //};
+    715          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_SCK =
+    716          {
+    717              .uFuncSel            = AM_HAL_PIN_42_M3SCK,
+    718              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    719              .uIOMnum             = 3
+    720          };
+    721          //*****************************************************************************
+    722          //
+    723          //  IOM3_SCL pin: I/O Master 3 I2C clock signal.
+    724          //
+    725          //*****************************************************************************
+    726          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_SCL =
+    727          {
+    728              .uFuncSel            = AM_HAL_PIN_42_M3SCL,
+    729              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+    730              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    731              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    732              .uIOMnum             = 3
+    733          };
+    734          
+    735          //*****************************************************************************
+    736          //
+    737          //  IOM3_SDA pin: I/O Master 3 I2C data signal.
+    738          //
+    739          //*****************************************************************************
+    740          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_SDA =
+    741          {
+    742              .uFuncSel            = AM_HAL_PIN_43_M3SDAWIR3,
+    743              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+    744              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    745              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    746              .uIOMnum             = 3
+    747          };
+    748          
+    749          //*****************************************************************************
+    750          //
+    751          //  IOM4_CS pin: I/O Master 4 chip select.
+    752          //
+    753          //*****************************************************************************
+    754          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_CS =
+    755          {
+    756              .uFuncSel            = AM_HAL_PIN_13_NCE13,
+    757              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    758              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+    759              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    760              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    761              .uIOMnum             = 4,
+    762              .uNCE                = 1,
+    763              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
+    764          };
+    765          
+    766          //*****************************************************************************
+    767          //
+    768          //  IOM4_MISO pin: I/O Master 4 SPI MISO signal.
     769          //
-    770          //  IOM4_MOSI pin: I/O Master 4 SPI MOSI signal.
-    771          //
-    772          //*****************************************************************************
-    773          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_MOSI =
-    774          {
-    775              .uFuncSel            = AM_HAL_PIN_44_M4MOSI,
-    776              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    777              .uIOMnum             = 4
-    778          };
-    779          
-    780          //*****************************************************************************
-    781          //
-    782          //  IOM4_SCK pin: I/O Master 4 SPI SCK signal.
-    783          //
-    784          //*****************************************************************************
-    785          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_SCK =
-    786          {
-    787              .uFuncSel            = AM_HAL_PIN_39_M4SCK,
-    788              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    789              .uIOMnum             = 4
-    790          };
-    791          
-    792          //*****************************************************************************
-    793          //
-    794          //  IOM4_SCL pin: I/O Master 4 I2C clock signal.
-    795          //
-    796          //*****************************************************************************
-    797          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_SCL =
-    798          {
-    799              .uFuncSel            = AM_HAL_PIN_39_M4SCL,
-    800              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-    801              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    802              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    803              .uIOMnum             = 4
-    804          };
-    805          
-    806          //*****************************************************************************
-    807          //
-    808          //  IOM4_SDA pin: I/O Master 4 I2C data signal.
-    809          //
-    810          //*****************************************************************************
-    811          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_SDA =
-    812          {
-    813              .uFuncSel            = AM_HAL_PIN_40_M4SDAWIR3,
-    814              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-    815              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
-    816              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    817              .uIOMnum             = 4
-    818          };
-    819          
-    820          //*****************************************************************************
-    821          //
-    822          //  IOM5_CS pin: I/O Master 5 chip select.
-    823          //
-    824          //*****************************************************************************
-    825          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM5_CS =
-    826          {
-    827              .uFuncSel            = AM_HAL_PIN_16_NCE16,
-    828              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    829              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
-    830              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
-    831              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    832              .uIOMnum             = 5,
-    833              .uNCE                = 0,
-    834              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-    835          };
-    836          
-    837          //*****************************************************************************
-    838          //
-    839          //  IOM5_MISO pin: I/O Master 5 SPI MISO signal.
-    840          //
-    841          //*****************************************************************************
-    842          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM5_MISO =
-    843          {
-    844              .uFuncSel            = AM_HAL_PIN_49_M5MISO,
-    845              .uIOMnum             = 5
-    846          };
-    847          
-    848          //*****************************************************************************
+    770          //*****************************************************************************
+    771          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_MISO =
+    772          {
+    773              .uFuncSel            = AM_HAL_PIN_40_M4MISO,
+    774              .uIOMnum             = 4
+    775          };
+    776          
+    777          //*****************************************************************************
+    778          //
+    779          //  IOM4_MOSI pin: I/O Master 4 SPI MOSI signal.
+    780          //
+    781          //*****************************************************************************
+    782          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_MOSI =
+    783          {
+    784              .uFuncSel            = AM_HAL_PIN_44_M4MOSI,
+    785              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    786              .uIOMnum             = 4
+    787          };
+    788          
+    789          //*****************************************************************************
+    790          //
+    791          //  IOM4_SCK pin: I/O Master 4 SPI SCK signal.
+    792          //
+    793          //*****************************************************************************
+    794          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_SCK =
+    795          {
+    796              .uFuncSel            = AM_HAL_PIN_39_M4SCK,
+    797              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    798              .uIOMnum             = 4
+    799          };
+    800          
+    801          //*****************************************************************************
+    802          //
+    803          //  IOM4_SCL pin: I/O Master 4 I2C clock signal.
+    804          //
+    805          //*****************************************************************************
+    806          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_SCL =
+    807          {
+    808              .uFuncSel            = AM_HAL_PIN_39_M4SCL,
+    809              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+    810              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    811              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    812              .uIOMnum             = 4
+    813          };
+    814          
+    815          //*****************************************************************************
+    816          //
+    817          //  IOM4_SDA pin: I/O Master 4 I2C data signal.
+    818          //
+    819          //*****************************************************************************
+    820          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM4_SDA =
+    821          {
+    822              .uFuncSel            = AM_HAL_PIN_40_M4SDAWIR3,
+    823              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+    824              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    825              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    826              .uIOMnum             = 4
+    827          };
+    828          
+    829          //*****************************************************************************
+    830          //
+    831          //  IOM5_CS pin: I/O Master 5 chip select.
+    832          //
+    833          //*****************************************************************************
+    834          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM5_CS =
+    835          {
+    836              .uFuncSel            = AM_HAL_PIN_16_NCE16,
+    837              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    838              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+    839              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    840              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    841              .uIOMnum             = 5,
+    842              .uNCE                = 0,
+    843              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
+    844          };
+    845          
+    846          //*****************************************************************************
+    847          //
+    848          //  IOM5_MISO pin: I/O Master 5 SPI MISO signal.
     849          //
-    850          //  IOM5_MOSI pin: I/O Master 5 SPI MOSI signal.
-    851          //
-    852          //*****************************************************************************
-    853          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM5_MOSI =
-    854          {
-    855              .uFuncSel            = AM_HAL_PIN_47_M5MOSI,
-    856              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    857              .uIOMnum             = 5
-    858          };
-    859          
-    860          //*****************************************************************************
-    861          //
-    862          //  IOM5_SCK pin: I/O Master 5 SPI SCK signal.
-    863          //
-    864          //*****************************************************************************
-    865          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM5_SCK =
-    866          {
-    867              .uFuncSel            = AM_HAL_PIN_48_M5SCK,
-    868              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    869              .uIOMnum             = 5
-    870          };
-    871          
-    872          //*****************************************************************************
-    873          //
-    874          //  IOM5_SCL pin: I/O Master 5 I2C clock signal.
-    875          //
-    876          //*****************************************************************************
-    877          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM5_SCL =
-    878          {
-    879              .uFuncSel            = AM_HAL_PIN_48_M5SCL,
-    880              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-    881              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    882              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    883              .uIOMnum             = 5
-    884          };
-    885          
-    886          //*****************************************************************************
-    887          //
-    888          //  IOM5_SDA pin: I/O Master 5 I2C data signal.
-    889          //
-    890          //*****************************************************************************
-    891          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM5_SDA =
-    892          {
-    893              .uFuncSel            = AM_HAL_PIN_49_M5SDAWIR3,
-    894              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-    895              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    896              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    897              .uIOMnum             = 5
-    898          };
-    899          
-    900          //*****************************************************************************
-    901          //
-    902          //  MSPI_CE0 pin: MSPI chip select.
-    903          //
-    904          //*****************************************************************************
-    905          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_CE0 =
-    906          {
-    907          //    .uFuncSel            = AM_HAL_PIN_19_NCE19,
-    908              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    909              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
-    910              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
-    911              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    912              .uIOMnum             = 6,
-    913              .uNCE                = 0,
-    914              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-    915          };
-    916          
-    917          //*****************************************************************************
-    918          //
-    919          //  MSPI_CE1 pin: MSPI chip select.
-    920          //
-    921          //*****************************************************************************
-    922          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_CE1 =
-    923          {
-    924              .uFuncSel            = AM_HAL_PIN_41_NCE41,
-    925              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-    926              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
-    927              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
-    928              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    929              .uIOMnum             = 6,
-    930              .uNCE                = 1,
-    931              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-    932          };
-    933          
-    934          //*****************************************************************************
-    935          //
-    936          //  MSPI_D0 pin: MSPI data 0.
-    937          //
-    938          //*****************************************************************************
-    939          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D0 =
-    940          {
-    941              .uFuncSel            = AM_HAL_PIN_22_MSPI0,
-    942              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
-    943              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    944              .uIOMnum             = 6
-    945          };
-    946          
+    850          //*****************************************************************************
+    851          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM5_MISO =
+    852          {
+    853              .uFuncSel            = AM_HAL_PIN_49_M5MISO,
+    854              .uIOMnum             = 5
+    855          };
+    856          
+    857          //*****************************************************************************
+    858          //
+    859          //  IOM5_MOSI pin: I/O Master 5 SPI MOSI signal.
+    860          //
+    861          //*****************************************************************************
+    862          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM5_MOSI =
+    863          {
+    864              .uFuncSel            = AM_HAL_PIN_47_M5MOSI,
+    865              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    866              .uIOMnum             = 5
+    867          };
+    868          
+    869          //*****************************************************************************
+    870          //
+    871          //  IOM5_SCK pin: I/O Master 5 SPI SCK signal.
+    872          //
+    873          //*****************************************************************************
+    874          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM5_SCK =
+    875          {
+    876              .uFuncSel            = AM_HAL_PIN_48_M5SCK,
+    877              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    878              .uIOMnum             = 5
+    879          };
+    880          
+    881          //*****************************************************************************
+    882          //
+    883          //  IOM5_SCL pin: I/O Master 5 I2C clock signal.
+    884          //
+    885          //*****************************************************************************
+    886          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM5_SCL =
+    887          {
+    888              .uFuncSel            = AM_HAL_PIN_48_M5SCL,
+    889              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+    890              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    891              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    892              .uIOMnum             = 5
+    893          };
+    894          
+    895          //*****************************************************************************
+    896          //
+    897          //  IOM5_SDA pin: I/O Master 5 I2C data signal.
+    898          //
+    899          //*****************************************************************************
+    900          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM5_SDA =
+    901          {
+    902              .uFuncSel            = AM_HAL_PIN_49_M5SDAWIR3,
+    903              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+    904              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    905              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
+    906              .uIOMnum             = 5
+    907          };
+    908          
+    909          //*****************************************************************************
+    910          //
+    911          //  MSPI_CE0 pin: MSPI chip select.
+    912          //
+    913          //*****************************************************************************
+    914          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_CE0 =
+    915          {
+    916          //    .uFuncSel            = AM_HAL_PIN_19_NCE19,
+    917              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    918              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+    919              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    920              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    921              .uIOMnum             = 6,
+    922              .uNCE                = 0,
+    923              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
+    924          };
+    925          
+    926          //*****************************************************************************
+    927          //
+    928          //  MSPI_CE1 pin: MSPI chip select.
+    929          //
+    930          //*****************************************************************************
+    931          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_CE1 =
+    932          {
+    933              .uFuncSel            = AM_HAL_PIN_41_NCE41,
+    934              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    935              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL,
+    936              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    937              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    938              .uIOMnum             = 6,
+    939              .uNCE                = 1,
+    940              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
+    941          };
+    942          
+    943          //*****************************************************************************
+    944          //
+    945          //  MSPI_D0 pin: MSPI data 0.
+    946          //
     947          //*****************************************************************************
-    948          //
-    949          //  MSPI_D1 pin: MSPI data 1.
-    950          //
-    951          //*****************************************************************************
-    952          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D1 =
-    953          {
-    954              .uFuncSel            = AM_HAL_PIN_26_MSPI1,
-    955              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
-    956              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    957              .uIOMnum             = 6
-    958          };
-    959          
+    948          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D0 =
+    949          {
+    950              .uFuncSel            = AM_HAL_PIN_22_MSPI0,
+    951              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
+    952              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    953              .uIOMnum             = 6
+    954          };
+    955          
+    956          //*****************************************************************************
+    957          //
+    958          //  MSPI_D1 pin: MSPI data 1.
+    959          //
     960          //*****************************************************************************
-    961          //
-    962          //  MSPI_D2 pin: MSPI data 2.
-    963          //
-    964          //*****************************************************************************
-    965          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D2 =
-    966          {
-    967              .uFuncSel            = AM_HAL_PIN_4_MSPI2,
-    968              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
-    969              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    970              .uIOMnum             = 6
-    971          };
-    972          
+    961          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D1 =
+    962          {
+    963              .uFuncSel            = AM_HAL_PIN_26_MSPI1,
+    964              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
+    965              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    966              .uIOMnum             = 6
+    967          };
+    968          
+    969          //*****************************************************************************
+    970          //
+    971          //  MSPI_D2 pin: MSPI data 2.
+    972          //
     973          //*****************************************************************************
-    974          //
-    975          //  MSPI_D3 pin: MSPI data 3.
-    976          //
-    977          //*****************************************************************************
-    978          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D3 =
-    979          {
-    980          //    .uFuncSel            = AM_HAL_PIN_23_MSPI3,
-    981              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
-    982              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    983              .uIOMnum             = 6
-    984          };
-    985          
+    974          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D2 =
+    975          {
+    976              .uFuncSel            = AM_HAL_PIN_4_MSPI2,
+    977              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
+    978              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    979              .uIOMnum             = 6
+    980          };
+    981          
+    982          //*****************************************************************************
+    983          //
+    984          //  MSPI_D3 pin: MSPI data 3.
+    985          //
     986          //*****************************************************************************
-    987          //
-    988          //  MSPI_D4 pin: MSPI data 4.
-    989          //
-    990          //*****************************************************************************
-    991          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D4 =
-    992          {
-    993              .uFuncSel            = AM_HAL_PIN_0_MSPI4,
-    994              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
-    995              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-    996              .uIOMnum             = 6
-    997          };
-    998          
+    987          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D3 =
+    988          {
+    989          //    .uFuncSel            = AM_HAL_PIN_23_MSPI3,
+    990              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
+    991              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+    992              .uIOMnum             = 6
+    993          };
+    994          
+    995          //*****************************************************************************
+    996          //
+    997          //  MSPI_D4 pin: MSPI data 4.
+    998          //
     999          //*****************************************************************************
-   1000          //
-   1001          //  MSPI_D5 pin: MSPI data 5.
-   1002          //
-   1003          //*****************************************************************************
-   1004          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D5 =
-   1005          {
-   1006              .uFuncSel            = AM_HAL_PIN_1_MSPI5,
-   1007              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
-   1008              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-   1009              .uIOMnum             = 6
-   1010          };
-   1011          
+   1000          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D4 =
+   1001          {
+   1002              .uFuncSel            = AM_HAL_PIN_0_MSPI4,
+   1003              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
+   1004              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+   1005              .uIOMnum             = 6
+   1006          };
+   1007          
+   1008          //*****************************************************************************
+   1009          //
+   1010          //  MSPI_D5 pin: MSPI data 5.
+   1011          //
    1012          //*****************************************************************************
-   1013          //
-   1014          //  MSPI_D6 pin: MSPI data 6.
-   1015          //
-   1016          //*****************************************************************************
-   1017          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D6 =
-   1018          {
-   1019              .uFuncSel            = AM_HAL_PIN_2_MSPI6,
-   1020              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
-   1021              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-   1022              .uIOMnum             = 6
-   1023          };
-   1024          
+   1013          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D5 =
+   1014          {
+   1015              .uFuncSel            = AM_HAL_PIN_1_MSPI5,
+   1016              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
+   1017              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+   1018              .uIOMnum             = 6
+   1019          };
+   1020          
+   1021          //*****************************************************************************
+   1022          //
+   1023          //  MSPI_D6 pin: MSPI data 6.
+   1024          //
    1025          //*****************************************************************************
-   1026          //
-   1027          //  MSPI_D7 pin: MSPI data 7.
-   1028          //
-   1029          //*****************************************************************************
-   1030          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D7 =
-   1031          {
-   1032              .uFuncSel            = AM_HAL_PIN_3_MSPI7,
-   1033              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
-   1034              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-   1035              .uIOMnum             = 6
-   1036          };
-   1037          
+   1026          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D6 =
+   1027          {
+   1028              .uFuncSel            = AM_HAL_PIN_2_MSPI6,
+   1029              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
+   1030              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+   1031              .uIOMnum             = 6
+   1032          };
+   1033          
+   1034          //*****************************************************************************
+   1035          //
+   1036          //  MSPI_D7 pin: MSPI data 7.
+   1037          //
    1038          //*****************************************************************************
-   1039          //
-   1040          //  MSPI_SCK pin: MSPI clock.
-   1041          //
-   1042          //*****************************************************************************
-   1043          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_SCK =
-   1044          {
-   1045              .uFuncSel            = AM_HAL_PIN_24_MSPI8,
-   1046              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
-   1047              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
-   1048              .uIOMnum             = 6
-   1049          };
-   1050          
+   1039          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_D7 =
+   1040          {
+   1041              .uFuncSel            = AM_HAL_PIN_3_MSPI7,
+   1042              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_8MA,
+   1043              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+   1044              .uIOMnum             = 6
+   1045          };
+   1046          
+   1047          //*****************************************************************************
+   1048          //
+   1049          //  MSPI_SCK pin: MSPI clock.
+   1050          //
    1051          //*****************************************************************************
-   1052          //
-   1053          //  IOS_CE pin: I/O Slave chip select.
-   1054          //
-   1055          //*****************************************************************************
-   1056          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOS_CE =
-   1057          {
-   1058              .uFuncSel            = AM_HAL_PIN_3_SLnCE,
-   1059              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE,
-   1060              .uNCE                = 0,
-   1061              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-   1062          };
-   1063          
+   1052          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_MSPI_SCK =
+   1053          {
+   1054              .uFuncSel            = AM_HAL_PIN_24_MSPI8,
+   1055              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+   1056              .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_LO2HI,
+   1057              .uIOMnum             = 6
+   1058          };
+   1059          
+   1060          //*****************************************************************************
+   1061          //
+   1062          //  IOS_CE pin: I/O Slave chip select.
+   1063          //
    1064          //*****************************************************************************
-   1065          //
-   1066          //  IOS_MISO pin: I/O Slave SPI MISO signal.
-   1067          //
-   1068          //*****************************************************************************
-   1069          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOS_MISO =
-   1070          {
-   1071              .uFuncSel            = AM_HAL_PIN_2_SLMISO,
-   1072              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA
-   1073          };
-   1074          
-   1075          //*****************************************************************************
+   1065          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOS_CE =
+   1066          {
+   1067              .uFuncSel            = AM_HAL_PIN_3_SLnCE,
+   1068              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE,
+   1069              .uNCE                = 0,
+   1070              .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
+   1071          };
+   1072          
+   1073          //*****************************************************************************
+   1074          //
+   1075          //  IOS_MISO pin: I/O Slave SPI MISO signal.
    1076          //
-   1077          //  IOS_MOSI pin: I/O Slave SPI MOSI signal.
-   1078          //
-   1079          //*****************************************************************************
-   1080          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOS_MOSI =
-   1081          {
-   1082              .uFuncSel            = AM_HAL_PIN_1_SLMOSI,
-   1083              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
-   1084          };
-   1085          
-   1086          //*****************************************************************************
+   1077          //*****************************************************************************
+   1078          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOS_MISO =
+   1079          {
+   1080              .uFuncSel            = AM_HAL_PIN_2_SLMISO,
+   1081              .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA
+   1082          };
+   1083          
+   1084          //*****************************************************************************
+   1085          //
+   1086          //  IOS_MOSI pin: I/O Slave SPI MOSI signal.
    1087          //
-   1088          //  IOS_SCK pin: I/O Slave SPI SCK signal.
-   1089          //
-   1090          //*****************************************************************************
-   1091          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOS_SCK =
-   1092          {
-   1093              .uFuncSel            = AM_HAL_PIN_0_SLSCK,
-   1094              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
-   1095          };
-   1096          
-   1097          //*****************************************************************************
+   1088          //*****************************************************************************
+   1089          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOS_MOSI =
+   1090          {
+   1091              .uFuncSel            = AM_HAL_PIN_1_SLMOSI,
+   1092              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
+   1093          };
+   1094          
+   1095          //*****************************************************************************
+   1096          //
+   1097          //  IOS_SCK pin: I/O Slave SPI SCK signal.
    1098          //
-   1099          //  IOS_SCL pin: I/O Slave I2C clock signal.
-   1100          //
-   1101          //*****************************************************************************
-   1102          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOS_SCL =
-   1103          {
-   1104              .uFuncSel            = AM_HAL_PIN_0_SLSCL,
-   1105              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
-   1106          };
-   1107          
-   1108          //*****************************************************************************
+   1099          //*****************************************************************************
+   1100          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOS_SCK =
+   1101          {
+   1102              .uFuncSel            = AM_HAL_PIN_0_SLSCK,
+   1103              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
+   1104          };
+   1105          
+   1106          //*****************************************************************************
+   1107          //
+   1108          //  IOS_SCL pin: I/O Slave I2C clock signal.
    1109          //
-   1110          //  IOS_SDA pin: I/O Slave I2C data signal.
-   1111          //
-   1112          //*****************************************************************************
-   1113          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOS_SDA =
-   1114          {
-   1115              .uFuncSel            = AM_HAL_PIN_1_SLSDAWIR3,
-   1116              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
-   1117              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
-   1118          };
-   1119          
-   1120          //*****************************************************************************
-   1121          //
-   1122          //  SWDCK pin: Cortex Serial Wire DCK.
-   1123          //
-   1124          //*****************************************************************************
-   1125          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_SWDCK =
-   1126          {
-   1127              .uFuncSel            = AM_HAL_PIN_20_SWDCK
-   1128          };
-   1129          
-   1130          //*****************************************************************************
-   1131          //
-   1132          //  SWDIO pin: Cortex Serial Wire DIO.
-   1133          //
-   1134          //*****************************************************************************
-   1135          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_SWDIO =
-   1136          {
-   1137              .uFuncSel            = AM_HAL_PIN_21_SWDIO
-   1138          };
-   1139          
-   1140          //*****************************************************************************
-   1141          //
-   1142          // End Doxygen group.
-   1143          //! @}
-   1144          //
-   1145          //*****************************************************************************
+   1110          //*****************************************************************************
+   1111          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOS_SCL =
+   1112          {
+   1113              .uFuncSel            = AM_HAL_PIN_0_SLSCL,
+   1114              .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
+   1115          };
+   1116          
+   1117          //*****************************************************************************
+   1118          //
+   1119          //  IOS_SDA pin: I/O Slave I2C data signal.
+   1120          //
+   1121          //*****************************************************************************
+   1122          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOS_SDA =
+   1123          {
+   1124              .uFuncSel            = AM_HAL_PIN_1_SLSDAWIR3,
+   1125              .ePullup             = AM_HAL_GPIO_PIN_PULLUP_1_5K,
+   1126              .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
+   1127          };
+   1128          
+   1129          //*****************************************************************************
+   1130          //
+   1131          //  SWDCK pin: Cortex Serial Wire DCK.
+   1132          //
+   1133          //*****************************************************************************
+   1134          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_SWDCK =
+   1135          {
+   1136              .uFuncSel            = AM_HAL_PIN_20_SWDCK
+   1137          };
+   1138          
+   1139          //*****************************************************************************
+   1140          //
+   1141          //  SWDIO pin: Cortex Serial Wire DIO.
+   1142          //
+   1143          //*****************************************************************************
+   1144          const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_SWDIO =
+   1145          {
+   1146              .uFuncSel            = AM_HAL_PIN_21_SWDIO
+   1147          };
+   1148          
+   1149          //*****************************************************************************
+   1150          //
+   1151          // End Doxygen group.
+   1152          //! @}
+   1153          //
+   1154          //*****************************************************************************
 
 
    Section sizes:

@@ -2445,6 +2445,12 @@
             <name>$PROJ_DIR$\..\src\artemis\artemis_stream.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_supercap.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_supercap.h</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\src\artemis\artemis_time.c</name>
         </file>
         <file>

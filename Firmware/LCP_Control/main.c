@@ -12,6 +12,7 @@
 //#include "artemis_time.h"
 //#include "artemis_pa9ld.h"
 //#include "artemis_ublox_i2c.h"
+#include "artemis_supercap.h"
 #include "ublox.h"
 
 #include <stdlib.h>
@@ -35,27 +36,38 @@ int main(void)
 
     // run the application
 //    artemis_scheduler_run();
-
-    S9T_init(BSP_UART_COM1, &g_AM_BSP_GPIO_COM1_POWER_PIN, AM_BSP_GPIO_COM1_POWER_PIN);
-    S9T_enable();
+//
+//    S9T_init(BSP_UART_COM1, &g_AM_BSP_GPIO_COM1_POWER_PIN, AM_BSP_GPIO_COM1_POWER_PIN);
+//    S9T_enable();
     
     /** Init GPS */
 
-    UBLOX_initialize(UBLOX_COM_I2C, UBLOX_MSG_UBX, UBLOX_MSG_UBX, 1);
-
-  float p, r, t;
-  UBLOX_Nav_t gps = {0};
+//    UBLOX_initialize(UBLOX_COM_I2C, UBLOX_MSG_UBX, UBLOX_MSG_UBX, 1);
+    
+    artemis_sc_initialize();
+    
+    if(artemis_sc_power_startup())
+    {
+      printf("Success in starting supercap charging!\n");
+    } else {
+      printf("Failed to start supercap charge\n");
+    }
+    
+    artemis_sc_power_off();
+    
+//  float p, r, t;
+//  UBLOX_Nav_t gps = {0};
     
 //    ublox_data_t gps;
     while(true)
     {
-      UBLOX_read_nav(&gps);
-      printf("GPS Fix = %u\n", gps.fix);
+//      UBLOX_read_nav(&gps);
+//      printf("GPS Fix = %u\n", gps.fix);
       
-      if(gps.fix)
-      {
-        printf("Lat=%.7f, Lon=%.7f, Alt=%.3f\n", gps.position.lat, gps.position.lon, gps.position.alt);
-      }
+//      if(gps.fix)
+//      {
+//        printf("Lat=%.7f, Lon=%.7f, Alt=%.3f\n", gps.position.lat, gps.position.lon, gps.position.alt);
+//      }
 //      artemis_pa9ld_read(&p, &t);
 //      printf("p=%0.3f, t=%0.3f\n", p, t);
 //      S9T_Read(&t, &r);
