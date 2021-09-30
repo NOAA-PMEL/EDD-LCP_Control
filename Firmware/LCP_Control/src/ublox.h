@@ -49,7 +49,7 @@ typedef enum eUBLOX_MsgType_t {
     UBLOX_MSG_UBX = 0x01,       /**< UBX Message */
     UBLOX_MSG_NMEA = 0x02,      /**< NMEA Messages */
     UBLOX_MSG_RTCM2 = 0x04,     /**< RTCM2 Messages */
-    UBLOX_MSG_RTCM3 = 0x10;     /**< RTCM3 Messages */
+    UBLOX_MSG_RTCM3 = 0x10      /**< RTCM3 Messages */
 }UBLOX_MsgType_t;
 
 /**
@@ -92,14 +92,15 @@ bool UBLOX_cfg_prt_for_i2c(uint16_t inConfig, uint16_t outConfig);
 
 bool UBLOX_cfg_port_msg(uint8_t class, uint8_t id, uint8_t rate);
 
-bool UBLOX_read_ubx(
-                    uint8_t class, 
-                    uint8_t id, 
-                    uint8_t *payload, 
-                    uint16_t delay, 
-                    ubx_packet_t *packet
-                    );
+//bool UBLOX_read_ubx(
+//                    uint8_t class, 
+//                    uint8_t id, 
+//                    uint8_t *payload, 
+//                    uint16_t delay, 
+//                    ubx_packet_t *packet
+//                    );
 
+bool UBLOX_read_nav(UBLOX_Nav_t *data);
 bool UBLOX_read_config(ubx_cfg_prt_t *prt);
 
 

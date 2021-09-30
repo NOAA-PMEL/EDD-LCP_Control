@@ -64,7 +64,31 @@
 //  Macros & Constants
 //
 //*****************************************************************************
+#define TEST_ON_IOM4 ( true )
+
 #define I2C_MSG_LEN_MAX     ( 128 )
+#define ARTEMIS_UBLOX_BUFFER_LENGTH (I2C_MSG_LEN_MAX)
+
+//*****************************************************************************
+//
+// Structs
+//
+//*****************************************************************************
+typedef uint8_t module_buffer_t[ARTEMIS_UBLOX_BUFFER_LENGTH];
+typedef struct s_module_t
+{
+    artemis_i2c_t i2c;
+    module_buffer_t txbuffer;
+    module_buffer_t rxbuffer;
+    struct {
+        uint32_t pin;
+        am_hal_gpio_pincfg_t *pinConfig;
+    }power;
+    struct {
+        uint32_t pin;
+        am_hal_gpio_pincfg_t *pinConfig;
+    }extint;
+} module_t;
 
 //*****************************************************************************
 //
@@ -102,14 +126,14 @@ void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
     artemis_i2c_t *i2c = &module.i2c;
 
     #ifdef TEST_ON_IOM4
-    module.power.pinConfig = &g_AM_BSP_GPIO_PRES_ON;
+    module.power.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_PRES_ON;
     module.power.pin = AM_BSP_GPIO_PRES_ON;
-    module.extint.pinConfig = &g_AM_BSP_GPIO_GPS_EXTINT;
+    module.extint.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_GPS_EXTINT;
     module.extint.pin = AM_BSP_GPIO_GPS_EXTINT;
     #else
-    module.power.pinConfig = &g_AM_BSP_GPIO_GPS_ON;
+    module.power.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_GPS_ON;
     module.power.pin = AM_BSP_GPIO_GPS_ON;
-    module.extint.pinConfig = &g_AM_BSP_GPIO_GPS_EXTINT;
+    module.extint.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_GPS_EXTINT;
     module.extint.pin = AM_BSP_GPIO_GPS_EXTINT;
     #endif
 
@@ -171,18 +195,18 @@ void artemis_ublox_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop)
   artemis_i2c_t *i2c = &module.i2c;
   artemis_stream_t txstream = {0};
   artemis_stream_setbuffer(&txstream, module.txbuffer, ARTEMIS_UBLOX_BUFFER_LENGTH);
+  artemis_stream_reset(&txstream);
   
   while(len > 0)
   {
-    uint16_t length;
     if(len > ARTEMIS_UBLOX_BUFFER_LENGTH)
     {
-      artemis_stream_write(&txstream, mg, ARTEMIS_UBLOX_BUFFER_LENGTH);
+      artemis_stream_write(&txstream, msg, ARTEMIS_UBLOX_BUFFER_LENGTH);
       artemis_i2c_send(i2c, false, &txstream);
       artemis_stream_reset(&txstream);
       len -= ARTEMIS_UBLOX_BUFFER_LENGTH;
     } else {
-      artemis_stream_write(&txstream, mg, len);
+      artemis_stream_write(&txstream, msg, len);
       artemis_i2c_send(i2c, stop, &txstream);
       len =0;
     }
@@ -210,7 +234,7 @@ uint16_t artemis_ublox_i2c_read_data(uint8_t *pBuf)
   artemis_stream_setbuffer(&txstream, module.txbuffer, ARTEMIS_UBLOX_BUFFER_LENGTH);
 
   /** Send the command to retreive data length @addr 0xFD */
-  artemis_stream_put(&txstream, 0xFE);
+  artemis_stream_put(&txstream, ARTEMIS_UBLOX_I2C_DATA_LEN_REG);
   artemis_i2c_send(i2c, false, &txstream);
 
   artemis_i2c_receive(i2c, true, &rxstream, 2);
@@ -219,13 +243,14 @@ uint16_t artemis_ublox_i2c_read_data(uint8_t *pBuf)
   artemis_stream_read(&rxstream, u8Len, 2);
 
 
-  if(u8Len[1] = 0xFF)
+  if(u8Len[1] == 0xFF)
   {
     /** Error, shouldn't be 0xFF */
     return 0;
   }
 
-  uint16_t len = (u8Len[1] << 8) | u8Len[0];
+  uint16_t len = (u8Len[0] << 8) | u8Len[1];
+//  printf("aui2c len = %u\n\n", len);
   uint8_t *pBufStart = pBuf;
 
   if(len > 0)
@@ -234,7 +259,7 @@ uint16_t artemis_ublox_i2c_read_data(uint8_t *pBuf)
     artemis_stream_reset(&rxstream);
 
     /** Send the command to retreive data @addr 0xFF */
-    artemis_stream_put(&txstream, 0xFF);
+    artemis_stream_put(&txstream, ARTEMIS_UBLOX_I2C_DATA_REG);
     artemis_i2c_send(i2c, false, &txstream);
 
     while(len > 0)

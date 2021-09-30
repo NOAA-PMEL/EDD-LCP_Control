@@ -2546,6 +2546,18 @@
         <file>
             <name>$PROJ_DIR$\..\src\S9_temp.h</name>
         </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\ublox.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\ublox.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\ublox_ubx.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\ublox_ubx.h</name>
+        </file>
     </group>
     <file>
         <name>$PROJ_DIR$\..\src\freertos_lowpower.c</name>

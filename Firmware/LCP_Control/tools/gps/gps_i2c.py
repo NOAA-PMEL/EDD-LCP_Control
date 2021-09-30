@@ -114,6 +114,7 @@ def parse_ubx_nav_pvt_packet(packet):
         cfg = {}
 
     return cfg
+    
 def parse_ubx_cfg_prt_packet(packet):
     if(packet):
         cfg = {

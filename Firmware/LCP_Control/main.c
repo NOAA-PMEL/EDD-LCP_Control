@@ -11,7 +11,8 @@
 //#include "artemis_scheduler.h"
 //#include "artemis_time.h"
 //#include "artemis_pa9ld.h"
-#include "artemis_ublox_i2c.h"
+//#include "artemis_ublox_i2c.h"
+#include "ublox.h"
 
 #include <stdlib.h>
 
@@ -38,23 +39,30 @@ int main(void)
     S9T_init(BSP_UART_COM1, &g_AM_BSP_GPIO_COM1_POWER_PIN, AM_BSP_GPIO_COM1_POWER_PIN);
     S9T_enable();
     
-//    artemis_pa9ld_initialize(&g_AM_BSP_GPIO_PRES_ON, AM_BSP_GPIO_PRES_ON);
-    artemis_ublox_i2c_initialize(&g_AM_BSP_GPIO_PRES_ON, AM_BSP_GPIO_PRES_ON, &g_AM_BSP_GPIO_GPS_EXTINT, AM_BSP_GPIO_GPS_EXTINT);
-//    
-//    artemis_ublox_i2c_turn_off_nmea_output();
-//    artemis_ublox_i2c_turn_on_nmea_output(NMEA_GGA);
-    float p, r, t;
+    /** Init GPS */
+
+    UBLOX_initialize(UBLOX_COM_I2C, UBLOX_MSG_UBX, UBLOX_MSG_UBX, 1);
+
+  float p, r, t;
+  UBLOX_Nav_t gps = {0};
     
-    ublox_data_t gps;
+//    ublox_data_t gps;
     while(true)
     {
+      UBLOX_read_nav(&gps);
+      printf("GPS Fix = %u\n", gps.fix);
+      
+      if(gps.fix)
+      {
+        printf("Lat=%.7f, Lon=%.7f, Alt=%.3f\n", gps.position.lat, gps.position.lon, gps.position.alt);
+      }
 //      artemis_pa9ld_read(&p, &t);
 //      printf("p=%0.3f, t=%0.3f\n", p, t);
 //      S9T_Read(&t, &r);
 //      printf("t=%.3f, r=%.3f\n", t, r); 
 //      artemis_ublox_i2c_read_position(&gps);
 //      artemis_ublox_read_data(&gps);
-      artemis_ublox_test();
+//      artemis_ublox_test();
 //    artemis_ublox_read_register(0x00, 240);
 
 //      printf("lat=%.6f%c, lon=%.6f%c, alt=%.3f\n", gps.lat, gps.NS, gps.lon, gps.EW, gps.alt);

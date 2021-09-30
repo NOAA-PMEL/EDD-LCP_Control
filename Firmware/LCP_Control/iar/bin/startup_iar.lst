@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         24/Sep/2021  12:59:05
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         29/Sep/2021  08:01:34
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode             
@@ -8,7 +8,7 @@
 #    Source file       =
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\startup_iar.c
 #    Command line      =
-#        -f C:\Users\casari\AppData\Local\Temp\1\EW1350.tmp
+#        -f C:\Users\casari\AppData\Local\Temp\1\EW2BCF.tmp
 #        (C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\startup_iar.c
 #        -D iar -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D
 #        AM_DEBUG_PRINTF -D AM_UTIL_FAULTISR_PRINT -lcN
@@ -508,52 +508,52 @@ C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\startup_iar.c
        4  ??DataTable0_1
        2  BusFault_Handler
           SecureFault_Handler
+          HardFault_Handler
           MemManage_Handler
           UsageFault_Handler
-          HardFault_Handler
        2  NMI_Handler
        6  Reset_Handler
       64  __Patchable
       10  __low_level_init
      192  __vector_table
-       2  am_stimer_cmpr0_isr
-          am_watchdog_isr
-          am_mspi0_isr
-          am_rtc_isr
-          am_ioslave_ios_isr
+       2  am_clkgen_isr
+          am_default_isr
+          am_flash_isr
+          am_stimer_cmpr0_isr
           am_iomaster3_isr
-          am_scard_isr
-          am_stimer_cmpr1_isr
-          am_stimer_cmpr3_isr
-          am_stimer_cmpr5_isr
-          am_brownout_isr
-          am_ble_isr
-          am_iomaster2_isr
-          am_gpio_isr
-          am_ctimer_isr
-          am_uart1_isr
-          am_stimer_isr
-          am_iomaster1_isr
+          am_watchdog_isr
+          am_uart_isr
           am_stimer_cmpr2_isr
           am_stimer_cmpr4_isr
-          am_stimer_cmpr6_isr
-          am_adc_isr
-          am_stimer_cmpr7_isr
+          am_ctimer_isr
+          am_mspi0_isr
+          am_scard_isr
+          am_iomaster2_isr
+          am_iomaster1_isr
           SysTick_Handler
-          am_vcomp_isr
-          am_ioslave_acc_isr
-          am_iomaster0_isr
-          am_iomaster5_isr
           am_iomaster4_isr
-          am_uart_isr
+          am_uart1_isr
+          am_brownout_isr
           am_pdm0_isr
+          am_iomaster5_isr
+          am_stimer_cmpr1_isr
+          am_stimer_cmpr3_isr
+          am_iomaster0_isr
+          am_stimer_cmpr5_isr
+          am_ble_isr
+          am_stimer_cmpr6_isr
+          am_stimer_cmpr7_isr
+          am_ioslave_acc_isr
+          am_gpio_isr
+          am_rtc_isr
+          am_adc_isr
+          am_vcomp_isr
           am_software0_isr
-          DebugMon_Handler
+          am_ioslave_ios_isr
+          am_stimer_isr
           PendSV_Handler
           SVC_Handler
-          am_clkgen_isr
-          am_flash_isr
-          am_default_isr
+          DebugMon_Handler
    8'960  pui32Stack
 
  

@@ -83,6 +83,8 @@ build timers.pbi : index timers.xcl
 build buffer_c.pbi : index buffer_c.xcl
 build LED.pbi : index LED.xcl
 build S9_temp.pbi : index S9_temp.xcl
+build ublox.pbi : index ublox.xcl
+build ublox_ubx.pbi : index ublox_ubx.xcl
 build main.pbi : index main.xcl
 build startup_iar.pbi : index startup_iar.xcl
 build freertos_lowpower_part0.pbi : link am_hal_adc.pbi am_hal_ble.pbi am_hal_ble_patch.pbi am_hal_ble_patch_b0.pbi am_hal_burst.pbi am_hal_cachectrl.pbi am_hal_clkgen.pbi am_hal_cmdq.pbi
@@ -92,8 +94,8 @@ build freertos_lowpower_part3.pbi : link am_hal_scard.pbi am_hal_secure_ota.pbi 
 build freertos_lowpower_part4.pbi : link am_hal_wdt.pbi am_devices_button.pbi am_devices_led.pbi am_util_debug.pbi am_util_delay.pbi am_util_faultisr.pbi am_util_stdio.pbi artemis_debug.pbi
 build freertos_lowpower_part5.pbi : link artemis_i2c.pbi artemis_iom.pbi artemis_max14830.pbi artemis_mcu.pbi artemis_pa9ld.pbi artemis_spi.pbi artemis_stream.pbi artemis_time.pbi
 build freertos_lowpower_part6.pbi : link artemis_ublox_i2c.pbi am_bsp.pbi am_bsp_pins.pbi bsp_uart.pbi event_groups.pbi heap_2.pbi list.pbi port.pbi
-build freertos_lowpower_part7.pbi : link queue.pbi rtos.pbi tasks.pbi timers.pbi buffer_c.pbi LED.pbi S9_temp.pbi main.pbi
-build freertos_lowpower_part8.pbi : link startup_iar.pbi
+build freertos_lowpower_part7.pbi : link queue.pbi rtos.pbi tasks.pbi timers.pbi buffer_c.pbi LED.pbi S9_temp.pbi ublox.pbi
+build freertos_lowpower_part8.pbi : link ublox_ubx.pbi main.pbi startup_iar.pbi
 build freertos_lowpower.pbd : link freertos_lowpower_part0.pbi freertos_lowpower_part1.pbi freertos_lowpower_part2.pbi freertos_lowpower_part3.pbi freertos_lowpower_part4.pbi freertos_lowpower_part5.pbi freertos_lowpower_part6.pbi freertos_lowpower_part7.pbi freertos_lowpower_part8.pbi
 build freertos_lowpower.pbw : browsedata freertos_lowpower.pbd
 

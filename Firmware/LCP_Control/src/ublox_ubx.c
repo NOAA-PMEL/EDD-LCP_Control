@@ -14,6 +14,7 @@
 //*****************************************************************************
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 //*****************************************************************************
 //
@@ -63,7 +64,7 @@ typedef union u_u16_to_i16_t
 // Static Function Prototypes
 //
 //*****************************************************************************
-static ubx_nak_t module_ubx_parse_ack_or_nak_msg(ubx_packet_t *packet, 
+static ubx_ack_t module_ubx_parse_ack_or_nak_msg(ubx_packet_t *packet, 
                                                 uint8_t expectedCls,
                                                 uint8_t expectedId);
 
@@ -76,6 +77,8 @@ static void module_ubx_parse_cfg_prt_packet(ubx_packet_t *packet,
 static void module_ubx_parse_cfg_rate_packet(ubx_packet_t *packet, 
                                             ubx_cfg_rate_t *rate);
 
+static void UBX_checksum_increment(ubx_packet_t *packet, uint8_t value);
+static void module_ublox_calc_ubx_checksum(ubx_packet_t *packet);
 static uint32_t bytes_to_u32(uint8_t *data);
 static int32_t bytes_to_i32(uint8_t *data);
 static uint16_t bytes_to_u16(uint8_t *data);
@@ -108,7 +111,7 @@ void UBX_create_ubx_packet(
     packet->id = ubx_id;
     packet->length = len;
     packet->payload = payload;
-    UBX_calc_ubx_checksum(&packet);
+    module_ublox_calc_ubx_checksum(packet);
 
 }
 
@@ -127,7 +130,7 @@ bool UBX_parse_ubx_packet(
                         ubx_packet_t *packet
                         )
 {
-    bool retVal = False;
+    bool retVal = false;
 
     if( (msg[0] == UBX_HEADER_1 ) &&  (msg[1] == UBX_HEADER_2) )
     {
@@ -137,9 +140,9 @@ bool UBX_parse_ubx_packet(
     if( retVal == true)
     {
         packet->cls = msg[2];
-        packet->id = msg[3]
+        packet->id = msg[3];
         packet->length = (msg[5] << 8) | msg[4];
-        packet->payload = msg[6];
+        packet->payload = &msg[6];
         packet->chksumA = msg[6 + packet->length];
         packet->chksumB = msg[7 + packet->length];
     }
@@ -293,12 +296,13 @@ void UBX_create_msg_from_packet(ubx_packet_t *packet, uint8_t *msg)
     *msg++ = UBX_HEADER_2;
     *msg++ = packet->cls;
     *msg++ = packet->id;
-    *msg++ = (uint8_t) (packet->length >> 8) & 0xFF;
     *msg++ = (uint8_t) (packet->length & 0xFF);
+    *msg++ = (uint8_t) (packet->length >> 8) & 0xFF;
+    
     memcpy(msg, packet->payload, packet->length);
-    msg += packet->len;
-    *msg += packet->chksumA;
-    *msg += packet->chksumB;
+    msg += packet->length;
+    *msg++ = packet->chksumA;
+    *msg = packet->chksumB;
 }
 
 /**
@@ -359,24 +363,46 @@ bool UBX_create_packet_from_msg(uint8_t *msg, uint16_t len, ubx_packet_t *packet
  * 
  * @param buf Pointer to data buffer array
  * @param len Length of data buffer
- * @return uint8_t* Pointer to start of UBX message
+ * @return uint8_t* Offset from start of buf (-1 = NOT FOUND )
  */
-uint8_t* UBX_find_start_of_msg(uint8_t *buf, uint16_t len)
+int16_t UBX_find_start_of_msg(uint8_t *buf, uint16_t len)
 {
-    uint8_t *pStart = NULL;
+    int16_t offset = -1;
 
-    for(uint16_t i; i< (len-1); i++)
+    for(uint16_t i=0; i< (len-1); i++)
     {
         if( (buf[i] == UBX_HEADER_1) && (buf[i+1] == UBX_HEADER_2) )
         {
-            pStart = (uint8_t*) (buf + i);
+            offset = i;
             break;
         }        
     }
 
-    return pStart;
+    return offset;
 }
 
+
+ubx_ack_t UBX_check_for_ack(ubx_packet_t *packet, 
+                            uint8_t expectedClass, 
+                            uint8_t expectedId)
+{
+  ubx_ack_t retVal = UBX_ACK_INVALID_RESPONSE;
+
+    if(packet->cls == 0x05)
+    {
+        if( (packet->payload[0] == expectedClass) && (packet->payload[1] == expectedId))
+        {
+            if( packet->id == 0x01)
+            {
+                retVal = UBX_ACK_ACK_RESPONSE;
+            } else if(packet->id == 0x00)
+            {
+                retVal = UBX_ACK_NAK_RESPONSE;
+            }
+        }
+    }
+  return retVal;
+}
 //*****************************************************************************
 //
 // Static Functions
@@ -393,9 +419,9 @@ uint8_t* UBX_find_start_of_msg(uint8_t *buf, uint16_t len)
  * @param expectedId Expected Class ID of ACK
  * @return ubx_nak_t ACK-ACK, ACK-NAK, or Invalid
  */
-static ubx_nak_t module_ubx_parse_ack_or_nak_msg(ubx_packet_t *packet, uint8_t expectedCls, uint8_t expectedId)
+static ubx_ack_t module_ubx_parse_ack_or_nak_msg(ubx_packet_t *packet, uint8_t expectedCls, uint8_t expectedId)
 {
-    ubx_nak_t retVal = UBX_ACK_INVALID;
+    ubx_ack_t retVal = UBX_ACK_INVALID_RESPONSE;
 
     if(packet->cls == 0x05)
     {
@@ -403,10 +429,10 @@ static ubx_nak_t module_ubx_parse_ack_or_nak_msg(ubx_packet_t *packet, uint8_t e
         {
             if( packet->id == 0x01)
             {
-                retVal = UBX_ACK_ACK;
+                retVal = UBX_ACK_ACK_RESPONSE;
             } else if(packet->id == 0x00)
             {
-                retVal = UBX_ACK_NAK;
+                retVal = UBX_ACK_NAK_RESPONSE;
             }
         }
     }
@@ -424,39 +450,39 @@ static void module_ubx_parse_nav_pvt_packet(ubx_packet_t *packet, ubx_nav_pvt_t 
 {
     uint8_t *payload = packet->payload;
 
-    nav->iTOW = bytes_to_u32(payload[0]);
-    nav->year = bytes_to_u16(payload[4]);
+    nav->iTOW = bytes_to_u32(&payload[0]);
+    nav->year = bytes_to_u16(&payload[4]);
     nav->month = payload[6];
     nav->day = payload[7];
     nav->hour = payload[8];
     nav->min = payload[9];
     nav->sec = payload[10];
     nav->valid = payload[11];
-    nav->tAcc = bytes_to_u32(payload[12]);
-    nav->nano = bytes_to_i32(payload[16]);
+    nav->tAcc = bytes_to_u32(&payload[12]);
+    nav->nano = bytes_to_i32(&payload[16]);
     nav->fixType = payload[20];
     nav->flags = payload[21];
     nav->flags2 = payload[22];
     nav->numSV = payload[23];
-    nav->lon = bytes_to_i32(payload[24]);
-    nav->lat = bytes_to_i32(payload[28]);
-    nav->height = bytes_to_i32(payload[32]);
-    nav->hMSL = bytes_to_i32(payload[36]);
-    nav->hAcc = bytes_to_u32(payload[40]);
-    nav->vAcc = bytes_to_u32(payload[44]);
-    nav->velN = bytes_to_i32(payload[48]);
-    nav->velE = bytes_to_i32(payload[52]);
-    nav->velD = bytes_to_i32(payload[56]);
-    nav->gSpeed = bytes_to_i32(payload[60]);
-    nav->headMot = bytes_to_i32(payload[64]);
-    nav->sAcc = bytes_to_u32(payload[68]);
-    nav->headAcc = bytes_to_u32(payload[72]);
-    nav->pDOP = bytes_to_u16(payload[76]);
-    nav->flags3 = bytes_to_u16(payload[78]);
-    nav->reserved1 = bytes_to_u32(payload[80]);
-    nav->headVeh = bytes_to_i32(payload[84]);
-    nav->magDec = bytes_to_i16(payload[88]);
-    nav->magAcc = bytes_to_u16(payload[90]);
+    nav->lon = bytes_to_i32(&payload[24]);
+    nav->lat = bytes_to_i32(&payload[28]);
+    nav->height = bytes_to_i32(&payload[32]);
+    nav->hMSL = bytes_to_i32(&payload[36]);
+    nav->hAcc = bytes_to_u32(&payload[40]);
+    nav->vAcc = bytes_to_u32(&payload[44]);
+    nav->velN = bytes_to_i32(&payload[48]);
+    nav->velE = bytes_to_i32(&payload[52]);
+    nav->velD = bytes_to_i32(&payload[56]);
+    nav->gSpeed = bytes_to_i32(&payload[60]);
+    nav->headMot = bytes_to_i32(&payload[64]);
+    nav->sAcc = bytes_to_u32(&payload[68]);
+    nav->headAcc = bytes_to_u32(&payload[72]);
+    nav->pDOP = bytes_to_u16(&payload[76]);
+    nav->flags3 = bytes_to_u16(&payload[78]);
+    nav->reserved1 = bytes_to_u32(&payload[80]);
+    nav->headVeh = bytes_to_i32(&payload[84]);
+    nav->magDec = bytes_to_i16(&payload[88]);
+    nav->magAcc = bytes_to_u16(&payload[90]);
 }
 
 /**
@@ -544,10 +570,10 @@ static void module_ublox_calc_ubx_checksum(ubx_packet_t *packet)
  */
 static uint32_t bytes_to_u32(uint8_t *data)
 {
-    uint32_t value;
+    uint32_t value = 0;
     for(uint8_t i=0;i<4;i++)
     {
-        value[i] = data[4-i-1] << (i*8);
+        value |= data[4-i-1] << (i*8);
     }
 
     return value;

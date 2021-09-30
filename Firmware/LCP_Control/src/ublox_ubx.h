@@ -23,7 +23,7 @@
 *							MACROS
 ************************************************************************/
 #define UBX_HEADER_SIZE                 ( 8 )
-#define UBX_PAYLOAD_SIZE_MAX            ( 2048 )
+#define UBX_PAYLOAD_SIZE_MAX            ( 2400 )
 #define UBX_MSG_SIZE_MAX                ( UBX_PAYLOAD_SIZE_MAX + UBX_HEADER_SIZE)
 
 #define UBX_HEADER_1                    ( 0xB5 )
@@ -126,9 +126,9 @@ typedef struct s_ubx_cfg_rate_t {
  * Return from ACK-ACK or ACK-NAK test
  */
 typedef enum e_ubx_ack_nak_t {
-    UBX_ACK_INVALID,
-    UBX_ACK_NAK,
-    UBX_ACK_ACK,
+    UBX_ACK_INVALID_RESPONSE,
+    UBX_ACK_NAK_RESPONSE,
+    UBX_ACK_ACK_RESPONSE,
 }ubx_ack_t;
 
 
@@ -273,7 +273,7 @@ bool UBX_parse_ubx_packet(
                         );
 void UBX_create_msg_from_packet(ubx_packet_t *packet, uint8_t *msg);
 bool UBX_create_packet_from_msg(uint8_t *msg, uint16_t len, ubx_packet_t *packet);
-uint8_t* UBX_find_start_of_msg(uint8_t *buf, uint16_t len);
+int16_t UBX_find_start_of_msg(uint8_t *buf, uint16_t len);
 ubx_ack_t UBX_check_for_ack(ubx_packet_t *packet, 
                             uint8_t expectedClass, 
                             uint8_t expectedId);

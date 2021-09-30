@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <settings>
     <DebugChecksum>
-        <Checksum>560035138</Checksum>
+        <Checksum>3237338063</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -118,13 +118,13 @@
         <MemConfigValue>C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\arm\CONFIG\debugger\AmbiqMicro\AMA3B1KK-KBR.ddf</MemConfigValue>
     </PlDriver>
     <Jet>
-        <OnlineReset>Software</OnlineReset>
         <JetConnSerialNo>81827</JetConnSerialNo>
         <JetConnFoundProbes />
         <PrevWtdReset>System</PrevWtdReset>
         <DisableInterrupts>0</DisableInterrupts>
         <LeaveRunning>0</LeaveRunning>
         <MultiCoreRunAll>0</MultiCoreRunAll>
+        <OnlineReset>Software</OnlineReset>
     </Jet>
     <ArmDriver>
         <EnableCache>1</EnableCache>
@@ -142,20 +142,6 @@
         <PowerForcePC>1</PowerForcePC>
         <PowerConnectPC>1</PowerConnectPC>
     </SWOManager>
-    <PowerProbe>
-        <Frequency>10000</Frequency>
-        <Probe0>I0</Probe0>
-        <ProbeSetup0>2 0 1 2 0 0</ProbeSetup0>
-    </PowerProbe>
-    <LogFile>
-        <LoggingEnabled>_ 1</LoggingEnabled>
-        <LogFile>_ "$PROJ_DIR$\LogFile1.log"</LogFile>
-        <Category>_ 0</Category>
-    </LogFile>
-    <TermIOLog>
-        <LoggingEnabled>_ 1</LoggingEnabled>
-        <LogFile>_ "$PROJ_DIR$\TermIO.log"</LogFile>
-    </TermIOLog>
     <array_types>
         <Fmt0>uint32_t[64]	4	0</Fmt0>
     </array_types>
@@ -168,7 +154,7 @@
         <Fmt5>{W}1:AM_HAL_STATUS_SUCCESS	3	0</Fmt5>
         <Fmt6>{W}1:AM_HAL_STATUS_TIMEOUT	3	0</Fmt6>
         <Fmt7>{W}1:cmd	4	0</Fmt7>
-        <Fmt8>{W}1:len	3	0</Fmt8>
+        <Fmt8>{W}1:len	4	0</Fmt8>
         <Fmt9>{W}1:port	4	0</Fmt9>
         <Fmt10>{W}1:ui32Status	3	0</Fmt10>
         <Fmt11>{W}2:checksum	4	0</Fmt11>
@@ -218,12 +204,27 @@
     <Breakpoints2>
         <Bp0>_ 0 "EMUL_DATA" "ui32Status" 0 0 1 4 4294967295</Bp0>
         <Bp1>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\bsp\bsp_uart.c}.42.5" 0 0 1 "" 0 "" 0</Bp1>
-        <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\artemis\artemis_ublox_i2c.c}.247.5" 0 0 1 "" 0 "" 0</Bp2>
-        <Bp3>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\artemis\artemis_ublox_i2c.h}.47.1" 0 0 1 "" 0 "" 0</Bp3>
-        <Bp4>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\main.c}.57.7" 0 0 1 "" 0 "" 0</Bp4>
-        <Bp5>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\artemis\artemis_ublox_i2c.c}.262.1" 0 0 1 "" 0 "" 0</Bp5>
-        <Count>6</Count>
+        <Bp2>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\artemis\artemis_ublox_i2c.h}.47.1" 0 0 1 "" 0 "" 0</Bp2>
+        <Bp3>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\main.c}.57.9" 0 0 1 "" 0 "" 0</Bp3>
+        <Bp4>_ 0 "EMUL_DATA" "artemis_ublox_i2c_read_data" 0 0 0 0 4294967295</Bp4>
+        <Bp5>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\src\ublox.c}.0.1" 0 0 1 "" 0 "" 0</Bp5>
+        <Bp6>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\src\ublox.c}.109.9" 0 0 1 "" 0 "" 0</Bp6>
+        <Count>7</Count>
     </Breakpoints2>
+    <PowerProbe>
+        <Frequency>10000</Frequency>
+        <Probe0>I0</Probe0>
+        <ProbeSetup0>2 0 1 2 0 0</ProbeSetup0>
+    </PowerProbe>
+    <TermIOLog>
+        <LoggingEnabled>_ 1</LoggingEnabled>
+        <LogFile>_ "$PROJ_DIR$\TermIO.log"</LogFile>
+    </TermIOLog>
+    <LogFile>
+        <LoggingEnabled>_ 1</LoggingEnabled>
+        <LogFile>_ "$PROJ_DIR$\LogFile1.log"</LogFile>
+        <Category>_ 0</Category>
+    </LogFile>
     <Aliases>
         <A0>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_cachectrl.c" ""</A0>
         <A1>_ "C:\version-control\AmbiqSuiteSDK\mcu\apollo3\hal\am_hal_clkgen.c" ""</A1>
