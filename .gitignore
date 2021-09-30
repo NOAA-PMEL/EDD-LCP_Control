@@ -144,4 +144,8 @@ Firmware/LCP_Control/iar/settings/freertos_lowpower.wsdt
 .vscode/
 build/
 src/artemis/artemis_ublox_i2c_old.c
-src/bsp_old/
+src/bsp_old/*.*
+depth_old.c
+depth_old.h
+main_old.h
+test/*.*
