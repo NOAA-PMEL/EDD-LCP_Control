@@ -2,7 +2,11 @@
 
 
 #include "depth.h"
+#include "temperature.h"
 
+#define SENSOR_MAX_DEPTH_RATE           ( 10 ) 
+#define SENSOR_MAX_TEMPERATURE_RATE     ( 2 ) 
+#define SENSOR_MAX_GPS_RATE             ( 2 )
 SensorData_t sensor_data;
 
 
@@ -58,10 +62,35 @@ void SENS_task_sample_depth_continuous(void)
 }
 
 
-void task_depth(uint8_t rate)
+void SENS_set_depth_rate(uint16_t rate)
 {
+    if( (rate > 0) && (rate < SENSOR_MAX_DEPTH_RATE) )
+    {
+        sensor_data.depth.rate = rate;
+    }
+}
+
+void SENS_set_temperature_rate(uint16_t rate)
+{
+    if( (rate > 0) && (rate < SENSOR_MAX_TEMPERATURE_RATE))
+    {
+        sensor_data.temperature.rate = rate;
+    }
+}
+
+void SENS_set_gps_rate(uint16_t rate)
+{
+    if( (rate > 0) && (rate < SENSOR_MAX_GPS_RATE))
+    {
+        sensor_data.temperature.rate = rate;
+    }
+}
+void task_depth(void)
+{
+    TickType_t xLastWakeTime;
     sDepth_Measurement_t depth = {0};
-    uint16_t period = 1000/rate;
+    assert(sensor_data.depth.rate != 0);
+    uint16_t period = 1000/sensor_data.depth.rate;
 
     /** Create the semaphore for the depth sensor read */
     sensor_data.depth.semaphore = xSemaphoreCreateMutex();
@@ -69,9 +98,24 @@ void task_depth(uint8_t rate)
     /** Initialize the Depth Sensor */
     DEPTH_initialize();
 
+    // Initialise the xLastWakeTime variable with the current time.
+    xLastWakeTime = xTaskGetTickCount();
+
     while(1)
     {
+        /** Power On */
+        DEPTH_Power_ON();
+
+        /** Delay to warm up */
+        /** @todo replace with const number */
+        vTaskDelay(50/ portTICK_RATE_MS);
+
+        /** Read the Data */
         DEPTH_Read(&depth);
+
+        /** Power Off */
+        DEPTH_Power_OFF();
+        
         
         if(xSemaphoreTake(sensor_data.depth.semaphore, period/portTICK_RATE_MS) == pdTRUE)
         {
@@ -79,15 +123,17 @@ void task_depth(uint8_t rate)
             xSemaphoreGive(sensor_data.depth.semaphore);
         }
 
-        vTaskDelay(1000 / portTICK_RATE_MS);
+        vTaskDelayUntil( &xLastWakeTime, 1000 / portTICK_RATE_MS );
     }
 
 }
 
-void task_temperature(uint8_t rate)
+void task_temperature(void)
 {
+    TickType_t xLastWakeTime;
     Temperature_Measurement_t temperature = {0};
     uint16_t period = 1000/rate;
+    period /= portTICK_RATE_MS;
 
     /** Create the semaphore for the depth sensor read */
     sensor_data.temperature.semaphore = xSemaphoreCreateMutex();
@@ -95,19 +141,74 @@ void task_temperature(uint8_t rate)
     /** Initialize the Depth Sensor */
     TEMP_initialize();
 
+    // Initialise the xLastWakeTime variable with the current time.
+    xLastWakeTime = xTaskGetTickCount();
+
     while(1)
     {
+        /** Turn power on */
+        TEMP_Power_ON();
+
+        /** Warmup for x */
+        /** @todo replace this with a macro */
+
+        vTaskDelay(50/ portTICK_RATE_MS);
+
+        /** Read the temperature */
         TEMP_Read(&temperature);
+
+        /** Power off */
+        TEMP_Power_OFF();
         
-        if(xSemaphoreTake(sensor_data.temperature.semaphore, period/portTICK_RATE_MS) == pdTRUE)
+        if(xSemaphoreTake(sensor_data.temperature.semaphore, 10/portTICK_RATE_MS) == pdTRUE)
         {
             sensor_data.temperature.value = depth.Depth;
             xSemaphoreGive(sensor_data.temperature.semaphore);
         }
 
-        vTaskDelay(1000 / portTICK_RATE_MS);
+        vTaskDelayUntil( &xLastWakeTime, period );
     }
 
 }
 
 
+
+
+void task_GPS(uint8_t rate)
+{
+
+    TickType_t xLastWakeTime;
+    Temperature_Measurement_t temperature = {0};
+    uint16_t period = 1000/rate;
+    GPS_Data_t gps = {0};
+
+    /** Create the semaphore for the depth sensor read */
+    sensor_data.GPS.semaphore = xSemaphoreCreateMutex();
+
+    /** Initialize the Depth Sensor */
+    GPS_initialize();
+
+
+
+    // Initialise the xLastWakeTime variable with the current time.
+    xLastWakeTime = xTaskGetTickCount();
+
+
+    while(1)
+    {
+
+        if(GPS_Read(&gps))
+        {
+            if(xSemaphoreTake(sensor_data.GPS.semaphore, 10/portTICK_RATE_MS)==pdTRUE)
+            {
+                sensor_data.GPS.fix = true;
+                sensor_data.GPS.latitude = gps.lat;
+                sensor_data.GPS.longitude = gps.lon;
+                sensor_data.GPS.altitude = gps.alt;
+            }
+        }
+    
+        vTaskDelayUntil( &xLastWakeTime, period );
+    }
+
+}

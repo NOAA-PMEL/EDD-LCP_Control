@@ -3,6 +3,13 @@
 #include "sensors.h"
 
 
+static System_t system;
+
+
+void STATE_initialize(SystemState_t state)
+{
+
+}
 
 void STATE_MainState(SystemState_t state)
 {
@@ -26,9 +33,9 @@ void STATE_MainState(SystemState_t state)
 
 
 
- void STATE_Predeploy(PredeploymentState_t state)
+ void STATE_Predeploy(void)
  {
-     switch(state)
+     switch(system.predeploy.state)
      {
         case PDS_Idle:
             break;
@@ -39,9 +46,9 @@ void STATE_MainState(SystemState_t state)
      }
  }  
 
- void STATE_AutoBallast(AutoBallastState_t state)
+ void STATE_AutoBallast(void)
  {
-     switch(state)
+     switch(system.ballast.state)
      {
         case ABS_DiveToExpected:
             break;
@@ -54,9 +61,9 @@ void STATE_MainState(SystemState_t state)
      }
  }
 
- void STATE_Moored(MooredState_t state)
+ void STATE_Moored(void)
  {
-     switch (state)
+     switch (system.moored.state)
      {
      case MOOR_MoveToParkDepth_mode:
          /* code */
@@ -87,5 +94,33 @@ void STATE_MainState(SystemState_t state)
          break;
      default:
          break;
+     }
+ }
+
+
+ void STATE_Profiler(void)
+ {
+     switch(system.profiler.state)
+     {
+        case SPS_Idle:
+        break;
+
+        case SPS_MoveToParkDepth_mode:
+        break;
+
+        case SPS_Park_mode:
+        break;
+        case SPS_MoveToSampleDepth_mode:
+        break;
+        case SPS_Sample_mode:
+        break;
+        case SPS_Surface_mode:
+        break;
+        case SPS_TX_mode:
+        break;
+        case SPS_RX_mode:
+        break;
+        default:
+        break;
      }
  }

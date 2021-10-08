@@ -38,9 +38,53 @@ typedef enum eMooredState_t
 
 typedef enum ePopupState_t
 {
-
+    PUS_Idle,
 }PopupState_t;
 
-// typedef enum 
+
+typedef eAirDeployState_t
+{
+    ADS_Idle,
+}AirDeployState_t;
+
+typedef eSimpleProfilerState_t
+{
+    SPS_Idle,
+    SPS_MoveToParkDepth_mode,
+    SPS_Park_mode,
+    SPS_MoveToSampleDepth_mode,
+    SPS_Sample_mode,
+    SPS_Surface_mode,
+    SPS_TX_mode,
+    SPS_RX_mode,
+}SimpleProfilerState_t;
+
+
+typedef struct eSystem_t
+{
+    SystemState_t system;
+    struct {
+        PredeploymentState_t state;
+    }predeploy;
+
+    struct {
+        AirDeployState_t state;
+    }airdeploy;
+    struct {
+        SimpleProfilerState_t state;
+    }profiler;
+    struct {
+        AutoBallastState_t state;
+    }ballast;
+    
+    struct {
+        MooredState_t state;
+    }moored;
+    struct {
+        PopupState_t state;
+    }popup;
+
+}System_t;
+
 
 #endif // STATEMACHINE_H

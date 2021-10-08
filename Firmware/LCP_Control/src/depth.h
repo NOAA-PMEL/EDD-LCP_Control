@@ -110,7 +110,7 @@ extern "C"{
  *
  *  @return None
  */
-void DEPTH_initialize(void);
+void DEPTH_initialize( void );
 
 /** @brief Depth Power On
  *
