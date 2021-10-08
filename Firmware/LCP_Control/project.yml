@@ -60,6 +60,8 @@
   :plugins:
     - :ignore
     - :callback
+    - :ignore_arg
+    - :return_thru_ptr
   :treat_as:
     uint8:    HEX8
     uint16:   HEX16

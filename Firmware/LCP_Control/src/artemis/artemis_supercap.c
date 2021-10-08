@@ -41,7 +41,7 @@
 //  Macros
 //
 //*****************************************************************************
-#define ARTEMIS_SC_POWER_TIMEOUT_MS ( 1000 )
+#define ARTEMIS_SC_POWER_TIMEOUT_SEC ( 60 )
 //*****************************************************************************
 //
 // Structs, Enums & Typedefs
@@ -95,13 +95,13 @@ void artemis_sc_initialize(void)
 bool artemis_sc_power_startup(void)
 {
     artemis_sc_power_on();
-    for(uint16_t i=0; i<ARTEMIS_SC_POWER_TIMEOUT_MS; i++)
+    for(uint16_t i=0; i<ARTEMIS_SC_POWER_TIMEOUT_SEC; i++)
     {
         if(artemis_sc_power_good())
         {
             return true;
         }
-        am_hal_systick_delay_us(1000);
+        am_hal_systick_delay_us(1000000);   /** 1 Seconds delay */
     }
     
     return false;

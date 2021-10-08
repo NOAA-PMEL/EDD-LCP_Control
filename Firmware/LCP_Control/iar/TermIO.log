@@ -24480,3 +24480,332 @@ SWO ENABLED
 
 SWO ENABLED
 Failed to start supercap charge
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+Success in starting supercap charging!
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+Success in starting supercap charging!
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig)
+	error:	134217984
+	func:	artemis_ublox_i2c_initialize
+	file:	artemis_ublox_i2c.c
+	line:	159
+}
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+AM HAL ERROR: {
+	hfunc:	am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer)
+	error:	134217730
+	func:	artemis_i2c_send
+	file:	artemis_i2c.c
+	line:	22
+}
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Logging of terminal I/O resumes >> 
+
+
+
+ << Logging of terminal I/O resumes >> 
+
+SWO ENABLED
+
+
+ << Debugger has been reset >> 
+

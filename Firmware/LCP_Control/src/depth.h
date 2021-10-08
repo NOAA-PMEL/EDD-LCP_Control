@@ -120,6 +120,22 @@ void DEPTH_initialize(void);
  */
 void DEPTH_Power_ON(void);
 
+/**
+ * @brief Turn Depth Sensor OFF
+ * 
+ * Disable power to Depth Sensor
+ */
+void DEPTH_Power_OFF(void);
+
+/**
+ * @brief Read the depth sensor.
+ * 
+ * Read the depth sensor and return relevant data
+ * 
+ * @param data Pointer to data struct
+ */
+void DEPTH_Read(sDepth_Measurement_t *data);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

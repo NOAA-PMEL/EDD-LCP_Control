@@ -64,7 +64,7 @@
 //  Macros & Constants
 //
 //*****************************************************************************
-#define TEST_ON_IOM4 ( true )
+//#define TEST_ON_IOM4 ( true )
 
 #define I2C_MSG_LEN_MAX     ( 128 )
 #define ARTEMIS_UBLOX_BUFFER_LENGTH (I2C_MSG_LEN_MAX)
@@ -148,7 +148,13 @@ void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
     i2c->iom.config.eInterfaceMode = AM_HAL_IOM_I2C_MODE;
     i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_100KHZ;
     artemis_iom_initialize(&i2c->iom);
-
+    
+    ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
+    ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.extint.pin, *module.extint.pinConfig));
+    artemis_ublox_i2c_power_on();
+    am_hal_systick_delay_us(1000);
+    artemis_ublox_i2c_power_off();
+    
     #ifdef TEST_ON_IOM4
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM4_SCL, g_AM_BSP_GPIO_IOM4_SCL));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM4_SDA, g_AM_BSP_GPIO_IOM4_SDA));
@@ -156,9 +162,7 @@ void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM1_SCL, g_AM_BSP_GPIO_IOM1_SCL));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM1_SDA, g_AM_BSP_GPIO_IOM1_SDA));
     #endif
-    ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
-    ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.extint.pin, *module.extint.pinConfig));
-       
+           
 
 }
 
@@ -168,7 +172,8 @@ void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
  */
 void artemis_ublox_i2c_power_on(void)
 {
-  am_hal_gpio_output_clear(module.power.pin);
+//  am_hal_gpio_output_clear(module.power.pin);
+  am_hal_gpio_state_write(module.power.pin, AM_HAL_GPIO_OUTPUT_CLEAR);
 }
 
 /**
@@ -177,7 +182,8 @@ void artemis_ublox_i2c_power_on(void)
  */
 void artemis_ublox_i2c_power_off(void)
 {
-  am_hal_gpio_output_set(module.power.pin);
+//  am_hal_gpio_output_set(module.power.pin);
+  am_hal_gpio_state_write(module.power.pin, AM_HAL_GPIO_OUTPUT_SET);
 }
 
 
