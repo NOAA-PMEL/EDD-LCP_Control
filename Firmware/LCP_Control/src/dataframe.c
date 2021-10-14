@@ -1,3 +1,12 @@
+/**
+ * @file dataframe.c
+ * @author Matt Casari (matthew.casari@noaa.gov)
+ * @brief LCP Dataframe for transmitting data via Iridium SBD messages
+ * @version 0.1
+ * @date 2021-10-12
+ *
+ * 
+ */
 #include "dataframe.h"
 #include <string.h>
 #include "sysinfo.h"
@@ -5,23 +14,65 @@
 
 #include <stdio.h>
 
-
+/************************************************************************
+*					STRUCTS & ENUMS
+************************************************************************/
+/**
+ * @brief profile struct
+ * Contains pointers and values for multi-page dataframes
+ * 
+ */
 typedef struct sDF_profile_t
 {
-    uint16_t idx;
-    uint8_t *pDf;
-    uint32_t time;
-    float *pTemp;
-    float *pDepth;
-    float lat;
-    float lon;
-    uint16_t remLen;
-    uint8_t page;
+    uint16_t idx;       /**< Current index */
+    uint8_t *pDf;       /**< Pointer to dataframe */
+    uint32_t time;      /**< Start time of mode */
+    float *pTemp;       /**< Pointer to temperature data */
+    float *pDepth;      /**< Pointer to depth data */
+    float lat;          /**< Latitude @ start or finish (depends on mode) */
+    float lon;          /**< Longitude @ start or finish (depends on mode) */
+    uint16_t remLen;    /**< Remaining length of data */
+    uint8_t page;       /**< Current page number */
 }DF_profile_t;
 
+
+/************************************************************************
+*					MODULE VARIABLES
+************************************************************************/
 static DF_profile_t profile;
+static DF_profile_t park;
+
+/************************************************************************
+*					STATIC FUNCTION PROTOTYPES 
+************************************************************************/
+STATIC uint16_t module_create_crc(uint8_t *data, uint8_t len);
+STATIC uint16_t module_convert_depth_to_uint16_t(float depth);
+STATIC uint16_t module_convert_temperature_to_uint16_t(float temp);
+STATIC uint64_t module_convert_latitude_to_uint64_t(float latitude);
+STATIC uint64_t module_convert_longitude_to_uint64_t(float longitude);
 
 
+/************************************************************************
+*					GLOBAL FUNCTION PROTOTYPES
+************************************************************************/
+/**
+ * @brief Create all profile messages to send 
+ * 
+ * 
+ * 
+ * @param first Is this the first message (t or f)
+ * @param df Pointer to dataframe
+ * @param time Start time of profile
+ * @param dataLen Length of data array
+ * @param lat Latitude @ start of profile (last known)
+ * @param lon Longitude @ start of profile (last known)
+ * @param temp Pointer to temperature array 
+ * @param depth Pointer to depth array
+ * 
+ * @retval End of messages
+ * @return true Last message
+ * @return false More messages follow
+ */
 bool DF_create_profile( bool first, uint8_t *df, uint32_t time, uint16_t dataLen,
                             float lat, float lon, float *temp, float *depth)
 {
@@ -32,7 +83,6 @@ bool DF_create_profile( bool first, uint8_t *df, uint32_t time, uint16_t dataLen
     if(first)
     {
         profile.idx = 0;
-        // profile.pDf = df;
         profile.time = (uint32_t) time;
         profile.remLen = (uint16_t) dataLen;
         profile.pTemp = (float*) temp;
@@ -43,7 +93,6 @@ bool DF_create_profile( bool first, uint8_t *df, uint32_t time, uint16_t dataLen
     }
 
     /** Determine how long the data in this message will be */
-    // printf("remLen = %u\n", profile.remLen);
     if(profile.remLen > 60)
     {
         msgLen = 60;
@@ -53,15 +102,12 @@ bool DF_create_profile( bool first, uint8_t *df, uint32_t time, uint16_t dataLen
     profile.remLen -= msgLen;
 
     /** Does the message end after this frame? */
-    // printf("remLen = %u\n", profile.remLen);
     if(profile.remLen > 0)
     {
         last = false;
     } else {
         last = true;
     }
-
-    // printf("msgLen=%u\n", msgLen);
 
     /** Create the message */
     DF_create_profile_page(df, profile.time, msgLen, profile.lat, profile.lon,
@@ -74,6 +120,80 @@ bool DF_create_profile( bool first, uint8_t *df, uint32_t time, uint16_t dataLen
 
     return last;
 }
+
+
+/**
+ * @brief Create all park messages to send 
+ * 
+ * 
+ * 
+ * @param first Is this the first message (t or f)
+ * @param df Pointer to dataframe
+ * @param time Pointer to time array
+ * @param dataLen Length of data array
+ * @param lat Latitude @ start of park (last known)
+ * @param lon Longitude @ start of park (last known)
+ * @param temp Pointer to temperature array 
+ * @param depth Pointer to depth array
+ * 
+ * @retval End of messages
+ * @return true Last message
+ * @return false More messages follow
+ */
+bool DF_create_park( bool first, uint8_t *df, uint32_t *time, uint16_t dataLen,
+                            float lat, float lon, float *temp, float *depth)
+{
+    uint16_t msgLen = 0;
+    bool last = false;
+
+    /** If this is the first call, initialize the variables */
+    if(first)
+    {
+        park.idx = 0;
+        // park.pDf = df;
+        park.time = (uint32_t) *time;
+        park.remLen = (uint16_t) dataLen;
+        park.pTemp = (float*) temp;
+        park.pDepth = (float*) depth;
+        park.lat = (float) lat;
+        park.lon = (float) lon;
+        park.page = 0;
+    }
+
+    /** Determine how long the data in this message will be */
+    if(park.remLen > 60)
+    {
+        msgLen = 60;
+    } else {
+        msgLen = park.remLen;
+    }
+    park.remLen -= msgLen;
+
+    /** Does the message end after this frame? */
+    if(park.remLen > 0)
+    {
+        last = false;
+    } else {
+        last = true;
+    }
+
+
+    /** Create the message */
+    DF_create_park_page(df, msgLen, park.lat, park.lon, time, depth, temp, park.page, last);
+    park.pTemp += 60;
+    park.pDepth += 60;
+
+
+
+
+    return last;
+}
+
+
+
+/************************************************************************
+*					STATIC FUNCTIONS
+************************************************************************/
 
 /**
  * @brief  Create a Profile Mode Dataframe 
@@ -106,7 +226,7 @@ bool DF_create_profile( bool first, uint8_t *df, uint32_t time, uint16_t dataLen
  * @param depth Pointer to Depth temperature
  * @return uint16_t Data starting position of next message (0 if it all fits in one message) 
  */
-uint16_t DF_create_profile_page( uint8_t *df,
+STATIC uint16_t DF_create_profile_page( uint8_t *df,
                             uint32_t time, uint16_t len, 
                             float lat, float lon, 
                             float *temp, float *depth,
@@ -142,7 +262,45 @@ uint16_t DF_create_profile_page( uint8_t *df,
 }
 
 
-uint16_t DF_create_park_page( uint8_t *df, uint16_t len, float lat,  float lon,
+/**
+ * @brief Create a single park page dataframe
+ * 
+ * Creates a dataframe for a single page with the following structure:
+ * 
+ * Start Char, ID, Serial Num, Firmware Major, Firmware Minor, Data Length, Data, CRC, Latitude, Longitude, Start Time, Page #, End Char
+ * 
+ * No commas are used.  All values are hex unless noted
+ * Start Char (1 byte ascii): * for new message, @ continued message
+ * ID (3 bytes ascii): LCP
+ * Firmware Major (1 byte)
+ * Firmware Minor (1 byte)
+ * Data Length (1 byte)
+ * Data (240 bytes) broken down into 8-byte data blocks (see below)
+ * CRC (2 bytes)
+ * Latitude (5 bytes): Offset by 180degrees
+ * Longitude (5 bytes): Adjusted for positive only, Lon = 0 - 360
+ * Start time (4 byte): Epoch time
+ * Page # (1 byte)
+ * End Char (1 byte ascii): Either ! for end of message, or & for more message to follow
+ * 
+ * Data block (8 bytes):
+ *  data[7:0] = time[3:0], depth[1:0], temperature[1:]
+ *  where
+ *      depth (uint16_t) = depth (float) * 10
+ *      temp (uint16_t) = (temp(float) + 5) * 1000
+ * 
+ * @param df pointer to dataframe
+ * @param len number of data samples
+ * @param lat latitude @ dive
+ * @param lon longitude @ dive
+ * @param time pointer to array of epoch times
+ * @param depth pointer to array of depths (m)
+ * @param temp pointer to array of temperatures (m)
+ * @param page dataframe page #
+ * @param last last frame in transmission?
+ * @return uint16_t 
+ */
+STATIC uint16_t DF_create_park_page( uint8_t *df, uint16_t len, float lat,  float lon,
                                 uint32_t *time, float *depth, float *temp, 
                                 uint8_t page, bool last)
 {
@@ -177,7 +335,22 @@ uint16_t DF_create_park_page( uint8_t *df, uint16_t len, float lat,  float lon,
     DF_create_generic_dataframe(df, LCP_MODE_PARK, startTime, idx, data, lat, lon, page, last);
 }
 
-uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, uint16_t len, 
+
+/**
+ * @brief Create a generic dataframe for LCP transmission
+ * 
+ * @param df Pointer to dataframe
+ * @param mode Dataframe mode (i.e., PROFILE, PARK, etc.)
+ * @param time Start time of dataframe
+ * @param len Length of data
+ * @param data Data block 
+ * @param lat Last know latitude
+ * @param lon Last know longitude
+ * @param page Dataframe page number
+ * @param last Last frame (true or false)
+ * @return uint16_t TBD
+ */
+STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, uint16_t len, 
                                     uint8_t *data, float lat, float lon, uint8_t page, bool last)
 {
     uint16_t retVal = 0u;
@@ -195,14 +368,11 @@ uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, u
         printf("ERROR");
     }
     
-    // printf("page dataLen=%u\n", dataLen);
-
     uint8_t *dStart = df;
-    // printf("%p\n", df);
+
     if(page == 0)
     {
         *df++ = '*';
-        // strncpy(df, "*LCP",4);
     } else {
         *df++ = '@';
     }
@@ -211,29 +381,23 @@ uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, u
     df += 3;
     
     /** Serial Number */
-    // printf("%p\n", df);
     uint16_t sn = SYS_get_serial_num();
     *df++ = sn >> 8;
     *df++ = sn;
 
     /** Firmware Version */
-    // printf("%p\n", df);
     uint8_t major, minor, build[6];
     SYS_get_firmware(&major, &minor, build);
     *df++ = major;
     *df++ = minor;
 
     /** LCP Mode */
-    // printf("%p\n", df);
     *df++ = LCP_MODE_PROFILE;
 
     /** Data Length */
-    // printf("%p\n", df);
-    // printf("dataLen=%u\n", dataLen);
     *df++ = (uint8_t) len >> 8;
     *df++ = (uint8_t) (len & 0x00FF);
-    // printf("dl>>8=0x%02x\n", dataLen>>8);
-    // printf("dl&0xFF=0x%02x\n", dataLen & 0x00FF);
+
     /** Data */
     
     uint8_t *crcStart = df;
@@ -244,7 +408,6 @@ uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, u
     
     /** Add the CRC */
     uint16_t crc = module_create_crc(crcStart, len);
-    // printf("crc=%u\n", crc);
     *df++ = (uint8_t) (crc >> 8) & 0x00FF;
     *df++ = (uint8_t) (crc & 0x00FF);
 
@@ -252,7 +415,6 @@ uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, u
 
     /** Add the lat */
     uint64_t lat64 = module_convert_latitude_to_uint64_t(lat);
-    // printf("%ul\n", lat64);
     *df++ = (uint8_t) ( lat64 >> 32) & 0x00FF;
     *df++ = (uint8_t) ( lat64 >> 24 ) & 0x00FF;
     *df++ = (uint8_t) ( lat64 >> 16 ) & 0x00FF;
@@ -261,7 +423,6 @@ uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, u
 
     /** Add the lon */
     uint64_t lon64 = module_convert_longitude_to_uint64_t(lon);
-    // printf("%ul\n", lon64);
     *df++ = (uint8_t) ( lon64 >> 32) & 0x00FF;
     *df++ = (uint8_t) ( lon64 >> 24 ) & 0x00FF;
     *df++ = (uint8_t) ( lon64 >> 16 ) & 0x00FF;
@@ -269,7 +430,6 @@ uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, u
     *df++ = (uint8_t) ( lon64 & 0x00FF);
 
     /** Add the time */
-    // printf("time=%ul\n", time);
     *df++ = (uint8_t) (time >> 24);
     *df++ = (uint8_t) (time >> 16) & 0x00FF;
     *df++ = (uint8_t) (time >> 8) & 0x00FF;
@@ -288,7 +448,13 @@ uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, u
 }
 
 
-
+/**
+ * @brief Create a CRC from the data provided
+ * 
+ * @param data Pointer to data array
+ * @param len Length of data array
+ * @return uint16_t calculated CRC
+ */
 uint16_t module_create_crc(uint8_t *data, uint8_t len)
 {
     uint8_t csA = 0;
@@ -306,9 +472,46 @@ uint16_t module_create_crc(uint8_t *data, uint8_t len)
 }
 
 
+/**
+ * @brief Convert depth to uint16_t
+ * 
+ * Converts the depth value to fit in an unsigned 16-bit int.
+ * 
+ * depth(uint16_t) = depth(float) * 10;
+ * 
+ * @param depth Depth
+ * @return uint16_t Converted value
+ */
+STATIC uint16_t module_convert_depth_to_uint16_t(float depth)
+{
+    return (uint16_t) depth * 10.0f;
+}
 
+/**
+ * @brief Convert temperature to uint16_t
+ * 
+ * Converts the S9 OEM Temperature value to fit in a unsigned 16-bit int.
+ * 
+ * temp (uint16_t) = (temp (float) + 5.0) * 1000
+ * 
+ * @param temp Temperature
+ * @return uint16_t Converted value;
+ */
+STATIC uint16_t module_convert_temperature_to_uint16_t(float temp)
+{
+    temp += 5.0f;
+    temp *= 1000;
 
-uint64_t module_convert_latitude_to_uint64_t(float latitude)
+    return (uint16_t) temp;
+}
+
+/**
+ * @brief Convert latitude into unsigned 64-bit integer
+ * 
+ * @param latitude Latitude to convert
+ * @return uint64_t Converted value
+ */
+STATIC uint64_t module_convert_latitude_to_uint64_t(float latitude)
 {
     latitude += 180.0f;
     latitude *= 1000.0f;
@@ -316,7 +519,13 @@ uint64_t module_convert_latitude_to_uint64_t(float latitude)
 
 }
 
-uint64_t module_convert_longitude_to_uint64_t(float longitude)
+/**
+ * @brief Convert longitude into unsigned 64-bit integer
+ * 
+ * @param longitude Longitude to convert
+ * @return uint64_t Converted value
+ */
+STATIC uint64_t module_convert_longitude_to_uint64_t(float longitude)
 {
     if(longitude < 0.0f)
     {

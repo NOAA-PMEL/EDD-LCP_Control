@@ -13,12 +13,6 @@ void tearDown(void)
 {
 }
 
-// void test_dataframe_NeedToImplement(void)
-// {
-//     TEST_IGNORE_MESSAGE("Need to Implement dataframe");
-// }
-
-
 void create_linear_dataset(uint8_t *data, uint8_t start, uint8_t end, uint16_t len)
 {
     uint8_t step = (end - start) / len;
@@ -118,8 +112,6 @@ void test_DF_create_profile_should_create_a_valid_profile(void)
         uint8_t idx = (i*4) + 11;
         expected[idx+2] = 0x13;
         expected[idx+3] = 0x88;
-        // printf("%u\n", idx+3);
-
     }
     expected[251] = 0x54;       /**< CRC High Byte */
     expected[252] = 0x80;       /**< CRC Low Byte */
@@ -145,19 +137,14 @@ void test_DF_create_profile_should_create_a_valid_profile(void)
     expected[269] = '!';    /**< Final page indicator */
 
     // When: function is called
-
     SYS_get_serial_num_IgnoreAndReturn(257);
-
     SYS_get_firmware_Expect(&major, &minor, &build[0]);
     SYS_get_firmware_IgnoreArg_build();
     SYS_get_firmware_IgnoreArg_major();
     SYS_get_firmware_IgnoreArg_minor();
     SYS_get_firmware_ReturnThruPtr_major(&major);
     SYS_get_firmware_ReturnThruPtr_minor(&minor);
-
-
     DF_create_profile_page(df, time, len, lat, lon, temp, depth, 0, true);
-
 
     // Then: result DF should be valid
     TEST_ASSERT_EQUAL_HEX8_ARRAY(expected, df, 270);
@@ -178,13 +165,10 @@ void test_DF_create_profile_should_create_a_valid_profile_page_two(void)
     uint16_t len = 60;
     uint16_t dataLen = len * 4;
     uint16_t dfLen = 0;
-
     uint8_t df[270] = {0};
-
     uint8_t major = 2;
     uint8_t minor = 27;
     uint8_t build[6];
-
     uint8_t expected[270] ={0};
 
 
@@ -206,8 +190,6 @@ void test_DF_create_profile_should_create_a_valid_profile_page_two(void)
         uint8_t idx = (i*4) + 11;
         expected[idx+2] = 0x13;
         expected[idx+3] = 0x88;
-        // printf("%u\n", idx+3);
-
     }
     expected[251] = 0x54;       /**< CRC High Byte */
     expected[252] = 0x80;       /**< CRC Low Byte */
@@ -233,19 +215,14 @@ void test_DF_create_profile_should_create_a_valid_profile_page_two(void)
     expected[269] = '!';    /**< Final page indicator */
 
     // When: function is called
-
     SYS_get_serial_num_IgnoreAndReturn(257);
-
     SYS_get_firmware_Expect(&major, &minor, &build[0]);
     SYS_get_firmware_IgnoreArg_build();
     SYS_get_firmware_IgnoreArg_major();
     SYS_get_firmware_IgnoreArg_minor();
     SYS_get_firmware_ReturnThruPtr_major(&major);
     SYS_get_firmware_ReturnThruPtr_minor(&minor);
-
-
     DF_create_profile_page(df, time, len, lat, lon, temp, depth, page, true);
-
 
     // Then: result DF should be valid
     TEST_ASSERT_EQUAL_HEX8_ARRAY(expected, df, 270);
@@ -265,15 +242,11 @@ void test_DF_create_profile_should_create_single_page_and_return_done(void)
     uint16_t len = 60;
     uint16_t dataLen = len * 4;
     uint16_t dfLen = 0;
-
     uint8_t df[270] = {0};
-
     uint8_t major = 2;
     uint8_t minor = 27;
     uint8_t build[6];
     bool retVal = false;
-
-
     uint8_t expected[270] ={0};
 
 
@@ -295,8 +268,6 @@ void test_DF_create_profile_should_create_single_page_and_return_done(void)
         uint8_t idx = (i*4) + 11;
         expected[idx+2] = 0x13;
         expected[idx+3] = 0x88;
-        // printf("%u\n", idx+3);
-
     }
     expected[251] = 0x54;       /**< CRC High Byte */
     expected[252] = 0x80;       /**< CRC Low Byte */
@@ -322,19 +293,14 @@ void test_DF_create_profile_should_create_single_page_and_return_done(void)
     expected[269] = '!';    /**< Final page indicator */
 
     // When: function is called
-
     SYS_get_serial_num_IgnoreAndReturn(257);
-
     SYS_get_firmware_Expect(&major, &minor, &build[0]);
     SYS_get_firmware_IgnoreArg_build();
     SYS_get_firmware_IgnoreArg_major();
     SYS_get_firmware_IgnoreArg_minor();
     SYS_get_firmware_ReturnThruPtr_major(&major);
     SYS_get_firmware_ReturnThruPtr_minor(&minor);
-
-
     retVal = DF_create_profile(true, df, time, len, lat, lon, temp, depth);
-    // DF_create_profile_page(df, time, len, lat, lon, temp, depth, 0, true);
 
 
     // Then: result DF should be valid
@@ -415,17 +381,14 @@ void test_DF_create_profile_should_create_multi_page_and_return_done(void)
     expected1[268] = 0;         /**< Page # */
     expected1[269] = '&';    /**< Final page indicator */
 
-    // When: function is called
-
+    // When: function is called for the first time
     SYS_get_serial_num_IgnoreAndReturn(257);
-
     SYS_get_firmware_Expect(&major, &minor, &build[0]);
     SYS_get_firmware_IgnoreArg_build();
     SYS_get_firmware_IgnoreArg_major();
     SYS_get_firmware_IgnoreArg_minor();
     SYS_get_firmware_ReturnThruPtr_major(&major);
     SYS_get_firmware_ReturnThruPtr_minor(&minor);
-
     retVal1 = DF_create_profile(true, df1, time, len, lat, lon, temp, depth);
 
     expected2[0] = '@';      /**< Start Character */
@@ -446,8 +409,6 @@ void test_DF_create_profile_should_create_multi_page_and_return_done(void)
         uint8_t idx = (i*4) + 11;
         expected2[idx+2] = 0x13;
         expected2[idx+3] = 0x88;
-        // printf("%u\n", idx+3);
-
     }
     expected2[251] = 0x54;       /**< CRC High Byte */
     expected2[252] = 0x80;       /**< CRC Low Byte */
@@ -472,35 +433,19 @@ void test_DF_create_profile_should_create_multi_page_and_return_done(void)
     expected2[268] = 1;         /**< Page # */
     expected2[269] = '!';    /**< Final page indicator */
 
-    // When: function is called
-
+    // When: function is called for the second time
     SYS_get_serial_num_IgnoreAndReturn(257);
-
     SYS_get_firmware_Expect(&major, &minor, &build[0]);
     SYS_get_firmware_IgnoreArg_build();
     SYS_get_firmware_IgnoreArg_major();
     SYS_get_firmware_IgnoreArg_minor();
     SYS_get_firmware_ReturnThruPtr_major(&major);
     SYS_get_firmware_ReturnThruPtr_minor(&minor);
-
-
     retVal2 = DF_create_profile(false, df2, time, len, lat, lon, temp, depth);
-    // retVal2 = DF_create_profile(false, df2, NULL, NULL, NULL, NULL, NULL, NULL);
-    // DF_create_profile_page(df, time, len, lat, lon, temp, depth, 0, true);
+
 
 
     // Then: result DF should be valid
-    // printf("\n\n***DF1***\n");
-    // for(uint16_t i=0;i<11;i++)
-    // {
-    //     printf("%u, %u, %u\n", i, expected1[i], df1[i]);
-    // }
-
-    // printf("\n\n***DF2***\n");
-    // for(uint16_t i=0;i<11;i++)
-    // {
-    //     printf("%u, %u, %u\n", i, expected2[i], df2[i]);
-    // }
     TEST_ASSERT_EQUAL_HEX8_ARRAY(expected1, df1, 270);
     TEST_ASSERT_EQUAL_HEX8_ARRAY(expected2, df2, 270);
     TEST_ASSERT_EQUAL(false, retVal1);
