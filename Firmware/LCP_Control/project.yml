@@ -35,6 +35,7 @@
     - -:test/support
   :source:
     - src/**
+    - src/sys/**
     - C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3
     - C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal
   :support:
