@@ -27,12 +27,20 @@
 /************************************************************************
 *							ENUM & STRUCTS
 ************************************************************************/
+/**
+ * @brief AT Errors
+ * 
+ */
 typedef enum eISBD_AT_Error_t {
     ISBD_AT_ERROR_NONE,
     ISBD_AT_ERROR_INVALID_MSG,
     ISBD_AT_ERROR_INVALID_CRC
 }ISBD_AT_Error_t;
 
+/**
+ * @brief SBD Command Types
+ * 
+ */
 typedef enum e_isbd_at_cmd_t{
     ISBD_AT_CMD_NONE,       /**< Placeholder */
     ISBD_AT_CMD_AT,         /**< Check alive */
@@ -45,6 +53,10 @@ typedef enum e_isbd_at_cmd_t{
     ISBD_AT_CMD_SBDRB       /**< Download binary message */
 }isbd_at_cmd_t;
 
+/**
+ * @brief AT Packet Stucts
+ * 
+ */
 typedef struct s_isbd_at_packet_t
 {  
     struct {
@@ -61,7 +73,6 @@ typedef struct s_isbd_at_packet_t
 /************************************************************************
 *					GLOBAL FUNCTION PROTOTYPES
 ************************************************************************/
-
 bool ISBD_AT_create_packet( isbd_at_cmd_t cmd,
                             uint16_t len,
                             uint8_t *data,

@@ -1,3 +1,12 @@
+/**
+ * @file MAX14830.c
+ * @author Matt Casari (matthew.casari@noaa.gov)
+ * @brief 
+ * @version 0.1
+ * @date 2021-08-11
+ * 
+ * 
+ */
 #include "MAX14830.h"
 
 //*****************************************************************************
@@ -325,6 +334,10 @@ static void module_MAX14830_Write(
 // Global Functions
 //
 //*****************************************************************************
+/**
+ * @brief Initialize the MAX14830 IC
+ * 
+ */
 void MAX14830_init(void)
 {
   uint32_t status = AM_HAL_STATUS_FAIL;
@@ -380,6 +393,11 @@ void MAX14830_init(void)
 //  MAX14830_disable(MAX14830_COM_PORT0);
 }
 
+/**
+ * @brief Enable the MAX14830 Port
+ * 
+ * @param port Port to enable
+ */
 void MAX14830_enable(eMAX18430_ComPort_t port)
 {
   /** If the device is off, turn it on */
@@ -437,7 +455,11 @@ void MAX14830_enable_direct(eMAX18430_ComPort_t port)
 
 }
 
-
+/**
+ * @brief Disable selected MAX14830 Port
+ * 
+ * @param port Port to disable
+ */
 void MAX14830_disable(eMAX18430_ComPort_t port)
 {
   /** Disable the Port Clock */
@@ -468,7 +490,11 @@ void MAX14830_disable(eMAX18430_ComPort_t port)
 
 }
 
-
+/**
+ * @brief Task for RTOS Read Task
+ * 
+ * @param pvParameters 
+ */
 void MAX14830_Interrupt_Task(void *pvParameters)
 {   
     char data[256];
@@ -500,6 +526,11 @@ void MAX14830_Interrupt_Task(void *pvParameters)
     }
 }
 
+/**
+ * @brief RTOS Read Task
+ * 
+ * @param pvParameters 
+ */
 void module_MAX14830_Write_Task(void  *pvParameters)
 {
 
@@ -548,6 +579,13 @@ void MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudra
   
 }
 
+/**
+ * @brief Write UART RTOS
+ * 
+ * @param port Port to write to
+ * @param data Pointer to data array to write
+ * @param len Length of data array
+ */
 void MAX14830_UART_Write(eMAX18430_ComPort_t port, char *data, uint32_t len)
 {
   
@@ -574,6 +612,13 @@ void MAX14830_UART_Write(eMAX18430_ComPort_t port, char *data, uint32_t len)
 
 }
 
+/**
+ * @brief UART Write (non-RTOS)
+ * 
+ * @param port Port to write to
+ * @param data Pointer to data array
+ * @param len Length of the data array
+ */
 void MAX14830_UART_Write_direct(eMAX18430_ComPort_t port, char *data, uint32_t len)
 {
   char taskDesc[configMAX_TASK_NAME_LEN];
@@ -603,6 +648,14 @@ void MAX14830_UART_Write_direct(eMAX18430_ComPort_t port, char *data, uint32_t l
 //  }
 }  
 
+/**
+ * @brief UART Read - RTOS
+ * 
+ * @param port Port to read from
+ * @param pData Pointer to data array
+ * @param max_len Maximum length of data to read
+ * @return uint32_t Number of characters read
+ */
 uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, char *pData, uint32_t max_len)
 {
   uint32_t len=0;
@@ -617,6 +670,14 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, char *pData, uint32_t max_
   return len;
 }
 
+/**
+ * @brief UART Read (non-RTOS)
+ * 
+ * @param port Port to read from
+ * @param pData Pointer to data array
+ * @param max_len Maximum length of data to read
+ * @return uint32_t Number of characters read
+ */
 uint32_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, char *pData, uint32_t max_len)
 {
   
@@ -633,6 +694,12 @@ uint32_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, char *pData, uint32
   
 }
 
+/**
+ * @brief Find the number of bytes in waiting
+ * 
+ * @param port Port to check
+ * @return uint32_t Number of bytes in waiting
+ */
 uint32_t MAX14830_UART_Read_bytes_waiting(eMAX18430_ComPort_t port)
 {
   uint32_t len = BufferC_Get_Size(&rxBuf[(uint8_t)port]);
@@ -646,6 +713,10 @@ uint32_t MAX14830_UART_Read_bytes_waiting(eMAX18430_ComPort_t port)
 // Static Functions
 //
 //*****************************************************************************
+/**
+ * @brief Power the MAX14830 ON
+ * 
+ */
 static void module_MAX14830_Power_On(void)
 {
   am_hal_iom_enable(&pIomHandle);
@@ -654,22 +725,39 @@ static void module_MAX14830_Power_On(void)
   
 }
 
+/**
+ * @brief Power the MAX14830 OFF
+ * 
+ */
 static void module_MAX14830_Power_Off(void)
 {
   am_hal_gpio_output_clear(BSP_S2U_SPI_NRESET);
   am_hal_gpio_output_set(BSP_S2U_ON);
 }
 
+/**
+ * @brief MAX14830 Chip Select Set
+ * 
+ */
 static void MAX14830_CS_Set(void)
 {
   am_hal_gpio_output_clear(BSP_S2U_SPI_CS);
 }
 
+/**
+ * @brief MAX14830 Chip select Clear
+ * 
+ */
 static void MAX14830_CS_Clear(void)
 {
   am_hal_gpio_output_set(BSP_S2U_SPI_CS);
 }
 
+/**
+ * @brief Fast read
+ * 
+ * @return uint32_t 
+ */
 static uint32_t module_MAX14830_FastRead(void)
 {
   uint32_t write_byte = 0u;
@@ -705,7 +793,15 @@ static uint32_t module_MAX14830_FastRead(void)
 }
 
 
-
+/**
+ * @brief MAX14830 Read
+ * 
+ * @param port  Port to read from
+ * @param ui32Instr Instruction 
+ * @param ui32NumBytes Number of Bytes
+ * @param pData Pointer to data array
+ * @return uint32_t Number of bytes read
+ */
 static uint32_t
 module_MAX14830_Read(
    eMAX18430_ComPort_t port,
@@ -746,6 +842,14 @@ module_MAX14830_Read(
       return 0;
     }
 
+/**
+ * @brief Write to port
+ * 
+ * @param port Port to write to
+ * @param reg Register to write
+ * @param data Pointer to data array
+ * @param len Length of data array
+ */
 static void module_MAX14830_Write(
   eMAX18430_ComPort_t port, 
   uint8_t reg, 

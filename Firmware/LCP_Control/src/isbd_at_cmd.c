@@ -9,12 +9,44 @@
 #include "isbd_at_cmd.h"
 
 
+//*****************************************************************************
+//
+// Required built-ins.
+//
+//*****************************************************************************
 
 
+
+//*****************************************************************************
+//
+// Project Files
+//
+//*****************************************************************************
+
+//*****************************************************************************
+//
+// Static Variables
+//
+//*****************************************************************************
 static uint16_t module_isbd_at_calculate_crc(isbd_at_packet_t *packet);
 static bool module_isbd_validate_crc(isbd_at_packet_t *packet);
 
 
+//*****************************************************************************
+//
+// Global Functions
+//
+//*****************************************************************************
+/**
+ * @brief Create a SBD Packet
+ * 
+ * @param cmd SBD Packet Type
+ * @param len Length of data
+ * @param data Pointer to data
+ * @param packet AT Packet 
+ * @return true Valid message
+ * @return false Invalid message
+ */
 bool ISBD_AT_create_packet( isbd_at_cmd_t cmd,
                             uint16_t len,
                             uint8_t *data,
@@ -87,7 +119,12 @@ bool ISBD_AT_send_packet( isbd_at_packet_t *packet)
 
 }
 
-
+/**
+ * @brief Calculate the CRC for the SBD packet
+ * 
+ * @param packet Packet to send
+ * @return uint16_t CRC value
+ */
 static uint16_t module_isbd_at_calculate_crc(isbd_at_packet_t *packet)
 {
     packet->checksumA = 0;
@@ -105,6 +142,13 @@ static uint16_t module_isbd_at_calculate_crc(isbd_at_packet_t *packet)
     return checksum;
 }
 
+/**
+ * @brief Validate CRC sent
+ * 
+ * @param packet SBD Packet
+ * @return true CRC is Valid
+ * @return false CRC is invalid
+ */
 static bool module_isbd_validate_crc(isbd_at_packet_t *packet)
 {
     uint16_t checksum_from_msg = (uint16_t) (packet->checksumA << 8) | packet->checksumB;

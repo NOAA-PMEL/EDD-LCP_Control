@@ -1,8 +1,37 @@
+/**
+ * @file depth.c
+ * @author Matt Casari (matthew.casari@noaa.gov)
+ * @brief 
+ * @version 0.1
+ * @date 2021-10-15
+ * 
+ * 
+ */
+
+
+//*****************************************************************************
+//
+// Required built-ins.
+//
+//*****************************************************************************
+
+
+
+//*****************************************************************************
+//
+// Project Files
+//
+//*****************************************************************************
 #include "depth.h"
 #include "artemis_pa9ld.h"
 #include "bsp_pins.h"
 
 
+//*****************************************************************************
+//
+// Static Variables
+//
+//*****************************************************************************
 /** Configuration structure
  * This static struct holds all configuration
  * information for the pressure sensor selected.
@@ -16,6 +45,12 @@ static sDepth_t module ={
     .density = TYPICAL_DENSITY_OF_SALTWATER
 };
 
+
+//*****************************************************************************
+//
+// Global Functions
+//
+//*****************************************************************************
 
 /******************************************************************************
 * Function : DEPTH_initialize()
@@ -61,7 +96,10 @@ void DEPTH_initialize(eDEPTH_Sensor_t sensor)
     }
 }
 
-
+/**
+ * @brief Turn Depth Sensor Power ON
+ * 
+ */
 void DEPTH_Power_ON(void)
 {   
     switch(module.sensor)
@@ -69,12 +107,20 @@ void DEPTH_Power_ON(void)
     artemis_pa9ld_power_on();
 }
 
+/**
+ * @brief Turn Depth Sensor Power OFF
+ *
+ */
 void DEPTH_Power_OFF(void)
 {
     artemis_pa9ld_power_off();
 }
 
-
+/**
+ * @brief Read Depth Sensor
+ * 
+ * @param data Pointer to depth sensor data struct
+ */
 void DEPTH_Read(sDepth_Measurement_t *data)
 {
     float pressure;
@@ -85,6 +131,13 @@ void DEPTH_Read(sDepth_Measurement_t *data)
     data->Depth = module_DEPTH_Convert_Pressure_to_Depth(pressure);
 }
 
+/**
+ * @brief Set Density of Water
+ * 
+ * Sets the water density for best depth converstion accuracy
+ * 
+ * @param density Water density value
+ */
 void DEPTH_Set_Density(float density)
 {
     if( (density >> 0) && (density << 10000))
@@ -97,8 +150,12 @@ void DEPTH_Set_Density(float density)
     }
 }
 
-
-
+/**
+ * @brief Convert Pressure to Depth value
+ * 
+ * @param pressure Pressure value
+ * @return float Converted depth value
+ */
 static float module_DEPTH_Convert_Pressure_to_Depth(float pressure)
 {
     /** Pressure to Depth Conversion */
