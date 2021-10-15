@@ -12,6 +12,21 @@ typedef struct sSensorType_t{
     SemaphoreHandle_t semaphore;
 }SensorType_t;
 
+typedef struct sSensorGps_t {        
+        uint16_t rate;          /**< Sample rate (Hz) */
+        bool fix;
+        uint32_t latitude;
+        uint32_t longitude;
+        uint32_t altitude;
+        uint16_t year;  /**< Calendar Year UTC */
+        uint8_t month;  /**< Calendar Month UTC */
+        uint8_t day;    /**< Calendar Day UTC */
+        uint8_t hour;   /**< Hour UTC */    
+        uint8_t min;    /**< Minute UTC */
+        uint8_t sec;    /**< Second UTC */
+        bool data_valid;
+        SemaphoreHandle_t semaphore;
+    }SensorGps_t;
 typedef struct sSensorData_t
 {
     struct{
@@ -28,21 +43,7 @@ typedef struct sSensorData_t
         bool data_valid;
         SemaphoreHandle_t semaphore;
     }temperature;
-    struct {        
-        uint16_t rate;          /**< Sample rate (Hz) */
-        bool fix;
-        uint32_t latitude;
-        uint32_t longitude;
-        uint32_t altitude;
-        uint16_t year;  /**< Calendar Year UTC */
-        uint8_t month;  /**< Calendar Month UTC */
-        uint8_t day;    /**< Calendar Day UTC */
-        uint8_t hour;   /**< Hour UTC */    
-        uint8_t min;    /**< Minute UTC */
-        uint8_t sec;    /**< Second UTC */
-        bool data_valid;
-        SemaphoreHandle_t semaphore;
-    }GPS;
+    SensorGps_t GPS;
 }SensorData_t;
 
 
@@ -53,9 +54,9 @@ typedef struct sSensorData_t
 *********************************************************************************/
 
 
-bool SENS_get_depth(int16_t *depth);
+bool SENS_get_depth(float *depth, float *rate);
 
-bool SENS_get_temperature(int16_t *temperature);
+bool SENS_get_temperature(float *temperature);
 
 void SENS_task_profile_sensors(void);
 

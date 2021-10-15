@@ -10,15 +10,15 @@
 SensorData_t sensor_data;
 
 
-bool SENS_get_depth(int16_t *depth)
+bool SENS_get_depth(float *depth, float *rate)
 {
     bool retVal = false;
 
     if( xSemaphoreTake(sensor_data.depth.semaphore) == pdTRUE)
     {
-        sensor_data.depth.previous = sensor_data.depth.current;
 
         *depth = sensor_data.depth.current;
+        *rate = sensor_data.depth.ascent_rate;
         retVal = true;
         xSemaphoreGive(sensor_data.depth.semaphore);
     }
@@ -26,15 +26,28 @@ bool SENS_get_depth(int16_t *depth)
 }
 
 
-bool SENS_get_temperature(int16_t *temperature)
+bool SENS_get_temperature(float *temperature)
 {
     bool retVal = false;
 
-    if( sensor_data.temperature.current || xSemaphoreTake(sensor_data.temperature.semaphore) == pdTRUE)
+    if( xSemaphoreTake(sensor_data.temperature.semaphore) == pdTRUE)
     {
         *temperature = sensor_data.temperature.current;
         retVal = true;
         xSemaphoreGive(sensor_data.temperature.semaphore);
+    }
+    return retVal;
+}
+
+bool SENS_get_gps(SensorGps_t *gps)
+{
+    bool retVal = false;
+
+    if(  xSemaphoreTake(sensor_data.GPS.semaphore) == pdTRUE)
+    {
+        gps = sensor_data.GPS;
+        retVal = true;
+        xSemaphoreGive(sensor_data.GPS.semaphore);
     }
     return retVal;
 }
