@@ -16,13 +16,15 @@ typedef struct sSensorData_t
 {
     struct{
         uint16_t rate;          /**< Sample rate (Hz) */
-        int16_t value;          /**< (int16_t) D_actual = depth / 1000 */
+        float current;          /**< Current depth (m) */
+        float previous;         /**< Previous depth (m) */
+        float ascent_rate;      /**< Calculated ascnet rate (m/s) */
         bool data_valid;
         SemaphoreHandle_t semaphore;
     }depth;
     struct {
         uint16_t rate;          /**< Sample rate (Hz) */
-        int16_t value;          /**< (int16_t) T_actual = temperature / 1000 */
+        float current;          /**< (int16_t) T_actual = temperature / 1000 */
         bool data_valid;
         SemaphoreHandle_t semaphore;
     }temperature;

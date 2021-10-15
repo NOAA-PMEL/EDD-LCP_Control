@@ -14,9 +14,11 @@ bool SENS_get_depth(int16_t *depth)
 {
     bool retVal = false;
 
-    if( sensor_data.depth.value || xSemaphoreTake(sensor_data.depth.semaphore) == pdTRUE)
+    if( xSemaphoreTake(sensor_data.depth.semaphore) == pdTRUE)
     {
-        *depth = sensor_data.depth.value;
+        sensor_data.depth.previous = sensor_data.depth.current;
+
+        *depth = sensor_data.depth.current;
         retVal = true;
         xSemaphoreGive(sensor_data.depth.semaphore);
     }
@@ -28,9 +30,9 @@ bool SENS_get_temperature(int16_t *temperature)
 {
     bool retVal = false;
 
-    if( sensor_data.temperature.value || xSemaphoreTake(sensor_data.temperature.semaphore) == pdTRUE)
+    if( sensor_data.temperature.current || xSemaphoreTake(sensor_data.temperature.semaphore) == pdTRUE)
     {
-        *temperature = sensor_data.temperature.value;
+        *temperature = sensor_data.temperature.current;
         retVal = true;
         xSemaphoreGive(sensor_data.temperature.semaphore);
     }
@@ -85,6 +87,7 @@ void SENS_set_gps_rate(uint16_t rate)
         sensor_data.temperature.rate = rate;
     }
 }
+
 void task_depth(void)
 {
     TickType_t xLastWakeTime;
@@ -119,7 +122,9 @@ void task_depth(void)
         
         if(xSemaphoreTake(sensor_data.depth.semaphore, period/portTICK_RATE_MS) == pdTRUE)
         {
-            sensor_data.depth.value = depth.Depth;
+            sensor_data.depth.previous = sensor_data.depth.current;
+            sensor_data.depth.current = depth.Depth;
+            sensor_data.depth.ascent_rate = (sensor_data.depth.current - sensor_data.depth.previous) / sensor_data.depth.rate;
             xSemaphoreGive(sensor_data.depth.semaphore);
         }
 
@@ -162,7 +167,7 @@ void task_temperature(void)
         
         if(xSemaphoreTake(sensor_data.temperature.semaphore, 10/portTICK_RATE_MS) == pdTRUE)
         {
-            sensor_data.temperature.value = depth.Depth;
+            sensor_data.temperature.current = depth.Depth;
             xSemaphoreGive(sensor_data.temperature.semaphore);
         }
 
