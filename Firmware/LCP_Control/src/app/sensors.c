@@ -39,8 +39,8 @@ bool SENS_get_temperature(int16_t *temperature)
 
 void SENS_task_profile_sensors(void)
 {
-    /** Start Depth Sensor @ 4 Hz */
-    task_depth(4);
+    /** Start Depth Sensor @ 1 Hz */
+    task_depth(1);
 
     /** Start Temperature Sensor @ 1Hz */
     task_temperature(1);
