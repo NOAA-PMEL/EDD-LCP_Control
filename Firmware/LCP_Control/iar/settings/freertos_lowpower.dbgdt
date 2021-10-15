@@ -1015,7 +1015,7 @@
             <IarPane-34105>
                 <expressions>
                     <item>module</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>
@@ -1080,7 +1080,7 @@
             <IarPane-34107>
                 <expressions>
                     <item>packet</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

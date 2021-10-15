@@ -26,7 +26,7 @@ typedef struct sSensorGps_t {
         uint8_t sec;    /**< Second UTC */
         bool data_valid;
         SemaphoreHandle_t semaphore;
-    }SensorGps_t;
+}SensorGps_t;
 typedef struct sSensorData_t
 {
     struct{
@@ -53,20 +53,33 @@ typedef struct sSensorData_t
 * Function Prototypes
 *********************************************************************************/
 
+void task_depth(void);
+
+void task_temperature(void);
+
+
+void SENS_sensor_depth_off(void);
+void SENS_sensor_depth_on(void);
+
+void SENS_sensor_gps_off(void);
+void SENS_sensor_gps_on(void);
+
+void SENS_sensor_temperature_off(void);
+void SENS_sensor_temperature_on(void;
 
 bool SENS_get_depth(float *depth, float *rate);
 
 bool SENS_get_temperature(float *temperature);
+
+bool SENS_get_gps(SensorGps_t *gps);
+
+
 
 void SENS_task_profile_sensors(void);
 
 void SENS_task_park_sensors(void);
 
 void SENS_task_sample_depth_continuous(void);
-
-void task_depth(void);
-
-void task_temperature(void);
 
 
 void SENS_set_depth_rate(uint16_t rate);

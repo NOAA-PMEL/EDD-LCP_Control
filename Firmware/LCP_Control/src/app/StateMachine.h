@@ -2,6 +2,47 @@
 #define STATEMACHINE_H
 
 
+
+
+
+/**********************************************************************************
+ * Includes
+ *********************************************************************************/
+#include <stdint.h>
+#include <stdbool.h>
+#include "control.h"
+#include "sensors.h"
+#include "data.h"
+
+
+/**********************************************************************************
+ * Configuration Constants
+ *********************************************************************************/
+
+
+/**********************************************************************************
+ * MACROS
+ *********************************************************************************/
+#define DATA_PROFILE_SAMPLE_FREQ    ( 1 )       /**< 1 Hz Sample Frequency */
+#define DATA_PROFILE_VELOCITY_MIN   ( 0.1 )     /**< Lowest minimum profile velocity (m/s)*/
+#define DATA_PROFILE_DEPTH_MAX      ( 220 )     /**< Maximum depth (m) */
+#define DATA_PROFILE_OVERAGE_MAX    ( 5 )       /**< Percent extra in buffer */
+#define DATA_PROFILE_SAMPLES_MAX    ( ( (DATA_PROFILE_DEPTH_MAX / DATA_PROFILE_VELOCITY_MIN) / DATA_PROFILE_SAMPLE_FREQ ) * (100 + DATA_PROFILE_OVERAGE_MAX) / 100)
+#define DATA_PROFILE_MAX_LEN        ( 25000 )
+
+#define DATA_PARK_SAMPLE_FREQ                   ( 1 / 60 )  /**< Sample every Minute */
+#define DATA_PARK_PARK_MAX_DURATION_HOURS       ( 24 )
+#define DATA_PARK_SAMPLES_MAX                   (( DATA_PARK_PARK_DURATION_HOURS * 60 * 60) * DATA_PARK_SAMPLE_FREQ )
+
+
+
+
+#define G_CONST                                 ( 9.80665 )
+
+
+/**********************************************************************************
+ * Typdefs
+ *********************************************************************************/
 typedef enum eSystemState_t{
     SYSST_Predeployment_mode,
     SYSST_AutoBallast_mode,
@@ -26,6 +67,7 @@ typedef enum eAutoBallastState_t
 }AutoBallastState_t;
 typedef enum eMooredState_t 
 {
+    MOOR_Idle,
     MOOR_MoveToParkDepth_mode,
     MOOR_Park_mode,
     MOOR_MoveToSampleDepth_mode,
@@ -39,15 +81,17 @@ typedef enum eMooredState_t
 typedef enum ePopupState_t
 {
     PUS_Idle,
+    PUS_DoSomething
 }PopupState_t;
 
 
-typedef eAirDeployState_t
+typedef enum eAirDeployState_t
 {
     ADS_Idle,
+    ADS_DoSomething
 }AirDeployState_t;
 
-typedef eSimpleProfilerState_t
+typedef enum eSimpleProfilerState_t
 {
     SPS_Idle,
     SPS_MoveToParkDepth_mode,
@@ -72,6 +116,7 @@ typedef struct eSystem_t
     }airdeploy;
     struct {
         SimpleProfilerState_t state;
+        
     }profiler;
     struct {
         AutoBallastState_t state;
@@ -83,8 +128,42 @@ typedef struct eSystem_t
     struct {
         PopupState_t state;
     }popup;
-
 }System_t;
 
 
+
+
+/**********************************************************************************
+ * Function Prototypes
+ *********************************************************************************/
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+
+void STATE_initialize(SystemState_t state);
+void STATE_MainState(SystemState_t state);
+void STATE_Predeploy(void);
+void STATE_AutoBallast(void);
+void STATE_Moored(void);
+void STATE_Profiler(void);
+
+
+
+
+
+/**********************************************************************************
+ * Unit Test Variables & Static Prototpyes
+ *********************************************************************************/
+#ifdef TEST
+#ifdef DOXYGEN_IGNORE_THIS
+
+
+#endif // DOXYGEN_IGNORE_THIS
+#endif
+
+
+#ifdef __cplusplus
+} // extern "C"
+#endif 
 #endif // STATEMACHINE_H

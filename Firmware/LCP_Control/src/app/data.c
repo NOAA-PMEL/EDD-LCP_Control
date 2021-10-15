@@ -26,7 +26,7 @@ static uint16_t module_convert_temperature_to_uint16_t(float temp);
 // Global Functions
 //
 //*****************************************************************************
-void DATA_setbuffer(ProfileData_t *p, uint16_t *pTime, 
+void DATA_setbuffer(Data_t *p, uint16_t *pTime, 
                             uint16_t *pDepth, uint16_t *pTemp,
                             size_t length)
 {
@@ -39,7 +39,7 @@ void DATA_setbuffer(ProfileData_t *p, uint16_t *pTime,
     p->data.pTemperature = pTemp;
 }
 
-void DATA_reset(ProfileData_t *p)
+void DATA_reset(Data_t *p)
 {
     idx = 0;
     p->cbuf.read = 0;
@@ -48,7 +48,7 @@ void DATA_reset(ProfileData_t *p)
     
 }
 
-size_t DATA_add(ProfileData_t *buf, uint32_t time, float depth, float temp)
+size_t DATA_add(Data_t *buf, uint32_t time, float depth, float temp)
 {
 
     if(buf->cbuf.written == 0)
@@ -67,7 +67,7 @@ size_t DATA_add(ProfileData_t *buf, uint32_t time, float depth, float temp)
 }
 
 
-size_t DATA_get_original(ProfileData_t *p, uint32_t *time, float *depth, float *temp)
+size_t DATA_get_original(Data_t *p, uint32_t *time, float *depth, float *temp)
 {
     if( p->cbuf.read < p->cbuf.written) 
     {
@@ -82,7 +82,7 @@ size_t DATA_get_original(ProfileData_t *p, uint32_t *time, float *depth, float *
 }
 
 
-size_t DATA_get_converted(ProfileData_t *p, uint32_t *start, uint16_t *offset, uint16_t *depth, uint16_t *temp)
+size_t DATA_get_converted(Data_t *p, uint32_t *start, uint16_t *offset, uint16_t *depth, uint16_t *temp)
 {
     if( p->cbuf.read < p->cbuf.written) 
     {

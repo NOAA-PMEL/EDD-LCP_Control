@@ -27,17 +27,16 @@
 /**********************************************************************************
  * MACROS
  *********************************************************************************/
-#define DATA_PROFILE_SAMPLE_FREQ    ( 1 )       /**< 1 Hz Sample Frequency */
-#define DATA_PROFILE_VELOCITY_MIN   ( 0.1 )     /**< Lowest minimum profile velocity (m/s)*/
-#define DATA_PROFILE_DEPTH_MAX      ( 220 )     /**< Maximum depth (m) */
-#define DATA_PROFILE_OVERAGE_MAX    ( 5 )       /**< Percent extra in buffer */
-#define DATA_PROFILE_SAMPLES_MAX    ( ( (DATA_PROFILE_DEPTH_MAX / DATA_PROFILE_VELOCITY_MIN) / DATA_PROFILE_SAMPLE_FREQ ) * (100 + DATA_PROFILE_OVERAGE_MAX) / 100)
-#define DATA_PROFILE_MAX_LEN        ( 25000 )
+
 /**********************************************************************************
  * Typdefs
  *********************************************************************************/
-typedef struct sProfileData_t
-{   
+// typedef struct sProfileData_t
+// {   
+    
+// }ProfileData_t;
+typedef struct sData_t
+{
     struct{
         size_t length;
         size_t written;
@@ -49,10 +48,6 @@ typedef struct sProfileData_t
         uint16_t *pDepth;
         uint16_t *pTemperature;
     }data;
-}ProfileData_t;
-typedef struct sData_t
-{
-
 }Data_t;
 
 /**********************************************************************************
@@ -62,17 +57,17 @@ typedef struct sData_t
 extern "C"{
 #endif
 
-void DATA_setbuffer(ProfileData_t *p, uint16_t *pTime, 
+void DATA_setbuffer(Data_t *p, uint16_t *pTime, 
                             uint16_t *pDepth, uint16_t *pTemp,
                             size_t length);
 
-void DATA_reset(ProfileData_t *p);
+void DATA_reset(Data_t *p);
 
-size_t DATA_add(ProfileData_t *buf, uint32_t time, float depth, float temp);
+size_t DATA_add(Data_t *buf, uint32_t time, float depth, float temp);
 
-size_t DATA_get_original(ProfileData_t *p, uint32_t *time, float *depth, float *temp);
+size_t DATA_get_original(Data_t *p, uint32_t *time, float *depth, float *temp);
 
-size_t DATA_get_converted(ProfileData_t *p, uint32_t *start, uint16_t *offset, uint16_t *depth, uint16_t *temp);
+size_t DATA_get_converted(Data_t *p, uint32_t *start, uint16_t *offset, uint16_t *depth, uint16_t *temp);
 
 
 /**********************************************************************************

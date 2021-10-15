@@ -5,6 +5,8 @@
 #include <stdbool.h>
 
 
+
+
 typedef enum eCTRL_Error_t{
     CTRL_ERROR_NONE  = 1,
     CTRL_ERROR_FAILURE = 0,
@@ -15,25 +17,33 @@ typedef enum eCTRL_Error_t{
 
 }CTRL_Errot_t;
 
-
-typedef struct sProfiler_t{
+struct {
     struct {
-        float depth;
-        uitn32_t residence_time;
-    }park;
-    struct {
-        float depth;
-        uint32_t residence_time;
-    }start;
-    struct {
-        float top_depth;
-        float rate;
-        bool break_thru_lens;
-    }profile;
+        float previous;     /**< Previous volume setting (mL) */
+        float current;      /**< Current volume of system (mL) */
+    }volume;
 
-    float crush_limit;
+    struct{
+        float previous;     /**< Previous volume setting (N) */
+        float current;      /**< Current system buoyancy (N) */
+    }buoyancy;
+    struct {
+        struct {
+            float records[3];   /**< Previous 3 rate data record */
+            float average;      /**< Average of previous 3 rates */
+        }previous;
 
-}Profiler_t;
+        float current;          /**< Current rate */
+    }rate;
+}Actual;
+
+
+
+
+
+
+
+
 
 
 
