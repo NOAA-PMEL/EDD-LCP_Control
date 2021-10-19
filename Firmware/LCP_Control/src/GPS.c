@@ -19,7 +19,7 @@ bool GPS_Read(GPS_Data_t *data)
     bool fix = false;
     UBLOX_Nav_t ublox = {0};
 
-    fix = UBLOX_read_nav(ublox);
+    fix = UBLOX_read_nav(&ublox);
 
     if(fix)
     {

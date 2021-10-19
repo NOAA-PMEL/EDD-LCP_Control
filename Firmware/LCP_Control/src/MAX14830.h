@@ -18,10 +18,30 @@
 #define _MAX14830_H
 
 
+/**********************************************************************************
+* Includes
+*********************************************************************************/
+
 #include <stdint.h>
 
 
+/**********************************************************************************
+* Configuration Constants
+*********************************************************************************/
 
+/**********************************************************************************
+* MACROS
+*********************************************************************************/
+
+
+
+/**********************************************************************************
+* Typdefs
+*********************************************************************************//
+/**
+ * @brief MAX14830 Port Selectin
+ *
+ */
 typedef enum
 {
   MAX14830_COM_PORT0    = 0,
@@ -30,7 +50,10 @@ typedef enum
   MAX14830_COM_PORT3    = 3  
 }eMAX18430_ComPort_t;
 
-
+/**
+ * @brief Baudarate selections availalbe for MAX14830
+ * 
+ */
 typedef enum
 {
   MAX14830_COM_BAUDRATE_1200    = 1200,
@@ -45,23 +68,27 @@ typedef enum
   MAX14830_COM_BAUDRATE_230400  = 230400
 }eMAX14830_Baudrate_t;
 
-//typedef struct
-//{
-//  
-//  
-//}sMAX14830_t;
 
 
+/**********************************************************************************
+* Function Prototypes
+*********************************************************************************/
+#ifdef __cplusplus
+extern "C"{
+#endif
 void MAX14830_init(void);
-
 void MAX14830_enable(eMAX18430_ComPort_t port);
 void MAX14830_enable_direct(eMAX18430_ComPort_t port);
 void MAX14830_disable(eMAX18430_ComPort_t port);
-
 void MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate );
 void MAX14830_UART_Write(eMAX18430_ComPort_t port, char *data, uint32_t len);
 void MAX14830_UART_Write_direct(eMAX18430_ComPort_t port, char *data, uint32_t len);
 uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, char *pData, uint32_t max_len);
 uint32_t MAX14830_UART_Read_bytes_waiting(eMAX18430_ComPort_t port);
 uint32_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, char *pData, uint32_t max_len);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
 #endif // _MAX14830_H

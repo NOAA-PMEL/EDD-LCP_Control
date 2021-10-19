@@ -27,10 +27,10 @@
 /**********************************************************************************
  * MACROS
  *********************************************************************************/
-#define PISTON_I2C_ADDR         ( 0x6C )
+#define PISTON_I2C_ADDR         ( 0x6C )        /**< I2C Address */
 
 
-#define PISTON_I2C_MEM_ADDR_VOLUME  ( 0x00 )
+#define PISTON_I2C_MEM_ADDR_VOLUME  ( 0x00 )    /**< Memory Address of Volume (double) */
 #define PISTON_I2C_MEM_ADDR_EXT_RET ( 0x60 )
 #define PISTON_I2C_MEM_ADDR_AT_ZERO ( 0x68 )
 #define PISTON_I2C_MEM_ADDR_AT_FULL ( 0x69 )
