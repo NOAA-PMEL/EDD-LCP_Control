@@ -19,6 +19,7 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "semphr.h"
 /**********************************************************************************
  * Configuration Constants
  *********************************************************************************/
@@ -72,7 +73,7 @@ void PIS_extend(void);
 void PIS_retract(void);
 void PIS_stop(void);
 void PIS_is_at_zero(void);
-void PIS_move_to_volume(float volume);
+bool PIS_move_to_volume(double volume);
 
 
 /**********************************************************************************

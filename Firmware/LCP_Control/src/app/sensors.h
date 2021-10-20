@@ -2,7 +2,10 @@
 #define SENSORS_H
 
 #include <stdint.h>
+#include <stdbool.h>
+
 #include "FreeRTOS.h"
+#include "semphr.h"
 #include "task.h"
 
 
@@ -65,7 +68,7 @@ void SENS_sensor_gps_off(void);
 void SENS_sensor_gps_on(void);
 
 void SENS_sensor_temperature_off(void);
-void SENS_sensor_temperature_on(void;
+void SENS_sensor_temperature_on(void);
 
 bool SENS_get_depth(float *depth, float *rate);
 

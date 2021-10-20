@@ -1,12 +1,17 @@
 #include "sensors.h"
 
+#include "FreeRTOS.h"
+
 
 #include "depth.h"
 #include "temperature.h"
+#include "GPS.h"
 
 #define SENSOR_MAX_DEPTH_RATE           ( 10 ) 
 #define SENSOR_MAX_TEMPERATURE_RATE     ( 2 ) 
 #define SENSOR_MAX_GPS_RATE             ( 2 )
+
+
 SensorData_t sensor_data;
 
 
@@ -14,7 +19,7 @@ bool SENS_get_depth(float *depth, float *rate)
 {
     bool retVal = false;
 
-    if( xSemaphoreTake(sensor_data.depth.semaphore) == pdTRUE)
+    if( xSemaphoreTake(sensor_data.depth.semaphore, 10/portTICK_PERIOD_MS) == pdTRUE)
     {
 
         *depth = sensor_data.depth.current;
@@ -30,7 +35,7 @@ bool SENS_get_temperature(float *temperature)
 {
     bool retVal = false;
 
-    if( xSemaphoreTake(sensor_data.temperature.semaphore) == pdTRUE)
+    if( xSemaphoreTake(sensor_data.temperature.semaphore, 10/portTICK_PERIOD_MS) == pdTRUE)
     {
         *temperature = sensor_data.temperature.current;
         retVal = true;
@@ -43,9 +48,9 @@ bool SENS_get_gps(SensorGps_t *gps)
 {
     bool retVal = false;
 
-    if(  xSemaphoreTake(sensor_data.GPS.semaphore) == pdTRUE)
+    if(  xSemaphoreTake(sensor_data.GPS.semaphore, 10/portTICK_PERIOD_MS) == pdTRUE)
     {
-        gps = sensor_data.GPS;
+        *gps = sensor_data.GPS;
         retVal = true;
         xSemaphoreGive(sensor_data.GPS.semaphore);
     }
@@ -55,23 +60,27 @@ bool SENS_get_gps(SensorGps_t *gps)
 void SENS_task_profile_sensors(void)
 {
     /** Start Depth Sensor @ 1 Hz */
-    task_depth(1);
+  SENS_set_depth_rate(1);
+    task_depth();
 
     /** Start Temperature Sensor @ 1Hz */
-    task_temperature(1);
+    SENS_set_temperature_rate(1);
+    task_temperature();
 
 }
 
 void SENS_task_park_sensors(void)
 {
     /** Sample at 1/60th Hz */
-    task_depth(1/60);
+  SENS_set_depth_rate(60);
+    task_depth();
 }
 
 void SENS_task_sample_depth_continuous(void)
 {
     /** Sample at 2 Hz */
-    task_depth(2);
+  SENS_set_depth_rate(2);
+    task_depth();
 
 
 }
@@ -105,14 +114,14 @@ void task_depth(void)
 {
     TickType_t xLastWakeTime;
     sDepth_Measurement_t depth = {0};
-    assert(sensor_data.depth.rate != 0);
+//    assert(sensor_data.depth.rate != 0);
     uint16_t period = 1000/sensor_data.depth.rate;
 
     /** Create the semaphore for the depth sensor read */
     sensor_data.depth.semaphore = xSemaphoreCreateMutex();
 
     /** Initialize the Depth Sensor */
-    DEPTH_initialize();
+    DEPTH_initialize(DEPTH_Keller_PA9LD);
 
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
@@ -124,7 +133,7 @@ void task_depth(void)
 
         /** Delay to warm up */
         /** @todo replace with const number */
-        vTaskDelay(50/ portTICK_RATE_MS);
+        vTaskDelay(50/ portTICK_PERIOD_MS);
 
         /** Read the Data */
         DEPTH_Read(&depth);
@@ -133,7 +142,7 @@ void task_depth(void)
         DEPTH_Power_OFF();
         
         
-        if(xSemaphoreTake(sensor_data.depth.semaphore, period/portTICK_RATE_MS) == pdTRUE)
+        if(xSemaphoreTake(sensor_data.depth.semaphore, period/portTICK_PERIOD_MS) == pdTRUE)
         {
             sensor_data.depth.previous = sensor_data.depth.current;
             sensor_data.depth.current = depth.Depth;
@@ -141,7 +150,7 @@ void task_depth(void)
             xSemaphoreGive(sensor_data.depth.semaphore);
         }
 
-        vTaskDelayUntil( &xLastWakeTime, 1000 / portTICK_RATE_MS );
+        vTaskDelayUntil( &xLastWakeTime, 1000 / portTICK_PERIOD_MS );
     }
 
 }
@@ -150,8 +159,8 @@ void task_temperature(void)
 {
     TickType_t xLastWakeTime;
     Temperature_Measurement_t temperature = {0};
-    uint16_t period = 1000/rate;
-    period /= portTICK_RATE_MS;
+    uint16_t period = 1000/sensor_data.temperature.rate;
+    period /= portTICK_PERIOD_MS;
 
     /** Create the semaphore for the depth sensor read */
     sensor_data.temperature.semaphore = xSemaphoreCreateMutex();
@@ -170,7 +179,7 @@ void task_temperature(void)
         /** Warmup for x */
         /** @todo replace this with a macro */
 
-        vTaskDelay(50/ portTICK_RATE_MS);
+        vTaskDelay(50/ portTICK_PERIOD_MS);
 
         /** Read the temperature */
         TEMP_Read(&temperature);
@@ -178,9 +187,9 @@ void task_temperature(void)
         /** Power off */
         TEMP_Power_OFF();
         
-        if(xSemaphoreTake(sensor_data.temperature.semaphore, 10/portTICK_RATE_MS) == pdTRUE)
+        if(xSemaphoreTake(sensor_data.temperature.semaphore, 10/portTICK_PERIOD_MS) == pdTRUE)
         {
-            sensor_data.temperature.current = depth.Depth;
+            sensor_data.temperature.current = temperature.temperature;
             xSemaphoreGive(sensor_data.temperature.semaphore);
         }
 
@@ -217,12 +226,12 @@ void task_GPS(uint8_t rate)
 
         if(GPS_Read(&gps))
         {
-            if(xSemaphoreTake(sensor_data.GPS.semaphore, 10/portTICK_RATE_MS)==pdTRUE)
+            if(xSemaphoreTake(sensor_data.GPS.semaphore, 10/portTICK_PERIOD_MS)==pdTRUE)
             {
                 sensor_data.GPS.fix = true;
-                sensor_data.GPS.latitude = gps.lat;
-                sensor_data.GPS.longitude = gps.lon;
-                sensor_data.GPS.altitude = gps.alt;
+                sensor_data.GPS.latitude = gps.position.lat;
+                sensor_data.GPS.longitude = gps.position.lon;
+                sensor_data.GPS.altitude = gps.position.alt;
             }
         }
     

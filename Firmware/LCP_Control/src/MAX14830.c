@@ -343,20 +343,20 @@ void MAX14830_init(void)
   uint32_t status = AM_HAL_STATUS_FAIL;
 
   /** Initialize the Power Pin */
-  am_hal_gpio_pinconfig(BSP_S2U_ON, g_LCP_BSP_S2U_ON);
+  am_hal_gpio_pinconfig(AM_BSP_GPIO_S2U_ON, g_AM_BSP_GPIO_S2U_ON);
   module_MAX14830_Power_Off();
   module_MAX14830_Power_On();
   
   /** Initialize the Chip Select */
-  am_hal_gpio_pinconfig(BSP_S2U_SPI_CS, g_LCP_BSP_S2U_SPI_CS);
-  am_hal_gpio_output_set(BSP_S2U_SPI_CS);
+  am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_CS, g_AM_BSP_GPIO_S2U_SPI_CS);
+  am_hal_gpio_output_set(BSP_GPIO_S2U_SPI_CS);
   
   /** Initialize the IRQ Input */
-  am_hal_gpio_pinconfig(BSP_S2U_SPI_NIRQ, g_LCP_BSP_S2U_SPI_NIRQ);
+  am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_NIRQ, g_AM_BSP_GPIO_S2U_SPI_NIRQ);
   
   /** Initialize the RESET line */
-  am_hal_gpio_pinconfig(BSP_S2U_SPI_NRESET, g_LCP_BSP_S2U_SPI_NRESET);
-  am_hal_gpio_output_clear(BSP_S2U_SPI_NRESET);
+  am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_NRESET, g_AM_BSP_GPIO_S2U_SPI_NRESET);
+  am_hal_gpio_output_clear(BSP_GPIO_S2U_SPI_NRESET);
   
   
   /** Initialize the SPI Configurations */
@@ -369,13 +369,13 @@ void MAX14830_init(void)
   status = am_hal_iom_enable(pIomHandle);
   printf("ENAB: status=%d\n", status);
   /** Initialie the SPI - MOSI */
-  status = am_hal_gpio_pinconfig(BSP_S2U_SPI_MOSI, g_LCP_BSP_S2U_SPI_MOSI);
+  status = am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_MOSI, g_AM_BSP_GPIO_S2U_SPI_MOSI);
   printf("MOSI: status=%d\n", status);
   /** Initialie the SPI - MISO */
-  status = am_hal_gpio_pinconfig(BSP_S2U_SPI_MISO, g_LCP_BSP_S2U_SPI_MISO);
+  status = am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_MISO, g_AM_BSP_GPIO_S2U_SPI_MISO);
   printf("MISO: status=%d\n", status);
   /** Initialie the SPI - SCLK */
-  status = am_hal_gpio_pinconfig(BSP_S2U_SPI_SCK, g_LCP_BSP_S2U_SPI_SCK);
+  status = am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_SCK, g_AM_BSP_GPIO_S2U_SPI_SCK);
   printf("SCK : status=%d\n", status);
   
   /** Clear the IOM register-access interrupts */
@@ -402,7 +402,7 @@ void MAX14830_enable(eMAX18430_ComPort_t port)
 {
   /** If the device is off, turn it on */
   uint32_t state = 0;
-  am_hal_gpio_state_read(BSP_S2U_ON, AM_HAL_GPIO_OUTPUT_READ, &state);
+  am_hal_gpio_state_read(AM_BSP_GPIO_S2U_ON, AM_HAL_GPIO_OUTPUT_READ, &state);
   if(state == 1)
   {
     module_MAX14830_Power_On();
@@ -439,7 +439,7 @@ void MAX14830_enable_direct(eMAX18430_ComPort_t port)
 {
   /** If the device is off, turn it on */
   uint32_t state = 0;
-  am_hal_gpio_state_read(BSP_S2U_ON, AM_HAL_GPIO_OUTPUT_READ, &state);
+  am_hal_gpio_state_read(AM_BSP_GPIO_S2U_ON, AM_HAL_GPIO_OUTPUT_READ, &state);
   if(state == 1)
   {
     module_MAX14830_Power_On();
@@ -484,7 +484,7 @@ void MAX14830_disable(eMAX18430_ComPort_t port)
   if(cnt ==  MAX14830_NUM_SERIAL_PORTS)
   {
     am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_DEEPSLEEP, false);
-//    am_hal_gpio_output_set(BSP_S2U_ON); //, AM_HAL_SYSCTRL_DEEPSLEEP, false);
+//    am_hal_gpio_output_set(AM_BSP_GPIO_S2U_ON); //, AM_HAL_SYSCTRL_DEEPSLEEP, false);
     module_MAX14830_Power_Off();
   }
 
@@ -720,8 +720,8 @@ uint32_t MAX14830_UART_Read_bytes_waiting(eMAX18430_ComPort_t port)
 static void module_MAX14830_Power_On(void)
 {
   am_hal_iom_enable(&pIomHandle);
-  am_hal_gpio_output_set(BSP_S2U_SPI_NRESET);
-  am_hal_gpio_output_clear(BSP_S2U_ON);
+  am_hal_gpio_output_set(BSP_GPIO_S2U_SPI_NRESET);
+  am_hal_gpio_output_clear(AM_BSP_GPIO_S2U_ON);
   
 }
 
@@ -731,8 +731,8 @@ static void module_MAX14830_Power_On(void)
  */
 static void module_MAX14830_Power_Off(void)
 {
-  am_hal_gpio_output_clear(BSP_S2U_SPI_NRESET);
-  am_hal_gpio_output_set(BSP_S2U_ON);
+  am_hal_gpio_output_clear(BSP_GPIO_S2U_SPI_NRESET);
+  am_hal_gpio_output_set(AM_BSP_GPIO_S2U_ON);
 }
 
 /**
@@ -741,7 +741,7 @@ static void module_MAX14830_Power_Off(void)
  */
 static void MAX14830_CS_Set(void)
 {
-  am_hal_gpio_output_clear(BSP_S2U_SPI_CS);
+  am_hal_gpio_output_clear(BSP_GPIO_S2U_SPI_CS);
 }
 
 /**
@@ -750,7 +750,7 @@ static void MAX14830_CS_Set(void)
  */
 static void MAX14830_CS_Clear(void)
 {
-  am_hal_gpio_output_set(BSP_S2U_SPI_CS);
+  am_hal_gpio_output_set(BSP_GPIO_S2U_SPI_CS);
 }
 
 /**

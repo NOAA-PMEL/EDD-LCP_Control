@@ -14,8 +14,8 @@
 // Required built-ins.
 //
 //*****************************************************************************
-
-
+#include <string.h>
+#include <stdio.h>
 
 //*****************************************************************************
 //
@@ -66,36 +66,36 @@ bool ISBD_AT_create_packet( isbd_at_cmd_t cmd,
         switch(packet->cmd.ecmd)
         {
             case ISBD_AT_CMD_AT:
-                strncpy(packet->cmd.msg, "AT",2);
+                strncpy((char*)packet->cmd.msg, "AT",2);
                 packet->cmd.expected_cr = 3;
                 break;
             case ISBD_AT_CMD_ATK0:
-                strncpy(packet->cmd.msg, "AT&K0",5);
+                strncpy((char*)packet->cmd.msg, "AT&K0",5);
                 packet->cmd.expected_cr = 3;
                 break;
-            case ISBD_AT_CMD_SBWRB:
-                sprintf(packet->cmd.msg, "AT+SBDWB=%u\r", packet->len);
+            case ISBD_AT_CMD_SBDWB:
+                sprintf((char*)packet->cmd.msg, "AT+SBDWB=%u\r", packet->len);
                 packet->cmd.expected_cr = 3;
                 break;
             case ISBD_AT_CMD_SBDWT:
-                sprintf(packet->cmd.msg, "AT+SBDWT=%u\r", packet->len);
+                sprintf((char*)packet->cmd.msg, "AT+SBDWT=%u\r", packet->len);
                 packet->cmd.expected_cr = 3;
                 break;
             case ISBD_AT_CMD_SBDIX:
-                strncpy(packet->cmd.msg, "AT+SBDIX",8);
+                strncpy((char*)packet->cmd.msg, "AT+SBDIX",8);
                 packet->cmd.expected_cr = 5;
                 break;
             case ISBD_AT_CMD_SBDRT:
-                strncpy(packet->cmd.msg, "AT+SBDRT",8);
+                strncpy((char*)packet->cmd.msg, "AT+SBDRT",8);
                 packet->cmd.expected_cr = 4;
                 break;
             case ISBD_AT_CMD_SBDRB:
-                strncpy(packet->cmd.msg, "AT+SBDRB",8);
+                strncpy((char*)packet->cmd.msg, "AT+SBDRB",8);
                 packet->cmd.expected_cr = 4;
                 break;
             case ISBD_AT_CMD_NONE:
             default:
-                strcpy(packet->cmd.msg, "");
+                strcpy((char*)packet->cmd.msg, "");
                 packet->cmd.expected_cr = 0;
                 break;  
         }
@@ -116,7 +116,7 @@ bool ISBD_AT_create_packet( isbd_at_cmd_t cmd,
 bool ISBD_AT_send_packet( isbd_at_packet_t *packet)
 {
 
-
+    return false;
 }
 
 /**
@@ -132,7 +132,7 @@ static uint16_t module_isbd_at_calculate_crc(isbd_at_packet_t *packet)
 
     uint16_t checksum = 0;
 
-    for(uint16_t i=0; i<packet->length; i++)
+    for(uint16_t i=0; i<packet->len; i++)
     {
         checksum += packet->data[i];
     }

@@ -12,7 +12,8 @@ typedef enum{
     BSP_UART_COM3,
     BSP_UART_COM4,
     BSP_UART_LOG,
-    BSP_UART_DEBUG
+    BSP_UART_DEBUG,
+    BSP_UART_NONE
 }e_uart_t;
 
 void bsp_uart_init(void);

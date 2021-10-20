@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         27/Aug/2021  13:35:48
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         20/Oct/2021  09:39:55
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode                        
@@ -8,7 +8,7 @@
 #    Source file                  =
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\MAX14830.c
 #    Command line                 =
-#        -f C:\Users\casari\AppData\Local\Temp\1\EW6E61.tmp
+#        -f C:\Users\casari\AppData\Local\Temp\2\EW529E.tmp
 #        (C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\MAX14830.c
 #        -D iar -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D
 #        AM_DEBUG_PRINTF -D AM_UTIL_FAULTISR_PRINT -lcN
@@ -35,9 +35,10 @@
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\bsp\\
 #        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ -I
 #        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\ -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\boards\apollo3_evb\bsp\\ -I
 #        $PROJ_DIR\src\RTOS\\ -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -Ol)
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\app\\ -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\sys\\ -Ol)
 #    Locale                       =  C
 #    List file                    =
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\MAX14830.lst
@@ -48,1015 +49,935 @@
 #      __dlib_file_descriptor     =  0
 #      __dlib_full_locale_support =  0
 #      __dlib_version             =  6
-#      __iar_require _Printf      =  int_specials
 #
 ###############################################################################
 
 C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\MAX14830.c
-      1          #include "MAX14830.h"
-      2          
-      3          //*****************************************************************************
-      4          //
-      5          // Required built-ins.
-      6          //
-      7          //*****************************************************************************
-      8          #include <stdint.h>
-      9          #include <stdbool.h>
-     10          #include <string.h>
-     11          #include <stdlib.h>
-     12          #include <math.h>
-     13          #include <assert.h>
-     14          #include <stdio.h>
-     15          
+      1          /**
+      2           * @file MAX14830.c
+      3           * @author Matt Casari (matthew.casari@noaa.gov)
+      4           * @brief 
+      5           * @version 0.1
+      6           * @date 2021-08-11
+      7           * 
+      8           * 
+      9           */
+     10          #include "MAX14830.h"
+     11          
+     12          //*****************************************************************************
+     13          //
+     14          // Required built-ins.
+     15          //
      16          //*****************************************************************************
-     17          //
-     18          // Standard AmbiqSuite includes.
-     19          //
-     20          //*****************************************************************************
-     21          #include "am_mcu_apollo.h"
-     22          #include "am_bsp.h"
-     23          #include "am_util.h"
+     17          #include <stdint.h>
+     18          #include <stdbool.h>
+     19          #include <string.h>
+     20          #include <stdlib.h>
+     21          #include <math.h>
+     22          #include <assert.h>
+     23          #include <stdio.h>
      24          
      25          //*****************************************************************************
      26          //
-     27          // Artemis specific files
+     27          // Standard AmbiqSuite includes.
      28          //
      29          //*****************************************************************************
-     30          #include "artemis_spi.h"
-     31          
-     32          //*****************************************************************************
-     33          //
-     34          // FreeRTOS include files.
+     30          #include "am_mcu_apollo.h"
+     31          #include "am_bsp.h"
+     32          #include "am_util.h"
+     33          
+     34          //*****************************************************************************
      35          //
-     36          //*****************************************************************************
-     37          #include "FreeRTOS.h"
-     38          #include "task.h"
-     39          #include "event_groups.h"
-     40          #include "semphr.h"
-     41          
-     42          
-     43          //*****************************************************************************
+     36          // Artemis specific files
+     37          //
+     38          //*****************************************************************************
+     39          #include "artemis_spi.h"
+     40          
+     41          //*****************************************************************************
+     42          //
+     43          // FreeRTOS include files.
      44          //
-     45          // Project Files
-     46          //
-     47          //*****************************************************************************
-     48          #include "am_bsp_pins.h"
-     49          #include "buffer_c.h"
+     45          //*****************************************************************************
+     46          #include "FreeRTOS.h"
+     47          #include "task.h"
+     48          #include "event_groups.h"
+     49          #include "semphr.h"
      50          
-     51          //*****************************************************************************
-     52          //
-     53          //  Register Defines
-     54          //
-     55          //*****************************************************************************
-     56          /** FIFO Data Registers */
-     57          #define MAX14830_RHR   ( 0x00 )
-     58          #define MAX14830_THR  ( 0x00 )
+     51          
+     52          //*****************************************************************************
+     53          //
+     54          // Project Files
+     55          //
+     56          //*****************************************************************************
+     57          #include "am_bsp_pins.h"
+     58          #include "buffer_c.h"
      59          
-     60          /** Interrupt Registers */
-     61          #define MAX14830_REG_IRQEN          ( 0x01 )
-     62          #define MAX14830_REG_ISR            ( 0x02 )
-     63          #define MAX14830_REG_LSRINTEN       ( 0x03 )
-     64          #define MAX14830_REG_LSR            ( 0x04 )
-     65          #define MAX14830_REG_SPCLCHRINTEN   ( 0x05 )
-     66          #define MAX14830_REG_SPCLCHARINT    ( 0x06 )
-     67          #define MAX14830_REG_STSINTEN       ( 0x07 )
-     68          #define MAX14830_REG_STSINT         ( 0x08 )
-     69          
-     70          /** UART Mode Registers */
-     71          #define MAX14830_REG_MODE1          ( 0x09 )
-     72          #define MAX14830_REG_MODE2          ( 0x0A )
-     73          #define MAX14830_REG_LCR            ( 0x0B )
-     74          #define MAX14830_REG_RXTIMEOUT      ( 0x0C )
-     75          #define MAX14830_REG_HDPIXDELAY     ( 0x0D )
-     76          #define MAX14830_REG_IRDA           ( 0x0E )
-     77          
-     78          /** FIFO Control Registers */
-     79          #define MAX14830_REG_FLOWLVL        ( 0x0F )
-     80          #define MAX14830_REG_FIFOTRGLVL     ( 0x10 )
-     81          #define MAX14830_REG_TXFIFOLVL      ( 0x11 )
-     82          #define MAX14830_REG_RXFIFOLVL      ( 0x12 )
-     83          
-     84          /** Flow Control Registers */
-     85          #define MAX14830_REG_FLOWCTRL       ( 0x13 )
-     86          #define MAX14830_REG_XON1           ( 0x14 )
-     87          #define MAX14830_REG_XON2           ( 0x15 )
-     88          #define MAX14830_REG_XOFF1          ( 0x16 )
-     89          #define MAX14830_REG_XOFF2          ( 0x17 )
-     90          
-     91          /** GPIO Registers */
-     92          #define MAX14830_REG_GPIOCONFIG     ( 0x18 )
-     93          #define MAX14830_REG_GPIODATA       ( 0x19 )
-     94          
-     95          /** Clock Configuration Registers*/
-     96          #define MAX14830_REG_PLLCONFIG      ( 0x1A )
-     97          #define MAX14830_REG_BRGCONFIG      ( 0x1B )
-     98          #define MAX14830_REG_DIVLSB         ( 0x1C )
-     99          #define MAX14830_REG_DIVMSB         ( 0x1D )
-    100          #define MAX14830_REG_CLKSOURCE      ( 0x1E )
-    101          
-    102          /** Global Registers */
-    103          #define MAX14830_REG_GLOBALRQ       ( 0x1F )
-    104          #define MAX14830_REG_GLOBLCOMND     ( 0x1F )
-    105          
-    106          /** Synchronization Registers */
-    107          #define MAX14830_REG_TXSYNCH        ( 0x20 )
-    108          #define MAX14830_REG_SYNCHDELAY1    ( 0x21 )
-    109          #define MAX14830_REG_SYNCHDELAY2    ( 0x22 )
+     60          //*****************************************************************************
+     61          //
+     62          //  Register Defines
+     63          //
+     64          //*****************************************************************************
+     65          /** FIFO Data Registers */
+     66          #define MAX14830_RHR   ( 0x00 )
+     67          #define MAX14830_THR  ( 0x00 )
+     68          
+     69          /** Interrupt Registers */
+     70          #define MAX14830_REG_IRQEN          ( 0x01 )
+     71          #define MAX14830_REG_ISR            ( 0x02 )
+     72          #define MAX14830_REG_LSRINTEN       ( 0x03 )
+     73          #define MAX14830_REG_LSR            ( 0x04 )
+     74          #define MAX14830_REG_SPCLCHRINTEN   ( 0x05 )
+     75          #define MAX14830_REG_SPCLCHARINT    ( 0x06 )
+     76          #define MAX14830_REG_STSINTEN       ( 0x07 )
+     77          #define MAX14830_REG_STSINT         ( 0x08 )
+     78          
+     79          /** UART Mode Registers */
+     80          #define MAX14830_REG_MODE1          ( 0x09 )
+     81          #define MAX14830_REG_MODE2          ( 0x0A )
+     82          #define MAX14830_REG_LCR            ( 0x0B )
+     83          #define MAX14830_REG_RXTIMEOUT      ( 0x0C )
+     84          #define MAX14830_REG_HDPIXDELAY     ( 0x0D )
+     85          #define MAX14830_REG_IRDA           ( 0x0E )
+     86          
+     87          /** FIFO Control Registers */
+     88          #define MAX14830_REG_FLOWLVL        ( 0x0F )
+     89          #define MAX14830_REG_FIFOTRGLVL     ( 0x10 )
+     90          #define MAX14830_REG_TXFIFOLVL      ( 0x11 )
+     91          #define MAX14830_REG_RXFIFOLVL      ( 0x12 )
+     92          
+     93          /** Flow Control Registers */
+     94          #define MAX14830_REG_FLOWCTRL       ( 0x13 )
+     95          #define MAX14830_REG_XON1           ( 0x14 )
+     96          #define MAX14830_REG_XON2           ( 0x15 )
+     97          #define MAX14830_REG_XOFF1          ( 0x16 )
+     98          #define MAX14830_REG_XOFF2          ( 0x17 )
+     99          
+    100          /** GPIO Registers */
+    101          #define MAX14830_REG_GPIOCONFIG     ( 0x18 )
+    102          #define MAX14830_REG_GPIODATA       ( 0x19 )
+    103          
+    104          /** Clock Configuration Registers*/
+    105          #define MAX14830_REG_PLLCONFIG      ( 0x1A )
+    106          #define MAX14830_REG_BRGCONFIG      ( 0x1B )
+    107          #define MAX14830_REG_DIVLSB         ( 0x1C )
+    108          #define MAX14830_REG_DIVMSB         ( 0x1D )
+    109          #define MAX14830_REG_CLKSOURCE      ( 0x1E )
     110          
-    111          /** Timer Registers */
-    112          #define MAX14830_REG_TIMER1         ( 0x23 )
-    113          #define MAX14830_REG_TIMER2         ( 0x24 )
+    111          /** Global Registers */
+    112          #define MAX14830_REG_GLOBALRQ       ( 0x1F )
+    113          #define MAX14830_REG_GLOBLCOMND     ( 0x1F )
     114          
-    115          /** Revision Register */
-    116          #define MAX14830_REG_REVID          ( 0x25 )
-    117          
-    118          /** IRQEn Register Bits */
-    119          #define MAX14830_IRQ_CTSIEN       ( 1u << 7 )
-    120          #define MAX14830_IRQ_RFIFOEMTY    ( 1u << 6 )
-    121          #define MAX14830_IRQ_TFIFOEMTY    ( 1u << 5 )
-    122          #define MAX14830_IRQ_TFIFOTRG     ( 1u << 4 )
-    123          #define MAX14830_IRQ_RFIFOTRG     ( 1u << 3 )
-    124          #define MAX14830_IRQ_STS          ( 1u << 2 )
-    125          #define MAX14830_IRQ_SPCLCHR      ( 1u << 1 )
-    126          #define MAX14830_IRQ_LSRERR       ( 1u )
-    127          
-    128          /** LSRIntEn Register Bits */
-    129          #define MAX14830_LSR_INT_NOISEINT     ( 1u << 5 )
-    130          #define MAX14830_LSR_INT_RBREAKI      ( 1u << 4 )
-    131          #define MAX14830_LSR_INT_FRAMEERR     ( 1u << 3 )
-    132          #define MAX14830_LSR_INT_PARITY       ( 1u << 2 )
-    133          #define MAX14830_LSR_INT_ROVERR       ( 1u << 1 )
-    134          #define MAX14830_LSR_INT_RTIMEOUT     ( 1u )
-    135          
-    136          /** LSR Register Bits */
-    137          #define MAX14830_LSR_CTS              ( 1u << 7 )
-    138          #define MAX14830_LSR_RXNOISE          ( 1u << 5 )
-    139          #define MAX14830_LSR_RXBREAK          ( 1u << 4 )
-    140          #define MAX14830_LSR_FRAMEERR         ( 1u << 3 )
-    141          #define MAX14830_LSR_RXPARITY         ( 1u << 2 )
-    142          #define MAX14830_LSR_RXOVERRUN        ( 1u << 1 )
-    143          #define MAX14830_LSR_RTIMEOUT         ( 1u )
+    115          /** Synchronization Registers */
+    116          #define MAX14830_REG_TXSYNCH        ( 0x20 )
+    117          #define MAX14830_REG_SYNCHDELAY1    ( 0x21 )
+    118          #define MAX14830_REG_SYNCHDELAY2    ( 0x22 )
+    119          
+    120          /** Timer Registers */
+    121          #define MAX14830_REG_TIMER1         ( 0x23 )
+    122          #define MAX14830_REG_TIMER2         ( 0x24 )
+    123          
+    124          /** Revision Register */
+    125          #define MAX14830_REG_REVID          ( 0x25 )
+    126          
+    127          /** IRQEn Register Bits */
+    128          #define MAX14830_IRQ_CTSIEN       ( 1u << 7 )
+    129          #define MAX14830_IRQ_RFIFOEMTY    ( 1u << 6 )
+    130          #define MAX14830_IRQ_TFIFOEMTY    ( 1u << 5 )
+    131          #define MAX14830_IRQ_TFIFOTRG     ( 1u << 4 )
+    132          #define MAX14830_IRQ_RFIFOTRG     ( 1u << 3 )
+    133          #define MAX14830_IRQ_STS          ( 1u << 2 )
+    134          #define MAX14830_IRQ_SPCLCHR      ( 1u << 1 )
+    135          #define MAX14830_IRQ_LSRERR       ( 1u )
+    136          
+    137          /** LSRIntEn Register Bits */
+    138          #define MAX14830_LSR_INT_NOISEINT     ( 1u << 5 )
+    139          #define MAX14830_LSR_INT_RBREAKI      ( 1u << 4 )
+    140          #define MAX14830_LSR_INT_FRAMEERR     ( 1u << 3 )
+    141          #define MAX14830_LSR_INT_PARITY       ( 1u << 2 )
+    142          #define MAX14830_LSR_INT_ROVERR       ( 1u << 1 )
+    143          #define MAX14830_LSR_INT_RTIMEOUT     ( 1u )
     144          
-    145          /** SpclChrIntEn Register Bits */
-    146          #define MAX14830_SCI_MLTDRP          ( 1u << 5 )
-    147          #define MAX14830_SCI_BREAK           ( 1u << 4 )
-    148          #define MAX14830_SCI_XOFF2           ( 1u << 3 )
-    149          #define MAX14830_SCI_XOFF1           ( 1u << 2 )
-    150          #define MAX14830_SCI_XON2            ( 1u << 1 )
-    151          #define MAX14830_SCE_XON1            ( 1u )
-    152          
-    153          /** STS Register Bits */
-    154          #define MAX14830_STS_CLKRDY          ( 1u << 5 )
-    155          #define MAX14830_STS_GPI3             ( 1u << 3 )
-    156          #define MAX14830_STS_GPI2             ( 1u << 2 )
-    157          #define MAX14830_STS_GPI1             ( 1u << 1 )
-    158          #define MAX14830_REG_GPI0             ( 1u )
-    159          
-    160          /** MODE1 Register Bits */
-    161          #define MAX14830_MODE1_IRQ_SEL         ( 1u << 7 )
-    162          #define MAX14830_MODE1_TRNSCV_CTRL     ( 1u << 4 )
-    163          #define MAX14830_MODE1_RTS_HIZ          ( 1u << 3 )
-    164          #define MAX14830_MODE1_TX_HIZ           ( 1u << 2 )
-    165          #define MAX14830_MODE1_TX_DISABL        ( 1u << 1 )
-    166          #define MAX14830_MODE1_RX_DISABL        ( 1u )
-    167          
-    168          /** MODE2 Register Bits */
-    169          #define MAX14830_MODE2_ECHO_SUPRS       ( 1u << 7 )
-    170          #define MAX14830_MODE2_MULTI_DROP       ( 1u << 6 )
-    171          #define MAX14830_MODE2_LOOPBACK         ( 1u << 5 )
-    172          #define MAX14830_MODE2_SPECIAL_CHR      ( 1u << 4 )
-    173          #define MAX14830_MODE2_RX_EMTY_INV      ( 1u << 3 )
-    174          #define MAX14830_MODE2_RX_TRIG_INV      ( 1u << 2 )
-    175          #define MAX14830_MODE2_FIFO_RST         ( 1u << 1 )
-    176          #define MAX14830_MODE2_RST              ( 1u )
-    177          
-    178          /** LCR Register Bits */
-    179          #define MAX14830_LCR_RTS                ( 1u << 7 )
-    180          #define MAX14830_LCR_TX_BREAK           ( 1u << 6 )
-    181          #define MAX14830_LCR_FORCE_PARITY       ( 1u << 5 )
-    182          #define MAX14830_LCR_EVEN_PARITY        ( 1u << 4 )
-    183          #define MAX14830_LCR_PARITY_EN          ( 1u << 3 )
-    184          #define MAX14830_LCR_STOPBITS_1         ( 0u )
-    185          #define MAX14830_LCR_STOPBITS_2         ( 1u << 2 )
-    186          #define MAX14830_LCR_LENGTH_5           ( 0x00 )
-    187          #define MAX14830_LCR_LENGTH_6           ( 0x01 )
-    188          #define MAX14830_LCR_LENGTH_7           ( 0x02 )
-    189          #define MAX14830_LCR_LENGTH_8           ( 0x03 )
-    190          
-    191          /** HDplxDelay Register Bits */
-    192          #define MAX14830_HDD_SETUP_MASK         ( 0x0F << 4 )
-    193          #define MAX14830_HDD_HOLD_MASK           ( 0x0F )
-    194          
-    195          /** IrDA Register Bits */
-    196          #define MAX14830_IRDA_TX_INV            ( 1u << 5 )
-    197          #define MAX14830_IRDA_RX_INV            ( 1u << 4 )
-    198          #define MAX14830_IRDA_MIR               ( 1u << 3 )
-    199          #define MAX14830_IRDA_RTS_INV           ( 1u << 2 )
-    200          #define MAX14830_IRDA_SIR               ( 1u << 1 )
-    201          #define MAX14830_IRDA_IRDA_EN           ( 1u )
-    202          
-    203          /** FlowLvl Register Bits */
-    204          #define MAX14830_IRDA_RESUME_MASK       ( 0x0F << 4 )
-    205          #define MAX14830_IRDA_HALT_MASK         ( 0x0F )
-    206          
-    207          /** FIFOTrigLvl Register Bits */
-    208          #define MAX14830_IRDA_RX_TRIG           ( 0x0F << 4 )
-    209          #define MAX14830_IRDA_TX_TRIG           ( 0x0F )
-    210          
-    211          /** FlowCtrl Register Bits */
-    212          #define MAX14830_FC_TX_XON1_XOFF1       ( 1u << 7 )
-    213          #define MAX14830_FC_TX_XON2_XOFF2       ( 1u << 6 )
-    214          #define MAX14830_FC_RX_XON1_XOFF1       ( 1u << 5 )
-    215          #define MAX14830_FC_RX_XON2_XOFF2       ( 1u << 4 )
-    216          #define MAX14830_FC_SW_FLOW_EN          ( 1u << 3 )
-    217          #define MAX14830_FC_SW_GPI_ADDR         ( 1u << 2 )
-    218          #define MAX14830_FC_AUTO_CTS            ( 1u << 1 )
-    219          #define MAX14830_FC_AUTO_RTS            ( 1u )
-    220          
-    221          /** PLLConfig Register Bits */
-    222          #define MAX14830_PLL_PREDIV(x)          ( x & 0x1F )
-    223          #define MAX14830_PLL_MULT_6             ( 0u  )
-    224          #define MAX14830_PLL_MULT_48            ( 1u << 6 )
-    225          #define MAX14830_PLL_MULT_96            ( 1u << 7 )
-    226          #define MAX14830_PLL_MULT_144           ( 3u << 6 )
-    227          
-    228          /** CLKSource Register Bits */
-    229          #define MAX14830_CLK_PLL_BYPASS         ( 1u << 3 )
-    230          #define MAX14830_CLK_PLL_EN             ( 1u << 2 )
-    231          #define MAX14830_CLK_CRYSTAL_EN         ( 1u << 1 )
-    232          
-    233          /** BRGConfig Register Bits */
-    234          #define MAX14830_BRG_CLK_DISABLE        ( 1u << 6 )
-    235          #define MAX14830_BRG_4X_MODE            ( 1u << 5 )
-    236          #define MAX14830_BRG_2X_MODE            ( 1u << 4 )
-    237          
-    238          
-    239          /** Write Bit */
-    240          #define MAX14830_SPI_WRITE_BIT          ( 1u << 7)
+    145          /** LSR Register Bits */
+    146          #define MAX14830_LSR_CTS              ( 1u << 7 )
+    147          #define MAX14830_LSR_RXNOISE          ( 1u << 5 )
+    148          #define MAX14830_LSR_RXBREAK          ( 1u << 4 )
+    149          #define MAX14830_LSR_FRAMEERR         ( 1u << 3 )
+    150          #define MAX14830_LSR_RXPARITY         ( 1u << 2 )
+    151          #define MAX14830_LSR_RXOVERRUN        ( 1u << 1 )
+    152          #define MAX14830_LSR_RTIMEOUT         ( 1u )
+    153          
+    154          /** SpclChrIntEn Register Bits */
+    155          #define MAX14830_SCI_MLTDRP          ( 1u << 5 )
+    156          #define MAX14830_SCI_BREAK           ( 1u << 4 )
+    157          #define MAX14830_SCI_XOFF2           ( 1u << 3 )
+    158          #define MAX14830_SCI_XOFF1           ( 1u << 2 )
+    159          #define MAX14830_SCI_XON2            ( 1u << 1 )
+    160          #define MAX14830_SCE_XON1            ( 1u )
+    161          
+    162          /** STS Register Bits */
+    163          #define MAX14830_STS_CLKRDY          ( 1u << 5 )
+    164          #define MAX14830_STS_GPI3             ( 1u << 3 )
+    165          #define MAX14830_STS_GPI2             ( 1u << 2 )
+    166          #define MAX14830_STS_GPI1             ( 1u << 1 )
+    167          #define MAX14830_REG_GPI0             ( 1u )
+    168          
+    169          /** MODE1 Register Bits */
+    170          #define MAX14830_MODE1_IRQ_SEL         ( 1u << 7 )
+    171          #define MAX14830_MODE1_TRNSCV_CTRL     ( 1u << 4 )
+    172          #define MAX14830_MODE1_RTS_HIZ          ( 1u << 3 )
+    173          #define MAX14830_MODE1_TX_HIZ           ( 1u << 2 )
+    174          #define MAX14830_MODE1_TX_DISABL        ( 1u << 1 )
+    175          #define MAX14830_MODE1_RX_DISABL        ( 1u )
+    176          
+    177          /** MODE2 Register Bits */
+    178          #define MAX14830_MODE2_ECHO_SUPRS       ( 1u << 7 )
+    179          #define MAX14830_MODE2_MULTI_DROP       ( 1u << 6 )
+    180          #define MAX14830_MODE2_LOOPBACK         ( 1u << 5 )
+    181          #define MAX14830_MODE2_SPECIAL_CHR      ( 1u << 4 )
+    182          #define MAX14830_MODE2_RX_EMTY_INV      ( 1u << 3 )
+    183          #define MAX14830_MODE2_RX_TRIG_INV      ( 1u << 2 )
+    184          #define MAX14830_MODE2_FIFO_RST         ( 1u << 1 )
+    185          #define MAX14830_MODE2_RST              ( 1u )
+    186          
+    187          /** LCR Register Bits */
+    188          #define MAX14830_LCR_RTS                ( 1u << 7 )
+    189          #define MAX14830_LCR_TX_BREAK           ( 1u << 6 )
+    190          #define MAX14830_LCR_FORCE_PARITY       ( 1u << 5 )
+    191          #define MAX14830_LCR_EVEN_PARITY        ( 1u << 4 )
+    192          #define MAX14830_LCR_PARITY_EN          ( 1u << 3 )
+    193          #define MAX14830_LCR_STOPBITS_1         ( 0u )
+    194          #define MAX14830_LCR_STOPBITS_2         ( 1u << 2 )
+    195          #define MAX14830_LCR_LENGTH_5           ( 0x00 )
+    196          #define MAX14830_LCR_LENGTH_6           ( 0x01 )
+    197          #define MAX14830_LCR_LENGTH_7           ( 0x02 )
+    198          #define MAX14830_LCR_LENGTH_8           ( 0x03 )
+    199          
+    200          /** HDplxDelay Register Bits */
+    201          #define MAX14830_HDD_SETUP_MASK         ( 0x0F << 4 )
+    202          #define MAX14830_HDD_HOLD_MASK           ( 0x0F )
+    203          
+    204          /** IrDA Register Bits */
+    205          #define MAX14830_IRDA_TX_INV            ( 1u << 5 )
+    206          #define MAX14830_IRDA_RX_INV            ( 1u << 4 )
+    207          #define MAX14830_IRDA_MIR               ( 1u << 3 )
+    208          #define MAX14830_IRDA_RTS_INV           ( 1u << 2 )
+    209          #define MAX14830_IRDA_SIR               ( 1u << 1 )
+    210          #define MAX14830_IRDA_IRDA_EN           ( 1u )
+    211          
+    212          /** FlowLvl Register Bits */
+    213          #define MAX14830_IRDA_RESUME_MASK       ( 0x0F << 4 )
+    214          #define MAX14830_IRDA_HALT_MASK         ( 0x0F )
+    215          
+    216          /** FIFOTrigLvl Register Bits */
+    217          #define MAX14830_IRDA_RX_TRIG           ( 0x0F << 4 )
+    218          #define MAX14830_IRDA_TX_TRIG           ( 0x0F )
+    219          
+    220          /** FlowCtrl Register Bits */
+    221          #define MAX14830_FC_TX_XON1_XOFF1       ( 1u << 7 )
+    222          #define MAX14830_FC_TX_XON2_XOFF2       ( 1u << 6 )
+    223          #define MAX14830_FC_RX_XON1_XOFF1       ( 1u << 5 )
+    224          #define MAX14830_FC_RX_XON2_XOFF2       ( 1u << 4 )
+    225          #define MAX14830_FC_SW_FLOW_EN          ( 1u << 3 )
+    226          #define MAX14830_FC_SW_GPI_ADDR         ( 1u << 2 )
+    227          #define MAX14830_FC_AUTO_CTS            ( 1u << 1 )
+    228          #define MAX14830_FC_AUTO_RTS            ( 1u )
+    229          
+    230          /** PLLConfig Register Bits */
+    231          #define MAX14830_PLL_PREDIV(x)          ( x & 0x1F )
+    232          #define MAX14830_PLL_MULT_6             ( 0u  )
+    233          #define MAX14830_PLL_MULT_48            ( 1u << 6 )
+    234          #define MAX14830_PLL_MULT_96            ( 1u << 7 )
+    235          #define MAX14830_PLL_MULT_144           ( 3u << 6 )
+    236          
+    237          /** CLKSource Register Bits */
+    238          #define MAX14830_CLK_PLL_BYPASS         ( 1u << 3 )
+    239          #define MAX14830_CLK_PLL_EN             ( 1u << 2 )
+    240          #define MAX14830_CLK_CRYSTAL_EN         ( 1u << 1 )
     241          
-    242          
-    243          /** System Settings */
-    244          #define MAX14830_XTAL_FREQ              ( 4000000u )
-    245          
-    246          //
+    242          /** BRGConfig Register Bits */
+    243          #define MAX14830_BRG_CLK_DISABLE        ( 1u << 6 )
+    244          #define MAX14830_BRG_4X_MODE            ( 1u << 5 )
+    245          #define MAX14830_BRG_2X_MODE            ( 1u << 4 )
+    246          
     247          
-    248          #define MAX14830_NUM_SERIAL_PORTS       ( 4 )
-    249          #define MAX14830_WRITE_TASK_PRIORITY    ( 5 )
-    250          #define STACK_SIZE                      ( 128 )
+    248          /** Write Bit */
+    249          #define MAX14830_SPI_WRITE_BIT          ( 1u << 7)
+    250          
     251          
-    252          
-    253          //*****************************************************************************
-    254          //
-    255          // FreeRTOS variables, tasks and semaphores
-    256          //
-    257          //*****************************************************************************
-    258          TaskHandle_t data_read_int_handle;
-    259          SemaphoreHandle_t xSpiMutex = NULL;
+    252          /** System Settings */
+    253          #define MAX14830_XTAL_FREQ              ( 4000000u )
+    254          
+    255          //
+    256          
+    257          #define MAX14830_NUM_SERIAL_PORTS       ( 4 )
+    258          #define MAX14830_WRITE_TASK_PRIORITY    ( 5 )
+    259          #define STACK_SIZE                      ( 128 )
     260          
-    261          //*****************************************************************************
-    262          //
-    263          // Ambiq IOM static variables
-    264          //
-    265          //*****************************************************************************
-    266          static am_hal_iom_config_t IomConfig = {
-    267            .eInterfaceMode       = AM_HAL_IOM_SPI_MODE,
-    268            .ui32ClockFreq        = AM_HAL_IOM_500KHZ,
-    269            .eSpiMode             = AM_HAL_IOM_SPI_MODE_0,
-    270            .pNBTxnBuf            = NULL,
-    271            .ui32NBTxnBufLength       = 0
-    272          };
-    273          
-    274          static void *pIomHandle;
-    275          const uint8_t CTSIEn        = (1u << 7);
-    276          const uint8_t RFifoEmtyIEn  = (1u << 6);
-    277          const uint8_t TFifoEmtyIEn  = (1u << 5);
-    278          
-    279          volatile bool xfer_complete = false;
-    280          volatile uint32_t txn_stat = 0;
-    281          
-    282          #define XFER_DATA_SIZE      ( 64 )
-    283          static char xfer_data[XFER_DATA_SIZE];
-    284          
-    285          
-    286          //*****************************************************************************
-    287          //
-    288          // Circular buffer defines
-    289          //
-    290          //*****************************************************************************
-    291          sCircularBufferC_t txBuf[MAX14830_NUM_SERIAL_PORTS];
-    292          sCircularBufferC_t rxBuf[MAX14830_NUM_SERIAL_PORTS];
-    293          //
-    294          //void xfer_complete_callback(void *pCallbackCtxt, uint32_t transactionStatus){
-    295          //    (void)pCallbackCtxt;
-    296          //    xfer_complete = true;
-    297          //    txn_stat = transactionStatus;
-    298          //}
-    299          
-    300          static void module_MAX14830_Power_On(void);
-    301          static void module_MAX14830_Power_Off(void);
-    302          static uint32_t module_MAX14830_FastRead(void);
-    303          static uint32_t module_MAX14830_Read(
-    304                              eMAX18430_ComPort_t port,
-    305                              uint32_t ui32Instr,
-    306                              uint32_t ui32NumBytes,
-    307                              char *pData );
+    261          
+    262          //*****************************************************************************
+    263          //
+    264          // FreeRTOS variables, tasks and semaphores
+    265          //
+    266          //*****************************************************************************
+    267          TaskHandle_t data_read_int_handle;
+    268          SemaphoreHandle_t xSpiMutex = NULL;
+    269          
+    270          //*****************************************************************************
+    271          //
+    272          // Ambiq IOM static variables
+    273          //
+    274          //*****************************************************************************
+    275          static am_hal_iom_config_t IomConfig = {
+    276            .eInterfaceMode       = AM_HAL_IOM_SPI_MODE,
+    277            .ui32ClockFreq        = AM_HAL_IOM_500KHZ,
+    278            .eSpiMode             = AM_HAL_IOM_SPI_MODE_0,
+    279            .pNBTxnBuf            = NULL,
+    280            .ui32NBTxnBufLength       = 0
+    281          };
+    282          
+    283          static void *pIomHandle;
+    284          const uint8_t CTSIEn        = (1u << 7);
+    285          const uint8_t RFifoEmtyIEn  = (1u << 6);
+    286          const uint8_t TFifoEmtyIEn  = (1u << 5);
+    287          
+    288          volatile bool xfer_complete = false;
+    289          volatile uint32_t txn_stat = 0;
+    290          
+    291          #define XFER_DATA_SIZE      ( 64 )
+    292          static char xfer_data[XFER_DATA_SIZE];
+    293          
+    294          
+    295          //*****************************************************************************
+    296          //
+    297          // Circular buffer defines
+    298          //
+    299          //*****************************************************************************
+    300          sCircularBufferC_t txBuf[MAX14830_NUM_SERIAL_PORTS];
+    301          sCircularBufferC_t rxBuf[MAX14830_NUM_SERIAL_PORTS];
+    302          //
+    303          //void xfer_complete_callback(void *pCallbackCtxt, uint32_t transactionStatus){
+    304          //    (void)pCallbackCtxt;
+    305          //    xfer_complete = true;
+    306          //    txn_stat = transactionStatus;
+    307          //}
     308          
     309          
-    310          static void module_MAX14830_Write(
-    311                              eMAX18430_ComPort_t port, 
-    312                              uint8_t reg, 
-    313                              char *data, 
-    314                              uint32_t len
-    315                              );
-    316          
-    317          //*****************************************************************************
-    318          //
-    319          // Global Functions
-    320          //
-    321          //*****************************************************************************
-    322          void MAX14830_init(void)
-    323          {
-    324            uint32_t status = AM_HAL_STATUS_FAIL;
-    325          
-    326            /** Initialize the Power Pin */
-    327            am_hal_gpio_pinconfig(BSP_S2U_ON, g_LCP_BSP_S2U_ON);
-    328            module_MAX14830_Power_Off();
-    329            module_MAX14830_Power_On();
-    330            
-    331            /** Initialize the Chip Select */
-    332            am_hal_gpio_pinconfig(BSP_S2U_SPI_CS, g_LCP_BSP_S2U_SPI_CS);
-    333            am_hal_gpio_output_set(BSP_S2U_SPI_CS);
-    334            
-    335            /** Initialize the IRQ Input */
-    336            am_hal_gpio_pinconfig(BSP_S2U_SPI_NIRQ, g_LCP_BSP_S2U_SPI_NIRQ);
-    337            
-    338            /** Initialize the RESET line */
-    339            am_hal_gpio_pinconfig(BSP_S2U_SPI_NRESET, g_LCP_BSP_S2U_SPI_NRESET);
-    340            am_hal_gpio_output_clear(BSP_S2U_SPI_NRESET);
-    341            
-    342            
-    343            /** Initialize the SPI Configurations */
-    344            status = am_hal_iom_initialize(3, &pIomHandle);
-    345            printf("INIT: status=%d\n", status);
-    346            status = am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_WAKE, false);
-    347            printf("PWRC: status=%d\n", status);
-    348            status = am_hal_iom_configure(pIomHandle, &IomConfig);
-    349            printf("CONF: status=%d\n", status);
-    350            status = am_hal_iom_enable(pIomHandle);
-    351            printf("ENAB: status=%d\n", status);
-    352            /** Initialie the SPI - MOSI */
-    353            status = am_hal_gpio_pinconfig(BSP_S2U_SPI_MOSI, g_LCP_BSP_S2U_SPI_MOSI);
-    354            printf("MOSI: status=%d\n", status);
-    355            /** Initialie the SPI - MISO */
-    356            status = am_hal_gpio_pinconfig(BSP_S2U_SPI_MISO, g_LCP_BSP_S2U_SPI_MISO);
-    357            printf("MISO: status=%d\n", status);
-    358            /** Initialie the SPI - SCLK */
-    359            status = am_hal_gpio_pinconfig(BSP_S2U_SPI_SCK, g_LCP_BSP_S2U_SPI_SCK);
-    360            printf("SCK : status=%d\n", status);
+    310          //*****************************************************************************
+    311          //
+    312          // Static Function Prototypes
+    313          //
+    314          //*****************************************************************************
+    315          static void module_MAX14830_Power_On(void);
+    316          static void module_MAX14830_Power_Off(void);
+    317          static uint32_t module_MAX14830_FastRead(void);
+    318          static uint32_t module_MAX14830_Read(
+    319                              eMAX18430_ComPort_t port,
+    320                              uint32_t ui32Instr,
+    321                              uint32_t ui32NumBytes,
+    322                              char *pData );
+    323          
+    324          
+    325          static void module_MAX14830_Write(
+    326                              eMAX18430_ComPort_t port, 
+    327                              uint8_t reg, 
+    328                              char *data, 
+    329                              uint32_t len
+    330                              );
+    331          
+    332          //*****************************************************************************
+    333          //
+    334          // Global Functions
+    335          //
+    336          //*****************************************************************************
+    337          /**
+    338           * @brief Initialize the MAX14830 IC
+    339           * 
+    340           */
+    341          void MAX14830_init(void)
+    342          {
+    343            uint32_t status = AM_HAL_STATUS_FAIL;
+    344          
+    345            /** Initialize the Power Pin */
+    346            am_hal_gpio_pinconfig(AM_BSP_GPIO_S2U_ON, g_AM_BSP_GPIO_S2U_ON);
+    347            module_MAX14830_Power_Off();
+    348            module_MAX14830_Power_On();
+    349            
+    350            /** Initialize the Chip Select */
+    351            am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_CS, g_AM_BSP_GPIO_S2U_SPI_CS);
+    352            am_hal_gpio_output_set(BSP_GPIO_S2U_SPI_CS);
+    353            
+    354            /** Initialize the IRQ Input */
+    355            am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_NIRQ, g_AM_BSP_GPIO_S2U_SPI_NIRQ);
+    356            
+    357            /** Initialize the RESET line */
+    358            am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_NRESET, g_AM_BSP_GPIO_S2U_SPI_NRESET);
+    359            am_hal_gpio_output_clear(BSP_GPIO_S2U_SPI_NRESET);
+    360            
     361            
-    362            /** Clear the IOM register-access interrupts */
-    363            am_hal_iom_interrupt_clear(pIomHandle, AM_HAL_IOM_INT_ALL);
-    364            am_hal_iom_interrupt_enable(pIomHandle, AM_HAL_IOM_INT_ERR);
-    365            
-    366            /** Set the NVIC for the IO Master */
-    367          //  NVIC_EnableIRQ(IOMSTR3_IRQn);
-    368          
-    369            /** Set the MAX14830 Clock Source to enable Crystal */
-    370            char temp = MAX14830_CLK_CRYSTAL_EN;
-    371          //  module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_CLKSOURCE, &temp, 1);
-    372          
-    373            /** Start the Read Task */
-    374          //  MAX14830_disable(MAX14830_COM_PORT0);
-    375          }
-    376          
-    377          void MAX14830_enable(eMAX18430_ComPort_t port)
-    378          {
-    379            /** If the device is off, turn it on */
-    380            uint32_t state = 0;
-    381            am_hal_gpio_state_read(BSP_S2U_ON, AM_HAL_GPIO_OUTPUT_READ, &state);
-    382            if(state == 1)
-    383            {
-    384              module_MAX14830_Power_On();
-    385              am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_WAKE, false);
-    386            }
+    362            /** Initialize the SPI Configurations */
+    363            status = am_hal_iom_initialize(3, &pIomHandle);
+    364            printf("INIT: status=%d\n", status);
+    365            status = am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_WAKE, false);
+    366            printf("PWRC: status=%d\n", status);
+    367            status = am_hal_iom_configure(pIomHandle, &IomConfig);
+    368            printf("CONF: status=%d\n", status);
+    369            status = am_hal_iom_enable(pIomHandle);
+    370            printf("ENAB: status=%d\n", status);
+    371            /** Initialie the SPI - MOSI */
+    372            status = am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_MOSI, g_AM_BSP_GPIO_S2U_SPI_MOSI);
+    373            printf("MOSI: status=%d\n", status);
+    374            /** Initialie the SPI - MISO */
+    375            status = am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_MISO, g_AM_BSP_GPIO_S2U_SPI_MISO);
+    376            printf("MISO: status=%d\n", status);
+    377            /** Initialie the SPI - SCLK */
+    378            status = am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_SCK, g_AM_BSP_GPIO_S2U_SPI_SCK);
+    379            printf("SCK : status=%d\n", status);
+    380            
+    381            /** Clear the IOM register-access interrupts */
+    382            am_hal_iom_interrupt_clear(pIomHandle, AM_HAL_IOM_INT_ALL);
+    383            am_hal_iom_interrupt_enable(pIomHandle, AM_HAL_IOM_INT_ERR);
+    384            
+    385            /** Set the NVIC for the IO Master */
+    386          //  NVIC_EnableIRQ(IOMSTR3_IRQn);
     387          
-    388            /** Enable the Port Clock */
-    389            char reg = 0;
-    390            module_MAX14830_Read(port, MAX14830_REG_BRGCONFIG, 1, &reg);
-    391            reg &= MAX14830_BRG_CLK_DISABLE;
-    392            module_MAX14830_Write(port, MAX14830_REG_BRGCONFIG, &reg, 1);
-    393          
-    394            /** Restart the Read Task if currently suspended */
-    395            switch(eTaskGetState(data_read_int_handle))
-    396            {
-    397              case eReady:
-    398                break;
-    399              case eRunning:
-    400              case eBlocked:
-    401                break;
-    402              case eSuspended:
-    403                vTaskResume(data_read_int_handle);
-    404                break;
-    405              case eDeleted:
-    406                break;
-    407              default:
-    408                break;
-    409            }
-    410            vTaskResume(data_read_int_handle);
+    388            /** Set the MAX14830 Clock Source to enable Crystal */
+    389            char temp = MAX14830_CLK_CRYSTAL_EN;
+    390          //  module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_CLKSOURCE, &temp, 1);
+    391          
+    392            /** Start the Read Task */
+    393          //  MAX14830_disable(MAX14830_COM_PORT0);
+    394          }
+    395          
+    396          /**
+    397           * @brief Enable the MAX14830 Port
+    398           * 
+    399           * @param port Port to enable
+    400           */
+    401          void MAX14830_enable(eMAX18430_ComPort_t port)
+    402          {
+    403            /** If the device is off, turn it on */
+    404            uint32_t state = 0;
+    405            am_hal_gpio_state_read(AM_BSP_GPIO_S2U_ON, AM_HAL_GPIO_OUTPUT_READ, &state);
+    406            if(state == 1)
+    407            {
+    408              module_MAX14830_Power_On();
+    409              am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_WAKE, false);
+    410            }
     411          
-    412          }
-    413          
-    414          void MAX14830_enable_direct(eMAX18430_ComPort_t port)
-    415          {
-    416            /** If the device is off, turn it on */
-    417            uint32_t state = 0;
-    418            am_hal_gpio_state_read(BSP_S2U_ON, AM_HAL_GPIO_OUTPUT_READ, &state);
-    419            if(state == 1)
+    412            /** Enable the Port Clock */
+    413            char reg = 0;
+    414            module_MAX14830_Read(port, MAX14830_REG_BRGCONFIG, 1, &reg);
+    415            reg &= MAX14830_BRG_CLK_DISABLE;
+    416            module_MAX14830_Write(port, MAX14830_REG_BRGCONFIG, &reg, 1);
+    417          
+    418            /** Restart the Read Task if currently suspended */
+    419            switch(eTaskGetState(data_read_int_handle))
     420            {
-    421              module_MAX14830_Power_On();
-    422              am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_WAKE, false);
-    423            }
-    424          
-    425            /** Enable the Port Clock */
-    426            char reg = 0;
-    427            module_MAX14830_Read(port, MAX14830_REG_BRGCONFIG, 1, &reg);
-    428            reg &= MAX14830_BRG_CLK_DISABLE;
-    429            module_MAX14830_Write(port, MAX14830_REG_BRGCONFIG, &reg, 1);
-    430          
-    431          
-    432          }
-    433          
-    434          
-    435          void MAX14830_disable(eMAX18430_ComPort_t port)
-    436          {
-    437            /** Disable the Port Clock */
-    438            char reg = 0;
-    439            module_MAX14830_Read(port, MAX14830_REG_BRGCONFIG, 1, &reg);
-    440            reg |= MAX14830_BRG_CLK_DISABLE;
-    441            module_MAX14830_Write(port, MAX14830_REG_BRGCONFIG, &reg, 1);
-    442          
-    443            /** Check to see if all ports are inactive */
-    444            uint8_t cnt = 0;
-    445            for(uint8_t i=0; i<4; i++)
-    446            {
-    447              reg = 0;
-    448              module_MAX14830_Read(port, MAX14830_REG_BRGCONFIG, 1, &reg);
-    449              if( (reg & MAX14830_BRG_CLK_DISABLE) > 0)
-    450              {
-    451                cnt++;
-    452              }
-    453            }
+    421              case eReady:
+    422                break;
+    423              case eRunning:
+    424              case eBlocked:
+    425                break;
+    426              case eSuspended:
+    427                vTaskResume(data_read_int_handle);
+    428                break;
+    429              case eDeleted:
+    430                break;
+    431              default:
+    432                break;
+    433            }
+    434            vTaskResume(data_read_int_handle);
+    435          
+    436          }
+    437          
+    438          void MAX14830_enable_direct(eMAX18430_ComPort_t port)
+    439          {
+    440            /** If the device is off, turn it on */
+    441            uint32_t state = 0;
+    442            am_hal_gpio_state_read(AM_BSP_GPIO_S2U_ON, AM_HAL_GPIO_OUTPUT_READ, &state);
+    443            if(state == 1)
+    444            {
+    445              module_MAX14830_Power_On();
+    446              am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_WAKE, false);
+    447            }
+    448          
+    449            /** Enable the Port Clock */
+    450            char reg = 0;
+    451            module_MAX14830_Read(port, MAX14830_REG_BRGCONFIG, 1, &reg);
+    452            reg &= MAX14830_BRG_CLK_DISABLE;
+    453            module_MAX14830_Write(port, MAX14830_REG_BRGCONFIG, &reg, 1);
     454          
-    455            /** If all the ports are deactivated, shut down the power for lower power ops */
-    456            if(cnt ==  MAX14830_NUM_SERIAL_PORTS)
-    457            {
-    458              am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_DEEPSLEEP, false);
-    459          //    am_hal_gpio_output_set(BSP_S2U_ON); //, AM_HAL_SYSCTRL_DEEPSLEEP, false);
-    460              module_MAX14830_Power_Off();
-    461            }
-    462          
-    463          }
-    464          
-    465          
-    466          void MAX14830_Interrupt_Task(void *pvParameters)
-    467          {   
-    468              char data[256];
-    469              char *pData = &data[0];
+    455          
+    456          }
+    457          
+    458          /**
+    459           * @brief Disable selected MAX14830 Port
+    460           * 
+    461           * @param port Port to disable
+    462           */
+    463          void MAX14830_disable(eMAX18430_ComPort_t port)
+    464          {
+    465            /** Disable the Port Clock */
+    466            char reg = 0;
+    467            module_MAX14830_Read(port, MAX14830_REG_BRGCONFIG, 1, &reg);
+    468            reg |= MAX14830_BRG_CLK_DISABLE;
+    469            module_MAX14830_Write(port, MAX14830_REG_BRGCONFIG, &reg, 1);
     470          
-    471              /** Fast read to the IRQ location */
-    472              while( xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS( 500UL )) != pdPASS);
-    473              uint32_t irq = module_MAX14830_FastRead();
-    474              xSemaphoreGive(xSpiMutex);
-    475              
-    476          
-    477              /** Walk through IRQs to find out which channels has data */
-    478              for(uint8_t i=0; i<4; i++)
-    479              {
-    480                if(irq | (1u<<i))
-    481                {
-    482                  /** Read the number of words in the FIFO (RxFIFOLvl) register */
-    483                  uint32_t len=0;
-    484                  while( xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS( 500UL )) != pdPASS);
-    485                  module_MAX14830_Read((eMAX18430_ComPort_t)i, MAX14830_RHR, len, pData);
-    486                  xSemaphoreGive(xSpiMutex);
-    487          
-    488                  /** Push the data into a circular buffer */
-    489                  for(uint16_t idx=0; idx<256; idx++)
-    490                  {
-    491                    BufferC_putc(&rxBuf[i], *pData++);
-    492                  }
-    493                }
-    494              }
-    495          }
-    496          
-    497          void module_MAX14830_Write_Task(void  *pvParameters)
-    498          {
-    499          
-    500            eMAX18430_ComPort_t port = (eMAX18430_ComPort_t) pvParameters;
-    501            char data = 0;
+    471            /** Check to see if all ports are inactive */
+    472            uint8_t cnt = 0;
+    473            for(uint8_t i=0; i<4; i++)
+    474            {
+    475              reg = 0;
+    476              module_MAX14830_Read(port, MAX14830_REG_BRGCONFIG, 1, &reg);
+    477              if( (reg & MAX14830_BRG_CLK_DISABLE) > 0)
+    478              {
+    479                cnt++;
+    480              }
+    481            }
+    482          
+    483            /** If all the ports are deactivated, shut down the power for lower power ops */
+    484            if(cnt ==  MAX14830_NUM_SERIAL_PORTS)
+    485            {
+    486              am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_DEEPSLEEP, false);
+    487          //    am_hal_gpio_output_set(AM_BSP_GPIO_S2U_ON); //, AM_HAL_SYSCTRL_DEEPSLEEP, false);
+    488              module_MAX14830_Power_Off();
+    489            }
+    490          
+    491          }
+    492          
+    493          /**
+    494           * @brief Task for RTOS Read Task
+    495           * 
+    496           * @param pvParameters 
+    497           */
+    498          void MAX14830_Interrupt_Task(void *pvParameters)
+    499          {   
+    500              char data[256];
+    501              char *pData = &data[0];
     502          
-    503            sCircularBufferC_t *pBuf = &txBuf[(uint8_t)port];
-    504          
-    505            while( xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS( 500UL )) != pdPASS);
-    506            while(BufferC_Get_Size(pBuf))
-    507            {
-    508              BufferC_getc(pBuf, &data);
-    509              module_MAX14830_Write(port, MAX14830_THR, &data, 1);
-    510            }
-    511            xSemaphoreGive(xSpiMutex);
-    512            vTaskDelete(NULL);
-    513          }
-    514          
-    515          /**
-    516           * D = fRef / (16 * BaudRate)
-    517           * DIV = TRUNC(D)
-    518           * FRACT, is a 4-bit nibble, which is programmed into BRGConfig[3:0]
-    519           * FRACT = ROUND(16 x (D-DIV)).
-    520           * 
-    521           * 
-    522           */
-    523          void MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate )
-    524          {
-    525          
-    526          //  uint32_t status = AM_HAL_STATUS_FAIL;
-    527            
-    528          //  module_MAX14830_FastRead();
-    529          
-    530            float D = MAX14830_XTAL_FREQ / (16 * baudrate );
-    531            uint32_t DIV = (uint32_t)trunc(D) ;
-    532            uint32_t FRACT = (uint32_t) round(16 * (D - DIV));
-    533            FRACT = FRACT & 0x0000000F;
-    534            uint32_t DIVMSB = (DIV & 0x00000100) >> 8;
-    535            uint32_t DIVLSB = (DIV & 0x000000FF);
+    503              /** Fast read to the IRQ location */
+    504              while( xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS( 500UL )) != pdPASS);
+    505              uint32_t irq = module_MAX14830_FastRead();
+    506              xSemaphoreGive(xSpiMutex);
+    507              
+    508          
+    509              /** Walk through IRQs to find out which channels has data */
+    510              for(uint8_t i=0; i<4; i++)
+    511              {
+    512                if(irq | (1u<<i))
+    513                {
+    514                  /** Read the number of words in the FIFO (RxFIFOLvl) register */
+    515                  uint32_t len=0;
+    516                  while( xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS( 500UL )) != pdPASS);
+    517                  module_MAX14830_Read((eMAX18430_ComPort_t)i, MAX14830_RHR, len, pData);
+    518                  xSemaphoreGive(xSpiMutex);
+    519          
+    520                  /** Push the data into a circular buffer */
+    521                  for(uint16_t idx=0; idx<256; idx++)
+    522                  {
+    523                    BufferC_putc(&rxBuf[i], *pData++);
+    524                  }
+    525                }
+    526              }
+    527          }
+    528          
+    529          /**
+    530           * @brief RTOS Read Task
+    531           * 
+    532           * @param pvParameters 
+    533           */
+    534          void module_MAX14830_Write_Task(void  *pvParameters)
+    535          {
     536          
-    537            /** Send the BRGConfig */
-    538            
-    539            module_MAX14830_Write(port, MAX14830_REG_DIVLSB, (char*)&DIVLSB, 1);
-    540            module_MAX14830_Write(port, MAX14830_REG_DIVMSB, (char*)&DIVMSB, 1);
-    541            module_MAX14830_Write(port, MAX14830_REG_BRGCONFIG, (char*)&FRACT, 1);
-    542            
-    543          }
-    544          
-    545          void MAX14830_UART_Write(eMAX18430_ComPort_t port, char *data, uint32_t len)
-    546          {
-    547            
-    548            char taskDesc[configMAX_TASK_NAME_LEN];
-    549            sprintf(taskDesc, "S2U Write CH%u", (uint8_t) port);
-    550          
-    551            /** Put data into circular buffer */
-    552            for(uint8_t i=0; i < len; i++)
-    553            {
-    554              BufferC_putc(&txBuf[(uint8_t) port], *data++);
-    555            }
-    556          
-    557            /** Ensure the port is enabled */
-    558            MAX14830_enable(port);
-    559          
-    560            /** Create Task */
-    561            xTaskCreate( 
-    562              module_MAX14830_Write_Task,   
-    563              taskDesc, 
-    564              STACK_SIZE, 
-    565              (void*) port, 
-    566              tskIDLE_PRIORITY + MAX14830_WRITE_TASK_PRIORITY, 
-    567              NULL);
-    568          
-    569          }
-    570          
-    571          void MAX14830_UART_Write_direct(eMAX18430_ComPort_t port, char *data, uint32_t len)
-    572          {
-    573            char taskDesc[configMAX_TASK_NAME_LEN];
-    574            sprintf(taskDesc, "S2U Write CH%u", (uint8_t) port);
-    575          
-    576            /** Put data into circular buffer */
-    577            for(uint8_t i=0; i < len; i++)
-    578            {
-    579              BufferC_putc(&txBuf[(uint8_t) port], *data++);
-    580            }
+    537            eMAX18430_ComPort_t port = (eMAX18430_ComPort_t) pvParameters;
+    538            char data = 0;
+    539          
+    540            sCircularBufferC_t *pBuf = &txBuf[(uint8_t)port];
+    541          
+    542            while( xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS( 500UL )) != pdPASS);
+    543            while(BufferC_Get_Size(pBuf))
+    544            {
+    545              BufferC_getc(pBuf, &data);
+    546              module_MAX14830_Write(port, MAX14830_THR, &data, 1);
+    547            }
+    548            xSemaphoreGive(xSpiMutex);
+    549            vTaskDelete(NULL);
+    550          }
+    551          
+    552          /**
+    553           * D = fRef / (16 * BaudRate)
+    554           * DIV = TRUNC(D)
+    555           * FRACT, is a 4-bit nibble, which is programmed into BRGConfig[3:0]
+    556           * FRACT = ROUND(16 x (D-DIV)).
+    557           * 
+    558           * 
+    559           */
+    560          void MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate )
+    561          {
+    562          
+    563          //  uint32_t status = AM_HAL_STATUS_FAIL;
+    564            
+    565          //  module_MAX14830_FastRead();
+    566          
+    567            float D = MAX14830_XTAL_FREQ / (16 * baudrate );
+    568            uint32_t DIV = (uint32_t)trunc(D) ;
+    569            uint32_t FRACT = (uint32_t) round(16 * (D - DIV));
+    570            FRACT = FRACT & 0x0000000F;
+    571            uint32_t DIVMSB = (DIV & 0x00000100) >> 8;
+    572            uint32_t DIVLSB = (DIV & 0x000000FF);
+    573          
+    574            /** Send the BRGConfig */
+    575            
+    576            module_MAX14830_Write(port, MAX14830_REG_DIVLSB, (char*)&DIVLSB, 1);
+    577            module_MAX14830_Write(port, MAX14830_REG_DIVMSB, (char*)&DIVMSB, 1);
+    578            module_MAX14830_Write(port, MAX14830_REG_BRGCONFIG, (char*)&FRACT, 1);
+    579            
+    580          }
     581          
-    582            /** Ensure the port is enabled */
-    583            MAX14830_enable_direct(port);
-    584          
-    585            sCircularBufferC_t *pBuf = &txBuf[(uint8_t)port];
-    586            char cData;
-    587            uint32_t xLen = 0;
-    588            while(BufferC_Get_Size(pBuf))
-    589            {
-    590              xLen = BufferC_gets(pBuf, xfer_data, XFER_DATA_SIZE);
-    591              module_MAX14830_Write(port, MAX14830_THR, xfer_data, xLen); 
-    592            }
-    593          //  while(BufferC_Get_Size(pBuf))
-    594          //  {
-    595          //    BufferC_getc(pBuf, &cData);
-    596          //    module_MAX14830_Write(port, MAX14830_THR, &cData, 1);
-    597          //  }
-    598          }  
-    599          
-    600          uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, char *pData, uint32_t max_len)
-    601          {
-    602            uint32_t len=0;
-    603            sCircularBufferC_t *pBuf = &rxBuf[(uint8_t)port];
-    604          
-    605            while( (BufferC_Get_Size(pBuf) > 0) && (len < max_len) )
-    606            {
-    607              BufferC_getc(pBuf, pData);
-    608              pData++;
-    609              len++;
-    610            }
-    611            return len;
-    612          }
-    613          
-    614          uint32_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, char *pData, uint32_t max_len)
-    615          {
-    616            
-    617            
-    618            uint32_t len=0;
-    619            sCircularBufferC_t *pBuf = &rxBuf[(uint8_t)port];
-    620            
-    621            
-    622          //  module_MAX14830_FastRead();
-    623          
-    624            module_MAX14830_Read(MAX14830_COM_PORT0,1, 36, pData);
-    625            
-    626            printf("%s\n", pData);
-    627            
-    628          }
-    629          
-    630          uint32_t MAX14830_UART_Read_bytes_waiting(eMAX18430_ComPort_t port)
-    631          {
-    632            uint32_t len = BufferC_Get_Size(&rxBuf[(uint8_t)port]);
-    633            return len;
-    634          }
+    582          /**
+    583           * @brief Write UART RTOS
+    584           * 
+    585           * @param port Port to write to
+    586           * @param data Pointer to data array to write
+    587           * @param len Length of data array
+    588           */
+    589          void MAX14830_UART_Write(eMAX18430_ComPort_t port, char *data, uint32_t len)
+    590          {
+    591            
+    592            char taskDesc[configMAX_TASK_NAME_LEN];
+    593            sprintf(taskDesc, "S2U Write CH%u", (uint8_t) port);
+    594          
+    595            /** Put data into circular buffer */
+    596            for(uint8_t i=0; i < len; i++)
+    597            {
+    598              BufferC_putc(&txBuf[(uint8_t) port], *data++);
+    599            }
+    600          
+    601            /** Ensure the port is enabled */
+    602            MAX14830_enable(port);
+    603          
+    604            /** Create Task */
+    605            xTaskCreate( 
+    606              module_MAX14830_Write_Task,   
+    607              taskDesc, 
+    608              STACK_SIZE, 
+    609              (void*) port, 
+    610              tskIDLE_PRIORITY + MAX14830_WRITE_TASK_PRIORITY, 
+    611              NULL);
+    612          
+    613          }
+    614          
+    615          /**
+    616           * @brief UART Write (non-RTOS)
+    617           * 
+    618           * @param port Port to write to
+    619           * @param data Pointer to data array
+    620           * @param len Length of the data array
+    621           */
+    622          void MAX14830_UART_Write_direct(eMAX18430_ComPort_t port, char *data, uint32_t len)
+    623          {
+    624            char taskDesc[configMAX_TASK_NAME_LEN];
+    625            sprintf(taskDesc, "S2U Write CH%u", (uint8_t) port);
+    626          
+    627            /** Put data into circular buffer */
+    628            for(uint8_t i=0; i < len; i++)
+    629            {
+    630              BufferC_putc(&txBuf[(uint8_t) port], *data++);
+    631            }
+    632          
+    633            /** Ensure the port is enabled */
+    634            MAX14830_enable_direct(port);
     635          
-    636          
-    637          
-    638          //*****************************************************************************
-    639          //
-    640          // Static Functions
-    641          //
-    642          //*****************************************************************************
-    643          static void module_MAX14830_Power_On(void)
-    644          {
-    645            am_hal_iom_enable(&pIomHandle);
-    646            am_hal_gpio_output_set(BSP_S2U_SPI_NRESET);
-    647            am_hal_gpio_output_clear(BSP_S2U_ON);
-    648            
-    649          }
+    636            sCircularBufferC_t *pBuf = &txBuf[(uint8_t)port];
+    637            char cData;
+    638            uint32_t xLen = 0;
+    639            while(BufferC_Get_Size(pBuf))
+    640            {
+    641              xLen = BufferC_gets(pBuf, xfer_data, XFER_DATA_SIZE);
+    642              module_MAX14830_Write(port, MAX14830_THR, xfer_data, xLen); 
+    643            }
+    644          //  while(BufferC_Get_Size(pBuf))
+    645          //  {
+    646          //    BufferC_getc(pBuf, &cData);
+    647          //    module_MAX14830_Write(port, MAX14830_THR, &cData, 1);
+    648          //  }
+    649          }  
     650          
-    651          static void module_MAX14830_Power_Off(void)
-    652          {
-    653            am_hal_gpio_output_clear(BSP_S2U_SPI_NRESET);
-    654            am_hal_gpio_output_set(BSP_S2U_ON);
-    655          }
-    656          
-    657          static void MAX14830_CS_Set(void)
-    658          {
-    659            am_hal_gpio_output_clear(BSP_S2U_SPI_CS);
-    660          }
-    661          
-    662          static void MAX14830_CS_Clear(void)
-    663          {
-    664            am_hal_gpio_output_set(BSP_S2U_SPI_CS);
-    665          }
-    666          
-    667          static uint32_t module_MAX14830_FastRead(void)
-    668          {
-    669            uint32_t write_byte = 0u;
-    670            uint32_t read_byte = 0u;
-    671            uint32_t status; 
-    672            
-    673            am_hal_iom_transfer_t xfer;
-    674            
-    675            xfer.uPeerInfo.ui32SpiChipSelect = 0;
-    676            xfer.ui32InstrLen = 0;
-    677            xfer.ui32Instr = 0;
-    678            xfer.ui32NumBytes = 1;
-    679            xfer.eDirection = AM_HAL_IOM_FULLDUPLEX;
-    680            xfer.pui32TxBuffer = &write_byte;
-    681            xfer.pui32RxBuffer = &read_byte;
-    682            xfer.bContinue = false;
-    683            xfer.ui8RepeatCount = 0;
-    684            xfer.ui8Priority = 1;
-    685            xfer.ui32PauseCondition = 0;
-    686            xfer.ui32StatusSetClr = 0;
-    687          
-    688            /** Chip Select */
-    689            MAX14830_CS_Set();
-    690            
-    691            status = am_hal_iom_spi_blocking_fullduplex(pIomHandle, &xfer);
-    692          
-    693            /** Chip Deselect */
-    694            MAX14830_CS_Clear();
-    695            
-    696            printf("FAST READ: status = %ul, rb = %u\n", status, read_byte);
-    697            return read_byte;
-    698          
-    699          }
-    700          
-    701          
-    702          
-    703          static uint32_t
-    704          module_MAX14830_Read(
-    705             eMAX18430_ComPort_t port,
-    706              uint32_t ui32Instr,
-    707              uint32_t ui32NumBytes,
-    708              char *pData )
-    709          {
-    710              am_hal_iom_transfer_t Transaction;
-    711          
-    712              /** Chip select */
-    713              MAX14830_CS_Set();
-    714                
-    715              //
-    716              // Create the transaction.
-    717              //
-    718              Transaction.ui32InstrLen    = 1;
-    719              Transaction.ui32Instr       = ui32Instr;
-    720              Transaction.eDirection      = AM_HAL_IOM_RX;
-    721              Transaction.ui32NumBytes    = ui32NumBytes;
-    722              Transaction.pui32RxBuffer   = (uint32_t*)pData;
-    723              Transaction.uPeerInfo.ui32SpiChipSelect = 0;
-    724              Transaction.bContinue       = false;
-    725              Transaction.ui8RepeatCount  = 0;
-    726              Transaction.ui32PauseCondition = 0;
-    727              Transaction.ui32StatusSetClr = 0;
-    728          
-    729              //
-    730              // Execute the transction over IOM.
-    731              //
-    732              if (am_hal_iom_blocking_transfer(pIomHandle, &Transaction))
-    733              {
-    734                /** Chip Deselect */
-    735                MAX14830_CS_Clear();
-    736                return -1;
-    737              }
-    738                /** Chip Deselect */
-    739                MAX14830_CS_Clear();
-    740                return 0;
-    741              }
-    742          
-    743          static void module_MAX14830_Write(
-    744            eMAX18430_ComPort_t port, 
-    745            uint8_t reg, 
-    746            char *data, 
-    747            uint32_t len
-    748            )
-    749          {
-    750            assert(reg <= 0x1F);
-    751           
-    752          
-    753            /** Enable */
-    754            module_MAX14830_Power_On();
-    755          //  am_hal_iom_enable(&pIomHandle);
-    756          
-    757            /** Chip Select */
-    758            MAX14830_CS_Set();
-    759            
-    760            /** Prep Write Byte */
-    761            char write_byte= MAX14830_SPI_WRITE_BIT | reg;
-    762            switch(port)
-    763            {
-    764              case MAX14830_COM_PORT0:
-    765                break;
-    766              case MAX14830_COM_PORT1:
-    767                write_byte|= (1u << 5);
-    768                break;
-    769              case MAX14830_COM_PORT2:
-    770                write_byte|= (1u << 6);
-    771                break;
-    772              case MAX14830_COM_PORT3:
-    773                write_byte|= (3u << 5);
-    774                break;
-    775              default:
-    776                /** Error */
-    777                break;
-    778            }
-    779          
-    780            am_hal_iom_transfer_t transfer = 
-    781            {
-    782              .uPeerInfo = {
-    783                .ui32SpiChipSelect    = 0,
-    784                .ui32I2CDevAddr       = 0,
-    785              },
-    786              .ui32InstrLen         = 0,
-    787              .ui32Instr            = 0,
-    788              .ui32NumBytes         = 1,
-    789              .eDirection           = AM_HAL_IOM_TX,
-    790              .pui32TxBuffer        = (uint32_t*) &write_byte,
-    791              .pui32RxBuffer        = NULL,
-    792              .bContinue            = false,
-    793              .ui8RepeatCount       = 0,
-    794              .ui8Priority          = 1,
-    795              .ui32PauseCondition   = 0,
-    796              .ui32StatusSetClr     = 0
-    797            };
-    798          
-    799            am_hal_iom_blocking_transfer(pIomHandle, &transfer);
-    800           
-    801            
-    802            transfer.pui32TxBuffer = (uint32_t*) data;
-    803            transfer.ui32NumBytes = len;
-    804            
-    805          
-    806            am_hal_iom_blocking_transfer(pIomHandle, &transfer);
-    807            
-    808            /** After transfer, turn Chip Select off */
-    809            MAX14830_CS_Clear();
-    810            
-    811            /** Disable */
-    812          //  module_MAX14830_Power_Off();
-    813          //  am_hal_iom_disable(&pIomHandle);
-    814            
-    815          }
+    651          /**
+    652           * @brief UART Read - RTOS
+    653           * 
+    654           * @param port Port to read from
+    655           * @param pData Pointer to data array
+    656           * @param max_len Maximum length of data to read
+    657           * @return uint32_t Number of characters read
+    658           */
+    659          uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, char *pData, uint32_t max_len)
+    660          {
+    661            uint32_t len=0;
+    662            sCircularBufferC_t *pBuf = &rxBuf[(uint8_t)port];
+    663          
+    664            while( (BufferC_Get_Size(pBuf) > 0) && (len < max_len) )
+    665            {
+    666              BufferC_getc(pBuf, pData);
+    667              pData++;
+    668              len++;
+    669            }
+    670            return len;
+    671          }
+    672          
+    673          /**
+    674           * @brief UART Read (non-RTOS)
+    675           * 
+    676           * @param port Port to read from
+    677           * @param pData Pointer to data array
+    678           * @param max_len Maximum length of data to read
+    679           * @return uint32_t Number of characters read
+    680           */
+    681          uint32_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, char *pData, uint32_t max_len)
+    682          {
+    683            
+    684            
+    685            uint32_t len=0;
+    686            sCircularBufferC_t *pBuf = &rxBuf[(uint8_t)port];
+    687            
+    688            
+    689          //  module_MAX14830_FastRead();
+    690          
+    691            module_MAX14830_Read(MAX14830_COM_PORT0,1, 36, pData);
+    692            
+    693            printf("%s\n", pData);
+    694            
+    695          }
+    696          
+    697          /**
+    698           * @brief Find the number of bytes in waiting
+    699           * 
+    700           * @param port Port to check
+    701           * @return uint32_t Number of bytes in waiting
+    702           */
+    703          uint32_t MAX14830_UART_Read_bytes_waiting(eMAX18430_ComPort_t port)
+    704          {
+    705            uint32_t len = BufferC_Get_Size(&rxBuf[(uint8_t)port]);
+    706            return len;
+    707          }
+    708          
+    709          
+    710          
+    711          //*****************************************************************************
+    712          //
+    713          // Static Functions
+    714          //
+    715          //*****************************************************************************
+    716          /**
+    717           * @brief Power the MAX14830 ON
+    718           * 
+    719           */
+    720          static void module_MAX14830_Power_On(void)
+    721          {
+    722            am_hal_iom_enable(&pIomHandle);
+    723            am_hal_gpio_output_set(BSP_GPIO_S2U_SPI_NRESET);
+    724            am_hal_gpio_output_clear(AM_BSP_GPIO_S2U_ON);
+    725            
+    726          }
+    727          
+    728          /**
+    729           * @brief Power the MAX14830 OFF
+    730           * 
+    731           */
+    732          static void module_MAX14830_Power_Off(void)
+    733          {
+    734            am_hal_gpio_output_clear(BSP_GPIO_S2U_SPI_NRESET);
+    735            am_hal_gpio_output_set(AM_BSP_GPIO_S2U_ON);
+    736          }
+    737          
+    738          /**
+    739           * @brief MAX14830 Chip Select Set
+    740           * 
+    741           */
+    742          static void MAX14830_CS_Set(void)
+    743          {
+    744            am_hal_gpio_output_clear(BSP_GPIO_S2U_SPI_CS);
+    745          }
+    746          
+    747          /**
+    748           * @brief MAX14830 Chip select Clear
+    749           * 
+    750           */
+    751          static void MAX14830_CS_Clear(void)
+    752          {
+    753            am_hal_gpio_output_set(BSP_GPIO_S2U_SPI_CS);
+    754          }
+    755          
+    756          /**
+    757           * @brief Fast read
+    758           * 
+    759           * @return uint32_t 
+    760           */
+    761          static uint32_t module_MAX14830_FastRead(void)
+    762          {
+    763            uint32_t write_byte = 0u;
+    764            uint32_t read_byte = 0u;
+    765            uint32_t status; 
+    766            
+    767            am_hal_iom_transfer_t xfer;
+    768            
+    769            xfer.uPeerInfo.ui32SpiChipSelect = 0;
+    770            xfer.ui32InstrLen = 0;
+    771            xfer.ui32Instr = 0;
+    772            xfer.ui32NumBytes = 1;
+    773            xfer.eDirection = AM_HAL_IOM_FULLDUPLEX;
+    774            xfer.pui32TxBuffer = &write_byte;
+    775            xfer.pui32RxBuffer = &read_byte;
+    776            xfer.bContinue = false;
+    777            xfer.ui8RepeatCount = 0;
+    778            xfer.ui8Priority = 1;
+    779            xfer.ui32PauseCondition = 0;
+    780            xfer.ui32StatusSetClr = 0;
+    781          
+    782            /** Chip Select */
+    783            MAX14830_CS_Set();
+    784            
+    785            status = am_hal_iom_spi_blocking_fullduplex(pIomHandle, &xfer);
+    786          
+    787            /** Chip Deselect */
+    788            MAX14830_CS_Clear();
+    789            
+    790            printf("FAST READ: status = %ul, rb = %u\n", status, read_byte);
+    791            return read_byte;
+    792          
+    793          }
+    794          
+    795          
+    796          /**
+    797           * @brief MAX14830 Read
+    798           * 
+    799           * @param port  Port to read from
+    800           * @param ui32Instr Instruction 
+    801           * @param ui32NumBytes Number of Bytes
+    802           * @param pData Pointer to data array
+    803           * @return uint32_t Number of bytes read
+    804           */
+    805          static uint32_t
+    806          module_MAX14830_Read(
+    807             eMAX18430_ComPort_t port,
+    808              uint32_t ui32Instr,
+    809              uint32_t ui32NumBytes,
+    810              char *pData )
+    811          {
+    812              am_hal_iom_transfer_t Transaction;
+    813          
+    814              /** Chip select */
+    815              MAX14830_CS_Set();
+    816                
+    817              //
+    818              // Create the transaction.
+    819              //
+    820              Transaction.ui32InstrLen    = 1;
+    821              Transaction.ui32Instr       = ui32Instr;
+    822              Transaction.eDirection      = AM_HAL_IOM_RX;
+    823              Transaction.ui32NumBytes    = ui32NumBytes;
+    824              Transaction.pui32RxBuffer   = (uint32_t*)pData;
+    825              Transaction.uPeerInfo.ui32SpiChipSelect = 0;
+    826              Transaction.bContinue       = false;
+    827              Transaction.ui8RepeatCount  = 0;
+    828              Transaction.ui32PauseCondition = 0;
+    829              Transaction.ui32StatusSetClr = 0;
+    830          
+    831              //
+    832              // Execute the transction over IOM.
+    833              //
+    834              if (am_hal_iom_blocking_transfer(pIomHandle, &Transaction))
+    835              {
+    836                /** Chip Deselect */
+    837                MAX14830_CS_Clear();
+    838                return -1;
+    839              }
+    840                /** Chip Deselect */
+    841                MAX14830_CS_Clear();
+    842                return 0;
+    843              }
+    844          
+    845          /**
+    846           * @brief Write to port
+    847           * 
+    848           * @param port Port to write to
+    849           * @param reg Register to write
+    850           * @param data Pointer to data array
+    851           * @param len Length of data array
+    852           */
+    853          static void module_MAX14830_Write(
+    854            eMAX18430_ComPort_t port, 
+    855            uint8_t reg, 
+    856            char *data, 
+    857            uint32_t len
+    858            )
+    859          {
+    860            assert(reg <= 0x1F);
+    861           
+    862          
+    863            /** Enable */
+    864            module_MAX14830_Power_On();
+    865          //  am_hal_iom_enable(&pIomHandle);
+    866          
+    867            /** Chip Select */
+    868            MAX14830_CS_Set();
+    869            
+    870            /** Prep Write Byte */
+    871            char write_byte= MAX14830_SPI_WRITE_BIT | reg;
+    872            switch(port)
+    873            {
+    874              case MAX14830_COM_PORT0:
+    875                break;
+    876              case MAX14830_COM_PORT1:
+    877                write_byte|= (1u << 5);
+    878                break;
+    879              case MAX14830_COM_PORT2:
+    880                write_byte|= (1u << 6);
+    881                break;
+    882              case MAX14830_COM_PORT3:
+    883                write_byte|= (3u << 5);
+    884                break;
+    885              default:
+    886                /** Error */
+    887                break;
+    888            }
+    889          
+    890            am_hal_iom_transfer_t transfer = 
+    891            {
+    892              .uPeerInfo = {
+    893                .ui32SpiChipSelect    = 0,
+    894                .ui32I2CDevAddr       = 0,
+    895              },
+    896              .ui32InstrLen         = 0,
+    897              .ui32Instr            = 0,
+    898              .ui32NumBytes         = 1,
+    899              .eDirection           = AM_HAL_IOM_TX,
+    900              .pui32TxBuffer        = (uint32_t*) &write_byte,
+    901              .pui32RxBuffer        = NULL,
+    902              .bContinue            = false,
+    903              .ui8RepeatCount       = 0,
+    904              .ui8Priority          = 1,
+    905              .ui32PauseCondition   = 0,
+    906              .ui32StatusSetClr     = 0
+    907            };
+    908          
+    909            am_hal_iom_blocking_transfer(pIomHandle, &transfer);
+    910           
+    911            
+    912            transfer.pui32TxBuffer = (uint32_t*) data;
+    913            transfer.ui32NumBytes = len;
+    914            
+    915          
+    916            am_hal_iom_blocking_transfer(pIomHandle, &transfer);
+    917            
+    918            /** After transfer, turn Chip Select off */
+    919            MAX14830_CS_Clear();
+    920            
+    921            /** Disable */
+    922          //  module_MAX14830_Power_Off();
+    923          //  am_hal_iom_disable(&pIomHandle);
+    924            
+    925          }
 
-   Maximum stack usage in bytes:
-
-   .cstack Function
-   ------- --------
-       0   MAX14830_CS_Clear
-       0   MAX14830_CS_Set
-     280   MAX14830_Interrupt_Task
-       280   -> BufferC_putc
-       280   -> module_MAX14830_FastRead
-       280   -> module_MAX14830_Read
-       280   -> xQueueGenericSend
-       280   -> xQueueSemaphoreTake
-      40   MAX14830_Set_baudrate
-        40   -> __aeabi_d2uiz
-        40   -> __aeabi_f2d
-        40   -> module_MAX14830_Write
-        40   -> round
-        40   -> trunc
-      24   MAX14830_UART_Read
-        24   -> BufferC_Get_Size
-        24   -> BufferC_getc
-       8   MAX14830_UART_Read_bytes_waiting
-         8   -> BufferC_Get_Size
-       8   MAX14830_UART_Read_direct
-         8   -> module_MAX14830_Read
-         8   -> printf
-      48   MAX14830_UART_Write
-        48   -> BufferC_putc
-        48   -> MAX14830_enable
-        48   -> sprintf
-        48   -> xTaskCreate
-      40   MAX14830_UART_Write_direct
-        40   -> BufferC_Get_Size
-        40   -> BufferC_gets
-        40   -> BufferC_putc
-        40   -> MAX14830_enable_direct
-        40   -> module_MAX14830_Write
-        40   -> sprintf
-      24   MAX14830_disable
-        24   -> am_hal_iom_power_ctrl
-        24   -> module_MAX14830_Power_Off
-        24   -> module_MAX14830_Read
-        24   -> module_MAX14830_Write
-      16   MAX14830_enable
-        16   -> am_hal_gpio_state_read
-        16   -> am_hal_iom_power_ctrl
-        16   -> eTaskGetState
-        16   -> module_MAX14830_Power_On
-        16   -> module_MAX14830_Read
-        16   -> module_MAX14830_Write
-        16   -> vTaskResume
-      16   MAX14830_enable_direct
-        16   -> am_hal_gpio_state_read
-        16   -> am_hal_iom_power_ctrl
-        16   -> module_MAX14830_Power_On
-        16   -> module_MAX14830_Read
-        16   -> module_MAX14830_Write
-       8   MAX14830_init
-         8   -> am_hal_gpio_pinconfig
-         8   -> am_hal_iom_configure
-         8   -> am_hal_iom_enable
-         8   -> am_hal_iom_initialize
-         8   -> am_hal_iom_interrupt_clear
-         8   -> am_hal_iom_interrupt_enable
-         8   -> am_hal_iom_power_ctrl
-         8   -> module_MAX14830_Power_Off
-         8   -> module_MAX14830_Power_On
-         8   -> printf
-      56   module_MAX14830_FastRead
-        56   -> MAX14830_CS_Clear
-        56   -> MAX14830_CS_Set
-        56   -> am_hal_iom_spi_blocking_fullduplex
-        56   -> printf
-       0   module_MAX14830_Power_Off
-       8   module_MAX14830_Power_On
-         8   -> am_hal_iom_enable
-      56   module_MAX14830_Read
-        56   -> MAX14830_CS_Clear
-        56   -> MAX14830_CS_Set
-        56   -> am_hal_iom_blocking_transfer
-      64   module_MAX14830_Write
-        64   -> MAX14830_CS_Clear
-        64   -> MAX14830_CS_Set
-        64   -> __aeabi_assert
-        64   -> __aeabi_memcpy4
-        64   -> __iar_EmptyStepPoint
-        64   -> am_hal_iom_blocking_transfer
-        64   -> module_MAX14830_Power_On
-      24   module_MAX14830_Write_Task
-        24   -> BufferC_Get_Size
-        24   -> BufferC_getc
-        24   -> module_MAX14830_Write
-        24   -> vTaskDelete
-        24   -> xQueueGenericSend
-        24   -> xQueueSemaphoreTake
-
-
-   Section sizes:
-
-   Bytes  Function/Label
-   -----  --------------
-       4  ??DataTable18
-       4  ??DataTable18_1
-       4  ??DataTable18_10
-       4  ??DataTable18_11
-       4  ??DataTable18_12
-       4  ??DataTable18_13
-       4  ??DataTable18_14
-       4  ??DataTable18_15
-       4  ??DataTable18_16
-       4  ??DataTable18_17
-       4  ??DataTable18_18
-       4  ??DataTable18_19
-       4  ??DataTable18_2
-       4  ??DataTable18_20
-       4  ??DataTable18_21
-       4  ??DataTable18_22
-       4  ??DataTable18_23
-       4  ??DataTable18_24
-       4  ??DataTable18_25
-       4  ??DataTable18_26
-       4  ??DataTable18_27
-       4  ??DataTable18_28
-       4  ??DataTable18_29
-       4  ??DataTable18_3
-       4  ??DataTable18_30
-       4  ??DataTable18_31
-       4  ??DataTable18_32
-       4  ??DataTable18_4
-       4  ??DataTable18_5
-       4  ??DataTable18_6
-       4  ??DataTable18_7
-       4  ??DataTable18_8
-       4  ??DataTable18_9
-      20  ?_0
-      20  ?_1
-      12  ?_10
-      12  ?_11
-      40  ?_12
-      20  ?_2
-      20  ?_3
-      20  ?_4
-      20  ?_5
-      20  ?_6
-      16  ?_7
-       4  ?_8
-      36  ?_9
-       1  CTSIEn
-      20  IomConfig
-      10  MAX14830_CS_Clear
-      10  MAX14830_CS_Set
-     164  MAX14830_Interrupt_Task
-     170  MAX14830_Set_baudrate
-      54  MAX14830_UART_Read
-      20  MAX14830_UART_Read_bytes_waiting
-      40  MAX14830_UART_Read_direct
-      94  MAX14830_UART_Write
-     128  MAX14830_UART_Write_direct
-     122  MAX14830_disable
-     138  MAX14830_enable
-      90  MAX14830_enable_direct
-     248  MAX14830_init
-       1  RFifoEmtyIEn
-       1  TFifoEmtyIEn
-       4  data_read_int_handle
-     104  module_MAX14830_FastRead
-      18  module_MAX14830_Power_Off
-      26  module_MAX14830_Power_On
-      88  module_MAX14830_Read
-     158  module_MAX14830_Write
-     100  module_MAX14830_Write_Task
-       4  pIomHandle
-   1'064  rxBuf
-   1'064  txBuf
-       4  txn_stat
-       4  xSpiMutex
-       1  xfer_complete
-      64  xfer_data
-
- 
- 2'209 bytes in section .bss
-    20 bytes in section .data
-   263 bytes in section .rodata
- 1'914 bytes in section .text
- 
- 1'914 bytes of CODE  memory
-   263 bytes of CONST memory
- 2'229 bytes of DATA  memory
-
-Errors: none
+Errors: 16
 Warnings: 6

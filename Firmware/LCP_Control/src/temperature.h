@@ -2,6 +2,8 @@
 #define TEMPERATURE_H
 
 
+#include "artemis_pa9ld.h"
+
 
 typedef enum eTemperatureSensor_t{
     TEMP_Undefined,
@@ -13,7 +15,7 @@ typedef struct sTemperature_t
 {   
     TemperatureSensor_t sensor;
      struct {
-        e_uart_t uart;          /**< UART Port */
+        uint8_t uart;          /**< UART Port */
     }uart;
     struct {
         uint32_t i2c;           /**< I2C Channel (IOM Module)*/

@@ -63,6 +63,7 @@
 //*****************************************************************************
 #include "am_bsp_pins.h"
 #include "buffer_c.h"
+#include "isbd_at_cmd.h"
 
 #endif // TEST
 //*****************************************************************************
@@ -78,10 +79,10 @@
 //
 //*****************************************************************************
 typedef uint8_t module_buffer_t[I9603N_BUFFER_SIZE];
-typedef struct s_module_t
-{
-    // artemis_uart_t uart;
-} module_t;
+//typedef struct s_module_t
+//{
+//     artemis_uart_t uart;
+//} module_t;
 
 //*****************************************************************************
 //
@@ -92,7 +93,7 @@ typedef struct s_module_t
  * @brief Module Parameters
  * 
  */
-static module_t module;
+//static module_t module;
 static uint8_t irid_buf[I9603N_BUFFER_SIZE];
 //*****************************************************************************
 //
@@ -150,7 +151,7 @@ bool I9603N_send_data(uint8_t *msg, uint16_t len)
     if(retVal)
     {
         
-        sprintf(irid_buf, "AT+SBWD=%u");
+        strcpy((char*)irid_buf, "AT+SBWD=%u");
         module_i9603n_send(irid_buf, strlen(irid_buf));
     }
 
@@ -231,7 +232,7 @@ static bool module_i9603_check_net_available(void)
         retVal = ISBD_AT_create_packet( ISBD_AT_CMD_CSQ,
                                         0,
                                         NULL,
-                                        packet );
+                                        &packet );
 
         /** Send the packet */
 
@@ -247,11 +248,11 @@ static bool module_i9603_check_net_available(void)
 
 static uint16_t module_i9603n_send_packet(
                             isbd_at_packet_t *packet,
-                            uint8_t *result,
+                            uint8_t *result
                             )
 {
     /** Send the command */
-    artemis_i9603n_send(packet->cmd.msg, strlen(packet->cmd.ms));
+    artemis_i9603n_send(packet->cmd.msg, strlen(packet->cmd.msg));
 
     /** */
 

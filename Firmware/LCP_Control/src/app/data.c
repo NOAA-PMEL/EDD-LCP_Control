@@ -26,8 +26,8 @@ static uint16_t module_convert_temperature_to_uint16_t(float temp);
 // Global Functions
 //
 //*****************************************************************************
-void DATA_setbuffer(Data_t *p, uint16_t *pTime, 
-                            uint16_t *pDepth, uint16_t *pTemp,
+void DATA_setbuffer(Data_t *p, uint32_t *pTime, 
+                            float *pDepth, float*pTemp,
                             size_t length)
 {
     p->cbuf.length = length;
@@ -41,7 +41,6 @@ void DATA_setbuffer(Data_t *p, uint16_t *pTime,
 
 void DATA_reset(Data_t *p)
 {
-    idx = 0;
     p->cbuf.read = 0;
     p->cbuf.written = 0;
     p->data.start_time = 0;
@@ -67,35 +66,35 @@ size_t DATA_add(Data_t *buf, uint32_t time, float depth, float temp)
 }
 
 
-size_t DATA_get_original(Data_t *p, uint32_t *time, float *depth, float *temp)
-{
-    if( p->cbuf.read < p->cbuf.written) 
-    {
-        *time = p->data.pTimeOffset[p->cbuf.read] + p->data.start_time;
-        *depth = module_convert_uint16_t_to_depth(p->data.pDepth[p->cbuf.read]);
-        *temp = module_convert_uint16_t_to_temperature(p->data.pTemperature[p->cbuf.read]);
-        p->cbuf.read++;
-        return 1;
-    }
-
-    return 0;
-}
-
-
-size_t DATA_get_converted(Data_t *p, uint32_t *start, uint16_t *offset, uint16_t *depth, uint16_t *temp)
-{
-    if( p->cbuf.read < p->cbuf.written) 
-    {
-        *start = p->data.start_time;
-        *time = p->data.pTimeOffset[p->cbuf.read];
-        *depth = p->data.pDepth[p->cbuf.read];
-        *temp = p->data.pTemperature[p->cbuf.read];
-        p->cbuf.read++;
-        return 1;
-    }
-
-    return 0;
-}
+//size_t DATA_get_original(Data_t *p, uint32_t *time, float *depth, float *temp)
+//{
+//    if( p->cbuf.read < p->cbuf.written) 
+//    {
+//        *time = p->data.pTimeOffset[p->cbuf.read] + p->data.start_time;
+//        *depth = module_convert_uint16_t_to_depth(p->data.pDepth[p->cbuf.read]);
+//        *temp = module_convert_uint16_t_to_temperature(p->data.pTemperature[p->cbuf.read]);
+//        p->cbuf.read++;
+//        return 1;
+//    }
+//
+//    return 0;
+//}
+//
+//
+//size_t DATA_get_converted(Data_t *p, uint32_t *start, uint16_t *offset, uint16_t *depth, uint16_t *temp)
+//{
+//    if( p->cbuf.read < p->cbuf.written) 
+//    {
+//        *start = p->data.start_time;
+//        *time = p->data.pTimeOffset[p->cbuf.read];
+//        *depth = p->data.pDepth[p->cbuf.read];
+//        *temp = p->data.pTemperature[p->cbuf.read];
+//        p->cbuf.read++;
+//        return 1;
+//    }
+//
+//    return 0;
+//}
 
 
 

@@ -364,6 +364,8 @@
                     <state>$AMBIQ_SDK$\CMSIS\ARM\Include</state>
                     <state>$PROJ_DIR\src\RTOS</state>
                     <state>$AMBIQ_SDK$\mcu\apollo3\hal</state>
+                    <state>C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\app</state>
+                    <state>C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\sys</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2395,6 +2397,33 @@
         </file>
     </group>
     <group>
+        <name>app</name>
+        <file>
+            <name>$PROJ_DIR$\..\src\app\control.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\app\control.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\app\data.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\app\data.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\app\sensors.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\app\sensors.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\app\StateMachine.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\app\StateMachine.h</name>
+        </file>
+    </group>
+    <group>
         <name>artemis</name>
         <file>
             <name>$PROJ_DIR$\..\src\artemis\artemis_debug.c</name>
@@ -2407,6 +2436,12 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\artemis\artemis_i2c.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_i9603n.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_i9603n.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\artemis\artemis_iom.c</name>
@@ -2433,6 +2468,12 @@
             <name>$PROJ_DIR$\..\src\artemis\artemis_pa9ld.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_piston.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_piston.h</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\src\artemis\artemis_spi.c</name>
         </file>
         <file>
@@ -2455,6 +2496,12 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\artemis\artemis_time.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_uart.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\artemis\artemis_uart.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\artemis\artemis_ublox_i2c.c</name>
@@ -2529,6 +2576,36 @@
             <name>$PROJ_DIR$\..\src\buffer_c.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\src\dataframe.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\dataframe.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\depth.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\depth.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\GPS.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\GPS.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\i9603n.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\i9603n.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\isbd_at_cmd.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\isbd_at_cmd.h</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\src\LED.c</name>
         </file>
         <file>
@@ -2536,33 +2613,81 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\MAX14830.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\MAX14830.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\piston.c</name>
             <excluded>
                 <configuration>Debug</configuration>
             </excluded>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\src\MAX14830.h</name>
+            <name>$PROJ_DIR$\..\src\piston.h</name>
             <excluded>
                 <configuration>Debug</configuration>
             </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\S9_temp.c</name>
+            <excluded>
+                <configuration>Debug</configuration>
+            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\S9_temp.h</name>
+            <excluded>
+                <configuration>Debug</configuration>
+            </excluded>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\temperature.c</name>
+            <excluded>
+                <configuration>Debug</configuration>
+            </excluded>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\temperature.h</name>
+            <excluded>
+                <configuration>Debug</configuration>
+            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\ublox.c</name>
+            <excluded>
+                <configuration>Debug</configuration>
+            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\ublox.h</name>
+            <excluded>
+                <configuration>Debug</configuration>
+            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\ublox_ubx.c</name>
+            <excluded>
+                <configuration>Debug</configuration>
+            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\ublox_ubx.h</name>
+            <excluded>
+                <configuration>Debug</configuration>
+            </excluded>
+        </file>
+    </group>
+    <group>
+        <name>sys</name>
+        <file>
+            <name>$PROJ_DIR$\..\src\sys\config.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\sys\sysinfo.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\src\sys\sysinfo.h</name>
         </file>
     </group>
     <file>

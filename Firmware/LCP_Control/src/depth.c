@@ -24,7 +24,7 @@
 //*****************************************************************************
 #include "depth.h"
 #include "artemis_pa9ld.h"
-#include "bsp_pins.h"
+#include "am_bsp_pins.h"
 
 
 //*****************************************************************************
@@ -38,12 +38,20 @@
  */
 static sDepth_t module ={
     .sensor = DEPTH_Keller_Not_Configured,
-    .uart = {0},
+    .uart = {BSP_UART_NONE},
     .i2c = {0},
     .device.manufacturer = {0},
     .device.scaling = {0},
-    .density = TYPICAL_DENSITY_OF_SALTWATER
+    .conversion.density = TYPICAL_DENSITY_OF_SALTWATER
 };
+
+
+//*****************************************************************************
+//
+// Static Function Prototypes
+//
+//*****************************************************************************
+static float module_DEPTH_Convert_Pressure_to_Depth(float pressure);
 
 
 //*****************************************************************************
@@ -80,11 +88,11 @@ static sDepth_t module ={
 *******************************************************************************/
 void DEPTH_initialize(eDEPTH_Sensor_t sensor)
 {
-    module.sensorType = sensor;
-    switch(sensorType)
+    module.sensor = sensor;
+    switch(sensor)
     {
         case DEPTH_Keller_PA9LD:
-            module.i2c = 4;
+            module.i2c.i2c = 4;
             artemis_pa9ld_initialize(&g_AM_BSP_GPIO_PRES_ON, AM_BSP_GPIO_PRES_ON);
             artemis_pa9ld_get_calibration(&module.device.manufacturer, &module.device.scaling);
             break;
@@ -103,6 +111,11 @@ void DEPTH_initialize(eDEPTH_Sensor_t sensor)
 void DEPTH_Power_ON(void)
 {   
     switch(module.sensor)
+    {
+        default:
+            break;
+      
+    }
 
     artemis_pa9ld_power_on();
 }
@@ -140,7 +153,7 @@ void DEPTH_Read(sDepth_Measurement_t *data)
  */
 void DEPTH_Set_Density(float density)
 {
-    if( (density >> 0) && (density << 10000))
+    if( (density > 0.0f) && (density < 10000.0f))
     {
         module.conversion.density = density;
     }

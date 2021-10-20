@@ -16,9 +16,9 @@
 #include "sensors.h"
 #include "config.h"
 
-#define DEPTH_BOUND = 1.0f
+#define DEPTH_BOUND      ( 1.0f )
 
-
+static void module_turn_off_gps_and_iridium(void);
 static void task_move_to_depth(void);
 static void task_maintain_depth(void);
 static void task_profile(void);
@@ -42,7 +42,7 @@ typedef struct sProfilerSettings_t{
     struct {
         float depth;            /**< Park depth (m) */
         float error;            /**< +/- error allowed (m) */
-        uint32 duration;        /**< Duration of park (seconds) */
+        uint32_t duration;        /**< Duration of park (seconds) */
         float rate;             /**< Depth Sensor Rate */
     }park;
     struct {
@@ -125,7 +125,7 @@ static ProfilerSettings_t settings = {
             .min = SYSTEM_FALL_RATE_MAX,
             .setpoint = SYSTEM_FALL_RATE_SETPOINT
         }
-    }
+    },
     .crush_limit = SYSTEM_CRUSH_LIMIT_DEPTH
 };
 
@@ -157,13 +157,16 @@ void task_move_to_park(void)
 {
 
     /** Set the depth */
-    PST_set_depth(profiler.park.depth);
+//    PST_set_depth(profiler.park.depth);
+  PST_set_depth(settings.park.depth);
 
     /** Monitor the movement */
+  bool moveFlag;
     do
     {
         /* code */
-    } while (/* condition */);
+      moveFlag = true;
+    } while (moveFlag);
     
 
     /** Kill the task */
@@ -172,7 +175,9 @@ void task_move_to_park(void)
 void task_move_to_depth(void)
 {   
     /** Send Command to Move to Depth */
-    PST_set_depth(profiler.start.depth)
+    PST_set_depth(settings.profile.depth);
+      
+    PIS_move_to_volume();
 
     /** Loop forever */
     while(1);
@@ -198,7 +203,7 @@ void task_profile(void)
 void task_move_to_surface(void)
 {
     /** Send command to move to surface, but not tx position */
-    PST_set_depth()
+//    PST_set_depth();
 }
 
 
@@ -206,7 +211,7 @@ void task_move_to_surface(void)
 int32_t CTRL_MoveToPark(float depth)
 {
     int32_t retVal = CTRL_ERROR_FAILURE;
-    sDepth_Measurement_t depth = {0};
+    sDepth_Measurement_t measurement = {0};
     TaskHandle_t xDepthHandle = NULL;
     TaskHandle_t xPistonHandle = NULL;
     
@@ -220,8 +225,8 @@ int32_t CTRL_MoveToPark(float depth)
 
 
     /** Create the tasks */
-    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, xDepthHandle);
-    xTaskCreate((TaskFunction_t) task_move_to_depth, "move_to_depth", 128, NULL, 1, xPistonHandle);
+    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
+    xTaskCreate((TaskFunction_t) task_move_to_depth, "move_to_depth", 128, NULL, 1, &xPistonHandle);
 
     if( (xDepthHandle != NULL) && (xPistonHandle != NULL) )
     {
@@ -235,13 +240,13 @@ int32_t CTRL_MoveToPark(float depth)
 
         while(!atDepth)
         {
-            DEPTH_Read(&depth);
+            DEPTH_Read(&measurement);
 
-            if(depth.Depth >= profiler.crush_limit)
+            if(measurement.Depth >= settings.crush_limit)
             {
                 /** Emergency blow !!! */
 
-            } else if ( (depth.Depth >= depth_min) && (depth.Depth <= depth_max) )
+            } else if ( (measurement.Depth >= depth_min) && (measurement.Depth <= depth_max) )
             {   
                 /** Wait for X # of seconds to validate at we're not drifting */
 
@@ -254,13 +259,13 @@ int32_t CTRL_MoveToPark(float depth)
 
 
     }
-
+    return retVal;
 }
 
 int32_t CTRL_MoveToStartDepth(float depth)
 {
     int32_t retVal = CTRL_ERROR_FAILURE;
-    sDepth_Measurement_t depth = {0};
+    sDepth_Measurement_t measurement = {0};
     TaskHandle_t xDepthHandle = NULL;
     TaskHandle_t xPistonHandle = NULL;
     
@@ -274,8 +279,8 @@ int32_t CTRL_MoveToStartDepth(float depth)
 
 
     /** Create the tasks */
-    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, xDepthHandle);
-    xTaskCreate((TaskFunction_t) task_move_to_depth, "move_to_depth", 128, NULL, 1, xPistonHandle);
+    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
+    xTaskCreate((TaskFunction_t) task_move_to_depth, "move_to_depth", 128, NULL, 1, &xPistonHandle);
 
     if( (xDepthHandle != NULL) && (xPistonHandle != NULL) )
     {
@@ -289,13 +294,13 @@ int32_t CTRL_MoveToStartDepth(float depth)
 
         while(!atDepth)
         {
-            DEPTH_Read(&depth);
+            DEPTH_Read(&measurement);
 
-            if(depth.Depth >= profiler.crush_limit)
+            if(measurement.Depth >= settings.crush_limit)
             {
                 /** Emergency blow !!! */
 
-            } else if ( (depth.Depth >= depth_min) && (depth.Depth <= depth_max) )
+            } else if ( (measurement.Depth >= depth_min) && (measurement.Depth <= depth_max) )
             {   
                 /** Wait for X # of seconds to validate at we're not drifting */
 
@@ -308,14 +313,14 @@ int32_t CTRL_MoveToStartDepth(float depth)
 
 
     }
-    
+    return retVal;
 }
 
 
 int32_t CTRL_MaintainDepth(float depth, uint32_t time_s)
 {
     int32_t retVal = CTRL_ERROR_FAILURE;
-    sDepth_Measurement_t depth = {0};
+//    sDepth_Measurement_t measurement = {0};
     TaskHandle_t xDepthHandle = NULL;
     TaskHandle_t xPistonHandle = NULL;
 
@@ -326,8 +331,8 @@ int32_t CTRL_MaintainDepth(float depth, uint32_t time_s)
     SENS_set_depth_rate(1);
 
     /** Create the tasks */
-    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, xDepthHandle);
-    xTaskCreate((TaskFunction_t) task_maintain_depth, "move_to_depth", 128, NULL, 1, xPistonHandle);
+    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
+    xTaskCreate((TaskFunction_t) task_maintain_depth, "move_to_depth", 128, NULL, 1, &xPistonHandle);
 
 
     uint32_t time = time_s;
@@ -340,13 +345,15 @@ int32_t CTRL_MaintainDepth(float depth, uint32_t time_s)
     vTaskDelete(xDepthHandle);
     vTaskDelete(xPistonHandle);
     
+    return retVal;
+    
 }
 
 
 int32_t CTRL_Profile(float top_depth, float rise_rate, bool break_thru_lens)
 {
     int32_t retVal = CTRL_ERROR_FAILURE;
-    sDepth_Measurement_t depth = {0};
+//    sDepth_Measurement_t depth = {0};
     TaskHandle_t xDepthHandle = NULL;
     TaskHandle_t xTemperatureHandle = NULL;
     TaskHandle_t xPistonHandle = NULL;
@@ -361,9 +368,9 @@ int32_t CTRL_Profile(float top_depth, float rise_rate, bool break_thru_lens)
     SENS_set_temperature_rate(4);
 
     /** Create the tasks */
-    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, xDepthHandle);
-    xTaskCreate((TaskFunctin_t) task_temperature, "temperature", 128, NULL, 1, xTemperatureHandle);
-    xTaskCreate((TaskFunction_t) task_profile, "move_to_depth", 128, NULL, 1, xPistonHandle);
+    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
+    xTaskCreate((TaskFunction_t) task_temperature, "temperature", 128, NULL, 1, &xTemperatureHandle);
+    xTaskCreate((TaskFunction_t) task_profile, "move_to_depth", 128, NULL, 1, &xPistonHandle);
 
 
     if( (xDepthHandle != NULL) && (xPistonHandle != NULL))
@@ -381,7 +388,7 @@ int32_t CTRL_Profile(float top_depth, float rise_rate, bool break_thru_lens)
     }
 
     
-
+    return retVal;
 }
 
 int32_t CTRL_MoveToSurface(uint32_t timeout)
@@ -397,12 +404,12 @@ int32_t CTRL_MoveToSurface(uint32_t timeout)
 
 
     /** Set the Depth we're moving to */
-    CTRL_set_park_depth(depth);
+    CTRL_set_park_depth(0.0f);
 
 
     /** Create the tasks */
-    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, xDepthHandle);
-    xTaskCreate((TaskFunction_t) task_move_to_depth, "move_to_depth", 128, NULL, 1, xPistonHandle);
+    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
+    xTaskCreate((TaskFunction_t) task_move_to_depth, "move_to_depth", 128, NULL, 1, &xPistonHandle);
 
     if( (xDepthHandle != NULL) && (xPistonHandle != NULL) )
     {
@@ -411,14 +418,14 @@ int32_t CTRL_MoveToSurface(uint32_t timeout)
 
         bool atDepth = false;
 
-        float depth_max = depth + DEPTH_BOUND;
-        float depth_min = depth - DEPTH_BOUND;
+        float depth_max = 0.0f + DEPTH_BOUND;
+        float depth_min = 0.0f - DEPTH_BOUND;
 
         while(!atDepth)
         {
             DEPTH_Read(&depth);
 
-            if(depth.Depth >= profiler.crush_limit)
+            if(depth.Depth >= settings.crush_limit)
             {
                 /** Emergency blow !!! */
 
@@ -435,6 +442,8 @@ int32_t CTRL_MoveToSurface(uint32_t timeout)
 
 
     }
+    
+    return retVal;
 }
 
 
@@ -468,15 +477,15 @@ static float module_calculate_buoyancy_from_ascent_rate(float rate)
     float f_buoyant = 0;
 
     /** Calculate Force due to gravity , F_g = m*g */
-    f_gravity = system.SysInfo.weight * G_CONST
-
+    f_gravity = settings.weight * G_CONST;
+    
     /** Calculate the drag force @ that velocity */
     /** F_d = 1/2 (rho) * v^2 * Cd * A */
     f_drag = 0.5;
-    f_drag *= system.SysInfo.density;
+    f_drag *= settings.density;
     f_drag *= (rate * rate);
     f_drag *= CYLINDER_DRAG_COEFF;
-    f_drag *= system.SysInfo.cross_section;
+    f_drag *= settings.cross_section;
 
     /** Calculate the required buoyant force */
     f_buoyant = f_gravity + f_drag;
@@ -494,7 +503,7 @@ static float module_calculate_volume_from_ascent_rate(float rate)
     /** Calculate volume from buoyant force */
     /** F_buoyant = V * (rho) * g */
     /** so, V = (rho) * g / F_buoyant */
-    float volume = system.SysInfo.density * G_CONST / f_buoyant;
+    float volume = settings.density * G_CONST / f_buoyant;
     return volume;
 }
 
@@ -505,15 +514,15 @@ static float module_calculate_buoyancy_from_descent_rate(float rate)
     float f_buoyant = 0;
 
     /** Calculate Force due to gravity , F_g = m*g */
-    f_gravity = system.SysInfo.weight * G_CONST
+    f_gravity = settings.weight * G_CONST;
 
     /** Calculate the drag force @ that velocity */
     /** F_d = 1/2 (rho) * v^2 * Cd * A */
-    f_drag = 0.5;
-    f_drag *= system.SysInfo.density;
+    f_drag = 0.5f;
+    f_drag *= settings.density;
     f_drag *= (rate * rate);
     f_drag *= CYLINDER_DRAG_COEFF;
-    f_drag *= system.SysInfo.cross_section;
+    f_drag *= settings.cross_section;
 
     /** Calculate the required buoyant force */
     f_buoyant = f_gravity - f_drag;
@@ -528,7 +537,7 @@ static float module_calculate_volume_from_descent_rate(float rate)
     /** Calculate volume from buoyant force */
     /** F_buoyant = V * (rho) * g */
     /** so, V = (rho) * g / F_buoyant */
-    float volume = system.SysInfo.density * G_CONST / f_buoyant;
+    float volume = settings.density * G_CONST / f_buoyant;
     return volume;
 }
 

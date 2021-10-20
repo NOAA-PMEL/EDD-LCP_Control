@@ -1,6 +1,7 @@
 #ifndef GPS_H
 #define GPS_H
 
+#include <stdint.h>
 #include <stdbool.h>
 
 typedef struct sGPS_Data_t

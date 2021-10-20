@@ -462,7 +462,7 @@ void artemis_max14830_UART_Write(eMAX18430_ComPort_t port, char *data, uint32_t 
   uint8_t txDatalen = 0;
   
   uint8_t txFifoLen;
-  module_max14830_Read(port, MAX14830_REG_TXFIFOLVL, 1, &txFifoLen);
+  module_max14830_Read(port, MAX14830_REG_TXFIFOLVL, 1, (char*)&txFifoLen);
   
   uint8_t txFifoEmptyLen = MAX14830_FIFO_SIZE - txFifoLen;
 //  if(txFifoEmptyLen > len)

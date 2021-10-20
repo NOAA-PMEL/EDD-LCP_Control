@@ -35,11 +35,13 @@ C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\
 -I
 C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\
 -I
-C:\Tools\Ambiq\AmbiqSuite-R2.5.1\boards\apollo3_evb\bsp\
--I
 $PROJ_DIR\src\RTOS\
 -I
 C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\
+-I
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\app\
+-I
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\sys\
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\arm\inc
 -I
@@ -69,11 +71,13 @@ C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3
 -I
 C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include
 -I
-C:\Tools\Ambiq\AmbiqSuite-R2.5.1\boards\apollo3_evb\bsp
--I
 C:\WINDOWS\system32\$PROJ_DIR\src\RTOS
 -I
 C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal
+-I
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\app
+-I
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\sys
 -D__CHAR_BITS__=8
 -D__CHAR_MAX__=0xff
 -D__CHAR_MIN__=0

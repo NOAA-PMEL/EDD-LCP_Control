@@ -10,6 +10,23 @@
 #ifndef DATA_H
 #define DATA_H
 
+/** Remove STATIC and PERSISTENT values if running TEST */
+/** Add the actual values if running release */
+#ifdef TEST
+#ifndef STATIC
+#define STATIC  
+#endif
+#ifndef PERSISTENT
+#define PERSISTENT
+#endif
+#else
+#ifndef STATIC
+#define STATIC  static
+#endif
+#ifndef PERSISTENT
+#define PERSISTENT __persistent 
+#endif
+#endif
 
 /**********************************************************************************
  * Includes
@@ -44,9 +61,9 @@ typedef struct sData_t
     }cbuf;
     struct{
         uint32_t start_time;
-        uint16_t *pTimeOffset;
-        uint16_t *pDepth;
-        uint16_t *pTemperature;
+        uint32_t *pTimeOffset;
+        float *pDepth;
+        float *pTemperature;
     }data;
 }Data_t;
 
@@ -57,8 +74,8 @@ typedef struct sData_t
 extern "C"{
 #endif
 
-void DATA_setbuffer(Data_t *p, uint16_t *pTime, 
-                            uint16_t *pDepth, uint16_t *pTemp,
+void DATA_setbuffer(Data_t *p, uint32_t *pTime, 
+                            float *pDepth, float*pTemp,
                             size_t length);
 
 void DATA_reset(Data_t *p);

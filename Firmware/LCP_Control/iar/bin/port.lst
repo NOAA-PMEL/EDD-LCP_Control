@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         29/Sep/2021  08:01:34
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         20/Oct/2021  09:34:55
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode             
@@ -8,7 +8,7 @@
 #    Source file       =
 #        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\port.c
 #    Command line      =
-#        -f C:\Users\casari\AppData\Local\Temp\1\EW2BD1.tmp
+#        -f C:\Users\casari\AppData\Local\Temp\2\EWC0FB.tmp
 #        (C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\port.c
 #        -D iar -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D
 #        AM_DEBUG_PRINTF -D AM_UTIL_FAULTISR_PRINT -lcN
@@ -36,7 +36,9 @@
 #        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ -I
 #        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\ -I
 #        $PROJ_DIR\src\RTOS\\ -I
-#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -Ol)
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\app\\ -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\sys\\ -Ol)
 #    Locale            =  C
 #    List file         =
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\port.lst

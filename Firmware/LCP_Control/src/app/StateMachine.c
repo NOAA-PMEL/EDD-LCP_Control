@@ -23,12 +23,12 @@
 //
 //*****************************************************************************
 
-static uint16_t park_time[DATA_PARK_SAMPLES_MAX];
-static uint16_t park_temp[DATA_PARK_SAMPLES_MAX];
-static uint16_t park_depth[DATA_PARK_SAMPLES_MAX];
-static uint16_t prof_time[DATA_PROFILE_SAMPLES_MAX];
-static uint16_t prof_temp[DATA_PROFILE_SAMPLES_MAX];
-static uint16_t prof_depth[DATA_PROFILE_SAMPLES_MAX];
+static uint32_t park_time[DATA_PARK_SAMPLES_MAX];
+static float park_temp[DATA_PARK_SAMPLES_MAX];
+static float park_depth[DATA_PARK_SAMPLES_MAX];
+static uint32_t prof_time[DATA_PROFILE_SAMPLES_MAX];
+static float prof_temp[DATA_PROFILE_SAMPLES_MAX];
+static float prof_depth[DATA_PROFILE_SAMPLES_MAX];
 
 static Data_t park;     /**< Park mode Data */
 static Data_t prof;     /**< Profile mode data */
@@ -37,7 +37,7 @@ static System_t system = {
     .system = SYSST_Predeployment_mode,
     .predeploy.state = PDS_Idle,
     .airdeploy.state = ADS_Idle,
-    .profiler.state = SDS_Idle,
+    .profiler.state = SPS_Idle,
     .ballast.state = ABS_DiveToExpected,
     .moored.state = MOOR_Idle,
     .popup.state = PUS_Idle,
@@ -173,28 +173,28 @@ void STATE_Profiler(void)
     switch(system.profiler.state)
     {
     case SPS_Idle:
-        succes = module_sps_idles();
+        success = module_sps_idles();
         break;
     case SPS_MoveToParkDepth_mode:
-        succes = module_sps_move_to_park();
+        success = module_sps_move_to_park();
         break;
     case SPS_Park_mode:
-        succes = module_sps_park();
+        success = module_sps_park();
         break;
     case SPS_MoveToSampleDepth_mode:
-        succes = module_sps_move_to_profile();
+        success = module_sps_move_to_profile();
         break;
     case SPS_Sample_mode:
-        succes = module_sps_profile();
+        success = module_sps_profile();
         break;
     case SPS_Surface_mode:
-        succes = module_sps_surface();
+        success = module_sps_surface();
         break;
     case SPS_TX_mode:
-        succes = module_sps_tx();
+        success = module_sps_tx();
         break;
     case SPS_RX_mode:
-        succes = module_sps_rx();
+        success = module_sps_rx();
         break;
     default:
         break;
@@ -216,7 +216,7 @@ void STATE_Profiler(void)
             case SPS_RX_mode:
             default:
                 system.profiler.state = SPS_Idle;
-                break
+                break;
         }
     }
 }
@@ -234,6 +234,7 @@ static bool module_sps_idle(void)
     SENS_sensor_depth_off();
     SENS_sensor_temperature_off();
 
+    return true;
 }
 
 static bool module_sps_move_to_park(void)
@@ -250,7 +251,9 @@ static bool module_sps_move_to_park(void)
     {
 
     }
-
+    
+    
+    return false;
 }
 
 
@@ -258,17 +261,20 @@ static bool module_sps_park(void)
 {
     /** Start 1/60Hz sampling of sensors for XXX minutes */
     /** Save data in Park Data strucutre */
-
+    
+  return false;
 }
 
 static bool module_sps_move_to_profile(void)
 {
     /** Calculate volume to move to */
-    float volume = module_calculate_buoyancy_from_descent_rate(system.SysInfo.rate.fall.setpoint);
+//    float volume = module_calculate_buoyancy_from_descent_rate(syst);
     
     /** Set volume */
 
     /** Monitor Depth, when depth reached, mode is complete */
+  
+  return false;
 
 }
 
@@ -283,6 +289,8 @@ static bool module_sps_profile(void)
     /** Start recording samples */
 
     /** Monitor depth & rate.  If rate fails, fix it.  If depth reaches surface, done */
+  
+  return false;
 
 }
 
@@ -297,6 +305,8 @@ static bool module_sps_move_to_surface(void)
     /** Capture current GPS Location  */
     
     /** GPS OFF */
+  
+  return false;
 
 }
 
@@ -308,7 +318,7 @@ static bool module_sps_tx(void)
 
     /** Transmit all data */
 
-
+    return false;
 }
 static bool module_sps_rx(void)
 {
@@ -318,6 +328,8 @@ static bool module_sps_rx(void)
     /** If message, receive it */
 
     /** Iridium OFF */
+  
+  return false;
 
 }
 

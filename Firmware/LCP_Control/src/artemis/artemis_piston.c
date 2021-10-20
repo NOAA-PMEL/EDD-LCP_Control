@@ -55,14 +55,14 @@
 //  Macros & Constants
 //
 //*****************************************************************************
-#define ARTEMIS_PISTON_BUFFER_LENGTH ( 256 )
+#define ARTEMIS_PISTON_BUFFER_LENGTH ( 128 )
 
 //*****************************************************************************
 //
 // Structs
 //
 //*****************************************************************************
-typedef uint8_t module_buffer_t[ARTEMIS_UBLOX_BUFFER_LENGTH];
+typedef uint8_t module_buffer_t[ARTEMIS_PISTON_BUFFER_LENGTH];
 typedef struct s_module_t
 {
     artemis_i2c_t i2c;
@@ -111,9 +111,9 @@ void artemis_piston_i2c_initialize(uint8_t i2c_addr)
     i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_100KHZ;
 
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
-    artemis_ublox_i2c_power_on();
+    artemis_piston_i2c_power_off();
     am_hal_systick_delay_us(1000);
-    artemis_ublox_i2c_power_off();
+    artemis_piston_i2c_power_on();
 
 
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM2_SCL, g_AM_BSP_GPIO_IOM2_SCL));
@@ -229,7 +229,7 @@ void artemis_piston_i2c_read(uint8_t addr, uint8_t *data, uint8_t len)
     artemis_stream_put(&txstream, ARTEMIS_PISTON_BUFFER_LENGTH);
     artemis_i2c_send(i2c, false, &txstream);
 
-    artemis_i2c_receive(i2c, true, &rxstream, len;
+    artemis_i2c_receive(i2c, true, &rxstream, len);
 
     artemis_stream_read(&rxstream, data, len);
 }

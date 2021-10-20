@@ -24,7 +24,9 @@ static Piston_t piston;
 //
 //*****************************************************************************
 static bool module_pis_read_if_full(void);
-
+static bool module_pis_read_if_zero(void);
+static bool module_pis_trv_eng(void);
+static double module_pis_get_volume(void);
 
 
 //*****************************************************************************
@@ -41,7 +43,7 @@ void PIS_initialize(void)
     artemis_piston_i2c_power_on();
 
     /** Update state */
-    module_pis_update_state();
+//    module_pis_update_state();
 }
 
 
@@ -49,8 +51,8 @@ void task_move_piston_to_zero(void)
 {
 
     TickType_t xLastWakeTime;
-    uint16_t period = 1000/rate;
-    period /= portTICK_RATE_MS;
+    uint16_t period = 1000/piston.rtos.rate;
+    period /= portTICK_PERIOD_MS;
 
     /** Start Piston Retract */
     PIS_retract();
@@ -64,7 +66,7 @@ void task_move_piston_to_zero(void)
     while(!fullFlag)
     {
         /** Read the piston memory to see if we're done */
-        if(xSemaphoreTake(piston.rtos.semaphore, piston.rtos.rate/portTICK_RATE_MS) == pdTRUE)
+        if(xSemaphoreTake(piston.rtos.semaphore, piston.rtos.rate/portTICK_PERIOD_MS) == pdTRUE)
         {
             fullFlag = module_pis_read_if_zero();
             xSemaphoreGive(piston.rtos.semaphore);
@@ -77,8 +79,8 @@ void task_move_piston_to_zero(void)
 void task_move_piston_to_full(void)
 {
     TickType_t xLastWakeTime;
-    uint16_t period = 1000/rate;
-    period /= portTICK_RATE_MS;
+    uint16_t period = 1000/piston.rtos.rate;
+    period /= portTICK_PERIOD_MS;
 
     /** Start Piston Extend */
     PIS_extend();
@@ -92,7 +94,7 @@ void task_move_piston_to_full(void)
     while(!fullFlag)
     {
         /** Read the piston memory to see if we're done */
-        if(xSemaphoreTake(piston.rtos.semaphore, piston.rtos.rate/portTICK_RATE_MS) == pdTRUE)
+        if(xSemaphoreTake(piston.rtos.semaphore, piston.rtos.rate/portTICK_PERIOD_MS) == pdTRUE)
         {
             fullFlag = module_pis_read_if_full();
             xSemaphoreGive(piston.rtos.semaphore);
@@ -105,9 +107,9 @@ void task_move_piston_to_full(void)
 
 void task_move_piston_to_volume(void)
 {
-    TickType_t xLastWakeTime;
-    uint16_t period = 1000/rate;
-    period /= portTICK_RATE_MS;
+//    TickType_t xLastWakeTime;
+    uint16_t period = 1000/piston.rtos.rate;
+    period /= portTICK_PERIOD_MS;
 
     /** Start the move */
     PIS_move_to_volume(piston.setpoint);
@@ -117,7 +119,7 @@ void task_move_piston_to_volume(void)
     while(!fullFlag)
     {
         /** Read the piston memory to see if we're done moving and at volume */
-        if(xSemaphoreTake(piston.rtos.semaphore, piston.rtos.rate/portTICK_RATE_MS) == pdTRUE)
+        if(xSemaphoreTake(piston.rtos.semaphore, piston.rtos.rate/portTICK_PERIOD_MS) == pdTRUE)
         {
             if(module_pis_trv_eng() == false)
             {
@@ -139,7 +141,7 @@ void task_move_piston_to_volume(void)
 bool PIS_set_volume(double volume)
 {
     bool retVal = false;
-    if( (volume > 0) && (volume < 100000)
+    if( (volume > 0) && (volume < 100000) )
     {
         piston.setpoint = volume;
         retVal = true;
@@ -150,34 +152,34 @@ bool PIS_set_volume(double volume)
 
 void PIS_extend(void)
 {
-    bool retVal = false;
+//    bool retVal = false;
     uint8_t addr = PISTON_I2C_MEM_ADDR_EXT_RET;
-    uint8_t cmd[4] = [0x01, 0x00, 0x01, 0x01];
+    uint8_t cmd[4] = {0x01, 0x00, 0x01, 0x01};
 
     
     artemis_piston_i2c_send_msg(&addr, 1, false);
-    artemis_piston_i2c_send_msg(v, 8, true);
+    artemis_piston_i2c_send_msg(cmd, 8, true);
 
-    return retVal;
+//    return retVal;
 }
 
 void PIS_retract(void)
 {
-    bool retVal = false;
+//    bool retVal = false;
     // self._write(0x60, [0xFF, 0x01, 0x00, 0x01])
     
     uint8_t addr = PISTON_I2C_MEM_ADDR_EXT_RET;
-    uint8_t cmd[4] = [0xFF, 0x00, 0x01, 0x01];
+    uint8_t cmd[4] = {0xFF, 0x00, 0x01, 0x01};
     
     artemis_piston_i2c_send_msg(&addr, 1, false);
-    artemis_piston_i2c_send_msg(v, 8, true);
+    artemis_piston_i2c_send_msg(cmd, 8, true);
 
-    return retVal;
+//    return retVal;
 }
 
 void PIS_stop(void)
 {
-    bool retVal = false;
+//    bool retVal = false;
     uint8_t addr = PISTON_I2C_MEM_ADDR_TRV_ENG;
     uint8_t cmd = 0x00;
 
@@ -185,7 +187,7 @@ void PIS_stop(void)
     artemis_piston_i2c_send_msg(&addr, 1, false);
     artemis_piston_i2c_send_msg(&cmd, 1, true);
 
-    return retVal;
+//    return retVal;
 }
 
 
@@ -228,6 +230,8 @@ static bool module_pis_read_if_full(void)
     
     return data;
 }
+
+
 
 static bool module_pis_read_if_zero(void)
 {

@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-
+#define G_CONST                                 ( 9.80665 )
 
 
 typedef enum eCTRL_Error_t{
@@ -17,25 +17,25 @@ typedef enum eCTRL_Error_t{
 
 }CTRL_Errot_t;
 
-struct {
-    struct {
-        float previous;     /**< Previous volume setting (mL) */
-        float current;      /**< Current volume of system (mL) */
-    }volume;
-
-    struct{
-        float previous;     /**< Previous volume setting (N) */
-        float current;      /**< Current system buoyancy (N) */
-    }buoyancy;
-    struct {
-        struct {
-            float records[3];   /**< Previous 3 rate data record */
-            float average;      /**< Average of previous 3 rates */
-        }previous;
-
-        float current;          /**< Current rate */
-    }rate;
-}Actual;
+//struct {
+//    struct {
+//        float previous;     /**< Previous volume setting (mL) */
+//        float current;      /**< Current volume of system (mL) */
+//    }volume;
+//
+//    struct{
+//        float previous;     /**< Previous volume setting (N) */
+//        float current;      /**< Current system buoyancy (N) */
+//    }buoyancy;
+//    struct {
+//        struct {
+//            float records[3];   /**< Previous 3 rate data record */
+//            float average;      /**< Average of previous 3 rates */
+//        }previous;
+//
+//        float current;          /**< Current rate */
+//    }rate;
+//}Actual;
 
 
 
