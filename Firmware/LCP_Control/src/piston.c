@@ -153,13 +153,18 @@ bool PIS_set_volume(double volume)
 void PIS_extend(void)
 {
 //    bool retVal = false;
-    uint8_t addr = PISTON_I2C_MEM_ADDR_EXT_RET;
-    uint8_t cmd[4] = {0x01, 0x00, 0x01, 0x01};
+//    uint8_t addr = PISTON_I2C_MEM_ADDR_EXT_RET;
+//    uint8_t cmd[4] = {0x01, 0x01, 0x00, 0x01};
+    uint8_t cmd[5] = {PISTON_I2C_MEM_ADDR_EXT_RET, 0x01, 0x01, 0x00, 0x01};
 
     
-    artemis_piston_i2c_send_msg(&addr, 1, false);
-    artemis_piston_i2c_send_msg(cmd, 8, true);
-
+//    artemis_piston_i2c_send_msg(&addr, 1, false);
+//    artemis_piston_i2c_send_msg(cmd, 4, true);
+    
+    /** Put in write mode */
+    artemis_piston_set_write_mode(true);
+    artemis_piston_i2c_send_msg(cmd, 5, true);
+//    artemis_piston_set_write_mode(false);
 //    return retVal;
 }
 
@@ -168,11 +173,13 @@ void PIS_retract(void)
 //    bool retVal = false;
     // self._write(0x60, [0xFF, 0x01, 0x00, 0x01])
     
-    uint8_t addr = PISTON_I2C_MEM_ADDR_EXT_RET;
-    uint8_t cmd[4] = {0xFF, 0x00, 0x01, 0x01};
+//    uint8_t addr = PISTON_I2C_MEM_ADDR_EXT_RET;
+//    uint8_t cmd[4] = {0xFF, 0x01, 0x00, 0x01};
+    uint8_t cmd[5] = {PISTON_I2C_MEM_ADDR_EXT_RET, 0xFF, 0x01, 0x00, 0x01};
     
-    artemis_piston_i2c_send_msg(&addr, 1, false);
-    artemis_piston_i2c_send_msg(cmd, 8, true);
+//    artemis_piston_i2c_send_msg(&addr, 1, false);
+    artemis_piston_set_write_mode(true);
+    artemis_piston_i2c_send_msg(cmd, 5, true);
 
 //    return retVal;
 }
@@ -278,3 +285,4 @@ static double module_pis_get_volume(void)
 
     return pis.fVolume;
 }
+

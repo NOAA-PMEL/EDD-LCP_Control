@@ -152,12 +152,17 @@ float S9T_Read(float *t, float *r)
   
   /** Find values */
   uint8_t *pStr = strstr(sampleStr, "sample\r\n");
-  pStr += 8;
-  uint8_t len = strlen(pStr);
-  module_s9_parse_msg(pStr, len, pS9);
-  *t = pS9->temperature;
-  *r = pS9->resistance;
- 
+  if(pStr != NULL)
+  {
+      pStr += 8;
+      uint8_t len = strlen(pStr);
+      module_s9_parse_msg(pStr, len, pS9);
+      *t = pS9->temperature;
+      *r = pS9->resistance;
+  } else {
+    *t = NAN;
+    *r = NAN;
+  }
   return 0;
 }
 

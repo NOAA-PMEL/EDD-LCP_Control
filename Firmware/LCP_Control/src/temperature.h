@@ -1,8 +1,8 @@
 #ifndef TEMPERATURE_H
 #define TEMPERATURE_H
 
-
-#include "artemis_pa9ld.h"
+#include <stdint.h>
+//#include "artemis_pa9ld.h"
 
 
 typedef enum eTemperatureSensor_t{
@@ -20,10 +20,10 @@ typedef struct sTemperature_t
     struct {
         uint32_t i2c;           /**< I2C Channel (IOM Module)*/
     }i2c;
-    struct {
-        module_manufacturer_t manufacturer; /**< Keller Manufacturer Info */
-        module_scaling_t scaling;           /**< Keller Scaling Coefficients */
-    }device;
+//    struct {
+//        module_manufacturer_t manufacturer; /**< Keller Manufacturer Info */
+//        module_scaling_t scaling;           /**< Keller Scaling Coefficients */
+//    }device;
 }Temperature_t;
 
 typedef struct sTemperature_Measurement_t

@@ -106,9 +106,10 @@ void artemis_piston_i2c_initialize(uint8_t i2c_addr)
 
 
     i2c->address = i2c_addr;
-
+    i2c->iom.module = 2;
     i2c->iom.config.eInterfaceMode = AM_HAL_IOM_I2C_MODE;
-    i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_100KHZ;
+    i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_400KHZ;
+    artemis_iom_initialize(&i2c->iom);
 
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
     artemis_piston_i2c_power_off();
@@ -118,7 +119,7 @@ void artemis_piston_i2c_initialize(uint8_t i2c_addr)
 
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM2_SCL, g_AM_BSP_GPIO_IOM2_SCL));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM2_SDA, g_AM_BSP_GPIO_IOM2_SDA));
-
+    
 
 }
 
@@ -134,6 +135,8 @@ void artemis_piston_i2c_power_off(void)
 
 void artemis_piston_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop)
 {
+  
+  
     artemis_i2c_t *i2c = &module.i2c;
   artemis_stream_t txstream = {0};
   artemis_stream_setbuffer(&txstream, module.txbuffer, ARTEMIS_PISTON_BUFFER_LENGTH);
@@ -153,6 +156,18 @@ void artemis_piston_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop)
       len =0;
     }
   }
+  
+//  while(len-- > 0)
+//  {
+//    artemis_stream_reset(&txstream);
+//    artemis_stream_write(&txstream, msg++, 1);
+//    if(len > 0)
+//    {
+//        artemis_i2c_send(i2c, false, &txstream);
+//    } else {
+//      artemis_i2c_send(i2c, stop, &txstream);
+//    }
+//  }
 }
 
 // uint16_t artemis_piston_i2c_read_data(uint8_t *pBuf)
@@ -232,4 +247,20 @@ void artemis_piston_i2c_read(uint8_t addr, uint8_t *data, uint8_t len)
     artemis_i2c_receive(i2c, true, &rxstream, len);
 
     artemis_stream_read(&rxstream, data, len);
+}
+
+
+void artemis_piston_set_write_mode(bool state)
+{
+  uint8_t key = 0x00;
+  uint8_t msg[2] = {0x07, 0x00};
+  if(state)
+  {
+    key = 0xA5;
+  }
+  msg[1] = key;
+  
+  artemis_piston_i2c_send_msg(msg, 1, false);
+  artemis_piston_i2c_send_msg(msg, 2, true);
+  am_hal_systick_delay_us(500000);
 }

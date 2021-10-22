@@ -2619,63 +2619,33 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\piston.c</name>
-            <excluded>
-                <configuration>Debug</configuration>
-            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\piston.h</name>
-            <excluded>
-                <configuration>Debug</configuration>
-            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\S9_temp.c</name>
-            <excluded>
-                <configuration>Debug</configuration>
-            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\S9_temp.h</name>
-            <excluded>
-                <configuration>Debug</configuration>
-            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\temperature.c</name>
-            <excluded>
-                <configuration>Debug</configuration>
-            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\temperature.h</name>
-            <excluded>
-                <configuration>Debug</configuration>
-            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\ublox.c</name>
-            <excluded>
-                <configuration>Debug</configuration>
-            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\ublox.h</name>
-            <excluded>
-                <configuration>Debug</configuration>
-            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\ublox_ubx.c</name>
-            <excluded>
-                <configuration>Debug</configuration>
-            </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\src\ublox_ubx.h</name>
-            <excluded>
-                <configuration>Debug</configuration>
-            </excluded>
         </file>
     </group>
     <group>

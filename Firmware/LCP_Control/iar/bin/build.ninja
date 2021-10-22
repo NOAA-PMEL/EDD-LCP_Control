@@ -96,6 +96,11 @@ build i9603n.pbi : index i9603n.xcl
 build isbd_at_cmd.pbi : index isbd_at_cmd.xcl
 build LED.pbi : index LED.xcl
 build MAX14830.pbi : index MAX14830.xcl
+build piston.pbi : index piston.xcl
+build S9_temp.pbi : index S9_temp.xcl
+build temperature.pbi : index temperature.xcl
+build ublox.pbi : index ublox.xcl
+build ublox_ubx.pbi : index ublox_ubx.xcl
 build sysinfo.pbi : index sysinfo.xcl
 build main.pbi : index main.xcl
 build startup_iar.pbi : index startup_iar.xcl
@@ -107,8 +112,9 @@ build freertos_lowpower_part4.pbi : link am_util_delay.pbi am_util_faultisr.pbi 
 build freertos_lowpower_part5.pbi : link artemis_i9603n.pbi artemis_iom.pbi artemis_max14830.pbi artemis_mcu.pbi artemis_pa9ld.pbi artemis_piston.pbi artemis_spi.pbi artemis_stream.pbi artemis_supercap.pbi
 build freertos_lowpower_part6.pbi : link artemis_time.pbi artemis_uart.pbi artemis_ublox_i2c.pbi am_bsp.pbi am_bsp_pins.pbi bsp_uart.pbi event_groups.pbi heap_2.pbi list.pbi
 build freertos_lowpower_part7.pbi : link port.pbi queue.pbi rtos.pbi tasks.pbi timers.pbi buffer_c.pbi dataframe.pbi depth.pbi GPS.pbi
-build freertos_lowpower_part8.pbi : link i9603n.pbi isbd_at_cmd.pbi LED.pbi MAX14830.pbi sysinfo.pbi main.pbi startup_iar.pbi
-build freertos_lowpower.pbd : link freertos_lowpower_part0.pbi freertos_lowpower_part1.pbi freertos_lowpower_part2.pbi freertos_lowpower_part3.pbi freertos_lowpower_part4.pbi freertos_lowpower_part5.pbi freertos_lowpower_part6.pbi freertos_lowpower_part7.pbi freertos_lowpower_part8.pbi
+build freertos_lowpower_part8.pbi : link i9603n.pbi isbd_at_cmd.pbi LED.pbi MAX14830.pbi piston.pbi S9_temp.pbi temperature.pbi ublox.pbi ublox_ubx.pbi
+build freertos_lowpower_part9.pbi : link sysinfo.pbi main.pbi startup_iar.pbi
+build freertos_lowpower.pbd : link freertos_lowpower_part0.pbi freertos_lowpower_part1.pbi freertos_lowpower_part2.pbi freertos_lowpower_part3.pbi freertos_lowpower_part4.pbi freertos_lowpower_part5.pbi freertos_lowpower_part6.pbi freertos_lowpower_part7.pbi freertos_lowpower_part8.pbi freertos_lowpower_part9.pbi
 build freertos_lowpower.pbw : browsedata freertos_lowpower.pbd
 
 

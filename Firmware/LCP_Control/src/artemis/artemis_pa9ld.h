@@ -21,7 +21,7 @@
 
 #include <stdint.h>
    
-#include "am_hal_gpio.h"
+//#include "am_hal_gpio.h"
 
 #ifdef __cplusplus
 extern "C" {

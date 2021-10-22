@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         20/Oct/2021  09:29:12
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         20/Oct/2021  11:48:48
 # Copyright 1999-2020 IAR Systems AB.
 #
 #    Cpu mode                        
@@ -8,7 +8,7 @@
 #    Source file                  =
 #        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\S9_temp.c
 #    Command line                 =
-#        -f C:\Users\casari\AppData\Local\Temp\2\EW7DC6.tmp
+#        -f C:\Users\casari\AppData\Local\Temp\2\EWFB8B.tmp
 #        (C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\S9_temp.c
 #        -D iar -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D
 #        AM_DEBUG_PRINTF -D AM_UTIL_FAULTISR_PRINT -lcN
@@ -206,182 +206,187 @@ C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\S9_temp.c
     152            
     153            /** Find values */
     154            uint8_t *pStr = strstr(sampleStr, "sample\r\n");
-    155            pStr += 8;
-    156            uint8_t len = strlen(pStr);
-    157            module_s9_parse_msg(pStr, len, pS9);
-    158            *t = pS9->temperature;
-    159            *r = pS9->resistance;
-    160           
-    161            return 0;
-    162          }
-    163          
-    164          /** @brief Parse S9 Temperature response
-    165           * 
-    166           * The S9 Temperature sensor returns a data string 
-    167           * in the format:
-    168           * RRRR.RRRR, TT.TTTT\r
-    169           * 
-    170           * Where RRRR.RRRR is the thermistor resistance in Ohms
-    171           * and TT.TTTT is the calculated temperature in degC
-    172           * 
-    173           * @param *data Pointer to data string
-    174           * @param len length of string
-    175           * @param *p Pointer to S9 Temperature structure
-    176           */
-    177          STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p)
-    178          {
-    179              uint8_t comma, end;
-    180              uint8_t i;
-    181              
-    182              if(len <= 4)
-    183              {
-    184                p->temperature = NAN;
-    185                p->resistance = NAN;
-    186                return;
-    187              }
-    188              
-    189          
-    190              for(i=0;i<len;i++)
-    191              {
-    192                  if(data[i] == ',')
-    193                  {
-    194                      comma = i;
-    195                  }
-    196                  else if(data[i] == '\r')
-    197                  {
-    198                      end = i;
-    199                  }
-    200              }
-    201          
-    202              if(end <= comma)
-    203              {
-    204                  p->temperature = NAN;
-    205                  p->resistance = NAN;
-    206                  return;
-    207              }
-    208          
-    209              /* Copy Resistance */
-    210              char temp[32];
-    211              strncpy(temp, &data[0],comma);
-    212              p->resistance = atof(temp);
+    155            if(pStr != NULL)
+    156            {
+    157                pStr += 8;
+    158                uint8_t len = strlen(pStr);
+    159                module_s9_parse_msg(pStr, len, pS9);
+    160                *t = pS9->temperature;
+    161                *r = pS9->resistance;
+    162            } else {
+    163              *t = NAN;
+    164              *r = NAN;
+    165            }
+    166            return 0;
+    167          }
+    168          
+    169          /** @brief Parse S9 Temperature response
+    170           * 
+    171           * The S9 Temperature sensor returns a data string 
+    172           * in the format:
+    173           * RRRR.RRRR, TT.TTTT\r
+    174           * 
+    175           * Where RRRR.RRRR is the thermistor resistance in Ohms
+    176           * and TT.TTTT is the calculated temperature in degC
+    177           * 
+    178           * @param *data Pointer to data string
+    179           * @param len length of string
+    180           * @param *p Pointer to S9 Temperature structure
+    181           */
+    182          STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p)
+    183          {
+    184              uint8_t comma, end;
+    185              uint8_t i;
+    186              
+    187              if(len <= 4)
+    188              {
+    189                p->temperature = NAN;
+    190                p->resistance = NAN;
+    191                return;
+    192              }
+    193              
+    194          
+    195              for(i=0;i<len;i++)
+    196              {
+    197                  if(data[i] == ',')
+    198                  {
+    199                      comma = i;
+    200                  }
+    201                  else if(data[i] == '\r')
+    202                  {
+    203                      end = i;
+    204                  }
+    205              }
+    206          
+    207              if(end <= comma)
+    208              {
+    209                  p->temperature = NAN;
+    210                  p->resistance = NAN;
+    211                  return;
+    212              }
     213          
-    214              /* Copy Temperature */
-    215              strncpy(temp, &data[comma+1], end-comma);
-    216              p->temperature = atof(temp);
-    217          
-    218          }
-    219          
-    220          
-    221          /** @brief Parse version info
-    222           * 
-    223           * When the S9 Temp is sent the "ver" command, 
-    224           * the following response is sent:
-    225           * S9>ver
-    226           * MID=T003
-    227           * C0=0.000855
-    228           * C1=0.000293
-    229           * C2=0.000000
-    230           * C3=0.000000
-    231           * R0=10000.000
-    232           * UID=000000000F0F1A08535722E74FBC90B1
-    233           * S9T0 V0.45
-    234           * OK
-    235           * 
-    236           * This function parses for each individual structure
-    237           * variable and returns.
-    238           * 
-    239           * @param *data Pointer to response string
-    240           * @param *p Pointer to S9 temperature structure
-    241           * 
-    242           */
-    243          STATIC void _parse_version(char *data, sS9_t *p )
-    244          {
-    245              uint8_t i;
-    246              char temp[255];
-    247              float temp_f; 
-    248          
-    249              strcpy(temp,data);
-    250              // printf("%s\n", temp);
-    251              char *tok;
-    252          
-    253              /** @todo strtok needs RTOS case!!! */
-    254              /* Find MID */
-    255              tok = strtok(temp,"=");
-    256              tok = strtok(NULL, "\r");
-    257              strcpy(p->info.MID, tok);
-    258          
-    259              /* Find C0 */
-    260              tok = strtok(NULL, "=");
+    214              /* Copy Resistance */
+    215              char temp[32];
+    216              strncpy(temp, &data[0],comma);
+    217              p->resistance = atof(temp);
+    218          
+    219              /* Copy Temperature */
+    220              strncpy(temp, &data[comma+1], end-comma);
+    221              p->temperature = atof(temp);
+    222          
+    223          }
+    224          
+    225          
+    226          /** @brief Parse version info
+    227           * 
+    228           * When the S9 Temp is sent the "ver" command, 
+    229           * the following response is sent:
+    230           * S9>ver
+    231           * MID=T003
+    232           * C0=0.000855
+    233           * C1=0.000293
+    234           * C2=0.000000
+    235           * C3=0.000000
+    236           * R0=10000.000
+    237           * UID=000000000F0F1A08535722E74FBC90B1
+    238           * S9T0 V0.45
+    239           * OK
+    240           * 
+    241           * This function parses for each individual structure
+    242           * variable and returns.
+    243           * 
+    244           * @param *data Pointer to response string
+    245           * @param *p Pointer to S9 temperature structure
+    246           * 
+    247           */
+    248          STATIC void _parse_version(char *data, sS9_t *p )
+    249          {
+    250              uint8_t i;
+    251              char temp[255];
+    252              float temp_f; 
+    253          
+    254              strcpy(temp,data);
+    255              // printf("%s\n", temp);
+    256              char *tok;
+    257          
+    258              /** @todo strtok needs RTOS case!!! */
+    259              /* Find MID */
+    260              tok = strtok(temp,"=");
     261              tok = strtok(NULL, "\r");
-    262              temp_f = atof(tok);
-    263              p->info.C0 = temp_f;
-    264          
-    265              /* Find C1 */
-    266              tok = strtok(NULL, "=");
-    267              tok = strtok(NULL, "\r");
-    268              p->info.C1 = atof(tok);
+    262              strcpy(p->info.MID, tok);
+    263          
+    264              /* Find C0 */
+    265              tok = strtok(NULL, "=");
+    266              tok = strtok(NULL, "\r");
+    267              temp_f = atof(tok);
+    268              p->info.C0 = temp_f;
     269          
-    270              /* Find C2 */
+    270              /* Find C1 */
     271              tok = strtok(NULL, "=");
     272              tok = strtok(NULL, "\r");
-    273              p->info.C2 = atof(tok);
+    273              p->info.C1 = atof(tok);
     274          
-    275              /* Find C3 */
+    275              /* Find C2 */
     276              tok = strtok(NULL, "=");
     277              tok = strtok(NULL, "\r");
-    278              p->info.C3 = atof(tok);
+    278              p->info.C2 = atof(tok);
     279          
-    280              /* Find R0 */
+    280              /* Find C3 */
     281              tok = strtok(NULL, "=");
     282              tok = strtok(NULL, "\r");
-    283              p->info.R0 = atof(tok);
+    283              p->info.C3 = atof(tok);
     284          
-    285              /* Find UID */
+    285              /* Find R0 */
     286              tok = strtok(NULL, "=");
     287              tok = strtok(NULL, "\r");
-    288              
-    289              uint8_t len = strlen(tok);
-    290          //    uint8_t sub_val = 0;
-    291              uint8_t temp_hex[32];
-    292              memset(temp,0,32);
-    293          
-    294              for(i=0;i<len;i++)
-    295              {
-    296                  if( (tok[i] >= '0') && (tok[i] <= '9'))
-    297                  {
-    298                      temp_hex[i] = tok[i] - '0';
-    299                  } else if ( (tok[i] >= 'A') && (tok[i] <= 'F'))
-    300                  {
-    301                      temp_hex[i] = tok[i] -'A' + 10;
-    302                  } else {
-    303                      /** @todo - Error condition */
-    304                  }
-    305              }
-    306              i=0;
-    307              uint8_t cnt =0;
-    308              while(i < 32)
-    309              {
-    310                  p->info.UID[cnt] = temp_hex[i++] << 4;
-    311                  p->info.UID[cnt] |= temp_hex[i++];
-    312                  cnt++;
-    313              }
-    314              
-    315              /* Find Sensor */
-    316              tok = strtok(NULL, " ");
-    317              strcpy(p->info.sensor, tok);
-    318          
-    319              /** Find Firmware Major Version */
-    320              tok = strtok(NULL, ".");
-    321              p->info.firmware.major = (uint8_t) atoi(tok);
-    322          
-    323              /** Find Firmware Minor Version */
-    324              tok = strtok(NULL, "\r");
-    325              p->info.firmware.minor = (uint8_t) atoi(tok);
-    326          
-    327              /** Find Status */
-    328              tok = strtok(NULL, "\r");
-    329              strcpy(p->info.status, tok);
-    330          }
+    288              p->info.R0 = atof(tok);
+    289          
+    290              /* Find UID */
+    291              tok = strtok(NULL, "=");
+    292              tok = strtok(NULL, "\r");
+    293              
+    294              uint8_t len = strlen(tok);
+    295          //    uint8_t sub_val = 0;
+    296              uint8_t temp_hex[32];
+    297              memset(temp,0,32);
+    298          
+    299              for(i=0;i<len;i++)
+    300              {
+    301                  if( (tok[i] >= '0') && (tok[i] <= '9'))
+    302                  {
+    303                      temp_hex[i] = tok[i] - '0';
+    304                  } else if ( (tok[i] >= 'A') && (tok[i] <= 'F'))
+    305                  {
+    306                      temp_hex[i] = tok[i] -'A' + 10;
+    307                  } else {
+    308                      /** @todo - Error condition */
+    309                  }
+    310              }
+    311              i=0;
+    312              uint8_t cnt =0;
+    313              while(i < 32)
+    314              {
+    315                  p->info.UID[cnt] = temp_hex[i++] << 4;
+    316                  p->info.UID[cnt] |= temp_hex[i++];
+    317                  cnt++;
+    318              }
+    319              
+    320              /* Find Sensor */
+    321              tok = strtok(NULL, " ");
+    322              strcpy(p->info.sensor, tok);
+    323          
+    324              /** Find Firmware Major Version */
+    325              tok = strtok(NULL, ".");
+    326              p->info.firmware.major = (uint8_t) atoi(tok);
+    327          
+    328              /** Find Firmware Minor Version */
+    329              tok = strtok(NULL, "\r");
+    330              p->info.firmware.minor = (uint8_t) atoi(tok);
+    331          
+    332              /** Find Status */
+    333              tok = strtok(NULL, "\r");
+    334              strcpy(p->info.status, tok);
+    335          }
 
    Maximum stack usage in bytes:
 
@@ -445,7 +450,7 @@ C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\S9_temp.c
       12  ?_5
       34  S9T_OFF
       34  S9T_ON
-      96  S9T_Read
+     114  S9T_Read
       16  S9T_Read_R
       16  S9T_Read_T
        8  S9T_disable
@@ -459,9 +464,9 @@ C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\S9_temp.c
   96 bytes in section .bss
    4 bytes in section .data
  150 bytes in section .rodata
- 602 bytes in section .text
+ 620 bytes in section .text
  
- 602 bytes of CODE  memory
+ 620 bytes of CODE  memory
  150 bytes of CONST memory
  100 bytes of DATA  memory
 

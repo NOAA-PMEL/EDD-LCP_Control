@@ -346,17 +346,13 @@ void MAX14830_init(void)
   am_hal_gpio_pinconfig(AM_BSP_GPIO_S2U_ON, g_AM_BSP_GPIO_S2U_ON);
   module_MAX14830_Power_Off();
   module_MAX14830_Power_On();
-  
-  /** Initialize the Chip Select */
-  am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_CS, g_AM_BSP_GPIO_S2U_SPI_CS);
-  am_hal_gpio_output_set(BSP_GPIO_S2U_SPI_CS);
-  
+    
   /** Initialize the IRQ Input */
-  am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_NIRQ, g_AM_BSP_GPIO_S2U_SPI_NIRQ);
+  am_hal_gpio_pinconfig(AM_BSP_GPIO_S2U_NIRQ, g_AM_BSP_GPIO_S2U_NIRQ);
   
   /** Initialize the RESET line */
-  am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_NRESET, g_AM_BSP_GPIO_S2U_SPI_NRESET);
-  am_hal_gpio_output_clear(BSP_GPIO_S2U_SPI_NRESET);
+  am_hal_gpio_pinconfig(AM_BSP_GPIO_S2U_NRESET, g_AM_BSP_GPIO_S2U_NRESET);
+  am_hal_gpio_output_clear(AM_BSP_GPIO_S2U_NRESET);
   
   
   /** Initialize the SPI Configurations */
@@ -369,14 +365,16 @@ void MAX14830_init(void)
   status = am_hal_iom_enable(pIomHandle);
   printf("ENAB: status=%d\n", status);
   /** Initialie the SPI - MOSI */
-  status = am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_MOSI, g_AM_BSP_GPIO_S2U_SPI_MOSI);
-  printf("MOSI: status=%d\n", status);
+  status = am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM3_MOSI, g_AM_BSP_GPIO_IOM3_MOSI);
+//  printf("MOSI: status=%d\n", status);
   /** Initialie the SPI - MISO */
-  status = am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_MISO, g_AM_BSP_GPIO_S2U_SPI_MISO);
-  printf("MISO: status=%d\n", status);
+  status = am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM3_MISO, g_AM_BSP_GPIO_IOM3_MISO);
+//  printf("MISO: status=%d\n", status);
   /** Initialie the SPI - SCLK */
-  status = am_hal_gpio_pinconfig(BSP_GPIO_S2U_SPI_SCK, g_AM_BSP_GPIO_S2U_SPI_SCK);
-  printf("SCK : status=%d\n", status);
+  status = am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM3_SCK, g_AM_BSP_GPIO_IOM3_SCK);
+//  printf("SCK : status=%d\n", status);
+  /** Initialize the Chip Select */
+  am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM3_CS, g_AM_BSP_GPIO_IOM3_CS);
   
   /** Clear the IOM register-access interrupts */
   am_hal_iom_interrupt_clear(pIomHandle, AM_HAL_IOM_INT_ALL);
@@ -720,7 +718,7 @@ uint32_t MAX14830_UART_Read_bytes_waiting(eMAX18430_ComPort_t port)
 static void module_MAX14830_Power_On(void)
 {
   am_hal_iom_enable(&pIomHandle);
-  am_hal_gpio_output_set(BSP_GPIO_S2U_SPI_NRESET);
+  am_hal_gpio_output_set(AM_BSP_GPIO_S2U_NRESET);
   am_hal_gpio_output_clear(AM_BSP_GPIO_S2U_ON);
   
 }
@@ -731,7 +729,7 @@ static void module_MAX14830_Power_On(void)
  */
 static void module_MAX14830_Power_Off(void)
 {
-  am_hal_gpio_output_clear(BSP_GPIO_S2U_SPI_NRESET);
+  am_hal_gpio_output_clear(AM_BSP_GPIO_S2U_NRESET);
   am_hal_gpio_output_set(AM_BSP_GPIO_S2U_ON);
 }
 
@@ -739,19 +737,19 @@ static void module_MAX14830_Power_Off(void)
  * @brief MAX14830 Chip Select Set
  * 
  */
-static void MAX14830_CS_Set(void)
-{
-  am_hal_gpio_output_clear(BSP_GPIO_S2U_SPI_CS);
-}
+//static void MAX14830_CS_Set(void)
+//{
+//  am_hal_gpio_output_clear(BSP_GPIO_S2U_SPI_CS);
+//}
 
 /**
  * @brief MAX14830 Chip select Clear
  * 
  */
-static void MAX14830_CS_Clear(void)
-{
-  am_hal_gpio_output_set(BSP_GPIO_S2U_SPI_CS);
-}
+//static void MAX14830_CS_Clear(void)
+//{
+//  am_hal_gpio_output_set(BSP_GPIO_S2U_SPI_CS);
+//}
 
 /**
  * @brief Fast read
@@ -779,13 +777,13 @@ static uint32_t module_MAX14830_FastRead(void)
   xfer.ui32PauseCondition = 0;
   xfer.ui32StatusSetClr = 0;
 
-  /** Chip Select */
-  MAX14830_CS_Set();
+//  /** Chip Select */
+//  MAX14830_CS_Set();
   
   status = am_hal_iom_spi_blocking_fullduplex(pIomHandle, &xfer);
 
-  /** Chip Deselect */
-  MAX14830_CS_Clear();
+//  /** Chip Deselect */
+//  MAX14830_CS_Clear();
   
   printf("FAST READ: status = %ul, rb = %u\n", status, read_byte);
   return read_byte;
@@ -811,8 +809,8 @@ module_MAX14830_Read(
 {
     am_hal_iom_transfer_t Transaction;
 
-    /** Chip select */
-    MAX14830_CS_Set();
+//    /** Chip select */
+//    MAX14830_CS_Set();
       
     //
     // Create the transaction.
@@ -834,11 +832,11 @@ module_MAX14830_Read(
     if (am_hal_iom_blocking_transfer(pIomHandle, &Transaction))
     {
       /** Chip Deselect */
-      MAX14830_CS_Clear();
+//      MAX14830_CS_Clear();
       return -1;
     }
       /** Chip Deselect */
-      MAX14830_CS_Clear();
+//      MAX14830_CS_Clear();
       return 0;
     }
 
@@ -865,7 +863,7 @@ static void module_MAX14830_Write(
 //  am_hal_iom_enable(&pIomHandle);
 
   /** Chip Select */
-  MAX14830_CS_Set();
+//  MAX14830_CS_Set();
   
   /** Prep Write Byte */
   char write_byte= MAX14830_SPI_WRITE_BIT | reg;
@@ -916,7 +914,7 @@ static void module_MAX14830_Write(
   am_hal_iom_blocking_transfer(pIomHandle, &transfer);
   
   /** After transfer, turn Chip Select off */
-  MAX14830_CS_Clear();
+//  MAX14830_CS_Clear();
   
   /** Disable */
 //  module_MAX14830_Power_Off();

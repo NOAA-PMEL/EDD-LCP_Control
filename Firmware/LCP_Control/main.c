@@ -15,11 +15,14 @@
 #include "artemis_supercap.h"
 #include "ublox.h"
 
+#include "control.h"
+#include "piston.h"
+
 #include <stdlib.h>
 
 //#define TEST_UBLOX  true
-#define TEST_SUPERCAP true
-
+//#define TEST_SUPERCAP true
+#define TEST_S9 true
 
 int main(void)
 {
@@ -38,6 +41,8 @@ int main(void)
     // run the application
 //    artemis_scheduler_run();
     
+    // initialize the piston 
+    PIS_initialize();
     
 #ifdef TEST_S9
     /** Init Soundnine Temperature Sensor */
@@ -63,9 +68,12 @@ int main(void)
       printf("Failed to start supercap charge\n");
     }
 #endif
-    
-    
-
+//    PIS_retract();
+    PIS_extend();
+    am_hal_systick_delay_us(2500000);
+    PIS_stop();
+    am_hal_systick_delay_us(2500000);
+    PIS_retract();
     while(true)
     {
 #ifdef TEST_UBLOX
