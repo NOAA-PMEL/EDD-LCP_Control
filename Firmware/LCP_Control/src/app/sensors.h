@@ -38,13 +38,13 @@ typedef struct sSensorData_t
         float previous;         /**< Previous depth (m) */
         float ascent_rate;      /**< Calculated ascnet rate (m/s) */
         bool data_valid;
-        SemaphoreHandle_t semaphore;
+        SemaphoreHandle_t *semaphore;
     }depth;
     struct {
         uint16_t rate;          /**< Sample rate (Hz) */
         float current;          /**< (int16_t) T_actual = temperature / 1000 */
         bool data_valid;
-        SemaphoreHandle_t semaphore;
+        SemaphoreHandle_t *semaphore;
     }temperature;
     SensorGps_t GPS;
 }SensorData_t;
@@ -90,6 +90,8 @@ void SENS_set_depth_rate(uint16_t rate);
 void SENS_set_temperature_rate(uint16_t rate);
 
 void SENS_set_gps_rate(uint16_t rate);
+
+void SENS_initialize(void);
 
 
 

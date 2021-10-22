@@ -12,14 +12,29 @@
 #define SENSOR_MAX_GPS_RATE             ( 2 )
 
 
-SensorData_t sensor_data;
+
+//static SemaphoreHandle_t xDepthSemaphore = NULL;
+//static SemaphoreHandle_t xTempSemaphore = NULL;
+static SensorData_t sensor_data;
+//SensorData_t sensor_data = {
+////  .depth.semaphore = &xDepthSemaphore,
+////  .temperature.semaphore = &xTempSemaphore
+//};
+void SENS_initialize(void)
+{
+  DEPTH_initialize(DEPTH_Keller_PA9LD);
+//  TEMP_initialize();
+  
+  
+  
+}
 
 
 bool SENS_get_depth(float *depth, float *rate)
 {
     bool retVal = false;
 
-    if( xSemaphoreTake(sensor_data.depth.semaphore, 10/portTICK_PERIOD_MS) == pdTRUE)
+    if( xSemaphoreTake(*sensor_data.depth.semaphore, 10/portTICK_PERIOD_MS) == pdTRUE)
     {
 
         *depth = sensor_data.depth.current;
@@ -35,7 +50,7 @@ bool SENS_get_temperature(float *temperature)
 {
     bool retVal = false;
 
-    if( xSemaphoreTake(sensor_data.temperature.semaphore, 10/portTICK_PERIOD_MS) == pdTRUE)
+    if( xSemaphoreTake(*sensor_data.temperature.semaphore, 10/portTICK_PERIOD_MS) == pdTRUE)
     {
         *temperature = sensor_data.temperature.current;
         retVal = true;
@@ -118,10 +133,10 @@ void task_depth(void)
     uint16_t period = 1000/sensor_data.depth.rate;
 
     /** Create the semaphore for the depth sensor read */
-    sensor_data.depth.semaphore = xSemaphoreCreateMutex();
+    *sensor_data.depth.semaphore = xSemaphoreCreateMutex();
 
     /** Initialize the Depth Sensor */
-    DEPTH_initialize(DEPTH_Keller_PA9LD);
+//    DEPTH_initialize(DEPTH_Keller_PA9LD);
 
     // Initialise the xLastWakeTime variable with the current time.
     xLastWakeTime = xTaskGetTickCount();
@@ -142,7 +157,7 @@ void task_depth(void)
         DEPTH_Power_OFF();
         
         
-        if(xSemaphoreTake(sensor_data.depth.semaphore, period/portTICK_PERIOD_MS) == pdTRUE)
+        if(xSemaphoreTake(*sensor_data.depth.semaphore, period/portTICK_PERIOD_MS) == pdTRUE)
         {
             sensor_data.depth.previous = sensor_data.depth.current;
             sensor_data.depth.current = depth.Depth;
@@ -163,7 +178,7 @@ void task_temperature(void)
     period /= portTICK_PERIOD_MS;
 
     /** Create the semaphore for the depth sensor read */
-    sensor_data.temperature.semaphore = xSemaphoreCreateMutex();
+    *sensor_data.temperature.semaphore = xSemaphoreCreateMutex();
 
     /** Initialize the Depth Sensor */
     TEMP_initialize();
@@ -187,7 +202,7 @@ void task_temperature(void)
         /** Power off */
         TEMP_Power_OFF();
         
-        if(xSemaphoreTake(sensor_data.temperature.semaphore, 10/portTICK_PERIOD_MS) == pdTRUE)
+        if(xSemaphoreTake(*sensor_data.temperature.semaphore, 10/portTICK_PERIOD_MS) == pdTRUE)
         {
             sensor_data.temperature.current = temperature.temperature;
             xSemaphoreGive(sensor_data.temperature.semaphore);
