@@ -25,3 +25,7 @@ This repository is home to the system controller PCB design and firmware for the
 
 ## State of this project
 This project was started but not completed before the embedded engineer left NOAA.  Parts of the code is working, much is not.  Proceed at your own risk.
+
+
+# Branch
+Develop has been merged into branch for the sake of putting information forward facing. 
