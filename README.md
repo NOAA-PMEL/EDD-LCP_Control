@@ -21,4 +21,7 @@ or activity by the DOC or the United States Government.*
 # EDD-LCP_Control
 Control PCB &amp; Firmware for Low Cost Profiler.
 
-This repository is home to the system controller PCB design and firmware for the low-cost profiler project (likely to be renamed).
+This repository is home to the system controller PCB design and firmware for the low-cost profiler project.
+
+## State of this project
+This project was started but not completed before the embedded engineer left NOAA.  Parts of the code is working, much is not.  Proceed at your own risk.

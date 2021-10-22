@@ -22,3 +22,4 @@ If enabled, debug messages will be sent over ITM.
 ******************************************************************************
 
 
+State of the world (project):
