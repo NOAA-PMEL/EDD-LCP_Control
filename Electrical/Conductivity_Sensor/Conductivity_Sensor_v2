@@ -1,0 +1,12 @@
+Reference, Quantity, Value, Footprint, Datasheet, MPN, 
+C1 C2 C3 C4 C5 C7 C8 C9 C10 C11 C12 ,11,"0.1uF","Capacitor_SMD:C_0805_2012Metric","~","C0805C104M5RACTU",""
+C6 ,1,"47pF","Capacitor_SMD:C_0805_2012Metric","~","C0805C470J5GACTU",""
+D1 D2 ,2,"1N4148","Diode_SMD:D_SOD-123","~","1N4148WT-7",""
+R1 R2 ,2,"1M","Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder","~","ERA-6AEB105V",""
+R3 ,1,"1.02k","Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder","~","ERA-6AEB1021V",""
+R4 ,1,"8.2k","Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder","~","ERA-6AEB822V",""
+R5 ,1,"1k","Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder","~","ERA-6AEB102V",""
+R6 ,1,"470","Resistor_SMD:R_0805_2012Metric","~","ERA-6AEB1021V",""
+U1 ,1,"OP07","Package_SO:SO-8_3.9x4.9mm_P1.27mm","http://www.ti.com/lit/ds/symlink/op07c.pdf","OP07CDR","OP07CDR"
+U2 ,1,"INA121U","Package_SO:SO-8_3.9x4.9mm_P1.27mm","http://www.ti.com/lit/gpn/ina121","INA121U","INA121U/2K5"
+U3 U4 U5 ,3,"LMP7701","Package_TO_SOT_SMD:SOT-23-5_HandSoldering","http://www.ti.com/lit/ds/symlink/lmp7701.pdf","LMP7701MF",""

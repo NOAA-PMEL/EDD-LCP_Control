@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name Conductivity_Sensor-rescue)(type Legacy)(uri ${KIPRJMOD}/Conductivity_Sensor-rescue.lib)(options "")(descr ""))
+)

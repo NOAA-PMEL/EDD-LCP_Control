@@ -1,0 +1,172 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Device:Battery_Cell BAT2
+U 1 1 5EBC5444
+P 1650 2000
+F 0 "BAT2" V 1395 2050 50  0000 C CNN
+F 1 "ZEUS AA" V 1486 2050 50  0000 C CNN
+F 2 "" V 1650 2060 50  0001 C CNN
+F 3 "~" V 1650 2060 50  0001 C CNN
+	1    1650 2000
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:Battery_Cell BAT9
+U 1 1 5EBC6E0E
+P 4700 2000
+F 0 "BAT9" V 4445 2050 50  0000 C CNN
+F 1 "ZEUS AA" V 4536 2050 50  0000 C CNN
+F 2 "" V 4700 2060 50  0001 C CNN
+F 3 "~" V 4700 2060 50  0001 C CNN
+	1    4700 2000
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1450 2000 1550 2000
+$Comp
+L Device:D_Schottky D1
+U 1 1 5EBCCD50
+P 5150 2000
+F 0 "D1" H 5150 1784 50  0000 C CNN
+F 1 "SB340" H 5150 1875 50  0000 C CNN
+F 2 "" H 5150 2000 50  0001 C CNN
+F 3 "~" H 5150 2000 50  0001 C CNN
+	1    5150 2000
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4900 2000 5000 2000
+Wire Wire Line
+	1100 2250 5750 2250
+Wire Wire Line
+	5750 2250 5750 2100
+Wire Wire Line
+	5750 2100 6000 2100
+Wire Notes Line width 10 rgb(255, 0, 27)
+	6000 2000 6500 2000
+Wire Notes Line width 10 rgb(0, 0, 0)
+	6000 2100 6500 2100
+Wire Notes Line width 10
+	1000 1500 5950 1500
+Wire Notes Line width 10
+	5950 1500 5950 2500
+Wire Notes Line width 10
+	5950 2500 1000 2500
+Wire Notes Line width 10
+	1000 2500 1000 1500
+Text Notes 6950 2200 0    118  ~ 24
+20AWG Teflon coated wire\n18" Leads. No connector\nDiodes accessible for testing
+Text Notes 6350 2250 0    157  ~ 31
++\n-
+Wire Wire Line
+	1100 2000 1100 2250
+Wire Wire Line
+	5300 2000 6000 2000
+$Comp
+L Device:Battery_Cell BAT3
+U 1 1 5EE016EA
+P 2050 2000
+F 0 "BAT3" V 1795 2050 50  0000 C CNN
+F 1 "ZEUS AA" V 1886 2050 50  0000 C CNN
+F 2 "" V 2050 2060 50  0001 C CNN
+F 3 "~" V 2050 2060 50  0001 C CNN
+	1    2050 2000
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:Battery_Cell BAT4
+U 1 1 5EE03956
+P 2500 2000
+F 0 "BAT4" V 2245 2050 50  0000 C CNN
+F 1 "ZEUS AA" V 2336 2050 50  0000 C CNN
+F 2 "" V 2500 2060 50  0001 C CNN
+F 3 "~" V 2500 2060 50  0001 C CNN
+	1    2500 2000
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:Battery_Cell BAT5
+U 1 1 5EE03EB4
+P 2950 2000
+F 0 "BAT5" V 2695 2050 50  0000 C CNN
+F 1 "ZEUS AA" V 2786 2050 50  0000 C CNN
+F 2 "" V 2950 2060 50  0001 C CNN
+F 3 "~" V 2950 2060 50  0001 C CNN
+	1    2950 2000
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:Battery_Cell BAT6
+U 1 1 5EE04388
+P 3400 2000
+F 0 "BAT6" V 3145 2050 50  0000 C CNN
+F 1 "ZEUS AA" V 3236 2050 50  0000 C CNN
+F 2 "" V 3400 2060 50  0001 C CNN
+F 3 "~" V 3400 2060 50  0001 C CNN
+	1    3400 2000
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:Battery_Cell BAT7
+U 1 1 5EE05DF0
+P 3850 2000
+F 0 "BAT7" V 3595 2050 50  0000 C CNN
+F 1 "ZEUS AA" V 3686 2050 50  0000 C CNN
+F 2 "" V 3850 2060 50  0001 C CNN
+F 3 "~" V 3850 2060 50  0001 C CNN
+	1    3850 2000
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4500 2000 4600 2000
+$Comp
+L Device:Battery_Cell BAT8
+U 1 1 5EBC621B
+P 4300 2000
+F 0 "BAT8" V 4045 2050 50  0000 C CNN
+F 1 "ZEUS AA" V 4136 2050 50  0000 C CNN
+F 2 "" V 4300 2060 50  0001 C CNN
+F 3 "~" V 4300 2060 50  0001 C CNN
+	1    4300 2000
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1100 2000 1150 2000
+$Comp
+L Device:Battery_Cell BAT1
+U 1 1 5EBC2C7A
+P 1250 2000
+F 0 "BAT1" V 995 2050 50  0000 C CNN
+F 1 "ZEUS AA" V 1086 2050 50  0000 C CNN
+F 2 "" V 1250 2060 50  0001 C CNN
+F 3 "~" V 1250 2060 50  0001 C CNN
+	1    1250 2000
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1850 2000 1950 2000
+Wire Wire Line
+	2250 2000 2400 2000
+Wire Wire Line
+	2700 2000 2850 2000
+Wire Wire Line
+	3150 2000 3300 2000
+Wire Wire Line
+	3600 2000 3750 2000
+Wire Wire Line
+	4050 2000 4200 2000
+$EndSCHEMATC
