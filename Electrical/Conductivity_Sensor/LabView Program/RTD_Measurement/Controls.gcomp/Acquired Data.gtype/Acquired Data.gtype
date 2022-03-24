@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SourceFile Checksum="C2C0FEC9F2E357BEC04D52F76B371BEADEF98120B10DFC9E7D94B446C5CBBAE96B35BC8AADE7B9F7D2E3AC2AF1110C1EE6D6092189E3A73AB708220D127F4E78" Timestamp="1D6048AB20ED743" xmlns="http://www.ni.com/PlatformFramework">
+	<SourceModelFeatureSet>
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="LabVIEW Controls" Name="http://www.ni.com/Controls.LabVIEW.Design" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Common language components" Name="http://www.ni.com/MocCommon" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Editor" Name="http://www.ni.com/PanelCommon" OldestCompatibleVersion="6.1.0.0" Version="6.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Editor" Name="http://www.ni.com/PlatformFramework" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ApplicationVersionInfo Build="8.1.0.49573" Name="LabVIEW NXG" Version="5.0.0" />
+	</SourceModelFeatureSet>
+	<TypeDefinition DataType="Wfm(Double)[]" Id="1" xmlns="http://www.ni.com/MocCommon">
+		<Icon Id="14" ListViewIconCrop="0 0 40 40" xmlns="http://www.ni.com/PlatformFramework">
+			<IconPanel Height="[float]40" Id="16" Left="[float]0" MinHeight="[float]0" MinWidth="[float]0" PanelSizeMode="Resize" Top="[float]0" Width="[float]40">
+				<IconTemplate ClipMargin="[SMThickness]3,3,3,3" Height="[float]40" Id="17" Left="[float]0" TemplateName="[string]GrayNoText" Top="[float]0" Width="[float]40">
+					<Rectangle Fill="[SMSolidColorBrush]#ff727272" Id="18" IsHitTestVisible="[bool]False" Left="[float]0" MinHeight="[float]1" MinWidth="[float]1" RadiusX="[float]4" RadiusY="[float]4" Top="[float]0" />
+					<Rectangle Fill="[SMSolidColorBrush]#ffe5e5e5" Id="19" IsHitTestVisible="[bool]False" Left="[float]0" Margin="[SMThickness]1,1,1,1" MinHeight="[float]1" MinWidth="[float]1" RadiusX="[float]2.5" RadiusY="[float]2.5" Stroke="[SMSolidColorBrush]#fff2f2f2" Top="[float]0" />
+				</IconTemplate>
+				<Image Height="[float]30" Id="20" Left="[float]5" MinHeight="[float]13" MinWidth="[float]13" Source="[SMEmbeddedImageSource]iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAIAAAC0Ujn1AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACqSURBVEhL7ZDdCUMhDEZdwVlcobO4grO4kys4i/0wEtLcizZc+lJyHiS/B0kYP8PVClcrXK1wteI/1KWUnPNKnmFTo7tnzU3M6hXdcVDXWqUaaUophDUml7kIKLb9OsYIu1K31lCRb++du4xWYxRq+vtrgjWlZhfbZ/OkBliDkdS4xlVNcBFQfFZLyK7U8hT0fnWQPbTMLvNBNqhlxVP1njU3salNuPqDMd5E39TdApD3LQAAAABJRU5ErkJggg==" Top="[float]5" Width="[float]30" />
+			</IconPanel>
+		</Icon>
+		<DataItem DataType="Wfm(Double)[]" Id="12" Name="Acquired Data">
+			<p.DefaultValue>null</p.DefaultValue>
+		</DataItem>
+	</TypeDefinition>
+	<EnvoyManagerFile Id="5" xmlns="http://www.ni.com/PlatformFramework">
+		<EnvoyManagerRootEnvoy Id="6" ModelDefinitionType="EnvoyManagerRootEnvoy" Name="RootEnvoy" />
+		<NameScopingEnvoy AutomaticallyResolveUp="True" Id="7" Name="Acquired Data.gtype" NameTracksFileName="True">
+			<EmbeddedDefinitionReference Bindings="{http://www.ni.com/PlatformFramework}NeverLazy" Id="8" ModelDefinitionType="{http://www.ni.com/MocCommon}ControlDefinition" Name="ControlDefinition">
+				<ControlDefinition Id="9" xmlns="http://www.ni.com/MocCommon">
+					<Label Height="[float]16" Id="11" LabelOwner="[UIModel]10" Left="[float]136" Text="[string]Acquired Data" Top="[float]32" Width="[float]76" xmlns="http://www.ni.com/PanelCommon" />
+					<ArrayViewer ArrayElement="[UIModel]13" Columns="[int]1" Dimensions="[int]1" Height="[float]128" HorizontalScrollBarVisibility="[ScrollBarVisibility]Hidden" Id="10" IndexVisibility="[Visibility]Visible" IsTabStop="[bool]True" Label="[UIModel]11" Left="[float]136" Rows="[int]1" TabIndex="[int]0" Top="[float]52" Value="{DataItemBinding Id=12}" VerticalScrollBarVisibility="[ScrollBarVisibility]Hidden" Width="[float]295" xmlns="http://www.ni.com/PanelCommon">
+						<p.DefaultElementValue>
+							<Waveform>
+								<Timestamp>60052752000;0;Utc</Timestamp>
+								<Interval>0x3FF0000000000000</Interval>
+								<Data>
+									<Array Lengths="0" />
+								</Data>
+							</Waveform>
+						</p.DefaultElementValue>
+						<Waveform Id="13" IsTabStop="[bool]True" TabIndex="[int]0" WaveformDataType="[Type]Double" xmlns="http://www.ni.com/Controls.LabVIEW.Design" />
+					</ArrayViewer>
+				</ControlDefinition>
+			</EmbeddedDefinitionReference>
+		</NameScopingEnvoy>
+	</EnvoyManagerFile>
+</SourceFile>

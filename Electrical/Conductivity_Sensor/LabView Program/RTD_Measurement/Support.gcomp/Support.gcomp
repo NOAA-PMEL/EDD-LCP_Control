@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SourceFile Checksum="D4F7B17859DDFF2CDCC7A3465AD7E324A2F33994BDFE8ECB24070F36772DACE9FFF78B09C20EF12B80B85DD5E67FF1E93D7003F06B25FEE3EC99C6213AC376CB" Timestamp="1D6048AB1D1F51E" xmlns="http://www.ni.com/PlatformFramework">
+	<SourceModelFeatureSet>
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="GComponentFeatureSet" Name="http://www.ni.com/GComponent.xsd" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Editor" Name="http://www.ni.com/PlatformFramework" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="SystemDesigner" Name="http://www.ni.com/SystemDesigner/EnvoyManagement" OldestCompatibleVersion="5.0.0.0" Version="5.0.0.49152" />
+		<ApplicationVersionInfo Build="8.1.0.49573" Name="LabVIEW NXG" Version="5.0.0" />
+	</SourceModelFeatureSet>
+	<ComponentDefinition DefaultConfigurationName="Configuration1" Id="de6ff019d44c4a6e8541f09b96939d54" RootNamespaceId="46c01cbea35649bfbbffdbc0ded83a30" xmlns="http://www.ni.com/GComponent.xsd">
+		<Icon Id="7a0af4d9f2b24eb686995b77b7c00839" ListViewIconCrop="0 0 40 40" xmlns="http://www.ni.com/PlatformFramework">
+			<IconPanel Height="[float]40" Id="cc1a1d6094db4c8d857cd2099917f911" Left="[float]0" PanelSizeMode="Resize" Top="[float]0" Width="[float]40">
+				<IconTemplate Height="[float]40" Id="96be8e4dbc9149d188d71c6c168187f0" Left="[float]0" TemplateName="[string]Blank" Top="[float]0" Width="[float]40" />
+			</IconPanel>
+		</Icon>
+		<CompilerSymbolTable Id="e288e9f127f84836885ed09824e10456" xmlns="http://www.ni.com/PlatformFramework" />
+		<ComponentConfiguration Id="71ad719c29874ad7a776ac31599081f6" Name="Configuration1">
+			<CompilerSymbolTable Id="73b43ab3e88041dc8a7f798c2b8f057d" xmlns="http://www.ni.com/PlatformFramework" />
+			<ComponentItemProperties AssociatedEnvoyId="e7e56029673441fda02604c8363a7633" Exported="True" Id="c0f2dc8305e940c4b3bf738c86c79154" />
+			<ComponentItemProperties AssociatedEnvoyId="ad9d4e8c0bd447379469a6aaffe9de88" Exported="True" Id="fb24ff51125f43b5abcef87ce024cf27" />
+			<ComponentItemProperties AssociatedEnvoyId="1ffec6697604dc788a13151d1c7ccf5" Exported="True" Id="49b0f76f98f4702a57ba3346327b94c" />
+			<GLibraryProperties Id="75876bbfbec047289e05e442ad23742e" />
+		</ComponentConfiguration>
+	</ComponentDefinition>
+	<EnvoyManagerFile Id="1264c1c7e1384754bcc723379b6efce0" xmlns="http://www.ni.com/PlatformFramework">
+		<EnvoyManagerRootEnvoy Id="cb6ab5fd82044dddb7f0d248ea8e4209" ModelDefinitionType="EnvoyManagerRootEnvoy" Name="RootEnvoy" />
+		<EmbeddedDefinitionReference Id="fc9ab9dd92b440a2999e6d98f81d1c74" ModelDefinitionType="{http://www.ni.com/GComponent.xsd}ComponentDefinitionEnvoyHierarchyRoot" Name="Global namespace">
+			<ComponentDefinitionEnvoyHierarchyRoot xmlns="http://www.ni.com/GComponent.xsd" />
+			<NameScopingEnvoy AutomaticallyResolveUp="True" Id="46c01cbea35649bfbbffdbc0ded83a30" Name="Support">
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="e7e56029673441fda02604c8363a7633" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Error Handler - Message Handling Loop.gvi" StoragePath="Error Handler - Message Handling Loop.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="ad9d4e8c0bd447379469a6aaffe9de88" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Check Loop Error.gvi" StoragePath="Check Loop Error.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="1ffec6697604dc788a13151d1c7ccf5" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Error Handler - Event Handling Loop.gvi" StoragePath="Error Handler - Event Handling Loop.gvi" />
+			</NameScopingEnvoy>
+		</EmbeddedDefinitionReference>
+		<NameScopingEnvoy Id="746f08f6d94c4460b3f67118e99a3f53" Name="Support.gcomp" NameTracksFileName="True">
+			<ContentReference ContentIdentifier="71ad719c29874ad7a776ac31599081f6" Id="bb595092553c46748d2c59acd189ffba" Name="Configuration1" OverridingModelDefinitionType="{http://www.ni.com/GComponent.xsd}ComponentConfiguration" />
+		</NameScopingEnvoy>
+	</EnvoyManagerFile>
+</SourceFile>

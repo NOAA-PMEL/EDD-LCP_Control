@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SourceFile Checksum="567FE2D900353DB8BE6342009A9B6C22C12690679982669D9E03853F50303AAB6615B6EC46FD54A4F5C063E6138DB45081E8D6537A4AD0B98937BFA1A4BA004C" Timestamp="1D6048AB1D131CD" xmlns="http://www.ni.com/PlatformFramework">
+	<SourceModelFeatureSet>
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="GComponentFeatureSet" Name="http://www.ni.com/GComponent.xsd" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Editor" Name="http://www.ni.com/PlatformFramework" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="SystemDesigner" Name="http://www.ni.com/SystemDesigner/EnvoyManagement" OldestCompatibleVersion="5.0.0.0" Version="5.0.0.49152" />
+		<ApplicationVersionInfo Build="8.1.0.49573" Name="LabVIEW NXG" Version="5.0.0" />
+	</SourceModelFeatureSet>
+	<ComponentDefinition DefaultConfigurationName="Configuration1" Id="4e99634e2596489285266ae47865d11b" RootNamespaceId="d0ebd436b24f4c918e347c41523ef304" xmlns="http://www.ni.com/GComponent.xsd">
+		<Icon Id="ddf8d0aaa7b64baa8d71ede2882a5e4b" ListViewIconCrop="0 0 40 40" xmlns="http://www.ni.com/PlatformFramework">
+			<IconPanel Height="[float]40" Id="3af9c3e6a4ad41258ec29e666a5a7b0f" Left="[float]0" PanelSizeMode="Resize" Top="[float]0" Width="[float]40">
+				<IconTemplate Height="[float]40" Id="7f2fb5cd6ff940f39e1480f652d4f715" Left="[float]0" TemplateName="[string]Blank" Top="[float]0" Width="[float]40" />
+			</IconPanel>
+		</Icon>
+		<CompilerSymbolTable Id="18cfca7f6f184d0aaef0873c26cceb44" xmlns="http://www.ni.com/PlatformFramework" />
+		<ComponentConfiguration Id="7fd83473417a4a2cb8a160777030840f" Name="Configuration1">
+			<CompilerSymbolTable Id="81df2cbd304b488d9ba07cee9e4e2ac7" xmlns="http://www.ni.com/PlatformFramework" />
+			<ComponentItemProperties AssociatedEnvoyId="47b3148c8db844bcb4372eaeaa51ccc3" Exported="True" Id="44624ac1337c4bd5892836fb01ff1cbe" />
+			<ComponentItemProperties AssociatedEnvoyId="721cd8fe7e6746cc8caddc6d5f199ee0" Exported="True" Id="3bae16663fa42ec8a924b8d9f10facb" />
+			<ComponentItemProperties AssociatedEnvoyId="5ac1e12927c442efb7533fd1631eb7c6" Exported="True" Id="74b18482c42144339afe3cbe65514d43" />
+			<ComponentItemProperties AssociatedEnvoyId="a74b0bb3689241c2beb7e2202c6ee943" Exported="True" Id="c9a2355866a3444db8856117ab92b024" />
+			<ComponentItemProperties AssociatedEnvoyId="978ecab602934aceab7d0aeaea620a84" Exported="True" Id="c8dd330a775e48e495da369af5f28347" />
+			<ComponentItemProperties AssociatedEnvoyId="cc8232fa69b54a9b91262776a670d526" Exported="True" Id="10079c211da64477b0dc57860f3d812b" />
+			<GLibraryProperties Id="6a2f96be75de47a59c4c290f93615e84" />
+		</ComponentConfiguration>
+	</ComponentDefinition>
+	<EnvoyManagerFile Id="15d58ca4ada64c509c1159836fdd147a" xmlns="http://www.ni.com/PlatformFramework">
+		<EnvoyManagerRootEnvoy Id="81022d1f4bb042589b823288a35eaab1" ModelDefinitionType="EnvoyManagerRootEnvoy" Name="RootEnvoy" />
+		<EmbeddedDefinitionReference Id="261634d1864147f8bd14a5e9021005b4" ModelDefinitionType="{http://www.ni.com/GComponent.xsd}ComponentDefinitionEnvoyHierarchyRoot" Name="Global namespace">
+			<ComponentDefinitionEnvoyHierarchyRoot xmlns="http://www.ni.com/GComponent.xsd" />
+			<NameScopingEnvoy AutomaticallyResolveUp="True" Id="d0ebd436b24f4c918e347c41523ef304" Name="Logging">
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="47b3148c8db844bcb4372eaeaa51ccc3" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Logging Message Loop.gvi" StoragePath="Logging Message Loop.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="721cd8fe7e6746cc8caddc6d5f199ee0" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Log Data.gvi" StoragePath="Log Data.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="5ac1e12927c442efb7533fd1631eb7c6" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Flush Data to Log File.gvi" StoragePath="Flush Data to Log File.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="a74b0bb3689241c2beb7e2202c6ee943" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Error Handler - Logging Message Loop.gvi" StoragePath="Error Handler - Logging Message Loop.gvi" />
+				<SourceFileReference Bindings="EnvoyManager" Id="978ecab602934aceab7d0aeaea620a84" ModelDefinitionType="NationalInstruments.MocCommon.Modeling.TypeDefinition" Name="Logging State.gtype" StoragePath="Logging State.gtype\Logging State.gtype" />
+				<SourceFileReference Bindings="EnvoyManager" Id="cc8232fa69b54a9b91262776a670d526" ModelDefinitionType="NationalInstruments.MocCommon.Modeling.TypeDefinition" Name="Logging Configuration.gtype" StoragePath="Logging Configuration.gtype\Logging Configuration.gtype" />
+			</NameScopingEnvoy>
+		</EmbeddedDefinitionReference>
+		<NameScopingEnvoy Id="c5d49d2e6054c81a96f42666728cdf1" Name="Logging.gcomp" NameTracksFileName="True">
+			<ContentReference ContentIdentifier="7fd83473417a4a2cb8a160777030840f" Id="e5f07f94959a407794ef46f973ce717d" Name="Configuration1" OverridingModelDefinitionType="{http://www.ni.com/GComponent.xsd}ComponentConfiguration" />
+		</NameScopingEnvoy>
+	</EnvoyManagerFile>
+</SourceFile>

@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SourceFile Checksum="7F233AE080B92CCD228A4C9E62D484D2F4175884CA1A0EE8804527596E28DAF7680018DBCEE611AE0845E9D51EB73323846BBDA1BE5162C9228B104F2AC3AC41" Timestamp="1D6048AB1D17FF6" xmlns="http://www.ni.com/PlatformFramework">
+	<SourceModelFeatureSet>
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="GComponentFeatureSet" Name="http://www.ni.com/GComponent.xsd" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Editor" Name="http://www.ni.com/PlatformFramework" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="SystemDesigner" Name="http://www.ni.com/SystemDesigner/EnvoyManagement" OldestCompatibleVersion="5.0.0.0" Version="5.0.0.49152" />
+		<ApplicationVersionInfo Build="8.1.0.49573" Name="LabVIEW NXG" Version="5.0.0" />
+	</SourceModelFeatureSet>
+	<ComponentDefinition DefaultConfigurationName="Configuration1" Id="f55008b1c4a401d9626b73e8eebde09" RootNamespaceId="3ea3e4dbcbdb4af59e2e8960ac890432" xmlns="http://www.ni.com/GComponent.xsd">
+		<Icon Id="e721f2d1c3d440428a8a0a134db03974" ListViewIconCrop="0 0 40 40" xmlns="http://www.ni.com/PlatformFramework">
+			<IconPanel Height="[float]40" Id="52492aadefac49bb92ce97bef666e469" Left="[float]0" PanelSizeMode="Resize" Top="[float]0" Width="[float]40">
+				<IconTemplate Height="[float]40" Id="58edd62aadb34032bd9953428ede52e7" Left="[float]0" TemplateName="[string]Blank" Top="[float]0" Width="[float]40" />
+			</IconPanel>
+		</Icon>
+		<CompilerSymbolTable Id="b2a1e8fd157d4637b3e7a32e579438d5" xmlns="http://www.ni.com/PlatformFramework" />
+		<ComponentConfiguration Id="c9493e87ff05446a8466f1f2d2a0aa20" Name="Configuration1">
+			<CompilerSymbolTable Id="b81593b3aef043ad9ce87fd002162d18" xmlns="http://www.ni.com/PlatformFramework" />
+			<ComponentItemProperties AssociatedEnvoyId="2eb7ff9371cb4af38560a4462e5ef0a9" Exported="True" Id="e8d06bc6f58d4598982410693bc45e93" />
+			<ComponentItemProperties AssociatedEnvoyId="6d67aa90183043beb856c4545ca3c912" Exported="True" Id="ec3131581fb34f5fb066acfae4977eb9" />
+			<ComponentItemProperties AssociatedEnvoyId="a681b8672c474752a35acd82ee297dd9" Exported="True" Id="b3626ec6a85343d6a7b03be83ab64ade" />
+			<ComponentItemProperties AssociatedEnvoyId="7004b66c33b54fff8fbdd20f6ab4252c" Exported="True" Id="3ba32610af1642e8b68bb96a94187d27" />
+			<ComponentItemProperties AssociatedEnvoyId="19013bfa40744ffabd626200480df6c4" Exported="True" Id="f701bd79238f47c4b7eb459d36b13d89" />
+			<ComponentItemProperties AssociatedEnvoyId="fe00f39b38de4183bfe17d936799737a" Exported="True" Id="86e76903939849e88f6ccc0131c6b77d" />
+			<ComponentItemProperties AssociatedEnvoyId="e65cef505fe345908bf262c9c22621c6" Exported="True" Id="5a845865832c496b945dbe3c4baf50b4" />
+			<ComponentItemProperties AssociatedEnvoyId="880c47be67d043b3a98a2bea41bd1d16" Exported="True" Id="9e64317cf98c4bf0aff7c5be3a29494f" />
+			<ComponentItemProperties AssociatedEnvoyId="20d15aabb8c542a5b7b5404169fdc3a3" Exported="True" Id="9150d81019f145d09138a734821f6c9b" />
+			<ComponentItemProperties AssociatedEnvoyId="e741d7c27dbe4539bee17b32a1b2a69c" Exported="True" Id="47bc68963bad4bebb9cb79d72588ff35" />
+			<GLibraryProperties Id="975a32061d7948f5863e8685c15fa17f" />
+		</ComponentConfiguration>
+	</ComponentDefinition>
+	<EnvoyManagerFile Id="72f851aea2f043f086cffa6aa7f325d4" xmlns="http://www.ni.com/PlatformFramework">
+		<EnvoyManagerRootEnvoy Id="cf4a15573a7c497890ee75c6432464da" ModelDefinitionType="EnvoyManagerRootEnvoy" Name="RootEnvoy" />
+		<EmbeddedDefinitionReference Id="909500ab44064095be5f9117e74601e0" ModelDefinitionType="{http://www.ni.com/GComponent.xsd}ComponentDefinitionEnvoyHierarchyRoot" Name="Global namespace">
+			<ComponentDefinitionEnvoyHierarchyRoot xmlns="http://www.ni.com/GComponent.xsd" />
+			<NameScopingEnvoy AutomaticallyResolveUp="True" Id="3ea3e4dbcbdb4af59e2e8960ac890432" Name="Acquisition">
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="2eb7ff9371cb4af38560a4462e5ef0a9" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Acquisition Message Loop.gvi" StoragePath="Acquisition Message Loop.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="6d67aa90183043beb856c4545ca3c912" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Generate Simulated Data.gvi" StoragePath="Generate Simulated Data.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="a681b8672c474752a35acd82ee297dd9" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Configure Hardware.gvi" StoragePath="Configure Hardware.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="7004b66c33b54fff8fbdd20f6ab4252c" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Stop Acquisition.gvi" StoragePath="Stop Acquisition.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="19013bfa40744ffabd626200480df6c4" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Acquire.gvi" StoragePath="Acquire.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="fe00f39b38de4183bfe17d936799737a" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Initialize Hardware References.gvi" StoragePath="Initialize Hardware References.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="e65cef505fe345908bf262c9c22621c6" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Error Handler - Acquisition Message Loop.gvi" StoragePath="Error Handler - Acquisition Message Loop.gvi" />
+				<SourceFileReference Bindings="EnvoyManager" Id="880c47be67d043b3a98a2bea41bd1d16" ModelDefinitionType="NationalInstruments.MocCommon.Modeling.TypeDefinition" Name="Signal Type.gtype" StoragePath="Signal Type.gtype\Signal Type.gtype" />
+				<SourceFileReference Bindings="EnvoyManager" Id="20d15aabb8c542a5b7b5404169fdc3a3" ModelDefinitionType="NationalInstruments.MocCommon.Modeling.TypeDefinition" Name="Hardware Configuration.gtype" StoragePath="Hardware Configuration.gtype\Hardware Configuration.gtype" />
+				<SourceFileReference Bindings="EnvoyManager" Id="e741d7c27dbe4539bee17b32a1b2a69c" ModelDefinitionType="NationalInstruments.MocCommon.Modeling.TypeDefinition" Name="Acquisition State.gtype" StoragePath="Acquisition State.gtype\Acquisition State.gtype" />
+			</NameScopingEnvoy>
+		</EmbeddedDefinitionReference>
+		<NameScopingEnvoy Id="f4ce31033fd2469f801f6020f709afe7" Name="Acquisition.gcomp" NameTracksFileName="True">
+			<ContentReference ContentIdentifier="c9493e87ff05446a8466f1f2d2a0aa20" Id="c047eca710f14227afa50c1db0a1ff47" Name="Configuration1" OverridingModelDefinitionType="{http://www.ni.com/GComponent.xsd}ComponentConfiguration" />
+		</NameScopingEnvoy>
+	</EnvoyManagerFile>
+</SourceFile>

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SourceFile Checksum="586D7BD7B6A3912DB53AA8677633E7EFC0B43E4B1BB2108B9C7AA691D8DA4AD70AD823B6418DC746B88E2A805EBA03E56668B59AED3997DC6276FB9F6DFE4A77" Timestamp="1D6048AB1D131CD" xmlns="http://www.ni.com/PlatformFramework">
+	<SourceModelFeatureSet>
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="GComponentFeatureSet" Name="http://www.ni.com/GComponent.xsd" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Editor" Name="http://www.ni.com/PlatformFramework" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="SystemDesigner" Name="http://www.ni.com/SystemDesigner/EnvoyManagement" OldestCompatibleVersion="5.0.0.0" Version="5.0.0.49152" />
+		<ApplicationVersionInfo Build="8.1.0.49573" Name="LabVIEW NXG" Version="5.0.0" />
+	</SourceModelFeatureSet>
+	<ComponentDefinition DefaultConfigurationName="Configuration1" Id="474598251ae745369ed4ca90004bccc5" RootNamespaceId="452a8089ddb4438a890082d78730ad12" xmlns="http://www.ni.com/GComponent.xsd">
+		<Icon Id="4771753f6da344ac915c92fa37254349" ListViewIconCrop="0 0 40 40" xmlns="http://www.ni.com/PlatformFramework">
+			<IconPanel Height="[float]40" Id="393d381ea7774ed1a929c1c27d585e14" Left="[float]0" PanelSizeMode="Resize" Top="[float]0" Width="[float]40">
+				<IconTemplate Height="[float]40" Id="7be25da01e0144e2a00364f47288f262" Left="[float]0" TemplateName="[string]Blank" Top="[float]0" Width="[float]40" />
+			</IconPanel>
+		</Icon>
+		<CompilerSymbolTable Id="76b6008f62554f279807225d74268bd5" xmlns="http://www.ni.com/PlatformFramework" />
+		<ComponentConfiguration Id="68576e8018ee423781557dec9c2ff903" Name="Configuration1">
+			<CompilerSymbolTable Id="3a8eba20c09040ec8e2d2b93be29777b" xmlns="http://www.ni.com/PlatformFramework" />
+			<ComponentItemProperties AssociatedEnvoyId="4a9c4b75e71f44b89a4b556a4c7e036f" Exported="True" Id="e135cb15a75942fda2d6c772ae4f26ed" />
+			<ComponentItemProperties AssociatedEnvoyId="1d86df3145d744c48447f31381b0c9a9" Exported="True" Id="e672034029c54457a4e02115cf467f0d" />
+			<ComponentItemProperties AssociatedEnvoyId="f9ee77e65fc4425baafbec1efdce44cb" Exported="True" Id="4c334b00be154576b2b930789fdec4f1" />
+			<ComponentItemProperties AssociatedEnvoyId="2695bae66caa4033a9fdd72baefc70a9" Exported="True" Id="328d35bb950f4fbda5d8011e17c93e36" />
+			<ComponentItemProperties AssociatedEnvoyId="b3fe5b80b25e4879a221ecddafc3bc66" Exported="True" Id="c3b535dc5e3746b7903437a4ec988f48" />
+			<ComponentItemProperties AssociatedEnvoyId="aea6ef2113fb4f7ab05994fc76f0a8df" Exported="True" Id="fa6ef7d05d2c4361bcf1b98423095f75" />
+			<ComponentItemProperties AssociatedEnvoyId="8b67f2343a9d48e781920e78227e159f" Exported="True" Id="c0a246877fdb4fa0b8a280a81604cd9f" />
+			<GLibraryProperties Id="bc0f1dbcd831476e8540b42dda200bbe" />
+		</ComponentConfiguration>
+	</ComponentDefinition>
+	<EnvoyManagerFile Id="f48fdb9a64b44097a0fe0ad175dc3292" xmlns="http://www.ni.com/PlatformFramework">
+		<EnvoyManagerRootEnvoy Id="c1a7309de97241f88b2c703ef72346e2" ModelDefinitionType="EnvoyManagerRootEnvoy" Name="RootEnvoy" />
+		<EmbeddedDefinitionReference Id="6755f1e85a744eb4aa9efef59f81e165" ModelDefinitionType="{http://www.ni.com/GComponent.xsd}ComponentDefinitionEnvoyHierarchyRoot" Name="Global namespace">
+			<ComponentDefinitionEnvoyHierarchyRoot xmlns="http://www.ni.com/GComponent.xsd" />
+			<NameScopingEnvoy AutomaticallyResolveUp="True" Id="452a8089ddb4438a890082d78730ad12" Name="Message Queue">
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="4a9c4b75e71f44b89a4b556a4c7e036f" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Obtain Message Queue.gvi" StoragePath="Obtain Message Queue.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="1d86df3145d744c48447f31381b0c9a9" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Create All Message Queues.gvi" StoragePath="Create All Message Queues.gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="f9ee77e65fc4425baafbec1efdce44cb" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Enqueue Message (Array).gvi" StoragePath="Enqueue Message (Array).gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="2695bae66caa4033a9fdd72baefc70a9" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Enqueue Message (Single).gvi" StoragePath="Enqueue Message (Single).gvi" />
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="b3fe5b80b25e4879a221ecddafc3bc66" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Dequeue Message.gvi" StoragePath="Dequeue Message.gvi" />
+				<SourceFileReference Bindings="EnvoyManager" Id="aea6ef2113fb4f7ab05994fc76f0a8df" ModelDefinitionType="NationalInstruments.MocCommon.Modeling.TypeDefinition" Name="Message Cluster.gtype" StoragePath="Message Cluster.gtype\Message Cluster.gtype" />
+				<SourceFileReference Bindings="EnvoyManager" Id="8b67f2343a9d48e781920e78227e159f" ModelDefinitionType="NationalInstruments.MocCommon.Modeling.TypeDefinition" Name="All Message Queues.gtype" StoragePath="All Message Queues.gtype\All Message Queues.gtype" />
+			</NameScopingEnvoy>
+		</EmbeddedDefinitionReference>
+		<NameScopingEnvoy Id="23ec132563f04b98a8ce04e3bfc7902a" Name="Message Queue.gcomp" NameTracksFileName="True">
+			<ContentReference ContentIdentifier="68576e8018ee423781557dec9c2ff903" Id="e4c878fd37504600981071bcfd9a0461" Name="Configuration1" OverridingModelDefinitionType="{http://www.ni.com/GComponent.xsd}ComponentConfiguration" />
+		</NameScopingEnvoy>
+	</EnvoyManagerFile>
+</SourceFile>

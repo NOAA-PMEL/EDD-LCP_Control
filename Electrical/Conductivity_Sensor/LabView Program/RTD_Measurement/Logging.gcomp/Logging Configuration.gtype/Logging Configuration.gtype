@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SourceFile Checksum="252C193CF8BE3B30843C7079867E1F6F628B5D684A9AC571D9FE2001781B8AD2CC1618B27D721D3B6D4F5FFB39C908AB52A3D82CFDBF1C400561AC2894A8C891" Timestamp="1D6048AB20C3F32" xmlns="http://www.ni.com/PlatformFramework">
+	<SourceModelFeatureSet>
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="LabVIEW Controls" Name="http://www.ni.com/Controls.LabVIEW.Design" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Common language components" Name="http://www.ni.com/MocCommon" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Editor" Name="http://www.ni.com/PanelCommon" OldestCompatibleVersion="6.1.0.0" Version="6.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Editor" Name="http://www.ni.com/PlatformFramework" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ApplicationVersionInfo Build="8.1.0.49573" Name="LabVIEW NXG" Version="5.0.0" />
+	</SourceModelFeatureSet>
+	<TypeDefinition DataType="@1d5aff672495406c9147a5f0e196fdee" Id="1" xmlns="http://www.ni.com/MocCommon">
+		<Icon Id="19" ListViewIconCrop="0 0 40 40" xmlns="http://www.ni.com/PlatformFramework">
+			<IconPanel Height="[float]40" Id="21" Left="[float]0" MinHeight="[float]0" MinWidth="[float]0" PanelSizeMode="Resize" Top="[float]0" Width="[float]40">
+				<IconTemplate ClipMargin="[SMThickness]3,3,3,3" Height="[float]40" Id="22" Left="[float]0" TemplateName="[string]GrayNoText" Top="[float]0" Width="[float]40">
+					<Rectangle Fill="[SMSolidColorBrush]#ff727272" Id="23" IsHitTestVisible="[bool]False" Left="[float]0" MinHeight="[float]1" MinWidth="[float]1" RadiusX="[float]4" RadiusY="[float]4" Top="[float]0" />
+					<Rectangle Fill="[SMSolidColorBrush]#ffe5e5e5" Id="24" IsHitTestVisible="[bool]False" Left="[float]0" Margin="[SMThickness]1,1,1,1" MinHeight="[float]1" MinWidth="[float]1" RadiusX="[float]2.5" RadiusY="[float]2.5" Stroke="[SMSolidColorBrush]#fff2f2f2" Top="[float]0" />
+				</IconTemplate>
+				<Image Height="[float]30" Id="25" Left="[float]5" MinHeight="[float]13" MinWidth="[float]13" Source="[SMEmbeddedImageSource]iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAIAAAC0Ujn1AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAD1SURBVEhLzZSBDYMwDASZtit0FnZip/Txuykx+RCCED25lnHtI0qlTmmZb4pB9TzjI4Mz4+okiOppWgtkojoENdVrbZmYWas7c1DnDJ5QE9UhqIOamHmnPhsvU1e5qsZ+IzgzqO4Jv6Zb8Bu6gf9Th98tBGfG1V7tiGpeOm8fqA5BzX3WbALUQKo7c1DnDJ5QE9UhqIOaoAZRfZaD/xCjUPvbv3i3BvYbwZnfPlzLUpylbT8kqtfTGnyNPwi4qCjUeRoF1LQrtvNV5HfZ3qBXbYeIp35rtvNVCnVeAPT6g8A3BVG95XC5TbFsR/nh3VGu7ktS+gCmq35Lwl4Q5QAAAABJRU5ErkJggg==" Top="[float]5" Width="[float]30" />
+			</IconPanel>
+		</Icon>
+		<DataItem DataType="@1d5aff672495406c9147a5f0e196fdee" Id="12" Name="Logging Configuration">
+			<p.DefaultValue>
+				<Cluster>
+					<Field1>
+						<Path a="1" />
+					</Field1>
+					<Field2>0</Field2>
+				</Cluster>
+			</p.DefaultValue>
+		</DataItem>
+	</TypeDefinition>
+	<EnvoyManagerFile Id="5" xmlns="http://www.ni.com/PlatformFramework">
+		<EnvoyManagerRootEnvoy Id="6" ModelDefinitionType="EnvoyManagerRootEnvoy" Name="RootEnvoy" />
+		<NameScopingEnvoy AutomaticallyResolveUp="True" Id="7" Name="Logging Configuration.gtype" NameTracksFileName="True">
+			<EmbeddedDefinitionReference Bindings="{http://www.ni.com/PlatformFramework}NeverLazy" Id="8" ModelDefinitionType="{http://www.ni.com/MocCommon}ControlDefinition" Name="ControlDefinition">
+				<ControlDefinition DefaultDirection="Control" Id="9" xmlns="http://www.ni.com/MocCommon">
+					<Label Height="[float]16" Id="11" LabelOwner="[UIModel]10" Left="[float]96" Text="[string]Logging Configuration" Top="[float]22" Width="[float]120" xmlns="http://www.ni.com/PanelCommon" />
+					<Cluster AutoArrange="[AutoArrange]ArrangeVertically" ClusterType="[Type]@1d5aff672495406c9147a5f0e196fdee" Height="[float]116" Id="10" IsTabStop="[bool]True" Label="[UIModel]11" Left="[float]96" TabIndex="[int]0" Top="[float]42" Value="{DataItemBinding Id=12}" Width="[float]125" xmlns="http://www.ni.com/PanelCommon">
+						<PathSelector BaseName="[string]Path" BrowseDialogTitle="[string]Open File" BrowseOption="[BrowseOption]ExistingFiles" Height="[float]25" Id="13" InitialDirectory="[string]" IsTabStop="[bool]True" Label="[UIModel]15" Left="[float]4" Path="{ClusterBinding FieldName=Log\ File\ Base\ Path}" TabIndex="[int]0" Top="[float]24" Width="[float]100" WrapText="[bool]False" xmlns="http://www.ni.com/Controls.LabVIEW.Design" />
+						<Label Height="[float]16" Id="15" LabelOwner="[UIModel]13" Left="[float]4" Text="[string]Log File Base Path" Top="[float]4" Width="[float]96" />
+						<OpaqueRefnum BaseName="[string]OpaqueRefnum" Height="[float]27" Id="16" IsTabStop="[bool]False" Label="[UIModel]18" Left="[float]4" RefnumType="[Type]@9614aabcd22747b79dc7fb3fdd9c486c" TabIndex="[int]1" Top="[float]77" Value="{ClusterBinding FieldName=TDMS\ File\ Reference}" Width="[float]21" xmlns="http://www.ni.com/Controls.LabVIEW.Design" />
+						<Label Height="[float]16" Id="18" LabelOwner="[UIModel]16" Left="[float]4" Text="[string]TDMS File Reference" Top="[float]57" Width="[float]109" />
+					</Cluster>
+				</ControlDefinition>
+			</EmbeddedDefinitionReference>
+		</NameScopingEnvoy>
+	</EnvoyManagerFile>
+	<DataTypeReferenceTable xmlns="http://www.ni.com/PlatformFramework">
+		<p.TypeReference TypeId="1d5aff672495406c9147a5f0e196fdee">
+			<Composite Id="1" Name="" Cluster="" GenericTypeDefinition="Void" BaseType="Void">
+				<Members>
+					<Field FieldAccessPolicy="ReadWrite" Name="Log File Base Path" DataType="Path" />
+					<Field FieldAccessPolicy="ReadWrite" Name="TDMS File Reference" DataType="@9614aabcd22747b79dc7fb3fdd9c486c" />
+				</Members>
+			</Composite>
+		</p.TypeReference>
+		<p.TypeReference TypeId="9614aabcd22747b79dc7fb3fdd9c486c">
+			<Attributed AttributedType="@ce8402c22f3546e1bf79d134aed17b10">
+				<AttributeValues>
+					<AttributeValue Name="NI_PlatformFramework_RefnumAttributes" Value="[NI_PlatformFramework_RefnumAttributes]Refnum" />
+				</AttributeValues>
+			</Attributed>
+		</p.TypeReference>
+		<p.TypeReference TypeId="ce8402c22f3546e1bf79d134aed17b10">
+			<Composite Id="1" Name="NationalInstruments.LabVIEW.CoreRuntime.TDMSFileRefnum" ReferenceClass="" GenericTypeDefinition="Void" BaseType="Void" />
+		</p.TypeReference>
+	</DataTypeReferenceTable>
+</SourceFile>

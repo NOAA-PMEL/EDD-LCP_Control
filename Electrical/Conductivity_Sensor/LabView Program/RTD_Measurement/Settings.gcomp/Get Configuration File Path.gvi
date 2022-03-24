@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SourceFile Checksum="291A113D47EAA0966402928C7601CC9E20843E1AA32A4FE4C3E2F80A47ACE944C6F914A45984C2B414BD86640A6845FF76533075A479D6C5BA1A386821A82502" Timestamp="1D6048AB2119655" xmlns="http://www.ni.com/PlatformFramework">
+	<SourceModelFeatureSet>
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="LabVIEW Controls" Name="http://www.ni.com/Controls.LabVIEW.Design" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="LabVIEW Virtual Instrument" Name="http://www.ni.com/LabVIEW.VI" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Common language components" Name="http://www.ni.com/MocCommon" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Editor" Name="http://www.ni.com/PanelCommon" OldestCompatibleVersion="6.1.0.0" Version="6.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Editor" Name="http://www.ni.com/PlatformFramework" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ApplicationVersionInfo Build="8.1.0.49573" Name="LabVIEW NXG" Version="5.0.0" />
+	</SourceModelFeatureSet>
+	<VirtualInstrument Id="1" LocalizationPolicy="Localize" xmlns="http://www.ni.com/LabVIEW.VI">
+		<p.UserDescription xmlns="http://www.ni.com/PlatformFramework">Get the path to the Settings XML file. This is done using the Application Directory function. For more information on how Application Directory calculates its path, right-click the function and choose Help.</p.UserDescription>
+		<Icon Id="17" ListViewIconCrop="0 0 40 40" xmlns="http://www.ni.com/PlatformFramework">
+			<IconPanel Height="[float]40" Id="19" Left="[float]0" MinHeight="[float]0" MinWidth="[float]0" PanelSizeMode="Resize" Top="[float]0" Width="[float]40">
+				<IconTemplate ClipMargin="[SMThickness]3,3,3,3" Height="[float]40" Id="20" Left="[float]0" TemplateName="[string]GrayNoText" Top="[float]0" Width="[float]40">
+					<Rectangle Fill="[SMSolidColorBrush]#ff727272" Id="21" IsHitTestVisible="[bool]False" Left="[float]0" MinHeight="[float]1" MinWidth="[float]1" RadiusX="[float]4" RadiusY="[float]4" Top="[float]0" />
+					<Rectangle Fill="[SMSolidColorBrush]#ffe5e5e5" Id="22" IsHitTestVisible="[bool]False" Left="[float]0" Margin="[SMThickness]1,1,1,1" MinHeight="[float]1" MinWidth="[float]1" RadiusX="[float]2.5" RadiusY="[float]2.5" Stroke="[SMSolidColorBrush]#fff2f2f2" Top="[float]0" />
+				</IconTemplate>
+				<Image Height="[float]30" Id="23" Left="[float]5" MinHeight="[float]13" MinWidth="[float]13" Source="[SMEmbeddedImageSource]iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAIAAAC0Ujn1AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACRSURBVEhL7dHRDYAgDEVRpu1O7OROSHzVlFKlGPSrN8Qg6jFiKp8VtCpoVdCqoFW/0Dlv/aCc+fJ8Dc0zUaXNdU9jGoPPZzLodIQ5IlpBw0VYr0k6EWHw+X32hrB9pmgch/ob+nLv5kh8tW9DzOQLsFKTND+v3JrnN0If0H0eus/11Qvoh8E3zdTs6dqCbiplB0G42wpVrekzAAAAAElFTkSuQmCC" Top="[float]5" Width="[float]30" />
+			</IconPanel>
+		</Icon>
+		<ConnectorPane Height="40" Id="9" ListViewHeight="55" ListViewWidth="150" Width="40" xmlns="http://www.ni.com/PlatformFramework">
+			<ConnectorPaneTerminal />
+			<ConnectorPaneTerminal Hotspot="0 15" />
+			<ConnectorPaneTerminal Hotspot="0 25" />
+			<ConnectorPaneTerminal Hotspot="0 35" />
+			<ConnectorPaneTerminal Hotspot="15 0" />
+			<ConnectorPaneTerminal Hotspot="25 0" />
+			<ConnectorPaneTerminal Hotspot="40 5" ListViewHotspot="150 35" Parameter="14" />
+			<ConnectorPaneTerminal Hotspot="40 15" />
+			<ConnectorPaneTerminal Hotspot="40 25" />
+			<ConnectorPaneTerminal Hotspot="40 35" />
+			<ConnectorPaneTerminal Hotspot="15 40" />
+			<ConnectorPaneTerminal Hotspot="25 40" />
+		</ConnectorPane>
+		<DiagramUnplacedItems Id="10" xmlns="http://www.ni.com/MocCommon" />
+		<FrontPanelUnplacedItems Height="[float]1600" Id="11" Left="[float]0" MinHeight="[float]0" MinWidth="[float]0" PanelSizeMode="Fixed" Top="[float]0" Width="[float]2000" />
+		<BlockDiagram Id="12">
+			<DataAccessor Bounds="810 -80 40 15" DataItem="14" Id="24" Label="25" xmlns="http://www.ni.com/MocCommon">
+				<Terminal DataType="Path" Direction="Input" Hotspot="3 5" Id="Value" xmlns="http://www.ni.com/PlatformFramework" />
+			</DataAccessor>
+			<NodeLabel AttachedTo="24" Bounds="810 -97 69 14" Id="25" xmlns="http://www.ni.com/PlatformFramework">
+				<p.Text>INI File Path</p.Text>
+			</NodeLabel>
+			<Literal Bounds="565 -65 160 15" DataType="Path" Id="26" Label="27" xmlns="http://www.ni.com/MocCommon">
+				<p.Data>
+					<Path a="0">
+						<pE>Settings.ini</pE>
+					</Path>
+				</p.Data>
+				<PathBehavior SizeToContent="False" />
+			</Literal>
+			<NodeLabel AttachedTo="26" Bounds="565 -86 43 18" Id="27" Visible="False" xmlns="http://www.ni.com/PlatformFramework">
+				<p.Text>string</p.Text>
+			</NodeLabel>
+			<BuildPath Bounds="755 -80 30 30" Id="32" />
+			<Comment Bounds="515 -25 465 55" Id="35" SizeToText="False" xmlns="http://www.ni.com/MocCommon">
+				<p.Text>Get the path to the Settings INI file. This is done using the Get Component Directory node.</p.Text>
+			</Comment>
+			<Wire Id="61" Joints="N(32:appended path)|(785,-75) N(24:Value)|(813,-75)" xmlns="http://www.ni.com/PlatformFramework" />
+			<Wire Id="62" Joints="N(26:Out)|(725,-60) N(32:name or relative path)|(755,-60)" xmlns="http://www.ni.com/PlatformFramework" />
+			<GetComponentDirectory Bounds="665 -100 30 30" Id="71" />
+			<Wire Id="74" Joints="N(71:Path)|(695,-85) h(45) v(10) N(32:base path)|(755,-75)" xmlns="http://www.ni.com/PlatformFramework" />
+		</BlockDiagram>
+		<NativeFrontPanel AllowMaximize="[bool]False" EnforceMaximumSize="[bool]True" Height="[float]1600" Id="13" Left="[float]0" MaxHeight="[float]1600" MaxWidth="[float]2000" MinHeight="[float]0" MinWidth="[float]0" PanelSizeMode="Fixed" Top="[float]0" Width="[float]2000" WindowTitleOption="[WindowTitleOption]None">
+			<PathSelector BaseName="[string]Path" BrowseDialogTitle="[null]" BrowseOption="[BrowseOption]ExistingFiles" Enabled="[bool]True" Filter="[null]" FilterLabel="[null]" Height="[float]77" Id="36" InitialDirectory="[string]" InteractionMode="[PathSelectorInteractionModes]ReadOnly" IsTabStop="[bool]True" Label="[UIModel]38" Left="[float]446" Path="{DataItemBinding Id=14}" TabIndex="[int]0" Top="[float]64" Width="[float]285" WrapText="[bool]False" xmlns="http://www.ni.com/Controls.LabVIEW.Design" />
+			<Label Height="[float]16" Id="38" LabelOwner="[UIModel]36" Left="[float]446" Text="[string]INI File Path" Top="[float]44" Width="[float]64" xmlns="http://www.ni.com/PanelCommon" />
+			<PanelExecutionWindow Id="75" />
+		</NativeFrontPanel>
+		<DataItem AdaptToDiagramType="True" CallDirection="Output" CallIndex="1" DataType="Path" Id="14" Name="INI File Path" xmlns="http://www.ni.com/MocCommon">
+			<p.DefaultValue>
+				<Path a="1" />
+			</p.DefaultValue>
+		</DataItem>
+	</VirtualInstrument>
+</SourceFile>

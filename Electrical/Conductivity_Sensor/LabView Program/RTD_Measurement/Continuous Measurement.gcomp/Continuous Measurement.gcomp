@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SourceFile Checksum="4FCB7A60884DCA8D966ABA24755EC4D39F0D1BBC8F946B28318C66123C899C23323CB3BCB72306A15F75792F182370DCC63E87B3800A0E6C7F413CDE6954D462" Timestamp="1D6048AB1D131CD" xmlns="http://www.ni.com/PlatformFramework">
+	<SourceModelFeatureSet>
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="GComponentFeatureSet" Name="http://www.ni.com/GComponent.xsd" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Native target compiler" Name="http://www.ni.com/LabVIEW.NativeBackEndCompiler" OldestCompatibleVersion="4.5.0.0" Version="4.5.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="Editor" Name="http://www.ni.com/PlatformFramework" OldestCompatibleVersion="8.1.0.49152" Version="8.1.0.49152" />
+		<ParsableNamespace AssemblyFileVersion="8.1.0.49573" FeatureSetName="SystemDesigner" Name="http://www.ni.com/SystemDesigner/EnvoyManagement" OldestCompatibleVersion="5.0.0.0" Version="5.0.0.49152" />
+		<ApplicationVersionInfo Build="8.1.0.49573" Name="LabVIEW NXG" Version="5.0.0" />
+	</SourceModelFeatureSet>
+	<ComponentDefinition DefaultConfigurationName="Configuration1" Id="d0382bc5cbd746dba12f01e333a0284d" RootNamespaceId="b99b87c37c6d4cd18c059a3111e8f5fa" xmlns="http://www.ni.com/GComponent.xsd">
+		<Icon Id="ebaa707c14c0449d80b51ee7c11bd6f9" ListViewIconCrop="0 0 40 40" xmlns="http://www.ni.com/PlatformFramework">
+			<IconPanel Height="[float]40" Id="3d169e38e489401bba0034b8876d18fa" Left="[float]0" PanelSizeMode="Resize" Top="[float]0" Width="[float]40">
+				<IconTemplate Height="[float]40" Id="efeeb7f72b3b4b359fa84d2e43c03efe" Left="[float]0" TemplateName="[string]Blank" Top="[float]0" Width="[float]40" />
+			</IconPanel>
+		</Icon>
+		<CompilerSymbolTable Id="6666a93bb474a498995e180156c438f" xmlns="http://www.ni.com/PlatformFramework" />
+		<ComponentConfiguration ComponentSubtypeIdentifier="Application" Id="efcb15094813499abb23aaac404bbf60" Name="Configuration1">
+			<CompilerSymbolTable Id="92c7139be78747e39f8292a4b1b75fde" xmlns="http://www.ni.com/PlatformFramework" />
+			<NativeApplicationOutputTypeProperties Id="e627fec7769b463e947407a7d291751b" xmlns="http://www.ni.com/LabVIEW.NativeBackEndCompiler" />
+			<ComponentItemProperties AssociatedEnvoyId="47a75edc94484f0bb5a9d0a1dec2e30d" Id="3a6834fc8154086b3a018b4356a2340" TopLevel="True" />
+		</ComponentConfiguration>
+	</ComponentDefinition>
+	<EnvoyManagerFile Id="be03ec3705394879b7c1ecfacc3886bc" xmlns="http://www.ni.com/PlatformFramework">
+		<EnvoyManagerRootEnvoy Id="e02d47f3d98b4b1ba954bae7541d0862" ModelDefinitionType="EnvoyManagerRootEnvoy" Name="RootEnvoy" />
+		<EmbeddedDefinitionReference Id="b29b0a0ff30243acae08a8b9e759d3b4" ModelDefinitionType="{http://www.ni.com/GComponent.xsd}ComponentDefinitionEnvoyHierarchyRoot" Name="Global namespace">
+			<ComponentDefinitionEnvoyHierarchyRoot xmlns="http://www.ni.com/GComponent.xsd" />
+			<NameScopingEnvoy AutomaticallyResolveUp="True" Id="b99b87c37c6d4cd18c059a3111e8f5fa" Name="Continuous Measurement">
+				<SourceFileReference Bindings="ContentKind_{http://www.ni.com/SystemDesigner/Vi}Process.Vi,{http://www.ni.com/SystemDesigner/EnvoyManagement}ProcessBackedEnvoyServiceMetaFactory" Id="47a75edc94484f0bb5a9d0a1dec2e30d" ModelDefinitionType="NationalInstruments.LabVIEW.VI.Modeling.VirtualInstrument" Name="Main.gvi" StoragePath="Main.gvi" />
+			</NameScopingEnvoy>
+		</EmbeddedDefinitionReference>
+		<NameScopingEnvoy Id="f9bb1a500d5f4e8faebbc90b106ea1e1" Name="Continuous Measurement.gcomp" NameTracksFileName="True">
+			<ContentReference ContentIdentifier="efcb15094813499abb23aaac404bbf60" Id="f21f6794d1f34d028610642874f89465" Name="Configuration1" OverridingModelDefinitionType="{http://www.ni.com/GComponent.xsd}ComponentConfiguration" />
+		</NameScopingEnvoy>
+	</EnvoyManagerFile>
+</SourceFile>
