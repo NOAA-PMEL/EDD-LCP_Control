@@ -1,5 +1,6 @@
 (fp_lib_table
-  (lib (name Batteries)(type KiCad)(uri "C:/Program Files/KiCad/share/SparkFun-KiCad-Libraries-master/Footprints/Batteries.pretty")(options "")(descr ""))
-  (lib (name PMEL_LGA)(type KiCad)(uri ${KIPRJMOD}/PMEL_LGA.pretty)(options "")(descr ""))
-  (lib (name PMEL_Modules)(type KiCad)(uri ${KIPRJMOD}/PMEL_Modules.pretty)(options "")(descr ""))
+  (lib (name "Batteries")(type "KiCad")(uri "${KICAD_SPARKFUN_SYMBOL}/Footprints/Batteries.pretty")(options "")(descr ""))
+  (lib (name "PMEL_LGA")(type "KiCad")(uri "${KIPRJMOD}/PMEL_LGA.pretty")(options "")(descr ""))
+  (lib (name "PMEL_Modules")(type "KiCad")(uri "${KIPRJMOD}/PMEL_Modules.pretty")(options "")(descr ""))
+  (lib (name "Connectors_SPARKFUN")(type "KiCad")(uri "${KICAD_SPARKFUN_SYMBOL}/Footprints/Connectors.pretty")(options "")(descr "")(disabled))
 )
