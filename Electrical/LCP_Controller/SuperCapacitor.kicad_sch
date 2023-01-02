@@ -1771,7 +1771,7 @@
     (property "Reference" "TP4" (id 0) (at 139.9032 65.7098 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "5000" (id 1) (at 139.9032 68.0212 0)
+    (property "Value" "5V3" (id 1) (at 139.9032 68.0212 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
     (property "Footprint" "TestPoint:TestPoint_Keystone_5000-5004_Miniature" (id 2) (at 143.51 69.85 0)

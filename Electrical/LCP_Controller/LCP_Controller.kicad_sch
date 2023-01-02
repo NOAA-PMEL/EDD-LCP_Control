@@ -2680,7 +2680,7 @@
       (reference "TP3") (unit 1) (value "GND") (footprint "TestPoint:TestPoint_Keystone_5000-5004_Miniature")
     )
     (path "/00000000-0000-0000-0000-00005ed94f33/00000000-0000-0000-0000-00005eecd78a"
-      (reference "TP4") (unit 1) (value "5000") (footprint "TestPoint:TestPoint_Keystone_5000-5004_Miniature")
+      (reference "TP4") (unit 1) (value "5V3") (footprint "TestPoint:TestPoint_Keystone_5000-5004_Miniature")
     )
     (path "/00000000-0000-0000-0000-00005eda4333/00000000-0000-0000-0000-00005efeb4f4"
       (reference "U1") (unit 1) (value "LMR50410") (footprint "Package_TO_SOT_SMD:SOT-23-6_Handsoldering")

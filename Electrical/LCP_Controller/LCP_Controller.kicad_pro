@@ -64,7 +64,7 @@
         "annular_width": "error",
         "clearance": "error",
         "copper_edge_clearance": "error",
-        "courtyards_overlap": "error",
+        "courtyards_overlap": "ignore",
         "diff_pair_gap_out_of_range": "error",
         "diff_pair_uncoupled_length_too_long": "error",
         "drill_out_of_range": "error",
@@ -140,16 +140,20 @@
           "drill": 0.0
         },
         {
-          "diameter": 0.4,
-          "drill": 0.25
-        },
-        {
           "diameter": 0.5,
           "drill": 0.25
         },
         {
           "diameter": 0.6,
           "drill": 0.35
+        },
+        {
+          "diameter": 0.8,
+          "drill": 0.4
+        },
+        {
+          "diameter": 1.0,
+          "drill": 0.5
         }
       ],
       "zones_allow_external_fillets": false,
