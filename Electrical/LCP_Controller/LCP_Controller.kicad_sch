@@ -1902,7 +1902,7 @@
     (path "/00000000-0000-0000-0000-00005ed94f33/00000000-0000-0000-0000-00005ee4229a"
       (reference "#PWR019") (unit 1) (value "GND") (footprint "")
     )
-    (path "/00000000-0000-0000-0000-00005ed94f33/00000000-0000-0000-0000-00005ee422a1"
+    (path "/00000000-0000-0000-0000-00005eda4333/63beb49a-d3b8-4883-acc6-d222b588595a"
       (reference "#PWR020") (unit 1) (value "GND") (footprint "")
     )
     (path "/00000000-0000-0000-0000-00005ed94f33/00000000-0000-0000-0000-00005ee42277"
@@ -2172,6 +2172,9 @@
     (path "/00000000-0000-0000-0000-00005ee033be/00000000-0000-0000-0000-00005f7eae77"
       (reference "#PWR0109") (unit 1) (value "GND") (footprint "")
     )
+    (path "/00000000-0000-0000-0000-00005ed94f33/47d95dbf-0565-4bfa-9291-2633360bb9b1"
+      (reference "#PWR0110") (unit 1) (value "GND") (footprint "")
+    )
     (path "/00000000-0000-0000-0000-00005eda50a5/00000000-0000-0000-0000-00005ee23044"
       (reference "#SUPPLY01") (unit 1) (value "VIN") (footprint "XXX-00000")
     )
@@ -2191,7 +2194,7 @@
       (reference "C3") (unit 1) (value "0.1uF") (footprint "Capacitor_SMD:C_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-00005eda4333/00000000-0000-0000-0000-00005f015bf8"
-      (reference "C4") (unit 1) (value "2.2uF") (footprint "Capacitor_SMD:C_0603_1608Metric")
+      (reference "C4") (unit 1) (value "2.2uF") (footprint "Capacitor_SMD:C_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-00005eda4333/00000000-0000-0000-0000-00005f028ea3"
       (reference "C5") (unit 1) (value "22uF") (footprint "Capacitor_SMD:C_0805_2012Metric")
@@ -2200,7 +2203,7 @@
       (reference "C6") (unit 1) (value "1uF") (footprint "Capacitor_SMD:C_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-00005eda4333/3ef37460-8722-4238-a59e-895afa9e33a0"
-      (reference "C7") (unit 1) (value "0.1uF") (footprint "Capacitor_SMD:C_0805_2012Metric")
+      (reference "C7") (unit 1) (value "0.1uF") (footprint "Capacitor_SMD:C_0603_1608Metric")
     )
     (path "/00000000-0000-0000-0000-00005ed94f33/00000000-0000-0000-0000-00005ee422ae"
       (reference "C8") (unit 1) (value "0.22uF") (footprint "Capacitor_SMD:C_1210_3225Metric")
@@ -2224,7 +2227,7 @@
       (reference "C14") (unit 1) (value "2.2uF") (footprint "Capacitor_SMD:C_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-00005eda42a9/00000000-0000-0000-0000-00005ee40235"
-      (reference "C15") (unit 1) (value "0.1uF") (footprint "Capacitor_SMD:C_0603_1608Metric")
+      (reference "C15") (unit 1) (value "0.1uF") (footprint "Capacitor_SMD:C_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-00005eda42a9/00000000-0000-0000-0000-00005edf4dd1"
       (reference "C16") (unit 1) (value "1nF") (footprint "Capacitor_SMD:C_0603_1608Metric")
@@ -2344,13 +2347,16 @@
       (reference "D3") (unit 1) (value "LED_GREEN") (footprint "LED_SMD:LED_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-00005edb3949/25cab382-791f-4be0-b77f-328a5394ee95"
-      (reference "D4") (unit 1) (value "PMEG4005EJ") (footprint "Diode_SMD:D_SOD-323")
+      (reference "D4") (unit 1) (value "RB400VAM-50TR") (footprint "Diode_SMD:D_SOD-323")
     )
     (path "/00000000-0000-0000-0000-00005edb3ce1/bb166f64-6651-49a2-a0a0-28c6fc3c6ec8"
       (reference "D5") (unit 1) (value "CDSOT23-SM712") (footprint "Package_TO_SOT_SMD:SOT-23")
     )
     (path "/00000000-0000-0000-0000-00005edb3ce1/0ad0b699-3569-427a-944b-ee3085782a60"
       (reference "D6") (unit 1) (value "CDSOT23-SM712") (footprint "Package_TO_SOT_SMD:SOT-23")
+    )
+    (path "/00000000-0000-0000-0000-00005eda4333/5c9a3fca-8774-4947-abed-77e2101c3907"
+      (reference "D7") (unit 1) (value "RB400VAM-50TR") (footprint "Diode_SMD:D_SOD-323")
     )
     (path "/00000000-0000-0000-0000-00005eda42a9/ef8918e8-3e58-4d2a-af03-cc7508fdc7ee"
       (reference "H1") (unit 1) (value "MountingHole_Pad") (footprint "MountingHole:MountingHole_2.5mm_Pad")
@@ -2392,7 +2398,7 @@
       (reference "J5") (unit 1) (value "SALEAE_TEST") (footprint "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical")
     )
     (path "/00000000-0000-0000-0000-00005eda42cc/00000000-0000-0000-0000-00005f060f58"
-      (reference "J6") (unit 1) (value "U.FL") (footprint "Connector_Coaxial:U.FL_Hirose_U.FL-R-SMT-1_Vertical")
+      (reference "J6") (unit 1) (value "Conn_Coaxial") (footprint "Connector_Coaxial:U.FL_Hirose_U.FL-R-SMT-1_Vertical")
     )
     (path "/00000000-0000-0000-0000-00005edb3949/00000000-0000-0000-0000-00005ee930be"
       (reference "J7") (unit 1) (value "SALEAE_TEST") (footprint "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical")
@@ -2482,7 +2488,7 @@
       (reference "Q1") (unit 1) (value "TSM500P02CX RFG ") (footprint "Package_TO_SOT_SMD:SOT-23")
     )
     (path "/00000000-0000-0000-0000-00005eda4333/00000000-0000-0000-0000-00005ee8eb15"
-      (reference "Q2") (unit 1) (value "MMBT2222AL") (footprint "Package_TO_SOT_SMD:SOT-23")
+      (reference "Q2") (unit 1) (value "BSR14") (footprint "Package_TO_SOT_SMD:SOT-23")
     )
     (path "/00000000-0000-0000-0000-00005ed94f33/00000000-0000-0000-0000-00005ee42307"
       (reference "Q3") (unit 1) (value "FDN537N") (footprint "Package_TO_SOT_SMD:SOT-23")
@@ -2524,7 +2530,7 @@
       (reference "R2") (unit 1) (value "51.0k") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/00000000-0000-0000-0000-00005eda4333/00000000-0000-0000-0000-00005f026bb9"
-      (reference "R3") (unit 1) (value "22.1k") (footprint "Resistor_SMD:R_0402_1005Metric")
+      (reference "R3") (unit 1) (value "15k") (footprint "Resistor_SMD:R_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-00005eda4333/00000000-0000-0000-0000-00005ee8eafd"
       (reference "R4") (unit 1) (value "10k") (footprint "Resistor_SMD:R_0805_2012Metric")
@@ -2683,7 +2689,7 @@
       (reference "TP4") (unit 1) (value "5V3") (footprint "TestPoint:TestPoint_Keystone_5000-5004_Miniature")
     )
     (path "/00000000-0000-0000-0000-00005eda4333/00000000-0000-0000-0000-00005efeb4f4"
-      (reference "U1") (unit 1) (value "LMR50410") (footprint "Package_TO_SOT_SMD:SOT-23-6_Handsoldering")
+      (reference "U1") (unit 1) (value "BD9G102G-LB") (footprint "Package_TO_SOT_SMD:SOT-23-6_Handsoldering")
     )
     (path "/00000000-0000-0000-0000-00005ed94f33/00000000-0000-0000-0000-00005ee42212"
       (reference "U2") (unit 1) (value "LTC3225") (footprint "Package_DFN_QFN:DFN-10-1EP_2x3mm_P0.5mm_EP0.64x2.4mm")

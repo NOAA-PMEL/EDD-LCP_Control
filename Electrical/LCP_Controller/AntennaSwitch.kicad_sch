@@ -389,7 +389,7 @@
     (effects (font (size 5.08 5.08)) (justify right bottom))
     (uuid c57742b4-1f9d-4cb8-ad24-e79486b74ffc)
   )
-  (text "Populate either C36 or C34. Not both." (at 107.95 116.84 0)
+  (text "Populate either C36 or C37. Not both." (at 107.95 116.84 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid dea887ad-e452-4359-944e-f3d4cbe021e4)
   )
