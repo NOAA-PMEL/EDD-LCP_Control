@@ -2912,7 +2912,7 @@
     (property "Datasheet" "https://www.ti.com/lit/ds/symlink/trs3122e.pdf?ts=1591021643258" (id 3) (at 227.33 91.44 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "MPN" "TRS3122ERGER" (id 4) (at 246.38 113.03 0)
+    (property "MPN" "TRS3122ERGET" (id 4) (at 246.38 113.03 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 37bfbdaf-cee2-486f-b6ba-184c9f3034d8))

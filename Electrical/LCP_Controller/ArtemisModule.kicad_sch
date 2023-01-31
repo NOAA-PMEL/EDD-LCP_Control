@@ -785,6 +785,7 @@
     )
   )
 
+
   (junction (at 214.63 68.58) (diameter 0) (color 0 0 0 0)
     (uuid 09b5a544-520c-462f-9d79-211c4396aff5)
   )
@@ -3301,6 +3302,9 @@
     (property "Datasheet" "~" (id 3) (at 137.16 200.66 0)
       (effects (font (size 1.27 1.27)) hide)
     )
+    (property "Population" "DNP" (id 4) (at 137.16 200.66 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
     (pin "1" (uuid f1978e6d-2686-45c1-9236-32a5331d15a3))
   )
 
@@ -3371,6 +3375,9 @@
     (property "Datasheet" "~" (id 3) (at 106.68 200.66 0)
       (effects (font (size 1.27 1.27)) hide)
     )
+    (property "Population" "DNP" (id 4) (at 106.68 200.66 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
     (pin "1" (uuid 8868afc7-40a3-489d-af14-20ca5f56fe04))
   )
 
@@ -3403,6 +3410,9 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 137.16 190.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Population" "DNP" (id 4) (at 137.16 190.5 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 2ec52581-2f76-4a55-b4d6-fa776f435b72))
@@ -3473,6 +3483,9 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 106.68 190.5 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Population" "DNP" (id 4) (at 106.68 190.5 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 90999bef-74d4-4546-9d1b-ee946fca12b5))
