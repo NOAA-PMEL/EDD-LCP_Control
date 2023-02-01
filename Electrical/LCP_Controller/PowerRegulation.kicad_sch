@@ -789,7 +789,6 @@
     )
   )
 
-
   (junction (at 142.24 104.14) (diameter 0) (color 0 0 0 0)
     (uuid 109be010-186f-42b1-989b-f6442ce5ba59)
   )
@@ -1847,7 +1846,7 @@
     (property "Value" "RB400VAM-50TR" (id 1) (at 166.37 85.09 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Footprint" "Diode_SMD:D_SOD-323F" (id 2) (at 168.91 81.28 0)
+    (property "Footprint" "Diode_SMD:D_TUMD2" (id 2) (at 168.91 81.28 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 168.91 81.28 0)

@@ -2347,7 +2347,7 @@
       (reference "D3") (unit 1) (value "LED_GREEN") (footprint "LED_SMD:LED_0805_2012Metric")
     )
     (path "/00000000-0000-0000-0000-00005edb3949/25cab382-791f-4be0-b77f-328a5394ee95"
-      (reference "D4") (unit 1) (value "RB400VAM-50TR") (footprint "Diode_SMD:D_SOD-323F")
+      (reference "D4") (unit 1) (value "RB400VAM-50TR") (footprint "Diode_SMD:D_TUMD2")
     )
     (path "/00000000-0000-0000-0000-00005edb3ce1/bb166f64-6651-49a2-a0a0-28c6fc3c6ec8"
       (reference "D5") (unit 1) (value "CDSOT23-SM712") (footprint "Package_TO_SOT_SMD:SOT-23")
@@ -2356,7 +2356,7 @@
       (reference "D6") (unit 1) (value "CDSOT23-SM712") (footprint "Package_TO_SOT_SMD:SOT-23")
     )
     (path "/00000000-0000-0000-0000-00005eda4333/5c9a3fca-8774-4947-abed-77e2101c3907"
-      (reference "D7") (unit 1) (value "RB400VAM-50TR") (footprint "Diode_SMD:D_SOD-323F")
+      (reference "D7") (unit 1) (value "RB400VAM-50TR") (footprint "Diode_SMD:D_TUMD2")
     )
     (path "/00000000-0000-0000-0000-00005eda42a9/ef8918e8-3e58-4d2a-af03-cc7508fdc7ee"
       (reference "H1") (unit 1) (value "MountingHole_Pad") (footprint "MountingHole:MountingHole_2.5mm_Pad")
