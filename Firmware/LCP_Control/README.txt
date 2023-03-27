@@ -1,6 +1,6 @@
 Name:
 =====
- freertos_lowpower
+ lcpcontrol_lowpower
 
 
 Description:
@@ -16,7 +16,7 @@ macro definitions.
 
 AM_DEBUG_PRINTF
 
-If enabled, debug messages will be sent over ITM.
+If enabled debug messages will be sent over UART.
 
 
 ******************************************************************************
