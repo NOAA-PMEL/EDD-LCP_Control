@@ -357,7 +357,7 @@ void artemis_max14830_disable(eMAX18430_ComPort_t port)
 	module_max14830_Power_Off();
 }
 
-void artemis_max14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate)
+uint32_t artemis_max14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate)
 {
 	float D = MAX14830_XTAL_FREQ / (16 * baudrate );
 	uint32_t DIV = (uint32_t)trunc(D) ;
@@ -371,7 +371,8 @@ void artemis_max14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_
 	module_max14830_Write(port, MAX14830_REG_DIVMSB, (uint8_t*)&DIVMSB, 1);
 	module_max14830_Write(port, MAX14830_REG_BRGCONFIG, (uint8_t*)&FRACT, 1);
 
-	am_util_stdio_printf ("\n Baudrate = %u \n ", (16*MAX14830_XTAL_FREQ) / (16 * (16*DIV + FRACT)));
+	//am_util_stdio_printf ("\n Baudrate = %u \n ", (16*MAX14830_XTAL_FREQ) / (16 * (16*DIV + FRACT)));
+	return ((16*MAX14830_XTAL_FREQ) / (16 * (16*DIV + FRACT)) );
 }
 
 void artemis_max14830_UART_Write(eMAX18430_ComPort_t port, uint8_t *sData, uint8_t len)
