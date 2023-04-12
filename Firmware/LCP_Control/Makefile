@@ -188,7 +188,7 @@ SRC += GPS.c
 SRC += i9603n.c
 SRC += isbd_at_cmd.c
 SRC += LED.c
-SRC += led_task.c
+##SRC += led_task.c
 SRC += MAX14830.c
 SRC += piston.c
 SRC += control.c
@@ -215,7 +215,8 @@ SRC += sysinfo.c
 SRC += temperature.c
 SRC += ublox.c
 SRC += ublox_ubx.c
-SRC += S9_temp.c
+SRC += S9_temperature.c
+SRC += K9lx_pressure.c
 
 CSRC = $(filter %.c,$(SRC))
 OBJS = $(CSRC:%.c=$(CONFIG)/%.o)
