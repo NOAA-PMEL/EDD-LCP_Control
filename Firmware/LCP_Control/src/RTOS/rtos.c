@@ -61,6 +61,7 @@
 #include "portable.h"
 #include "main.h"
 #include "assert.h"
+#include "LED.h"
 
 #define STACK_SIZE  ( 200 )
 
