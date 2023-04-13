@@ -238,7 +238,8 @@ void UBX_parse_nav(UBX_NAV_ID_t id, ubx_packet_t *packet, void *parsed){
     switch(id)
     {
         case UBX_NAV_PVT      :
-            module_ubx_parse_nav_pvt_packet(packet, (ubx_nav_pvt_t*) parsed);
+            //module_ubx_parse_nav_pvt_packet(packet, (ubx_nav_pvt_t*) parsed);
+            module_ubx_parse_nav_pvt_packet(packet, parsed);
             break;
         case UBX_NAV_SAT      :
         case UBX_NAV_AOPSTATUS:
@@ -483,6 +484,7 @@ static void module_ubx_parse_nav_pvt_packet(ubx_packet_t *packet, ubx_nav_pvt_t 
     nav->headVeh = bytes_to_i32(&payload[84]);
     nav->magDec = bytes_to_i16(&payload[88]);
     nav->magAcc = bytes_to_u16(&payload[90]);
+
 }
 
 /**
@@ -587,9 +589,17 @@ static uint32_t bytes_to_u32(uint8_t *data)
  */
 static int32_t bytes_to_i32(uint8_t *data)
 {
-    u32_to_i32_t val;
-    val.u32 = bytes_to_u32(data);
-    return val.i32;
+	int32_t value = 0;
+	for(uint8_t i=0;i<4;i++)
+	{
+		value |= data[3-i] << (8*(3-i));
+	}
+
+	return value;
+
+	//u32_to_i32_t val;
+	//val.u32 = bytes_to_u32(data);
+	//return val.i32;
 }
 
 /**

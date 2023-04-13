@@ -127,9 +127,11 @@ bool UBLOX_read_nav(UBLOX_Nav_t *data)
     ubx_nav_pvt_t nav = {0};
 
     retVal = module_ublox_read(UBX_NAV_CLASS, UBX_NAV_PVT, &nav);
+	//am_util_stdio_printf("ublox ret is %d \n", retVal);
 
     if(retVal)
     {
+		//am_util_stdio_printf("ublox fix type %d \n", nav.fixType);
         if(nav.fixType > 2)
         {
             retVal = true;
@@ -138,7 +140,7 @@ bool UBLOX_read_nav(UBLOX_Nav_t *data)
             
             data->position.lat = nav.lat * 1e-7;
             data->position.lon = nav.lon * 1e-7;
-            data->position.alt = nav.hMSL;
+            data->position.alt = nav.hMSL* 1e-3;
             
             data->accuracy.hAcc = nav.hAcc;
             data->accuracy.vAcc = nav.vAcc;
@@ -501,9 +503,16 @@ bool module_ublox_read_ubx(
     {
         am_hal_systick_delay_us(1000);
     }
+	am_util_stdio_printf("\n");
 
     /** Read Buffer */
     uint16_t len = artemis_ublox_i2c_read_data(ubx_msg);
+
+	//for (uint16_t i=0; i<len; i++){
+	//	am_util_stdio_printf("%c", ubx_msg[i]);
+	//}
+	//am_util_stdio_printf("\n");
+
     if(len > 0)
     {
         /** Find start of UBX Packet */

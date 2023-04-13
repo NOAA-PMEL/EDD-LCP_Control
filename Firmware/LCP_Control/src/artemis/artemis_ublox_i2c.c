@@ -77,17 +77,17 @@
 typedef uint8_t module_buffer_t[ARTEMIS_UBLOX_BUFFER_LENGTH];
 typedef struct s_module_t
 {
-    artemis_i2c_t i2c;
-    module_buffer_t txbuffer;
-    module_buffer_t rxbuffer;
-    struct {
-        uint32_t pin;
-        am_hal_gpio_pincfg_t *pinConfig;
-    }power;
-    struct {
-        uint32_t pin;
-        am_hal_gpio_pincfg_t *pinConfig;
-    }extint;
+	artemis_i2c_t i2c;
+	module_buffer_t txbuffer;
+	module_buffer_t rxbuffer;
+	struct {
+		uint32_t pin;
+		am_hal_gpio_pincfg_t *pinConfig;
+	}power;
+	struct {
+		uint32_t pin;
+		am_hal_gpio_pincfg_t *pinConfig;
+	}extint;
 } module_t;
 
 //*****************************************************************************
@@ -163,7 +163,6 @@ void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM1_SDA, g_AM_BSP_GPIO_IOM1_SDA));
     #endif
            
-
 }
 
 /**
@@ -172,8 +171,7 @@ void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
  */
 void artemis_ublox_i2c_power_on(void)
 {
-//  am_hal_gpio_output_clear(module.power.pin);
-  am_hal_gpio_state_write(module.power.pin, AM_HAL_GPIO_OUTPUT_CLEAR);
+	am_hal_gpio_output_clear(module.power.pin);
 }
 
 /**
@@ -182,10 +180,8 @@ void artemis_ublox_i2c_power_on(void)
  */
 void artemis_ublox_i2c_power_off(void)
 {
-//  am_hal_gpio_output_set(module.power.pin);
-  am_hal_gpio_state_write(module.power.pin, AM_HAL_GPIO_OUTPUT_SET);
+	am_hal_gpio_output_set(module.power.pin);
 }
-
 
 /**
  * @brief Send I2C message
@@ -198,25 +194,26 @@ void artemis_ublox_i2c_power_off(void)
  */
 void artemis_ublox_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop)
 {
-  artemis_i2c_t *i2c = &module.i2c;
-  artemis_stream_t txstream = {0};
-  artemis_stream_setbuffer(&txstream, module.txbuffer, ARTEMIS_UBLOX_BUFFER_LENGTH);
-  artemis_stream_reset(&txstream);
-  
-  while(len > 0)
-  {
-    if(len > ARTEMIS_UBLOX_BUFFER_LENGTH)
-    {
-      artemis_stream_write(&txstream, msg, ARTEMIS_UBLOX_BUFFER_LENGTH);
-      artemis_i2c_send(i2c, false, &txstream);
-      artemis_stream_reset(&txstream);
-      len -= ARTEMIS_UBLOX_BUFFER_LENGTH;
-    } else {
-      artemis_stream_write(&txstream, msg, len);
-      artemis_i2c_send(i2c, stop, &txstream);
-      len =0;
-    }
-  }
+	artemis_i2c_t *i2c = &module.i2c;
+	artemis_stream_t txstream = {0};
+	artemis_stream_setbuffer(&txstream, module.txbuffer, ARTEMIS_UBLOX_BUFFER_LENGTH);
+	artemis_stream_reset(&txstream);
+
+	while(len > 0)
+	{
+		if(len > ARTEMIS_UBLOX_BUFFER_LENGTH)
+		{
+			artemis_stream_write(&txstream, msg, ARTEMIS_UBLOX_BUFFER_LENGTH);
+			artemis_i2c_send(i2c, false, &txstream);
+			artemis_stream_reset(&txstream);
+			len -= ARTEMIS_UBLOX_BUFFER_LENGTH;
+		}
+		else {
+			artemis_stream_write(&txstream, msg, len);
+			artemis_i2c_send(i2c, stop, &txstream);
+			len =0;
+		}
+	}
 }
 
 /**
@@ -232,61 +229,61 @@ void artemis_ublox_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop)
  */
 uint16_t artemis_ublox_i2c_read_data(uint8_t *pBuf)
 {
-  artemis_i2c_t *i2c = &module.i2c;
-  
-  artemis_stream_t rxstream = {0};
-  artemis_stream_t txstream = {0};
-  artemis_stream_setbuffer(&rxstream, module.rxbuffer, ARTEMIS_UBLOX_BUFFER_LENGTH);
-  artemis_stream_setbuffer(&txstream, module.txbuffer, ARTEMIS_UBLOX_BUFFER_LENGTH);
+	artemis_i2c_t *i2c = &module.i2c;
 
-  /** Send the command to retreive data length @addr 0xFD */
-  artemis_stream_put(&txstream, ARTEMIS_UBLOX_I2C_DATA_LEN_REG);
-  artemis_i2c_send(i2c, false, &txstream);
+	artemis_stream_t rxstream = {0};
+	artemis_stream_t txstream = {0};
+	artemis_stream_setbuffer(&rxstream, module.rxbuffer, ARTEMIS_UBLOX_BUFFER_LENGTH);
+	artemis_stream_setbuffer(&txstream, module.txbuffer, ARTEMIS_UBLOX_BUFFER_LENGTH);
 
-  artemis_i2c_receive(i2c, true, &rxstream, 2);
+	/** Send the command to retreive data length @addr 0xFD */
+	artemis_stream_put(&txstream, ARTEMIS_UBLOX_I2C_DATA_LEN_REG);
+	artemis_i2c_send(i2c, false, &txstream);
 
-  uint8_t u8Len[2];
-  artemis_stream_read(&rxstream, u8Len, 2);
+	artemis_i2c_receive(i2c, true, &rxstream, 2);
+
+	uint8_t u8Len[2];
+	artemis_stream_read(&rxstream, u8Len, 2);
 
 
-  if(u8Len[1] == 0xFF)
-  {
-    /** Error, shouldn't be 0xFF */
-    return 0;
-  }
+	if(u8Len[1] == 0xFF)
+	{
+		/** Error, shouldn't be 0xFF */
+		return 0;
+	}
 
-  uint16_t len = (u8Len[0] << 8) | u8Len[1];
-//  printf("aui2c len = %u\n\n", len);
-  uint8_t *pBufStart = pBuf;
+	uint16_t len = (u8Len[0] << 8) | u8Len[1];
+	//printf("aui2c len = %u\n\n", len);
 
-  if(len > 0)
-  {
-    artemis_stream_reset(&txstream);
-    artemis_stream_reset(&rxstream);
+	uint8_t *pBufStart = pBuf;
 
-    /** Send the command to retreive data @addr 0xFF */
-    artemis_stream_put(&txstream, ARTEMIS_UBLOX_I2C_DATA_REG);
-    artemis_i2c_send(i2c, false, &txstream);
+	if(len > 0)
+	{
+		artemis_stream_reset(&txstream);
+		artemis_stream_reset(&rxstream);
 
-    while(len > 0)
-    {
-      if(len > ARTEMIS_UBLOX_BUFFER_LENGTH)
-      {
-        artemis_i2c_receive(i2c, false, &rxstream, ARTEMIS_UBLOX_BUFFER_LENGTH);
-        artemis_stream_read(&rxstream, pBuf, ARTEMIS_UBLOX_BUFFER_LENGTH);
-        artemis_stream_reset(&rxstream);
-        pBuf += ARTEMIS_UBLOX_BUFFER_LENGTH;
-        len -= ARTEMIS_UBLOX_BUFFER_LENGTH;
-      } else {
-        artemis_i2c_receive(i2c, true, &rxstream, len);
-        artemis_stream_read(&rxstream, pBuf, ARTEMIS_UBLOX_BUFFER_LENGTH);
-        pBuf += len;
-        len = 0;
-      }
-    }
+		/** Send the command to retreive data @addr 0xFF */
+		artemis_stream_put(&txstream, ARTEMIS_UBLOX_I2C_DATA_REG);
+		artemis_i2c_send(i2c, false, &txstream);
 
-  }
+		while(len > 0)
+		{
+			if(len > ARTEMIS_UBLOX_BUFFER_LENGTH)
+			{
+				artemis_i2c_receive(i2c, false, &rxstream, ARTEMIS_UBLOX_BUFFER_LENGTH);
+				artemis_stream_read(&rxstream, pBuf, ARTEMIS_UBLOX_BUFFER_LENGTH);
+				artemis_stream_reset(&rxstream);
+				pBuf += ARTEMIS_UBLOX_BUFFER_LENGTH;
+				len -= ARTEMIS_UBLOX_BUFFER_LENGTH;
+			}
+			else {
+				artemis_i2c_receive(i2c, true, &rxstream, len);
+				artemis_stream_read(&rxstream, pBuf, ARTEMIS_UBLOX_BUFFER_LENGTH);
+				pBuf += len;
+				len = 0;
+			}
+		}
+	}
 
-  return (uint16_t)(pBuf - pBufStart);
-
+	return (uint16_t)(pBuf - pBufStart);
 }
