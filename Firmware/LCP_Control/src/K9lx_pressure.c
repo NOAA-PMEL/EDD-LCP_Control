@@ -218,7 +218,7 @@ static module_t module;
 //*****************************************************************************
 static void module_k9lx_read_sensor(k9lx_data_t *data);
 static float module_k9lx_convert_pressure(uint32_t u32Pressure);
-static float module_k9lx_convert_temperature(uint32_t u32Temp);
+static float module_k9lx_convert_temperature(float Temperature_c);
 static bool module_k9lx_read_status(void);
 static void module_k9lx_device_info(uint8_t port);
 static uint16_t module_k9lx_crc16 (uint8_t *crc_h, uint8_t *crc_l, uint8_t *pData, uint8_t len);
@@ -326,8 +326,8 @@ static void module_k9lx_read_sensor(k9lx_data_t *data)
 	data->pressure = pressure_bar.f;
 
 	/** Convert the temperature */
-	//data->temperature = module_k9lx_convert_temperature(temperature_c.f);
-	data->temperature = temperature_c.f;
+	data->temperature = module_k9lx_convert_temperature(temperature_c.f);
+	//data->temperature = temperature_c.f;
 }
 
 static float module_k9lx_convert_pressure(uint32_t u32Pressure)
@@ -351,15 +351,17 @@ static float module_k9lx_convert_pressure(uint32_t u32Pressure)
 	return fPressure;
 }
 
-static float module_k9lx_convert_temperature(uint32_t u32Temp)
+static float module_k9lx_convert_temperature(float temperature_c)
 {
-	u32Temp = u32Temp >> 4;
-	float fTemp = (float)(u32Temp);
-	fTemp -= 24;
-	fTemp *= 0.05;
-	fTemp -= 50;
+	float temperature_f = temperature_c * (9/5) + 32 ;
 
-	return fTemp;
+	//u32Temp = u32Temp >> 4;
+	//float fTemp = (float)(u32Temp);
+	//fTemp -= 24;
+	//fTemp *= 0.05;
+	//fTemp -= 50;
+
+	return temperature_f;
 }
 
 //static bool module_k9lx_read_status(void)
@@ -549,7 +551,7 @@ static void module_k9lx_device_info(uint8_t port)
 		for (uint8_t i=4; i<8; i++){
 			temperature_c.u[7-i] = pt[i];
 		}
-		ARTEMIS_DEBUG_PRINTF("%0.5f °C", temperature_c.f);
+		ARTEMIS_DEBUG_PRINTF("%0.3f °C, %0.3f °F", temperature_c.f, temperature_c.f * (9/5) + 32);
 	}
 
 	ARTEMIS_DEBUG_PRINTF("\n\tPressure\t: ");

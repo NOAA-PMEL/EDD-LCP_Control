@@ -60,41 +60,26 @@ STATIC void _parse_version(char *data, sS9_t *p, uint8_t rxLen);
 void S9T_init(const e_uart_t port, uint32_t baudrate)
 {
 
-  //assert(
-  //        (port == BSP_UART_COM0) ||
-  //        (port == BSP_UART_COM1) ||
-  //        (port == BSP_UART_COM2) ||
-  //        (port == BSP_UART_COM3)
-  //
-  //       );
+	/** Default Buadrate */
+	pS9->device.uart.baudrate = baudrate;
 
-  /** Default Buadrate */
-  pS9->device.uart.baudrate = baudrate;
-  
-  /** Attach values to struct */
-  pS9->device.power.pin = (am_hal_gpio_pincfg_t*)&g_AM_BSP_GPIO_COM0_POWER_PIN;
-  pS9->device.power.pin_number = AM_BSP_GPIO_COM0_POWER_PIN;
+	/** Attach values to struct */
+	pS9->device.power.pin = (am_hal_gpio_pincfg_t*)&g_AM_BSP_GPIO_COM0_POWER_PIN;
+	pS9->device.power.pin_number = AM_BSP_GPIO_COM0_POWER_PIN;
 
-  pS9->device.uart.port = port;
+	pS9->device.uart.port = port;
 
-  /** Initialize the COM Port Power Pin */
-  am_hal_gpio_pinconfig(pS9->device.power.pin_number, *pS9->device.power.pin);// g_LCP_BSP_COM0_POWER_ON);
-  S9T_OFF();
-  S9T_ON();
-  am_hal_systick_delay_us(500000);
-  
-  /** Initialize the COM Port UART */
-  //bsp_uart_init();
-  //bsp_uart_set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
-  //bsp_uart_puts(pS9->device.uart.port, "\r", 1);
-  //bsp_uart_puts(pS9->device.uart.port, "\r", 1);
-  //bsp_uart_puts(pS9->device.uart.port, "stop\r", 5);
-  //bsp_uart_puts(pS9->device.uart.port, "STOP\r", 5);
- 
-  artemis_max14830_Set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
-  artemis_max14830_UART_Write (pS9->device.uart.port, "stop\r", 5);
-  S9T_dev_info();  
+	/** Initialize the COM Port Power Pin */
+	am_hal_gpio_pinconfig(pS9->device.power.pin_number, *pS9->device.power.pin);// g_LCP_BSP_COM0_POWER_ON);
+	S9T_OFF();
+	S9T_ON();
+	am_hal_systick_delay_us(500000);
 
+	artemis_max14830_Set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
+	artemis_max14830_UART_Write (pS9->device.uart.port, "stop\r", 5);
+
+	// fetch device info
+	S9T_dev_info();
 }
 
 void S9T_dev_info(void){
@@ -210,7 +195,8 @@ float S9T_Read(float *t, float *r)
 		pStr += 8;
 		uint8_t len = strlen(pStr);
 		module_s9_parse_msg(pStr, len, pS9);
-		*t = pS9->temperature;
+		//*t = pS9->temperature; // Tempearture in °C
+		*t = pS9->temperature * (9/5) + 32;  // convert to °F
 		*r = pS9->resistance;
 	}
 	else {
