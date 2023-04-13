@@ -78,6 +78,7 @@ void i9603n_on(void);
 void i9603n_off(void);
 bool i9603n_send_msg(uint8_t *msg, uint16_t len);
 uint16_t i9603n_read_msg(uint8_t *msg, uint8_t len);
+bool i9603n_send_data(uint8_t *msg, uint16_t len);
 
 
 //#ifndef TEST

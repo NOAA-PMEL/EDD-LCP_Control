@@ -112,7 +112,7 @@ STATIC i9603n_result_t module_i9603n_read_at(void);
 // Global Functions
 //
 //*****************************************************************************
-void I9603N_initialize(void)
+void i9603n_initialize(void)
 {
     /** Initalize the 9603n UART & IO */
     artemis_i9603n_initialize();
@@ -123,22 +123,25 @@ void I9603N_initialize(void)
 }
 
 
-void I9603N_on(void)
+void i9603n_on(void)
 {
     module_i9603_power_on();
 }
 
 
-void I9603N_off(void)
+void i9603n_off(void)
 {
     module_i9603_power_off();
 }
 
 
 
-bool I9603N_send_data(uint8_t *msg, uint16_t len)
+bool i9603n_send_data(uint8_t *msg, uint16_t len)
 {
     bool retVal = false;
+	uint8_t rxData[128] = {0};
+	uint8_t rxLen = 9;
+	uint8_t msg_len = 0;
 
     if(len <= I9603N_BUFFER_SIZE)
     {
@@ -151,8 +154,15 @@ bool I9603N_send_data(uint8_t *msg, uint16_t len)
     if(retVal)
     {
         
-        strcpy((char*)irid_buf, "AT+SBWD=%u");
+        //strcpy((char*)irid_buf, "AT+SBWD=%u");
+        strcpy((char*)irid_buf, (char*)msg);
         module_i9603n_send(irid_buf, strlen(irid_buf));
+		am_util_stdio_printf("\n");
+        msg_len = artemis_i9603n_receive(rxData, rxLen);
+		for (uint8_t i=0; i<msg_len; i++){
+			am_util_stdio_printf("%c", rxData[i]);
+		}
+		am_util_stdio_printf("\n");
     }
 
     /** Wait for the ACK */
@@ -181,10 +191,14 @@ uint16_t I9603N_read_incoming_msg(uint8_t *msg, uint8_t len)
 
 static bool module_i9603_power_on(void)
 {
-    bool retVal = false;
-    
-    retVal = artemis_sc_power_startup();
-    
+	bool retVal = false;
+
+	retVal = artemis_sc_power_startup();
+
+	if (retVal){
+		artemis_i9603n_power_on();
+	}
+
 }
 
 
@@ -199,7 +213,7 @@ static bool module_i9603_attempt_network_connection(uint8_t attempts, uint16_t a
     bool retVal = false;
 
     /** Make sure the modem is on */
-    I9603N_on();
+    i9603n_on();
 
     /** Ensure there is network connection via pin*/
     uint8_t connection_attempts = attempts;
@@ -297,11 +311,11 @@ STATIC i9603n_result_t module_i9603n_read_at(void)
     bool contFlag = true;
     while(contFlag)
     {   
-        printf("buf_idx=%u\n", buf_idx);
+        am_util_stdio_printf("buf_idx=%u\n", buf_idx);
         msg_len = artemis_i9603n_receive(&irid_buf[buf_idx], buf_len_remaining);
         total_len += msg_len;
 
-        printf("%s\n", irid_buf);
+        am_util_stdio_printf("%s\n", irid_buf);
         if(msg_len > 0)
         {   
             do{
@@ -324,8 +338,8 @@ STATIC i9603n_result_t module_i9603n_read_at(void)
 
                 if(result == I9603N_RESULT_FAIL)
                 {
-                    printf("total_len=%u\n", total_len);
-                    printf("before loop loc= %p\n", pStart);
+                    am_util_stdio_printf("total_len=%u\n", total_len);
+                    am_util_stdio_printf("before loop loc= %p\n", pStart);
                     for(uint16_t i=0; i<total_len; i++)
                     {
                         printf("%u ", i);
@@ -339,7 +353,7 @@ STATIC i9603n_result_t module_i9603n_read_at(void)
                             total_len -= (i+1);
                         }
                     }
-                    printf("after loop loc= %p\n", pStart);
+                    am_util_stdio_printf("after loop loc= %p\n", pStart);
                 } else {
                     contFlag = false;
                 }

@@ -77,7 +77,6 @@ static module_t module = {0};
 //*****************************************************************************
 void artemis_sc_initialize(void)
 {
-
     module.power.pin = AM_BSP_GPIO_SC_ON;
     module.power.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_SC_ON;
     module.shutdown.pin = AM_BSP_GPIO_SC_NSHDN;
@@ -88,38 +87,38 @@ void artemis_sc_initialize(void)
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.shutdown.pin, *module.shutdown.pinConfig));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.good.pin, *module.good.pinConfig));
-
 }
-
 
 bool artemis_sc_power_startup(void)
 {
-    artemis_sc_power_on();
-    for(uint16_t i=0; i<ARTEMIS_SC_POWER_TIMEOUT_SEC; i++)
-    {
-        if(artemis_sc_power_good())
-        {
-            return true;
-        }
-        am_hal_systick_delay_us(1000000);   /** 1 Seconds delay */
-    }
-    
-    return false;
+	artemis_sc_power_on();
+	for(uint16_t i=0; i<ARTEMIS_SC_POWER_TIMEOUT_SEC; i++)
+	{
+		if(artemis_sc_power_good())
+		{
+			am_util_stdio_printf("Capacitors charged\n");
+			return true;
+		}
+		am_util_stdio_printf("Capacitor charging ... \n");
+		am_hal_systick_delay_us(1000000);   /** 1 Seconds delay */
+	}
+
+	return false;
 }
 
 void artemis_sc_power_on(void)
 {
-    am_hal_gpio_output_set(module.power.pin);
-    am_hal_gpio_output_set(module.shutdown.pin);
+	am_hal_gpio_output_set(module.power.pin);
+	am_hal_gpio_output_set(module.shutdown.pin);
 }
 
 void artemis_sc_power_off(void)
 {
-    am_hal_gpio_output_clear(module.shutdown.pin);
-    am_hal_gpio_output_clear(module.power.pin);
+	am_hal_gpio_output_clear(module.shutdown.pin);
+	am_hal_gpio_output_clear(module.power.pin);
 }
 
 bool artemis_sc_power_good(void)
 {
-    return am_hal_gpio_input_read(module.good.pin);
+	return am_hal_gpio_input_read(module.good.pin);
 }
