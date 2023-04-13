@@ -1,111 +1,121 @@
-///
-/// @file artemis_main.c
-///
+/* @file artemis_main.c
+ *
+ *
+ */
 
 #include "main.h"
-#include "S9_temp.h"
 #include "bsp_uart.h"
+#include "stdlib.h"
 
 #include "artemis_debug.h"
 #include "artemis_mcu.h"
-//#include "artemis_scheduler.h"
-//#include "artemis_time.h"
-//#include "artemis_pa9ld.h"
-//#include "artemis_ublox_i2c.h"
-#include "artemis_supercap.h"
-#include "ublox.h"
+#include "artemis_time.h"
+#include "artemis_ublox_i2c.h"
+#include "artemis_max14830.h"
 
 #include "control.h"
 #include "piston.h"
 #include "sensors.h"
-#include <stdlib.h>
 
-//#define TEST_UBLOX  true
-//#define TEST_SUPERCAP true
-#define TEST_S9 true
+#include "ublox.h"
+#include "GPS.h"
+#include "S9_temperature.h"
+#include "K9lx_pressure.h"
+#include "i9603n.h"
+
+
+#define TEST_GPS
+#define TEST_MODEM
+#define TEST_MAX
+
+#define TEST_KELLER
+#define TEST_S9
 
 int main(void)
 {
-    // initialize mcu features
-    artemis_mcu_initialize();
+	// initialize mcu features
+	artemis_mcu_initialize();
 
-    // initialize debug features
-    artemis_debug_initialize();
+	// initialize debug features
+	artemis_debug_initialize();
+	am_util_stdio_printf("Hello Ambiq World\n");
 
-    // initialize time functions
-    artemis_time_initialize();
+	// initialize time functions
+	//artemis_time_initialize();
 
-    // initialize the scheduler
-//    artemis_scheduler_initialize();
+	// initialize the scheduler
+	// artemis_scheduler_initialize();
 
-    // run the application
-//    artemis_scheduler_run();
-    
-    // initialize the piston 
-//    PIS_initialize();
-    
-//#ifdef TEST_S9
-//    /** Init Soundnine Temperature Sensor */
-//    S9T_init(BSP_UART_COM1, &g_AM_BSP_GPIO_COM1_POWER_PIN, AM_BSP_GPIO_COM1_POWER_PIN);
-//    S9T_enable();
-//    float p, r, t;
-//#endif
-    
-    
-//#ifdef TEST_UBLOX
-//    /** Init GPS */
-//    UBLOX_initialize(UBLOX_COM_I2C, UBLOX_MSG_UBX, UBLOX_MSG_UBX, 1);
-//    UBLOX_Nav_t gps = {0};
-//#endif
-//    
-//#ifdef TEST_SUPERCAP
-//    artemis_sc_initialize();
-//    
-//    if(artemis_sc_power_startup())
-//    {
-//      printf("Success in starting supercap charging!\n");
-//    } else {
-//      printf("Failed to start supercap charge\n");
-//    }
-//#endif
-//    PIS_retract();
-//    PIS_extend();
-//    am_hal_systick_delay_us(2500000);
-//    PIS_stop();
-//    am_hal_systick_delay_us(2500000);
-//    PIS_retract();
-//    while(true)
-//    {
-//#ifdef TEST_UBLOX
-//      UBLOX_read_nav(&gps);
-//      printf("GPS Fix = %u\n", gps.fix);
-//
-//      if(gps.fix)
-//      {
-//        printf("Lat=%.7f, Lon=%.7f, Alt=%.3f\n", gps.position.lat, gps.position.lon, gps.position.alt);
-//      }
-//#endif
-//      
-//#ifdef TEST_S9
-//    S9T_Read(&t, &r);
-//    printf("t=%.3f, r=%.3f\n", t, r); 
-//#endif
-//    
-//
-//    }
-    SENS_initialize();
-    TaskHandle_t xDepthHandle = NULL;
-    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
-    vTaskStartScheduler();
-    float d, r;
-    while(1)
-    {
-      
-      SENS_get_depth(&d, &r);
-      printf("d=%0.3f\n", d);
-    }
-    
-    
-    
-    return(EXIT_SUCCESS);
+	// run the application
+	// artemis_scheduler_run();
+
+	// initialize the piston
+	// PIS_initialize();
+
+
+#ifdef TEST_GPS
+	/** Init GPS */
+	UBLOX_initialize(UBLOX_COM_I2C, UBLOX_MSG_UBX, UBLOX_MSG_UBX, 1);
+	//UBLOX_Nav_t gps = {0};
+	GPS_Data_t gps = {0};
+#endif
+
+#ifdef TEST_MODEM
+	i9603n_initialize();
+	i9603n_on();
+#endif
+
+#ifdef TEST_MAX
+	artemis_max14830_init();
+
+	#ifdef TEST_KELLER
+		K9lx_init(3, 9600);
+		float k_temperature, k_pressure = 0;
+	#endif
+
+	#ifdef TEST_S9
+		S9T_init(0, 9600);
+		float s_temperature, s_resistance = 0;
+	#endif
+
+#endif
+
+	am_util_stdio_printf("\n\n");
+
+	while(1)
+	{
+		#ifdef TEST_GPS
+		if (GPS_Read(&gps)){
+			am_util_stdio_printf("GPS :	fixed, latitude=%0.7f , longitude=%0.7f, altitude=%0.2f\n", \
+										gps.position.lat, gps.position.lon, gps.position.alt);
+		}
+		else {
+			am_util_stdio_printf("GPS, no fix\n");
+		}
+
+		#endif
+
+		#ifdef TEST_MODEM
+			i9603n_send_data("AT\r", 3);
+		#endif
+
+		#ifdef TEST_MAX
+
+			#ifdef TEST_KELLER
+				K9lx_read(&k_pressure, &k_temperature);
+				am_util_stdio_printf("K9lx :	Pressure = %0.5f bar, \tTemperature = %0.3f °F\n", k_pressure, k_temperature);
+			#endif
+
+			#ifdef TEST_S9
+				S9T_Read(&s_temperature, &s_resistance);
+				am_util_stdio_printf("S9   :	Resistance = %0.5f Ohm, \tTemperature = %0.3f °F\n", s_resistance, s_temperature);
+			#endif
+
+		#endif
+
+		// 1s delay
+		am_util_stdio_printf("1 second delay\n");
+		am_util_delay_ms(1000);
+	}
+
 }
