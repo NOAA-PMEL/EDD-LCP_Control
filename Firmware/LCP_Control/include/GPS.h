@@ -2,6 +2,7 @@
 #define GPS_H
 
 #include "stdint.h"
+#include "stdbool.h"
 
 typedef struct sGPS_Data_t
 {
@@ -22,6 +23,6 @@ typedef struct sGPS_Data_t
 }GPS_Data_t;
 
 void GPS_initialize(void);
-uint8_t GPS_Read(GPS_Data_t *data);
+bool GPS_Read(GPS_Data_t *data);
 
 #endif // GPS_H
