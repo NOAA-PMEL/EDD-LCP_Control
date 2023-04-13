@@ -92,7 +92,6 @@ extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_LED_BLUE;
 //
 //*****************************************************************************
 #define AM_BSP_GPIO_SC_NSHDN            	0
-//#define AM_BSP_GPIO_SC_NSHDN            	27
 extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_SC_NSHDN;
 
 //*****************************************************************************
@@ -109,7 +108,6 @@ extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_SC_PGOOD;
 //
 //*****************************************************************************
 #define AM_BSP_GPIO_SC_ON               	1
-//#define AM_BSP_GPIO_SC_ON               	22
 extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_SC_ON;
 
 //*****************************************************************************
@@ -134,7 +132,6 @@ extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_CONSOLE_UART_RX;
 //
 //*****************************************************************************
 #define AM_BSP_GPIO_IRIDIUM_ON          	4
-//#define AM_BSP_GPIO_IRIDIUM_ON          	17
 extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_IRIDIUM_ON;
 
 //*****************************************************************************
@@ -143,7 +140,6 @@ extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_IRIDIUM_ON;
 //
 //*****************************************************************************
 #define AM_BSP_GPIO_IRIDIUM_RING_IND    	22
-//#define AM_BSP_GPIO_IRIDIUM_RING_IND    	41
 extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_IRIDIUM_RING_IND;
 
 //*****************************************************************************
@@ -152,7 +148,6 @@ extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_IRIDIUM_RING_IND;
 //
 //*****************************************************************************
 #define AM_BSP_GPIO_IRIDIUM_NET_AVAIL   	24
-//#define AM_BSP_GPIO_IRIDIUM_NET_AVAIL   	18
 extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_IRIDIUM_NET_AVAIL;
 
 //*****************************************************************************
@@ -161,7 +156,6 @@ extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_IRIDIUM_NET_AVAIL;
 //
 //*****************************************************************************
 #define AM_BSP_GPIO_IRIDIUM_UART_TX     	14
-//#define AM_BSP_GPIO_IRIDIUM_UART_TX     	24
 extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_IRIDIUM_UART_TX;
 
 //*****************************************************************************
@@ -170,7 +164,6 @@ extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_IRIDIUM_UART_TX;
 //
 //*****************************************************************************
 #define AM_BSP_GPIO_IRIDIUM_UART_RX     	15
-//#define AM_BSP_GPIO_IRIDIUM_UART_RX     	25
 extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_IRIDIUM_UART_RX;
 
 //*****************************************************************************
