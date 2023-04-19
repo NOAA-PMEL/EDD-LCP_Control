@@ -382,7 +382,9 @@ const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_BUS_VOLTAGE =
 const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_PWR_CTRL_EN =
 {
     .uFuncSel            = AM_HAL_PIN_2_GPIO,
-    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL
 };
 
 //*****************************************************************************
