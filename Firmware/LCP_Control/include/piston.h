@@ -66,6 +66,7 @@ void task_move_piston_to_zero(void);
 void task_move_piston_to_full(void);
 void task_move_piston_to_volume(void);
 
+void PIS_initialize(void);
 bool PIS_set_volume(double volume);
 void PIS_move_to_zero(void);
 void PIS_move_to_full(void);

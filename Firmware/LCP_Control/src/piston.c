@@ -43,9 +43,8 @@ void PIS_initialize(void)
     artemis_piston_i2c_power_on();
 
     /** Update state */
-//    module_pis_update_state();
+    //module_pis_update_state();
 }
-
 
 void task_move_piston_to_zero(void)
 {
@@ -71,7 +70,6 @@ void task_move_piston_to_zero(void)
             fullFlag = module_pis_read_if_zero();
             xSemaphoreGive(piston.rtos.semaphore);
         }
-
         vTaskDelayUntil( &xLastWakeTime, period );
     }
 }
@@ -100,10 +98,9 @@ void task_move_piston_to_full(void)
             xSemaphoreGive(piston.rtos.semaphore);
         }
 
-        vTaskDelayUntil( &xLastWakeTime, period );
+    vTaskDelayUntil( &xLastWakeTime, period );
     }
 }
-
 
 void task_move_piston_to_volume(void)
 {
@@ -146,7 +143,6 @@ bool PIS_set_volume(double volume)
         piston.setpoint = volume;
         retVal = true;
     }
-
     return retVal;
 }
 
@@ -155,7 +151,7 @@ void PIS_extend(void)
 //    bool retVal = false;
 //    uint8_t addr = PISTON_I2C_MEM_ADDR_EXT_RET;
 //    uint8_t cmd[4] = {0x01, 0x01, 0x00, 0x01};
-    uint8_t cmd[5] = {PISTON_I2C_MEM_ADDR_EXT_RET, 0x01, 0x01, 0x00, 0x01};
+    uint8_t cmd[6] = {PISTON_I2C_MEM_ADDR_EXT_RET, 0x01, 0x01, 0x00, 0x01, 0x00};
 
     
 //    artemis_piston_i2c_send_msg(&addr, 1, false);
@@ -163,7 +159,7 @@ void PIS_extend(void)
     
     /** Put in write mode */
     artemis_piston_set_write_mode(true);
-    artemis_piston_i2c_send_msg(cmd, 5, true);
+    artemis_piston_i2c_send_msg(cmd, 6, true);
 //    artemis_piston_set_write_mode(false);
 //    return retVal;
 }
@@ -175,11 +171,11 @@ void PIS_retract(void)
     
 //    uint8_t addr = PISTON_I2C_MEM_ADDR_EXT_RET;
 //    uint8_t cmd[4] = {0xFF, 0x01, 0x00, 0x01};
-    uint8_t cmd[5] = {PISTON_I2C_MEM_ADDR_EXT_RET, 0xFF, 0x01, 0x00, 0x01};
+    uint8_t cmd[6] = {PISTON_I2C_MEM_ADDR_EXT_RET, 0xFF, 0x01, 0x00, 0x01, 0x00};
     
 //    artemis_piston_i2c_send_msg(&addr, 1, false);
     artemis_piston_set_write_mode(true);
-    artemis_piston_i2c_send_msg(cmd, 5, true);
+    artemis_piston_i2c_send_msg(cmd, 6, true);
 
 //    return retVal;
 }
