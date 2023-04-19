@@ -21,12 +21,6 @@ void artemis_i2c_send(artemis_i2c_t *i2c, bool stop, artemis_stream_t *txstream)
 		ARTEMIS_DEBUG_PRINTF("I2C ERROR \n");
 	}
 
-	//am_util_stdio_printf("Sending = \n");
-	//for (uint16_t i=0; i<txstream->written; i++){
-	//	am_util_stdio_printf("%c", (char)txstream->buffer[i]);
-	//}
-	//am_util_stdio_printf("\n");
-
 	// update the number of bytes read from the txstream
 	txstream->read = txstream->written;
 }
