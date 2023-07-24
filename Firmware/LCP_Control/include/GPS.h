@@ -24,5 +24,7 @@ typedef struct sGPS_Data_t
 
 void GPS_initialize(void);
 bool GPS_Read(GPS_Data_t *data);
+void GPS_on(void);
+void GPS_off(void);
 
 #endif // GPS_H

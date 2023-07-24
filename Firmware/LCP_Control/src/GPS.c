@@ -1,5 +1,6 @@
 #include "GPS.h"
 #include "ublox.h"
+#include "artemis_ublox_i2c.h"
 
 void GPS_initialize(void)
 {
@@ -28,4 +29,14 @@ bool GPS_Read(GPS_Data_t *data)
 		data->time.sec = ublox.time.sec;
 	}
 	return fix;
+}
+
+void GPS_on(void)
+{
+    artemis_ublox_i2c_power_on();
+}
+
+void GPS_off(void)
+{
+    artemis_ublox_i2c_power_off();
 }
