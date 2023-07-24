@@ -115,8 +115,8 @@ static const am_hal_uart_config_t g_sBspUartConfig =
     //
     // Set TX and RX FIFOs to interrupt at half-full.
     //
-    .ui32FifoLevels = (AM_HAL_UART_TX_FIFO_1_2 |
-                       AM_HAL_UART_RX_FIFO_1_2),
+    .ui32FifoLevels = (AM_HAL_UART_TX_FIFO_7_8 |
+                       AM_HAL_UART_RX_FIFO_7_8),
 
     //
     // The default interface will just use polling instead of buffers.

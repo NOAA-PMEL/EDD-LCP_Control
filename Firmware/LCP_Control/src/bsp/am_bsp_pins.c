@@ -245,14 +245,13 @@ const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_ACCEL_INT =
 //  ACCEL_SPI_CS pin: This pin is the Accelerometer SPI Chip Select pin.
 //
 //*****************************************************************************
-//const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_ACCEL_SPI_CS =
-//{
-//    .uFuncSel            = AM_HAL_PIN_36_GPIO,
-//    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
-//    .uIOMnum             = 0,
-//    .uNCE                = 0,
-//    .eCEpol              = AM_HAL_GPIO_PIN_CEPOL_ACTIVELOW
-//};
+const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_ACCEL_SPI_CS =
+{
+    .uFuncSel            = AM_HAL_PIN_36_GPIO,
+    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL
+};
 
 //*****************************************************************************
 //
