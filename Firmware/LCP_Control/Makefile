@@ -176,6 +176,8 @@ SRC += am_util_debug.c
 SRC += am_util_delay.c
 SRC += am_util_faultisr.c
 SRC += am_util_stdio.c
+SRC += am_util_string.c
+SRC += am_util_time.c
 SRC += am_util_id.c
 SRC += startup_gcc.c
 ### custom inclusion
@@ -217,6 +219,9 @@ SRC += ublox.c
 SRC += ublox_ubx.c
 SRC += S9_temperature.c
 SRC += K9lx_pressure.c
+SRC += artemis_rtc.c
+SRC += artemis_accel.c
+
 
 CSRC = $(filter %.c,$(SRC))
 OBJS = $(CSRC:%.c=$(CONFIG)/%.o)
@@ -267,7 +272,7 @@ sim: directories $(BIN)/$(TARGET).bin
 ASB_UPLOADER=$(PYTHON3) $(COMMONPATH)/tools_sfe/asb/asb.py
 SVL_UPLOADER=$(PYTHON3) $(COMMONPATH)/tools_sfe/svl/svl.py
 ASB_UPLOAD_BAUD ?=115200
-SVL_UPLOAD_BAUD ?=115200
+SVL_UPLOAD_BAUD ?=921600
 
 directories:
 	@mkdir -p $(CONFIG)
