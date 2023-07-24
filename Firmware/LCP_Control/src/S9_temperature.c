@@ -73,10 +73,9 @@ void S9T_init(const e_uart_t port, uint32_t baudrate)
 	am_hal_gpio_pinconfig(pS9->device.power.pin_number, *pS9->device.power.pin);// g_LCP_BSP_COM0_POWER_ON);
 	S9T_OFF();
 	S9T_ON();
-	am_hal_systick_delay_us(500000);
 
 	artemis_max14830_Set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
-	artemis_max14830_UART_Write (pS9->device.uart.port, "stop\r", 5);
+	artemis_max14830_UART_Write (pS9->device.uart.port, (uint8_t*)"stop\r", 5);
 
 	// fetch device info
 	S9T_dev_info();
@@ -155,6 +154,7 @@ void S9T_disable(void)
 void S9T_ON(void)
 {
 	am_hal_gpio_output_clear(pS9->device.power.pin_number);
+	am_hal_systick_delay_us(500000);
 }
 
 void S9T_OFF(void)
@@ -184,7 +184,8 @@ float S9T_Read(float *t, float *r)
 	uint8_t rxLen = 0;
 
 	artemis_max14830_UART_Write (pS9->device.uart.port, "sample\r", 7);
-	am_hal_systick_delay_us(750000);
+	//am_hal_systick_delay_us(750000);
+	am_hal_systick_delay_us(1000000);
 	artemis_max14830_UART_Read (pS9->device.uart.port, sampleStr, &rxLen);
 	//bsp_uart_gets(pS9->device.uart.port, sampleStr, 256);
 
