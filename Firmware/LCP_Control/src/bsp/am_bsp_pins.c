@@ -375,6 +375,19 @@ const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_BUS_VOLTAGE =
 
 //*****************************************************************************
 //
+//  PWR_CTRL I2C_1_PWR : This pin is the Power Control for I2C_1.
+//
+//*****************************************************************************
+const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_I2C_1_PWR =
+{
+    .uFuncSel            = AM_HAL_PIN_16_GPIO,
+    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL
+};
+
+//*****************************************************************************
+//
 //  PWR_CTRL_EN pin: This pin is the Power Control (Piston) Enable pin.
 //
 //*****************************************************************************
