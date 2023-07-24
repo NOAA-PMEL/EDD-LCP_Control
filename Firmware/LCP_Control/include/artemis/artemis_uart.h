@@ -30,7 +30,8 @@ void artemis_uart_initialize(artemis_uart_t *uart, uint32_t baudrate);
 void artemis_uart_uninitialize(artemis_uart_t *uart);
 void artemis_uart_flush(artemis_uart_t *uart);
 void artemis_uart_send(artemis_uart_t *uart, artemis_stream_t *txstream);
-void artemis_uart_receive(artemis_uart_t *uart, artemis_stream_t *rxstream, uint32_t rxnumber);
+//void artemis_uart_receive(artemis_uart_t *uart, artemis_stream_t *rxstream, uint32_t rxnumber);
+void artemis_uart_receive(artemis_stream_t *rxstream);
 
 #ifdef __cplusplus
 }
