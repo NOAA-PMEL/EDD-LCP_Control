@@ -62,7 +62,7 @@
 //  Macros & Constants
 //
 //*****************************************************************************
-#define I2C_MSG_LEN_MAX     ( 128 )
+#define I2C_MSG_LEN_MAX     ( 400 )
 #define ARTEMIS_UBLOX_BUFFER_LENGTH (I2C_MSG_LEN_MAX)
 
 //*****************************************************************************
@@ -158,6 +158,7 @@ void artemis_i9603n_initialize(void)
 
 	/** Initialize UART Port */
 	artemis_uart_initialize(uart, baudrate);
+    artemis_uart_flush(uart);
 }
 
 
@@ -192,12 +193,12 @@ void artemis_i9603n_send(char *msg, uint16_t len)
 	artemis_uart_send(&module.uart, &txstream);
 }
 
-uint16_t artemis_i9603n_receive(char *msg, uint16_t bufLen)
+uint16_t artemis_i9603n_receive(char *msg)
 {
 	artemis_stream_t rxstream = {0};
 	artemis_stream_setbuffer(&rxstream, module.rxbuffer, ARTEMIS_UBLOX_BUFFER_LENGTH);
 	artemis_stream_reset(&rxstream);
-	artemis_uart_receive(&module.uart, &rxstream, bufLen);
+	artemis_uart_receive(&rxstream);
 	artemis_stream_read(&rxstream, (uint8_t*)msg, rxstream.written);
 
 	return rxstream.written;

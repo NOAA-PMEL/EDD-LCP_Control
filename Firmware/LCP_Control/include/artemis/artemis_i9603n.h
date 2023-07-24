@@ -44,7 +44,7 @@ void artemis_i9603n_power_off(void);
 bool artemis_i9603n_is_network_available(void);
 bool artemis_i9603n_is_ringing(void);
 void artemis_i9603n_send(char *msg, uint16_t len);
-uint16_t artemis_i9603n_receive(char *msg, uint16_t bufLen);
+uint16_t artemis_i9603n_receive(char *msg);
 
 
 #endif // ARTEMIS_I9603N_H
