@@ -54,8 +54,6 @@
 #include "event_groups.h"
 #include "semphr.h"
 
-
-
 //*****************************************************************************
 //
 // Project Files
@@ -71,14 +69,15 @@
 //  Macros & Constants
 //
 //*****************************************************************************
-#define I9603N_BUFFER_SIZE  ( 300 )
+#define I9603N_TX_BUFFER_SIZE  ( 400 )
+#define I9603N_RX_BUFFER_SIZE  ( 300 )
 #define I9603N_CONN_ATTEMPT_COUNT   ( 120 )
 //*****************************************************************************
 //
 // Structs
 //
 //*****************************************************************************
-typedef uint8_t module_buffer_t[I9603N_BUFFER_SIZE];
+//typedef uint8_t module_buffer_t[I9603N_BUFFER_SIZE];
 //typedef struct s_module_t
 //{
 //     artemis_uart_t uart;
@@ -94,18 +93,35 @@ typedef uint8_t module_buffer_t[I9603N_BUFFER_SIZE];
  * 
  */
 //static module_t module;
-static uint8_t irid_buf[I9603N_BUFFER_SIZE];
+static volatile uint8_t irid_buf_tx[I9603N_TX_BUFFER_SIZE];
+static volatile uint8_t irid_buf_rx[I9603N_RX_BUFFER_SIZE];
 //*****************************************************************************
 //
 // Static Function Prototypes
 //
 //*****************************************************************************
 #ifndef TEST
-static bool module_i9603_power_on(void);
+
+static void module_i9603_power_on(void);
 static void module_i9603_power_off(void);
+
 static bool module_i9603_check_net_available(void);
-static bool module_i9603n_send(uint8_t *msg, uint16_t len);
-STATIC i9603n_result_t module_i9603n_read_at(void);
+static void module_i9603n_send(uint8_t *txData);
+static uint16_t module_i603n_receive(uint8_t *rxData);
+
+static bool module_i9603n_echo_off(void);
+static bool module_i9603n_echo_on(void);
+
+static bool module_i9603n_clear_oBuff(void);
+static bool module_i9603n_clear_iBuff(void);
+static bool module_i9603n_clear_MOMSN(void);
+static void module_i9603n_flush(uint8_t *buff);
+static bool module_i9603n_AT_check(void);
+
+static int16_t parse_AT(uint8_t *rxData, uint8_t *pattern, uint16_t len);
+static uint16_t parse_data(uint8_t *inData, uint8_t *outData);
+static i9603n_result_t module_i9603n_read_AT(uint16_t *len);
+
 #endif
 //*****************************************************************************
 //
@@ -119,69 +135,562 @@ void i9603n_initialize(void)
 
     /** Initialize the power circuitry */
     artemis_sc_initialize();
-
+    am_util_delay_ms(500);
 }
-
 
 void i9603n_on(void)
 {
     module_i9603_power_on();
+    am_util_delay_ms(1000);
+    //module_i9603n_echo_off();
 }
-
 
 void i9603n_off(void)
 {
     module_i9603_power_off();
 }
 
-
-
-bool i9603n_send_data(uint8_t *msg, uint16_t len)
+uint16_t i9603n_send_AT_cmd(uint8_t *cmd, uint8_t *rxData)
 {
-    bool retVal = false;
-	uint8_t rxData[128] = {0};
-	uint8_t rxLen = 9;
-	uint8_t msg_len = 0;
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint16_t txLen = strlen(cmd);
+    uint8_t lData[300] = {0};
+    uint16_t len=0;
 
-    if(len <= I9603N_BUFFER_SIZE)
+    if (txLen > 120)
     {
-        retVal = true;
+        // Debug
+        am_util_stdio_printf("limit of cmd size is 120 bytes !, %u\n", txLen);
+        return len;
     }
-
-    
-
-    /** Write the message */
-    if(retVal)
+    else
     {
-        
-        //strcpy((char*)irid_buf, "AT+SBWD=%u");
-        strcpy((char*)irid_buf, (char*)msg);
-        module_i9603n_send(irid_buf, strlen(irid_buf));
-		am_util_stdio_printf("\n");
-        msg_len = artemis_i9603n_receive(rxData, rxLen);
-		for (uint8_t i=0; i<msg_len; i++){
-			am_util_stdio_printf("%c", rxData[i]);
-		}
-		am_util_stdio_printf("\n");
+        module_i9603n_send(cmd);
+        result = module_i9603n_read_AT(&len);
+        if (result == I9603N_RESULT_OK)
+        {
+            len += 1;
+            memcpy (lData, irid_buf_rx, len);
+            for (uint16_t i=0; i<len; i++)
+            {
+                rxData[i] = lData[i];
+            }
+        }
+        else
+        {
+            len = 0;
+        }
     }
-
-    /** Wait for the ACK */
-    if(retVal)
-    {
-
-    }
-
-    return retVal;
+    module_i9603n_flush(irid_buf_rx);
+    return len;
 }
 
-
-
-
-uint16_t I9603N_read_incoming_msg(uint8_t *msg, uint8_t len)
+uint16_t i9603n_test_transfer(uint8_t *rxData)
 {
-    
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint8_t *cmd = "AT+SBDTC\r";
+    uint16_t rxLen = 0;
+
+    module_i9603n_send(cmd);
+    uint16_t len = 0;
+    result = module_i9603n_read_AT(&len);
+
+    if (result == I9603N_RESULT_OK)
+    {
+        uint8_t *lData = NULL;
+        uint16_t len = 0;
+        uint16_t number = 0;
+        uint16_t i=0;
+
+        if (irid_buf_rx[0] == 'A' && irid_buf_rx[1] == 'T')
+        {
+            while (irid_buf_rx[i]!='\n' && i<300)
+            {
+                i++;
+            }
+            lData = &irid_buf_rx[i+1];
+        }
+        else
+        {
+            lData = &irid_buf_rx[0];
+        }
+
+        char *tok = strtok(lData, "\r\n");
+        while (tok !=NULL)
+        {
+            if (strcmp(tok,"OK")==0)
+            {
+                break;
+            }
+
+            char *i_tok = strtok(tok, ":");
+            while (i_tok != NULL)
+            {
+                uint16_t len = strlen(i_tok)+1;
+                for (i=0; i<len; i++)
+                {
+                    if (i_tok[i] == '=')
+                    {
+                        i++;
+                        while(i<len)
+                        {
+                            if (i_tok[i] == '\0')
+                            {
+                                if (number > 255)
+                                {
+                                    rxData[rxLen] = (number>>8)&0xFF;
+                                    rxLen++;
+                                    rxData[rxLen] = (number&0xFF);
+                                    rxLen++;
+                                    number = 0;
+                                }
+                                else
+                                {
+                                    rxData[rxLen] = number;
+                                    rxLen++;
+                                    number = 0;
+                                }
+                            }
+                            else if(i_tok[i] == ' ')
+                            {
+                                // do nothing
+                            }
+                            else
+                            {
+                                number = number * 10 + (i_tok[i] - 48);
+                                //am_util_stdio_printf("number = %u\n", number);
+                            }
+                            i++;
+                        }
+                    }
+                }
+                i_tok = strtok(NULL, ":");
+            }
+            tok = strtok(NULL, "\r\n");
+        }
+    }
+    else
+    {
+        am_util_stdio_printf("Transfer Result NOT OK\n");
+    }
+    module_i9603n_flush(irid_buf_rx);
+    return rxLen;
 }
 
+uint16_t i9603n_read_text(char *rxText)
+{
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    char lData[300] = {0};
+    uint16_t len = 0;
+
+    uint8_t *cmd = "AT+SBDRT\r";
+    module_i9603n_send(cmd);
+    result = module_i9603n_read_AT(&len);
+    memcpy (lData, irid_buf_rx, len);
+    module_i9603n_flush(irid_buf_rx);
+    if (result == I9603N_RESULT_OK)
+    {
+        char *local = NULL;
+        char *tok = strtok(lData, "\r\n");
+        while(tok != NULL)
+        {
+            if (strcmp(tok, "OK") == 0)
+            {
+                break;
+            }
+
+            local = tok;
+            tok = strtok(NULL, "\r\n");
+        }
+
+        len = strlen(local);
+        memcpy(rxText, local, len);
+    }
+    else
+    {
+        am_util_stdio_printf("Result NOT OK :: length = %u\n", len);
+        // handle this
+        len = 0;
+    }
+
+    module_i9603n_flush(irid_buf_rx);
+    return len;
+}
+
+bool i9603n_send_text(char *txText)
+{
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint16_t txLen = strlen(txText);
+    bool ret = false;
+    uint16_t len=0;
+
+    if (txLen > 120)
+    {
+        // Debug
+        am_util_stdio_printf("limit of text size is 120 bytes, (%u !!!)\n", txLen);
+        return ret;
+    }
+    else
+    {
+        sprintf((char*)irid_buf_tx, "AT+SBDWT=%s\r", txText);
+        module_i9603n_send(irid_buf_tx);
+        result = module_i9603n_read_AT(&len);
+        if (result == I9603N_RESULT_OK)
+        {
+            ret = true;
+        }
+        else
+        {
+            ret = false;
+        }
+    }
+    module_i9603n_flush(irid_buf_rx);
+    module_i9603n_flush(irid_buf_tx);
+    return ret;
+}
+
+uint16_t i9603n_read_data(uint8_t *rxData)
+{
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint8_t lData[300] = {0};
+    uint16_t len = 0;
+
+    module_i9603n_send("AT+SBDRB\r");
+
+    result = module_i9603n_read_AT(&len);
+    if (result == I9603N_RESULT_OK)
+    {
+
+        int16_t pos = parse_AT(irid_buf_rx, "\r\nOK\r\n", len);
+        if (pos!=-1)
+        {
+            len = pos;
+            memcpy (lData, irid_buf_rx, len);
+            module_i9603n_flush(irid_buf_rx);
+        }
+        else
+        {
+            module_i9603n_flush(irid_buf_rx);
+            return 0;
+        }
+
+        if (lData[0]=='A' && lData[1]=='T')
+        {
+            uint16_t i=0;
+            while(lData[i]!='\r')
+            {
+                i++;
+            }
+            i++;
+            uint16_t msgLen = lData[i] << 8 | lData[i+1];
+            uint16_t recvSum = (lData[len-2] << 8) | lData[len-1];
+            uint16_t checkSum = 0;
+            uint16_t j = 0;
+            for (i=i+2; i<len-2; i++)
+            {
+                checkSum += lData[i];
+                rxData[j] = lData[i];
+                j++;
+            }
+
+            // checksum check
+            if (checkSum == recvSum) {return msgLen;}
+            else {return 0;}
+        }
+        else
+        {
+            uint16_t msgLen = lData[0] << 8 | lData[1];
+            uint16_t recvSum = (lData[len-2] << 8) | lData[len-1];
+            uint16_t checkSum = 0;
+            for (uint16_t i=2; i<len-2; i++)
+            {
+                checkSum += lData[i];
+                rxData[i-2] = lData[i];
+            }
+
+            // checksum check
+            if (checkSum == recvSum) {return msgLen;}
+            else {return 0;}
+        }
+    }
+    else
+    {
+        // Debug
+        module_i9603n_flush(irid_buf_rx);
+        am_util_stdio_printf("Try again ...\n");
+        return 0;
+    }
+}
+
+bool i9603n_send_data(uint8_t *txData)
+{
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint16_t txLen = strlen(txData);
+    char cmd[20] = {0};
+    bool ret = false;
+    uint16_t len=0;
+
+    if (txLen > 340)
+    {
+        // Debug
+        am_util_stdio_printf("length exceeds 340 bytes !, (%u !!!)\n", txLen);
+        return ret;
+    }
+
+    // Prepare for a message to send
+    else
+    {
+        sprintf(cmd, "AT+SBDWB=%u\r", txLen);
+        module_i9603n_send(cmd);
+        result = module_i9603n_read_AT(&len);
+        if (result == I9603N_RESULT_READY)
+        {
+            am_util_stdio_printf("Result is READY \n");
+            ret = true;
+        }
+        else
+        {
+            am_util_stdio_printf("Result is NOT READY \n");
+            ret = false;
+        }
+
+        if (ret == true)
+        {
+            uint16_t checksum = 0;
+            memcpy(irid_buf_tx, txData, txLen);
+            uint16_t i = 0;
+
+            for (i=0; i<txLen; i++)
+            {
+                checksum += irid_buf_tx[i];
+            }
+            irid_buf_tx[i] = (checksum >> 8) & 0xFF ;
+            irid_buf_tx[i+1] = (checksum & 0xFF) ;
+
+            /* for Debugging */
+            //am_util_stdio_printf("Sending String = ");
+            //for (uint16_t i=0; i<strlen(irid_buf_tx); i++)
+            //{
+            //    am_util_stdio_printf("0x%02X ", irid_buf_tx[i]);
+            //}
+            //am_util_stdio_printf("\n");
+
+            // send bytes
+            module_i9603n_send(irid_buf_tx);
+            result = module_i9603n_read_AT(&len);
+            if (result == I9603N_RESULT_OK)
+            {
+                if (parse_AT(irid_buf_rx, "0\r\n", len) != -1)
+                {
+                    ret = true;
+                }
+                else
+                {
+                    ret = false;
+                }
+            }
+        }
+        else
+        {
+            ret = false;
+        }
+    }
+    // flush rx and tx buffer in any case
+    module_i9603n_flush(irid_buf_rx);
+    module_i9603n_flush(irid_buf_tx);
+    return ret;
+}
+
+uint8_t i9603n_signal_quality(uint8_t *rxData)
+{
+    uint8_t *cmd = "AT+CSQ\r";
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint16_t rxLen = 0;
+    uint16_t len = 0;
+
+    module_i9603n_send(cmd);
+    result = module_i9603n_read_AT(&len);
+
+    if (result == I9603N_RESULT_OK)
+    {
+        rxLen = parse_data(irid_buf_rx, rxData);
+    }
+    module_i9603n_flush(irid_buf_rx);
+    return rxLen;
+}
+
+uint8_t i9603n_initiate_transfer(uint8_t *rxData)
+{
+    uint8_t *cmd = "AT+SBDIX\r";
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint16_t rxLen =0;
+    uint16_t len = 0;
+
+    module_i9603n_send(cmd);
+    result = module_i9603n_read_AT(&len);
+
+    if (result == I9603N_RESULT_OK)
+    {
+        rxLen = parse_data(irid_buf_rx, rxData);
+    }
+    module_i9603n_flush(irid_buf_rx);
+    return rxLen;
+}
+
+uint8_t i9603n_status(uint8_t *rxData)
+{
+    uint8_t *cmd = "AT+SBDSX\r";
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint16_t rxLen = 0;
+    uint16_t len = 0;
+
+    module_i9603n_send(cmd);
+    result = module_i9603n_read_AT(&len);
+
+    if (result == I9603N_RESULT_OK)
+    {
+        rxLen = parse_data(irid_buf_rx, rxData);
+    }
+
+    module_i9603n_flush(irid_buf_rx);
+    return rxLen;
+}
+
+uint16_t i9603n_read_imei(uint8_t *rxData)
+{
+    uint8_t *cmd = "AT+CGSN\r";
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint16_t rxLen = 0;
+    uint16_t len = 0;
+
+    module_i9603n_send(cmd);
+    result = module_i9603n_read_AT(&len);
+
+    if (result == I9603N_RESULT_OK)
+    {
+        uint8_t *lData = NULL;
+        if (irid_buf_rx[0] == 'A' && irid_buf_rx[1] == 'T')
+        {
+            uint16_t i=0;
+            while (irid_buf_rx[i]!='\n' && i<300)
+            {
+                i++;
+            }
+            lData = &irid_buf_rx[i+1];
+        }
+        else
+        {
+            lData = &irid_buf_rx[0];
+        }
+
+        char *tok = strtok(lData, "\r\n");
+        while (tok !=NULL)
+        {
+            if (strcmp(tok,"OK")==0)
+            {
+                break;
+            }
+
+            len = strlen(tok);
+            strncpy (rxData, tok, len);
+            rxData += len;
+            rxLen += len;
+            tok = strtok(NULL, "\r\n");
+        }
+    }
+    module_i9603n_flush(irid_buf_rx);
+    return rxLen;
+}
+
+uint16_t i9603n_read_model(uint8_t *rxData)
+{
+    uint8_t *cmd = "AT+GMM\r";
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint16_t rxLen = 0;
+    uint16_t len = 0;
+
+    module_i9603n_send(cmd);
+    result = module_i9603n_read_AT(&len);
+
+    if (result == I9603N_RESULT_OK)
+    {
+        uint8_t *lData = NULL;
+        if (irid_buf_rx[0] == 'A' && irid_buf_rx[1] == 'T')
+        {
+            uint16_t i=0;
+            while (irid_buf_rx[i]!='\n' && i<300)
+            {
+                i++;
+            }
+            lData = &irid_buf_rx[i+1];
+        }
+        else
+        {
+            lData = &irid_buf_rx[0];
+        }
+
+        char *tok = strtok(lData, "\r\n");
+        while (tok !=NULL)
+        {
+            if (strcmp(tok,"OK")==0)
+            {
+                break;
+            }
+            len = strlen(tok);
+            strncpy (rxData, tok, len);
+            rxData += len;
+            rxLen += len;
+            tok = strtok(NULL, "\r\n");
+        }
+    }
+    module_i9603n_flush(irid_buf_rx);
+    return rxLen;
+}
+
+uint16_t i9603n_read_revision(uint8_t *rxData)
+{
+    uint8_t *cmd = "AT+CGMR\r";
+    uint16_t rxLen = 0;
+    uint16_t len = 0;
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+
+    module_i9603n_send(cmd);
+    result = module_i9603n_read_AT(&len);
+
+    if (result == I9603N_RESULT_OK)
+    {
+        uint8_t *lData = NULL;
+        if (irid_buf_rx[0] == 'A' && irid_buf_rx[1] == 'T')
+        {
+            uint16_t i=0;
+            while (irid_buf_rx[i]!='\n' && i<300)
+            {
+                i++;
+            }
+            lData = &irid_buf_rx[i+1];
+        }
+        else
+        {
+            lData = &irid_buf_rx[0];
+        }
+
+        char *tok = strtok(lData, "\r");
+        while (tok !=NULL)
+        {
+            if (strcmp(tok,"\nOK")==0)
+            {
+                break;
+            }
+            len = strlen(tok);
+            strncpy (rxData, tok, len);
+            rxData += len;
+            rxLen += len;
+            tok = strtok(NULL, "\r");
+        }
+    }
+    module_i9603n_flush(irid_buf_rx);
+    return rxLen;
+}
 
 //*****************************************************************************
 //
@@ -189,24 +698,21 @@ uint16_t I9603N_read_incoming_msg(uint8_t *msg, uint8_t len)
 //
 //*****************************************************************************
 
-static bool module_i9603_power_on(void)
+static void module_i9603_power_on(void)
 {
 	bool retVal = false;
-
 	retVal = artemis_sc_power_startup();
-
-	if (retVal){
+	if (retVal)
+    {
 		artemis_i9603n_power_on();
+        am_util_delay_ms(500);
 	}
-
 }
-
 
 static void module_i9603_power_off(void)
 {
     artemis_sc_power_off();
 }
-
 
 static bool module_i9603_attempt_network_connection(uint8_t attempts, uint16_t attempt_delay_us)
 {
@@ -225,15 +731,13 @@ static bool module_i9603_attempt_network_connection(uint8_t attempts, uint16_t a
         am_hal_systick_delay_us(attempt_delay_us);
         #endif
     }
-    
-    
-
     return retVal;
 }
 
 static bool module_i9603_check_net_available(void)
 {
     bool retVal = false;
+
     if(artemis_i9603n_is_network_available())
     {
         retVal = true;
@@ -288,88 +792,374 @@ static uint16_t module_i9603n_send_packet(
         default:
             break;  
     }
-    
 }   
 
-static bool module_i9603n_send(uint8_t *msg, uint16_t len)
+static uint16_t module_i603n_receive(uint8_t *rxData)
 {
-    artemis_i9603n_send(msg, len);
+    uint16_t len = artemis_i9603n_receive(rxData);
+    return len;
 }
 
-STATIC i9603n_result_t module_i9603n_read_at(void)
+static void module_i9603n_send(uint8_t *txData)
+{
+    artemis_i9603n_send(txData, strlen((char*)txData));
+}
+
+static bool module_i9603n_AT_check(void)
 {
     i9603n_result_t result = I9603N_RESULT_FAIL;
+    bool ret = false;
+    module_i9603n_send("AT\r");
+    uint16_t len = 0;
+    result = module_i9603n_read_AT(&len);
+    if (result == I9603N_RESULT_OK) { ret = true; }
+    else { ret = false; }
+    module_i9603n_flush(irid_buf_rx);
+    return ret;
+}
 
-    uint16_t buf_len_remaining = I9603N_BUFFER_SIZE;
+static bool module_i9603n_echo_off(void)
+{
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    bool ret = false;
+    module_i9603n_send("ATE0\r");
+    uint16_t len = 0;
+    result = module_i9603n_read_AT(&len);
+    if (result == I9603N_RESULT_OK) { ret = true; }
+    else { ret = false; }
+    module_i9603n_flush(irid_buf_rx);
+    return ret;
+}
+
+static bool module_i9603n_echo_on(void)
+{
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    bool ret = false;
+    module_i9603n_send("ATE1\r");
+    uint16_t len = 0;
+    result = module_i9603n_read_AT(&len);
+    if (result == I9603N_RESULT_OK) { ret = true; }
+    else { ret = false; }
+    module_i9603n_flush(irid_buf_rx);
+    return ret;
+}
+
+static void module_i9603n_flush(uint8_t *buff)
+{
+    uint16_t len = strlen(buff)+1;
+    for (uint16_t i=0; i<len; i++)
+    {
+        buff[i] = 0;
+    }
+}
+
+static bool module_i9603n_clear_MOMSN(void)
+{
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint8_t rxData[8] = {0};
+    uint16_t len = 0;
+
+    len = i9603n_status(rxData);
+    if (len > 0)
+    {
+        if (rxData[1] == 0)
+        {
+            return true;
+        }
+        else if (rxData[1] > 0)
+        {
+            uint8_t *cmd = "AT+SBDC\r";
+
+            module_i9603n_send(cmd);
+            result = module_i9603n_read_AT(&len);
+            if (result == I9603N_RESULT_OK)
+            {
+                return true;
+            }
+        }
+        else
+        {
+            // handle this
+            return false;
+        }
+    }
+    else
+    {
+        // handle this
+        return false;
+    }
+}
+
+static bool module_i9603n_clear_oBuff(void)
+{
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint8_t rxData[8] = {0};
+    uint16_t len = 0;
+
+    len = i9603n_status(rxData);
+    if (len > 0)
+    {
+        if (rxData[0] == 0)
+        {
+            return true;
+        }
+        else if (rxData[0] == 1)
+        {
+            uint8_t *cmd = "AT+SBDD0\r";
+
+            module_i9603n_send(cmd);
+            result = module_i9603n_read_AT(&len);
+            if (result == I9603N_RESULT_OK)
+            {
+                return true;
+            }
+        }
+        else
+        {
+            // handle this
+            return false;
+        }
+    }
+    else
+    {
+        // handle this
+        return false;
+    }
+}
+
+static bool module_i9603n_clear_iBuff(void)
+{
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint8_t rxData[8] = {0};
+    uint16_t len = 0;
+
+    len = i9603n_status(rxData);
+    if (len > 0)
+    {
+        if (rxData[2] == 0)
+        {
+            return true;
+        }
+        else if (rxData[2] == 1)
+        {
+            uint8_t *cmd = "AT+SBDD1\r";
+
+            module_i9603n_send(cmd);
+            result = module_i9603n_read_AT(&len);
+            if (result == I9603N_RESULT_OK)
+            {
+                return true;
+            }
+        }
+        else
+        {
+            // handle this
+            return false;
+        }
+    }
+    else
+    {
+        // handle this
+        return false;
+    }
+}
+
+static uint16_t parse_data(uint8_t *inData, uint8_t *outData)
+{
+    uint16_t rxLen=0;
+    uint16_t len = 0;
+    int16_t number = 0;
+    bool negative = false;
+    uint8_t *lData = NULL;
+    uint8_t buff[300] = {0};
+
+    memcpy(buff, inData, strlen(inData)+1);
+
+    if (buff[0] == 'A' && buff[1] == 'T')
+    {
+        uint16_t i=0;
+        while (buff[i]!='\n' && i<312)
+        {
+            i++;
+        }
+        lData = &buff[i+1];
+    }
+    else
+    {
+        lData = &buff[0];
+    }
+
+    // Debug
+    //am_util_stdio_printf("Received String = ");
+    //for (uint8_t i=0; lData[i]!='\0'; i++)
+    //{
+    //    am_util_stdio_printf("%c", lData[i]);
+    //}
+    //am_util_stdio_printf("\n");
+
+    char *o_tok = strtok(lData, "\r\n");
+    while (o_tok !=NULL)
+    {
+        if (strcmp(o_tok,"OK")==0)
+        {
+            break;
+        }
+        char *i_tok = strtok(o_tok, ":");
+        while (i_tok != NULL)
+        {
+            if (i_tok[0] != '+')
+            {
+                len = strlen(i_tok);
+                for (uint16_t i=0; i<len+1; i++)
+                {
+                    if ( (i_tok[i] == ',')  || (i_tok[i] == '\0'))
+                    {
+                        outData[rxLen] = number;
+                        rxLen++;
+                        number = 0;
+                    }
+                    else if ( (i_tok[i] == ' ') )
+                    {
+                        // do nothing
+                    }
+                    else
+                    {
+                        if ( i_tok[i] == '-')
+                        {
+                            negative = true;
+                        }
+                        else
+                        {
+                            number = number * 10 + (i_tok[i] - 48) ;
+                            if (negative)
+                            {
+                                number *= -1 ;
+                                negative = false;
+                            }
+                        }
+                    }
+                }
+            }
+            i_tok = strtok(NULL, ":");
+        }
+        o_tok = strtok(NULL, "\r\n");
+    }
+    return rxLen;
+}
+
+static int16_t parse_AT(uint8_t *rxData, uint8_t *pattern, uint16_t len)
+{
+    int16_t pos = -1;
+    uint16_t i, j, k = 0;
+    uint16_t rxLen = len;
+    uint8_t pattLen = strlen((char*)pattern);
+
+    if (pattLen > rxLen)
+    {
+        return -1;
+    }
+
+    for (i=0; i<=(rxLen-pattLen); i++)
+    {
+        pos = k = i;
+        for (j=0; j<pattLen; j++)
+        {
+            if (pattern[j] == rxData[k])
+            {
+                k++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        if (j == pattLen)
+        {
+            return pos;
+        }
+    }
+    return -1;
+}
+
+static i9603n_result_t module_i9603n_read_AT(uint16_t *len)
+{
+    i9603n_result_t result = I9603N_RESULT_FAIL;
     uint16_t msg_len = 0;
-    uint16_t buf_idx = 0;
-    uint16_t total_len =0;
-    uint8_t *pStart = &irid_buf[0];
-
-    // msg_len = artemis_i9603n_receive(&irid_buf[buf_idx], buf_len_remaining);
-
+    uint16_t rem_len = 0;
+    char *pStart = &irid_buf_rx[0];
+    uint8_t remBuff[64] = {0};
     bool contFlag = true;
-    while(contFlag)
-    {   
-        am_util_stdio_printf("buf_idx=%u\n", buf_idx);
-        msg_len = artemis_i9603n_receive(&irid_buf[buf_idx], buf_len_remaining);
-        total_len += msg_len;
+    uint32_t wait = 0;
 
-        am_util_stdio_printf("%s\n", irid_buf);
+    while(contFlag && wait < 400000)
+    {
+        msg_len = artemis_i9603n_receive(irid_buf_rx);
+
         if(msg_len > 0)
-        {   
+        {
+            ///* Debug */
+            //for (uint16_t i=0; i<msg_len; i++)
+            //{
+            //    am_util_stdio_printf("0x%02X ", pStart[i]);
+            //}
+            //am_util_stdio_printf("\n");
+            //am_util_stdio_printf("msg_len = %i, rem_len = %i\n", msg_len, rem_len);
+
             do{
-                if(strncmp(pStart, "OK\r\n", 4) == 0)
+                if(parse_AT(pStart, "OK\r\n", msg_len+rem_len) != -1)
                 {
                     result = I9603N_RESULT_OK;
-                } else if(strncmp(pStart, "ERROR\r\n", 7)==0)
+                }
+                else if(parse_AT(pStart, "ERROR\r\n", msg_len+rem_len) != -1)
                 {
                     result = I9603N_RESULT_ERROR;
-                } else if(strncmp(pStart, "READY\r\n", 7)==0)
+                }
+                else if(parse_AT(pStart, "READY\r\n", msg_len+rem_len) != -1)
                 {
                     result = I9603N_RESULT_READY;
-                } else if(strncmp(pStart, "HARDWARE FAILURE\r\n", 18)==0)
+                }
+                else if(parse_AT(pStart, "HARDWARE FAILURE\r\n", msg_len+rem_len) != -1)
                 {
                     result = I9603N_RESULT_HARDWARE_FAILURE;
-                } else if(strncmp(pStart, "SBDRING\r\n", 9) == 0)
+                }
+                else if(parse_AT(pStart, "SBDRING\r\n", msg_len+rem_len) != -1)
                 {
                     result = I9603N_RESULT_SBD_RING;
                 }
 
                 if(result == I9603N_RESULT_FAIL)
                 {
-                    am_util_stdio_printf("total_len=%u\n", total_len);
-                    am_util_stdio_printf("before loop loc= %p\n", pStart);
-                    for(uint16_t i=0; i<total_len; i++)
+                    rem_len = artemis_i9603n_receive(remBuff);
+                    if (rem_len > 0)
                     {
-                        printf("%u ", i);
-                        if(pStart[i] == '\r' && pStart[i+1] == '\n')
+                        for (uint16_t i=0; i<rem_len; i++)
                         {
-                            pStart += (i + 2);
-                            total_len -= (i+2);
-                        } else if(pStart[i] == '\n')
-                        {
-                            pStart += (i+1);
-                            total_len -= (i+1);
+                            irid_buf_rx[msg_len+i] = remBuff[i];
+                            //am_util_stdio_printf("0x%02X ", pStart[msg_len+i]);
                         }
+
+                        ///* Debug */
+                        //am_util_stdio_printf("\n");
+                        //for (uint16_t i=0; i<rem_len+msg_len; i++)
+                        //{
+                        //    am_util_stdio_printf("%c", pStart[i]);
+                        //    //am_util_stdio_printf("%c", irid_buf_rx[i]);
+                        //    //am_util_stdio_printf("%c", remBuff[i]);
+                        //}
+                        //am_util_stdio_printf("\n");
                     }
-                    am_util_stdio_printf("after loop loc= %p\n", pStart);
-                } else {
-                    contFlag = false;
+                    wait++;
                 }
-            }while(result == I9603N_RESULT_FAIL);
+                else
+                {
+                    contFlag = false;
+                    wait = 0;
+                }
+                wait++;
+            } while(result == I9603N_RESULT_FAIL && wait < 5000);
         }
-
-        buf_idx += msg_len;
+        am_hal_systick_delay_us(50);
     }
-    
-
-   
-    
+    *len = msg_len+rem_len;
     return result;
 }
-
-
-
-
-

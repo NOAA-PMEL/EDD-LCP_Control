@@ -66,9 +66,6 @@ typedef enum ei9603n_result_t
 } i9603n_result_t;
 
 
-
-
-
 /************************************************************************
 *					GLOBAL FUNCTION PROTOTYPES
 ************************************************************************/
@@ -76,10 +73,21 @@ typedef enum ei9603n_result_t
 void i9603n_initialize(void);
 void i9603n_on(void);
 void i9603n_off(void);
-bool i9603n_send_msg(uint8_t *msg, uint16_t len);
-uint16_t i9603n_read_msg(uint8_t *msg, uint8_t len);
-bool i9603n_send_data(uint8_t *msg, uint16_t len);
 
+uint8_t i9603n_status(uint8_t *rxData);
+uint8_t i9603n_signal_quality(uint8_t *rxData);
+uint16_t i9603n_send_AT_cmd(uint8_t *cmd, uint8_t *rxData);
+
+uint16_t i9603n_read_imei(uint8_t *rxData);
+uint16_t i9603n_read_model(uint8_t *rxData);
+uint16_t i9603n_read_revision(uint8_t *rxData);
+
+bool i9603n_send_text(char *txText);
+bool i9603n_send_data(uint8_t *txData);
+uint16_t i9603n_read_text(char *rxText);
+uint16_t i9603n_read_data(uint8_t *rxData);
+uint16_t i9603n_test_transfer(uint8_t *rxData);
+uint8_t i9603n_initiate_transfer(uint8_t *rxData);
 
 //#ifndef TEST
 ////*****************************************************************************
@@ -92,6 +100,6 @@ bool i9603n_send_data(uint8_t *msg, uint16_t len);
 //static bool module_i9603n_check_net_available(void);
 //static bool module_i9603n_send(uint8_t *msg, uint16_t len);
 //STATIC i9603n_result_t module_i9603n_read_at(void);
-//#endif 
+//#endif
 
-#endif // UBLOX_H
+#endif // I9603N_H
