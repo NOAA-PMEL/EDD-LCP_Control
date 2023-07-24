@@ -494,7 +494,7 @@ void artemis_max14830_gpio_configure_output(uint8_t pin, eMAX14830_GPIO_Output_t
   uint8_t port = module_max14830_port_from_pin(pin);
   uint8_t data;
  
-  module_max14830_Read(port, MAX14830_REG_GPIOCONFIG, 1, &data);
+  module_max14830_Read(port, MAX14830_REG_GPIOCONFIG, &data, 1);
   /** Set to output */
   data |= MAX14830_GPIO_PIN_TO_BIT(pin);
   
@@ -516,7 +516,7 @@ void artemis_max14830_gpio_set(uint8_t pin)
 {
   uint8_t port = module_max14830_port_from_pin(pin);  
   uint8_t data;
-  module_max14830_Read(port, MAX14830_REG_GPIODATA, 1, &data);
+  module_max14830_Read(port, MAX14830_REG_GPIODATA, &data, 1);
   data |= MAX14830_GPIO_PIN_TO_BIT(pin);
   module_max14830_Write(
                       port,  
@@ -530,7 +530,7 @@ void artemis_max14830_gpio_clear(uint8_t pin)
 {
   uint8_t port = module_max14830_port_from_pin(pin);
   uint8_t data;
-  module_max14830_Read(port, MAX14830_REG_GPIODATA, 1, &data);
+  module_max14830_Read(port, MAX14830_REG_GPIODATA, &data, 1);
   data &= ~MAX14830_GPIO_PIN_TO_BIT(pin);
   module_max14830_Write(
                       port,  
