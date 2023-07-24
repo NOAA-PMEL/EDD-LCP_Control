@@ -247,6 +247,7 @@ void K9lx_init(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudRate)
 	/** Read the module Firmware version, P-Mode, serial number, Active channels */ 
 	module_k9lx_device_info(port);
 	//K9lx_power_off();
+    am_util_stdio_printf("K9LX init Done\n");
 }
 	
 void K9lx_power_on(void)
@@ -337,11 +338,11 @@ static float module_k9lx_convert_pressure(uint32_t u32Pressure)
 {
     if(u32Pressure < 16384)
     {
-        u32Pressure = 0;
+    u32Pressure = 0;
     }
     else
     {
-        u32Pressure -= 16384;
+    u32Pressure -= 16384;
     }
     //u32Pressure -= 16384;
     //
@@ -363,41 +364,41 @@ static float module_k9lx_convert_temperature(float temperature_c)
 
 //static bool module_k9lx_read_status(void)
 //{
-	//artemis_stream_t rxstream = {0};
-	//artemis_stream_setbuffer(&rxstream, module.rxbuffer, K9LX_BUFFER_LENGTH);
-	//
-	//artemis_i2c_t *i2c = &module.i2c;
-	//artemis_i2c_receive(i2c, true, &rxstream, 1);
-	//
-	//uint8_t data;
-	//artemis_stream_get(&rxstream, &data);
-	//data = data & K9LX_STATUS_BIT;
-	//return data;
+//    artemis_stream_t rxstream = {0};
+//    artemis_stream_setbuffer(&rxstream, module.rxbuffer, K9LX_BUFFER_LENGTH);
+//
+//    artemis_i2c_t *i2c = &module.i2c;
+//    artemis_i2c_receive(i2c, true, &rxstream, 1);
+//
+//    uint8_t data;
+//    artemis_stream_get(&rxstream, &data);
+//    data = data & K9LX_STATUS_BIT;
+//    return data;
 //}
 
 //static int32_t module_k9lx_read_with_status(artemis_i2c_t *i2c, artemis_stream_t *rxstream, uint32_t numBytes, uint32_t attempts)
 //{
-//	int32_t result = -1;
-//	uint8_t temp;
+//    int32_t result = -1;
+//    uint8_t temp;
 //
-//	do{
-//		artemis_stream_reset(rxstream);
-//		artemis_i2c_receive(i2c, true, rxstream, numBytes);
-//		artemis_stream_get(rxstream, &temp);
+//    do{
+//        artemis_stream_reset(rxstream);
+//        artemis_i2c_receive(i2c, true, rxstream, numBytes);
+//        artemis_stream_get(rxstream, &temp);
 //
-//	}while((temp & K9LX_STATUS_BIT) && (--attempts > 0));
+//    }while((temp & K9LX_STATUS_BIT) && (--attempts > 0));
 //
-//	//printf("%u, %ul\n", temp & K9LX_STATUS_BIT, attempts);
+//    //printf("%u, %ul\n", temp & K9LX_STATUS_BIT, attempts);
 //
-//	if( !(temp & K9LX_STATUS_BIT))
-//	{
-//		result = 0;
-//	}
-//	return result;
+//    if( !(temp & K9LX_STATUS_BIT))
+//    {
+//        result = 0;
+//    }
+//    return result;
 //}
 
-static int8_t module_k9lx_data_integrity (uint8_t *Data, uint8_t len){
-
+static int8_t module_k9lx_data_integrity (uint8_t *Data, uint8_t len)
+{
     /*	check received data's Function's code
      *	7th bit of second byte will tell the error has been received
      *	third byte would be the error code, follow the MODBUS communication protocol v3.7
@@ -530,22 +531,23 @@ static void module_k9lx_device_info(uint8_t port)
 
     //ARTEMIS_DEBUG_PRINTF("\nPressure : ");
     //ret = module_k9lx_read_reg(port, K9LX_FL_P1, 2, pr);
-    //if (ret == 0) {
-    //	for (uint8_t i=0; i<4; i++){
-    //		pressure_bar.u[3-i] = pr[i];
-    //	}
-    //	ARTEMIS_DEBUG_PRINTF("%0.5f bar", pressure_bar.f);
+    //if (ret == 0)
+    //{
+    //    for (uint8_t i=0; i<4; i++)
+    //    {
+    //        pressure_bar.u[3-i] = pr[i];
+    //    }
+    //    ARTEMIS_DEBUG_PRINTF("%0.5f bar", pressure_bar.f);
     //}
-
     //ARTEMIS_DEBUG_PRINTF("\nTemperature : ");
     //ret = module_k9lx_read_reg(port, K9LX_FL_TOB1, 2, tp);
     //if (ret == 0) {
-    //	for (uint8_t i=0; i<4; i++){
-    //		temperature_c.u[3-i] = tp[i];
-    //	}
-    //	ARTEMIS_DEBUG_PRINTF("%0.5f\n", temperature_c.f);
+    //    for (uint8_t i=0; i<4; i++)
+    //    {
+    //        temperature_c.u[3-i] = tp[i];
+    //    }
+    //    ARTEMIS_DEBUG_PRINTF("%0.5f\n", temperature_c.f);
     //}
-
 
     /* 32-bit floating point , access P and T in one cycle 8 bytes */
     ARTEMIS_DEBUG_PRINTF("\n\tPressure\t: ");
@@ -582,6 +584,4 @@ static void module_k9lx_device_info(uint8_t port)
 
     //am_util_delay_ms(100);
     //module_k9lx_read_reg(port, K9LX_FIRM_VER1, 1, firmware1);
-
 }
-

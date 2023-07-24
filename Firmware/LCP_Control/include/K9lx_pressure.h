@@ -1,4 +1,4 @@
-/**! @file artemis_k9lx.h
+/**! @file K9lx_pressure.h
  * @brief Maxim SPI-to-UART Converter
  *
  * @author Basharat Martin basharat.martin@noaa.gov
@@ -20,6 +20,7 @@
 #define K9LX_H_PRESSURE
 
 #include "stdint.h"
+#include "artemis_max14830.h"
 
 #ifdef __cplusplus
 extern "C" {
