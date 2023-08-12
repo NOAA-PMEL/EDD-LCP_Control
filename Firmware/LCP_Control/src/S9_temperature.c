@@ -22,6 +22,7 @@
 #include "am_mcu_apollo.h"
 #include "am_bsp.h"
 #include "am_util.h"
+#include "string.h"
 
 //*****************************************************************************
 //
@@ -55,157 +56,256 @@ static sS9_t *pS9 = &s9;
 
 STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p);
 STATIC void _parse_version(char *data, sS9_t *p, uint8_t rxLen);
+STATIC int16_t _parse_response(uint8_t *rData, uint8_t *pattern, uint16_t len);
+STATIC S9_result_t receive_response(uint8_t *rData, uint8_t *len);
+STATIC void _module_s9_stop_sampling(void);
 
-//void S9T_init( const e_uart_t port, const am_hal_gpio_pincfg_t *power, const uint32_t power_pin)
-void S9T_init(const e_uart_t port, uint32_t baudrate)
+void S9T_init(S9_init_param *p)
 {
+    /** Default Buadrate */
+    pS9->device.uart.port = p->port;
+    pS9->device.uart.baudrate = p->baudrate;
 
-	/** Default Buadrate */
-	pS9->device.uart.baudrate = baudrate;
+    /** Attach values to struct */
+    pS9->device.power.pin = p->pin_config;
+    pS9->device.power.pin_number = p->pin_number;
 
-	/** Attach values to struct */
-	pS9->device.power.pin = (am_hal_gpio_pincfg_t*)&g_AM_BSP_GPIO_COM0_POWER_PIN;
-	pS9->device.power.pin_number = AM_BSP_GPIO_COM0_POWER_PIN;
+    /** Initialize the COM Port Power Pin */
+    am_hal_gpio_pinconfig(pS9->device.power.pin_number, *pS9->device.power.pin);
 
-	pS9->device.uart.port = port;
+    /* set the baudrate */
+    artemis_max14830_Set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
 
-	/** Initialize the COM Port Power Pin */
-	am_hal_gpio_pinconfig(pS9->device.power.pin_number, *pS9->device.power.pin);// g_LCP_BSP_COM0_POWER_ON);
-	S9T_OFF();
-	S9T_ON();
+    /* turn on the module*/
+    S9T_ON();
 
-	artemis_max14830_Set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
-	artemis_max14830_UART_Write (pS9->device.uart.port, (uint8_t*)"stop\r", 5);
+    /* stop sampling*/
+    _module_s9_stop_sampling();
 
-	// fetch device info
-	S9T_dev_info();
+    // fetch device info, if required
+    S9T_dev_info();
+
+    /* turn off the module*/
+    S9T_OFF();
 }
 
-void S9T_dev_info(void){
+STATIC void _module_s9_stop_sampling(void)
+{
+    S9_result_t result = S9_RESULT_FAIL;
+    char sampleStr[12];
+    uint8_t rxLen = 0;
+    artemis_max14830_UART_Write (pS9->device.uart.port, (uint8_t*)"stop\r", 5);
+    result = receive_response(sampleStr, &rxLen);
+    if (result == S9_RESULT_OK)
+    {
+        /* Debug */
+        ARTEMIS_DEBUG_PRINTF("S9 : Sampling Stopped\n");
+    }
+    else
+    {
+        /* Debug */
+        ARTEMIS_DEBUG_PRINTF("S9 : Sampling did not stop\n");
+    }
+}
 
-	char verStr[256] = {0};
-	uint8_t rxLen = 0;
-	uint8_t i=0;
+void S9T_dev_info(void)
+{
+    S9_result_t result = S9_RESULT_FAIL;
+    char verStr[256] = {0};
+    uint8_t rxLen = 0;
+    uint8_t i=0;
 
-	artemis_max14830_UART_Write (pS9->device.uart.port, "ver\r", 4);
-	artemis_max14830_UART_Read (pS9->device.uart.port, verStr, &rxLen);
+    artemis_max14830_UART_Write (pS9->device.uart.port, "ver\r", 4);
+    //artemis_max14830_UART_Read (pS9->device.uart.port, verStr, &rxLen);
 
-	// parse the return data
-	_parse_version(verStr, pS9, rxLen);
+    result = receive_response(verStr, &rxLen);
+    if (result == S9_RESULT_OK)
+    {
+        /* Debug */
+        //ARTEMIS_DEBUG_PRINTF("S9 : Sampling Stopped\n");
 
-	// print pS9 structure 
-	ARTEMIS_DEBUG_PRINTF("\nS9 Temperature Sensor\n");
-	ARTEMIS_DEBUG_PRINTF("*****************************\n");
+        // parse the return data
+        _parse_version(verStr, pS9, rxLen);
 
-	// MID
-	ARTEMIS_DEBUG_PRINTF("\tMID\t= ");
-	for (i=0; i<8; i++){
-		ARTEMIS_DEBUG_PRINTF("%c", pS9->info.MID[i]);
-	}
-	ARTEMIS_DEBUG_PRINTF("\n");
+        // print pS9 structure
+        ARTEMIS_DEBUG_PRINTF("\nS9 Temperature Sensor\n");
+        ARTEMIS_DEBUG_PRINTF("*****************************\n");
 
-	// C0-C3, R0
-	ARTEMIS_DEBUG_PRINTF("\tC0\t= %.7f\n", pS9->info.C0);
-	ARTEMIS_DEBUG_PRINTF("\tC1\t= %.7f\n", pS9->info.C1);
-	ARTEMIS_DEBUG_PRINTF("\tC2\t= %.7f\n", pS9->info.C2);
-	ARTEMIS_DEBUG_PRINTF("\tC3\t= %.7f\n", pS9->info.C3);
-	ARTEMIS_DEBUG_PRINTF("\tR0\t= %.7f\n", pS9->info.R0);
-	ARTEMIS_DEBUG_PRINTF("\tAverage\t= %u\n", pS9->info.average);
+        // MID
+        ARTEMIS_DEBUG_PRINTF("\tMID\t= ");
+        for (i=0; i<8; i++){
+            ARTEMIS_DEBUG_PRINTF("%c", pS9->info.MID[i]);
+        }
+        ARTEMIS_DEBUG_PRINTF("\n");
 
-	// UID
-	ARTEMIS_DEBUG_PRINTF("\tUID\t= ");
-	for (i=0; i<32; i++){
-		ARTEMIS_DEBUG_PRINTF("%c", pS9->info.UID[i]);
-	}
-	ARTEMIS_DEBUG_PRINTF("\n");
+        // C0-C3, R0
+        ARTEMIS_DEBUG_PRINTF("\tC0\t= %.7f\n", pS9->info.C0);
+        ARTEMIS_DEBUG_PRINTF("\tC1\t= %.7f\n", pS9->info.C1);
+        ARTEMIS_DEBUG_PRINTF("\tC2\t= %.7f\n", pS9->info.C2);
+        ARTEMIS_DEBUG_PRINTF("\tC3\t= %.7f\n", pS9->info.C3);
+        ARTEMIS_DEBUG_PRINTF("\tR0\t= %.7f\n", pS9->info.R0);
+        ARTEMIS_DEBUG_PRINTF("\tAverage\t= %u\n", pS9->info.average);
 
-	// Sensor Name
-	ARTEMIS_DEBUG_PRINTF("\tFirmware Ver = ");
-	for (i=0; i<10; i++){
-		ARTEMIS_DEBUG_PRINTF("%c", pS9->info.sensor[i]);
-	}
-	ARTEMIS_DEBUG_PRINTF("\n");
+        // UID
+        ARTEMIS_DEBUG_PRINTF("\tUID\t= ");
+        for (i=0; i<32; i++){
+            ARTEMIS_DEBUG_PRINTF("%c", pS9->info.UID[i]);
+        }
+        ARTEMIS_DEBUG_PRINTF("\n");
 
-	//// Firmware Version
-	////ARTEMIS_DEBUG_PRINTF("%c", pS9->info.firmware.major);
-	////ARTEMIS_DEBUG_PRINTF("%c", pS9->info.firmware.minor);
-	////ARTEMIS_DEBUG_PRINTF("\n");
+        // Sensor Name
+        ARTEMIS_DEBUG_PRINTF("\tFirmware Ver = ");
+        for (i=0; i<10; i++){
+            ARTEMIS_DEBUG_PRINTF("%c", pS9->info.sensor[i]);
+        }
+        ARTEMIS_DEBUG_PRINTF("\n");
+        //// Firmware Version
+        ////ARTEMIS_DEBUG_PRINTF("%c", pS9->info.firmware.major);
+        ////ARTEMIS_DEBUG_PRINTF("%c", pS9->info.firmware.minor);
+        ////ARTEMIS_DEBUG_PRINTF("\n");
 
-	// Sensor Status
-	ARTEMIS_DEBUG_PRINTF("\tStatus\t=  ");
-	for (i=0; i<2; i++){
-		ARTEMIS_DEBUG_PRINTF("%c", pS9->info.status[i]);
-	}
-	ARTEMIS_DEBUG_PRINTF("\n");
+        // Sensor Status
+        ARTEMIS_DEBUG_PRINTF("\tStatus\t=  ");
+        for (i=0; i<2; i++){
+            ARTEMIS_DEBUG_PRINTF("%c", pS9->info.status[i]);
+        }
+        ARTEMIS_DEBUG_PRINTF("\n");
+    }
+    else
+    {
+        /* Debug */
+        ARTEMIS_DEBUG_PRINTF("S9 : Something went wrong\n");
+    }
 }
 
 void S9T_enable(void)
 {
-	/** Enable the Power Pin */
-	S9T_ON();
+    /** Enable the Power Pin */
+    S9T_ON();
 }
 
 void S9T_disable(void)
 {
-	/** Disable the Power Pin */
-	S9T_OFF();
+    /** Disable the Power Pin */
+    S9T_OFF();
 }
 
 void S9T_ON(void)
 {
-	am_hal_gpio_output_clear(pS9->device.power.pin_number);
-	am_hal_systick_delay_us(500000);
+    am_hal_gpio_output_clear(pS9->device.power.pin_number);
+    //am_hal_systick_delay_us(500000);
 }
 
 void S9T_OFF(void)
 {
-	am_hal_gpio_output_set(pS9->device.power.pin_number);
+    am_hal_gpio_output_set(pS9->device.power.pin_number);
 }
 
 float S9T_Read_T(void)
 {
-	float t;
-	S9T_Read(&t, NULL);
-	return t;
+    float t;
+    S9T_Read(&t, NULL);
+    return t;
 }
 
 float S9T_Read_R(void)
 {
-	float r;
-	S9T_Read(NULL, &r);
-	return r;
+    float r;
+    S9T_Read(NULL, &r);
+    return r;
 }
 
 float S9T_Read(float *t, float *r)
 {
-	//bsp_uart_puts(pS9->device.uart.port, "sample\r", 7);
-
-	char sampleStr[256];
-	uint8_t rxLen = 0;
+    //bsp_uart_puts(pS9->device.uart.port, "sample\r", 7);
+    char sampleStr[64];
+    uint16_t rxLen = 0;
+    S9_result_t result = S9_RESULT_FAIL;
 
 	artemis_max14830_UART_Write (pS9->device.uart.port, "sample\r", 7);
-	//am_hal_systick_delay_us(750000);
-	am_hal_systick_delay_us(1000000);
-	artemis_max14830_UART_Read (pS9->device.uart.port, sampleStr, &rxLen);
-	//bsp_uart_gets(pS9->device.uart.port, sampleStr, 256);
+    result = receive_response(sampleStr, &rxLen);
 
-	/** Find values */
-	uint8_t *pStr = strstr(sampleStr, "sample\r\n");
-	if(pStr != NULL)
-	{
-		pStr += 8;
-		uint8_t len = strlen(pStr);
-		module_s9_parse_msg(pStr, len, pS9);
-		//*t = pS9->temperature; // Tempearture in °C
-		*t = pS9->temperature * (9/5) + 32;  // convert to °F
-		*r = pS9->resistance;
-	}
-	else {
-		*t = NAN;
-		*r = NAN;
-	}
+    if (result == S9_RESULT_OK)
+    {
+        /* debug */
+        //ARTEMIS_DEBUG_PRINTF("result OK\n");
 
-	return 0;
+        char *ptok = sampleStr;
+        char *tok = strtok_r (ptok, "\r\n", &ptok);
+        char *last_token = NULL;
+        char sample[64] = {0};
+
+        while (tok != NULL)
+        {
+            if (strcmp(tok,"OK")==0)
+            {
+                uint8_t len = strlen(last_token)+1;
+                sample[len] = '\r';
+                for (uint8_t i=0; i<len; i++)
+                {
+                    sample[i]=  last_token[i];
+                }
+
+                module_s9_parse_msg(sample, len+1, pS9);
+                *t = pS9->temperature; // Tempearture in °C
+                //*t = pS9->temperature * (9/5) + 32;  // convert to °F
+                *r = pS9->resistance;
+                break;
+            }
+            last_token = tok;
+            tok = strtok_r(NULL, "\r\n", &ptok);
+        }
+    }
+    else
+    {
+        /* Debug */
+        //ARTEMIS_DEBUG_PRINTF("result NOT OK\n");
+    }
+	return 0.0;
+}
+
+/** @brief Parse S9 Temperature response
+ *
+ * The S9 Temperature sensor returns a data string
+ * which is a reponse with either OK or ERROR.
+ *
+ * @param *rData Pointer to data string
+ * @param *pattern to compare lies in the data string
+ * @param len length of string
+ */
+
+STATIC int16_t _parse_response(uint8_t *rData, uint8_t *pattern, uint16_t len)
+{
+    int16_t pos = -1;
+    uint16_t i, j, k = 0;
+    uint16_t rxLen = len;
+    uint8_t pattLen = strlen((char*)pattern);
+
+    if (pattLen > rxLen)
+    {
+        return -1;
+    }
+
+    for (i=0; i<=(rxLen-pattLen); i++)
+    {
+        pos = k = i;
+        for (j=0; j<pattLen; j++)
+        {
+            if (pattern[j] == rData[k])
+            {
+                k++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        if (j == pattLen)
+        {
+            return pos;
+        }
+    }
+    return -1;
 }
 
 /** @brief Parse S9 Temperature response
@@ -224,44 +324,43 @@ float S9T_Read(float *t, float *r)
 
 STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p)
 {
-	uint8_t comma, end;
-	uint8_t i;
+    uint8_t comma, end;
+    uint8_t i;
 
-	if(len <= 4)
-	{
-		p->temperature = NAN;
-		p->resistance = NAN;
-		return;
-	}
+    if(len <= 4)
+    {
+        p->temperature = NAN;
+        p->resistance = NAN;
+        return;
+    }
 
-	for(i=0;i<len;i++)
-	{
-		if(data[i] == ',')
-		{
-			comma = i;
-		}
-		else if(data[i] == '\r')
-		{
-			end = i;
-		}
-	}
+    for(i=0;i<len;i++)
+    {
+        if(data[i] == ',')
+        {
+            comma = i;
+        }
+        else if(data[i] == '\r')
+        {
+            end = i;
+        }
+    }
 
-	if(end <= comma)
-	{
-		p->temperature = NAN;
-		p->resistance = NAN;
-		return;
-	}
+    if(end <= comma)
+    {
+        p->temperature = NAN;
+        p->resistance = NAN;
+        return;
+    }
 
-	/* Copy Resistance */
-	char temp[32];
-	strncpy(temp, &data[0],comma);
-	p->resistance = atof(temp);
+    /* Copy Resistance */
+    char temp[32];
+    strncpy(temp, &data[0],comma);
+    p->resistance = atof(temp);
 
-	/* Copy Temperature */
-	strncpy(temp, &data[comma+1], end-comma);
-	p->temperature = atof(temp);
-
+    /* Copy Temperature */
+    strncpy(temp, &data[comma+1], end-comma);
+    p->temperature = atof(temp);
 }
 
 /** @brief Parse version info
@@ -289,99 +388,165 @@ STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p)
 
 STATIC void _parse_version(char *data, sS9_t *p, uint8_t rxLen)
 {
-	uint8_t i=0;
-	char temp[256];
-	float temp_f; 
+    uint8_t i=0;
+    char temp[256];
+    float temp_f;
 
-	strcpy(temp,data);
-	// printf("%s\n", temp);
-	char *tok;
+    strcpy(temp,data);
+    // printf("%s\n", temp);
+    char *tok;
 
-	/** @todo strtok needs RTOS case!!! */
-	/* Find MID */
-	tok = strtok(temp,"=");
-	tok = strtok(NULL, "\r");
-	strcpy(p->info.MID, tok);
+    /** @todo strtok needs RTOS case!!! */
+    /* Find MID */
+    tok = strtok(temp,"=");
+    tok = strtok(NULL, "\r");
+    strcpy(p->info.MID, tok);
 
-	/* Find C0 */
-	tok = strtok(NULL, "=");
-	tok = strtok(NULL, "\r");
-	temp_f = atof(tok);
-	p->info.C0 = temp_f;
+    /* Find C0 */
+    tok = strtok(NULL, "=");
+    tok = strtok(NULL, "\r");
+    temp_f = atof(tok);
+    p->info.C0 = temp_f;
 
-	/* Find C1 */
-	tok = strtok(NULL, "=");
-	tok = strtok(NULL, "\r");
-	p->info.C1 = atof(tok);
+    /* Find C1 */
+    tok = strtok(NULL, "=");
+    tok = strtok(NULL, "\r");
+    p->info.C1 = atof(tok);
 
-	/* Find C2 */
-	tok = strtok(NULL, "=");
-	tok = strtok(NULL, "\r");
-	p->info.C2 = atof(tok);
+    /* Find C2 */
+    tok = strtok(NULL, "=");
+    tok = strtok(NULL, "\r");
+    p->info.C2 = atof(tok);
 
-	/* Find C3 */
-	tok = strtok(NULL, "=");
-	tok = strtok(NULL, "\r");
-	p->info.C3 = atof(tok);
+    /* Find C3 */
+    tok = strtok(NULL, "=");
+    tok = strtok(NULL, "\r");
+    p->info.C3 = atof(tok);
 
-	/* Find R0 */
-	tok = strtok(NULL, "=");
-	tok = strtok(NULL, "\r");
-	p->info.R0 = atof(tok);
+    /* Find R0 */
+    tok = strtok(NULL, "=");
+    tok = strtok(NULL, "\r");
+    p->info.R0 = atof(tok);
 
-	/* Find Average number/value */
-	tok = strtok(NULL, "=");
-	tok = strtok(NULL, "\r");
-	p->info.average = atof(tok);
+    /* Find Average number/value */
+    tok = strtok(NULL, "=");
+    tok = strtok(NULL, "\r");
+    p->info.average = atof(tok);
 
-	/* Find UID */
-	tok = strtok(NULL, "=");
-	tok = strtok(NULL, "\r");
-	strcpy(p->info.UID, tok);
+    /* Find UID */
+    tok = strtok(NULL, "=");
+    tok = strtok(NULL, "\r");
+    strcpy(p->info.UID, tok);
 
-	//uint8_t len = strlen(tok);
-	//ARTEMIS_DEBUG_PRINTF("UID length = %u \n", len);
-	////uint8_t sub_val = 0;
-	//uint8_t temp_hex[32];
-	//memset(temp,0,32);
+    //uint8_t len = strlen(tok);
+    //ARTEMIS_DEBUG_PRINTF("UID length = %u \n", len);
+    ////uint8_t sub_val = 0;
+    //uint8_t temp_hex[32];
+    //memset(temp,0,32);
 
-	//for(i=0;i<len;i++)
-	//{
-	//    if( (tok[i] >= '0') && (tok[i] <= '9'))
-	//    {
-	//        temp_hex[i] = tok[i] - '0';
-	//    } else if ( (tok[i] >= 'A') && (tok[i] <= 'F'))
-	//    {
-	//        temp_hex[i] = tok[i] -'A' + 10;
-	//    } else {
-	//        /** @todo - Error condition */
-	//    }
-	//}
-	//i=0;
-	//uint8_t cnt =0;
-	//while(i < 32)
-	//{
-	//    p->info.UID[cnt] = temp_hex[i++] << 4;
-	//    p->info.UID[cnt] |= temp_hex[i++];
-	//    cnt++;
-	//}
+    //for(i=0;i<len;i++)
+    //{
+    //    if( (tok[i] >= '0') && (tok[i] <= '9'))
+    //    {
+    //        temp_hex[i] = tok[i] - '0';
+    //    } else if ( (tok[i] >= 'A') && (tok[i] <= 'F'))
+    //    {
+    //        temp_hex[i] = tok[i] -'A' + 10;
+    //    } else {
+    //        /** @todo - Error condition */
+    //    }
+    //}
+    //i=0;
+    //uint8_t cnt =0;
+    //while(i < 32)
+    //{
+    //    p->info.UID[cnt] = temp_hex[i++] << 4;
+    //    p->info.UID[cnt] |= temp_hex[i++];
+    //    cnt++;
+    //}
 
-	/* Find Sensor */
-	tok = strtok(NULL, "\r\n");
-	strcpy(p->info.sensor, tok);
+    /* Find Sensor */
+    tok = strtok(NULL, "\r\n");
+    strcpy(p->info.sensor, tok);
 
-	///** Find Firmware Major Version */
-	//tok = strtok(NULL, " ");
-	//tok = strtok(NULL, ".");
-	//p->info.firmware.major = (uint8_t) atoi(tok);
-	//ARTEMIS_DEBUG_PRINTF("Firmware major = %u\n", p->info.firmware.major);
+    ///** Find Firmware Major Version */
+    //tok = strtok(NULL, " ");
+    //tok = strtok(NULL, ".");
+    //p->info.firmware.major = (uint8_t) atoi(tok);
+    //ARTEMIS_DEBUG_PRINTF("Firmware major = %u\n", p->info.firmware.major);
 
-	///** Find Firmware Minor Version */
-	//tok = strtok(NULL, "\r");
-	//p->info.firmware.minor = (uint8_t) atoi(tok);
-	//ARTEMIS_DEBUG_PRINTF("Firmware minor = %u\n", p->info.firmware.minor);
+    ///** Find Firmware Minor Version */
+    //tok = strtok(NULL, "\r");
+    //p->info.firmware.minor = (uint8_t) atoi(tok);
+    //ARTEMIS_DEBUG_PRINTF("Firmware minor = %u\n", p->info.firmware.minor);
 
-	/** Find Status */
-	tok = strtok(NULL, "\r\n");
-	strcpy(p->info.status, tok);
+    /** Find Status */
+    tok = strtok(NULL, "\r\n");
+    strcpy(p->info.status, tok);
+}
+
+STATIC S9_result_t receive_response(uint8_t *rData, uint8_t *len)
+{
+    S9_result_t result = S9_RESULT_FAIL;
+    uint8_t msg_len = 0;
+    uint8_t rem_len = 0;
+    uint8_t lBuf[256] = {0};
+    bool contFlag = true;
+    uint32_t wait = 0;
+
+    // maximum wait cycles
+    while(contFlag && wait < 100000)
+    {
+	    artemis_max14830_UART_Read (pS9->device.uart.port, lBuf, &msg_len);
+
+        if(msg_len > 0)
+        {
+            for (uint16_t i=0; i<msg_len; i++)
+            {
+                rData[i] = lBuf[i];
+
+                /* Debug */
+	            //ARTEMIS_DEBUG_PRINTF("%c", lBuf[i]);
+            }
+
+            *len = msg_len;
+            do{
+                if(_parse_response(rData, "OK\r\n", *len) != -1)
+                {
+	                //ARTEMIS_DEBUG_PRINTF("\nTemp OK\n");
+                    result = S9_RESULT_OK;
+                }
+                else if(_parse_response(rData, "ERROR\r\n", *len) != -1)
+                {
+                    result = S9_RESULT_ERROR;
+                }
+                if(result == S9_RESULT_FAIL)
+                {
+	                artemis_max14830_UART_Read (pS9->device.uart.port, lBuf, &rem_len);
+                    if (rem_len > 0)
+                    {
+	                    //ARTEMIS_DEBUG_PRINTF("\nremaining Lenth happened = %u \n", rem_len);
+                        for (uint16_t i=0; i<rem_len; i++)
+                        {
+                            rData[*len+i] = lBuf[i];
+
+                            /* Debug */
+	                        //ARTEMIS_DEBUG_PRINTF("%c", lBuf[i]);
+                        }
+                        *len += rem_len;
+                    }
+                    wait++;
+                }
+                else
+                {
+                    contFlag = false;
+                    wait = 0;
+                }
+                wait++;
+                //am_hal_systick_delay_us(50);
+            } while(result == S9_RESULT_FAIL && wait < 50000);
+        }
+        //am_hal_systick_delay_us(50);
+    }
+    return result;
 }

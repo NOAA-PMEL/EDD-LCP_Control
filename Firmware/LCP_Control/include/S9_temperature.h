@@ -62,36 +62,58 @@
 //  
 //  
 //}sS9Uart_t;
-typedef struct {
-	float temperature;
-	float resistance;
-	struct {
-		char MID[8];
-		float C0;
-		float C1;
-		float C2;
-		float C3;
-		float R0;
-		uint8_t average;
-		uint8_t UID[32];
-		uint8_t sensor[10];
-		struct {
-			uint8_t major;
-			uint8_t minor;
-		}firmware;
-		char status[2];
-	}info;
-	struct {
-		struct {
-			am_hal_gpio_pincfg_t *pin;
-			uint32_t pin_number;
-		}power;
-		struct {
-			e_uart_t port;
-			uint32_t baudrate;
-		}uart;
-	}device;
+typedef struct
+{
+    float temperature;
+    float resistance;
+    struct
+    {
+        char MID[8];
+        float C0;
+        float C1;
+        float C2;
+        float C3;
+        float R0;
+        uint8_t average;
+        uint8_t UID[32];
+        uint8_t sensor[10];
+        struct
+        {
+            uint8_t major;
+            uint8_t minor;
+        }firmware;
+        char status[2];
+    }info;
+    struct
+    {
+        struct
+        {
+            const am_hal_gpio_pincfg_t *pin;
+            uint32_t pin_number;
+        }power;
+        struct
+        {
+            e_uart_t port;
+            uint32_t baudrate;
+        }uart;
+    }device;
+
 }sS9_t;
+
+typedef enum eS9_result_t
+{
+    S9_RESULT_FAIL,
+    S9_RESULT_OK,
+    S9_RESULT_ERROR
+} S9_result_t;
+
+typedef struct
+{
+    e_uart_t port;
+    uint32_t baudrate;
+    const am_hal_gpio_pincfg_t *pin_config;
+    uint32_t pin_number;
+} S9_init_param;
 
 
 /************************************************************************
@@ -108,8 +130,7 @@ typedef struct {
  * @return None
  * 
  */
-//void S9T_init( const e_uart_t port, const am_hal_gpio_pincfg_t *power, const uint32_t power_pin);
-void S9T_init(const e_uart_t port, uint32_t baudrate);
+void S9T_init(S9_init_param *p);
 /** @brief S9 Temp ON 
  * 
  * Turn the S9 Temperature Sensor ON
