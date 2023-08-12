@@ -169,40 +169,14 @@
 //
 //*****************************************************************************
 
-typedef uint8_t module_buffer_t[K9LX_BUFFER_LENGTH];
-typedef struct s_module_t
-{
-	module_buffer_t txbuffer;
-	module_buffer_t rxbuffer;
-	struct {
-		uint32_t pin;
-		am_hal_gpio_pincfg_t *pinConfig;
-	} power;
-
-	module_scaling_t scaling;
-	module_manufacturer_t manufacturer;
-
-} module_t;
-
-typedef struct s_k9lx_data_t
-{
-	float pressure;
-	float temperature;
-} k9lx_data_t;
-
-typedef union {
-	struct {
-		uint8_t u[4];
-	};
-	float f;
-} u32_to_float_t;
 
 //*****************************************************************************
 //
 // Static Variables
 //
 //*****************************************************************************
-static module_t module;
+static K9lx_t k9lx;
+static K9lx_t *pK9lx = &k9lx;
 
 //*****************************************************************************
 //
@@ -210,13 +184,7 @@ static module_t module;
 //
 //*****************************************************************************
 
-
-//*****************************************************************************
-//
-// Global Functions
-//
-//*****************************************************************************
-static void module_k9lx_read_sensor(k9lx_data_t *data);
+static void module_k9lx_read_sensor(K9lx_data_t *data);
 static float module_k9lx_convert_pressure(uint32_t u32Pressure);
 static float module_k9lx_convert_temperature(float Temperature_c);
 static bool module_k9lx_read_status(void);
@@ -225,39 +193,48 @@ static uint16_t module_k9lx_crc16 (uint8_t *crc_h, uint8_t *crc_l, uint8_t *pDat
 static int8_t module_k9lx_read_reg(uint8_t port, uint16_t reg_add, uint8_t reg_num, uint8_t *pData);
 static int8_t module_k9lx_data_integrity (uint8_t *Data, uint8_t len);
 
-void K9lx_init(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudRate)
+//*****************************************************************************
+//
+// Global Functions
+//
+//*****************************************************************************
+
+void K9lx_init(K9lx_init_param *p)
 {
-	eMAX14830_Baudrate_t br = baudRate;
-	/* set max port and baudrate */ 
-	artemis_max14830_Set_baudrate(port, br);
+    /** Default Buadrate */
+    pK9lx->device.uart.port = p->port;
+    pK9lx->device.uart.baudrate = p->baudrate;
 
-	module.power.pinConfig = (am_hal_gpio_pincfg_t*)&g_AM_BSP_GPIO_COM3_POWER_PIN;
-	module.power.pin = AM_BSP_GPIO_COM3_POWER_PIN;
+    /** Attach values to struct */
+    pK9lx->device.power.pin = p->pin_config;
+    pK9lx->device.power.pin_number = p->pin_number;
 
-	/** Initialize the COM Port Power Pin */
-	ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
+    /** Initialize the COM Port Power Pin */
+    am_hal_gpio_pinconfig(pK9lx->device.power.pin_number, *pK9lx->device.power.pin);
 
-	/** Turn K-9LX On */
-	K9lx_power_off();
-	K9lx_power_on();
+    /* set the baudrate */
+    artemis_max14830_Set_baudrate(pK9lx->device.uart.port, pK9lx->device.uart.baudrate);
 
-	/* wait for device to get initialized*/
-	am_util_delay_ms(500);
+    /** Turn K-9LX On */
+    K9lx_power_on();
 
-	/** Read the module Firmware version, P-Mode, serial number, Active channels */ 
-	module_k9lx_device_info(port);
-	//K9lx_power_off();
-    am_util_stdio_printf("K9LX init Done\n");
+    /* wait for device to get initialized*/
+    am_util_delay_ms(500);
+
+    /** Read the module Firmware version, P-Mode, serial number, Active channels */
+    module_k9lx_device_info(pK9lx->device.uart.port);
+    //am_util_stdio_printf("K9LX init Done\n");
+    K9lx_power_off();
 }
 	
 void K9lx_power_on(void)
 {
-	am_hal_gpio_output_clear(module.power.pin);
+    am_hal_gpio_output_clear(pK9lx->device.power.pin);
 }
 
 void K9lx_power_off(void)
 {
-	am_hal_gpio_output_set(module.power.pin);
+    am_hal_gpio_output_set(pK9lx->device.power.pin);
 }
 
 static uint16_t module_k9lx_crc16 (uint8_t *crc_h, uint8_t *crc_l, uint8_t *pData, uint8_t len){
@@ -295,7 +272,7 @@ static uint16_t module_k9lx_crc16 (uint8_t *crc_h, uint8_t *crc_l, uint8_t *pDat
 
 void K9lx_read(float *pressure, float *temperature)
 {
-    k9lx_data_t data;
+    K9lx_data_t data;
     module_k9lx_read_sensor(&data);
     *pressure = data.pressure;
     *temperature = data.temperature;
@@ -306,7 +283,7 @@ void K9lx_read(float *pressure, float *temperature)
 // Static Functions
 //
 //*****************************************************************************
-static void module_k9lx_read_sensor(k9lx_data_t *data)
+static void module_k9lx_read_sensor(K9lx_data_t *data)
 {
     uint8_t ret = 0;
     uint8_t pt[8] = {0};
@@ -349,16 +326,17 @@ static float module_k9lx_convert_pressure(uint32_t u32Pressure)
     //int32 pTemp = (int32_t)u32Pressure;
     //pTemp -= -16384;
     float fPressure =  (float) (u32Pressure);
-    fPressure *= module.scaling.diff;
+    fPressure *= pK9lx->scaling.diff;
     fPressure /= 32768;
-    fPressure += module.scaling.low;
+    fPressure += pK9lx->scaling.low;
 
     return fPressure;
 }
 
 static float module_k9lx_convert_temperature(float temperature_c)
 {
-    float temperature_f = temperature_c * (9/5) + 32 ;
+    //float temperature_f = temperature_c * (9/5) + 32 ;
+    float temperature_f = temperature_c;
     return temperature_f;
 }
 
@@ -491,12 +469,12 @@ static void module_k9lx_device_info(uint8_t port)
     uint32_t serial_nr = 0;
 
     uint8_t pr[4] = {0};
-    uint8_t tp[4] = {0};
+    //uint8_t tp[4] = {0};
     uint8_t pt[8] = {0};
 
-    k9lx_data_t values;
+    //K9lx_data_t values;
     u32_to_float_t pressure_bar;
-    u32_to_float_t pressure_pascal;
+    //u32_to_float_t pressure_pascal;
     u32_to_float_t temperature_c;
 
     int32_t pressure_p = 0;
@@ -513,7 +491,7 @@ static void module_k9lx_device_info(uint8_t port)
     {
         for (uint8_t i=0; i<4; i++)
         {
-            am_util_stdio_printf ("%u.", firmware[i]);
+            ARTEMIS_DEBUG_PRINTF("%u.", firmware[i]);
         }
     }
 
