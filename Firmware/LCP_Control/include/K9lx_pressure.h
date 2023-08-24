@@ -78,11 +78,11 @@ typedef struct s_module_t
     K9lx_manufacturer_t manufacturer;
 } K9lx_t;
 
-typedef struct s_k9lx_data_t
+typedef struct s_k9lx_data_pt
 {
     float pressure;
     float temperature;
-} K9lx_data_t;
+} K9lx_data_pt;
 
 typedef union
 {
@@ -96,7 +96,8 @@ typedef union
 void K9lx_init(K9lx_init_param *p);
 void K9lx_power_on(void);
 void K9lx_power_off(void);
-void K9lx_read(float *pressure, float *temperature);
+void K9lx_read_P(float *pressure);
+void K9lx_read_PT(float *pressure, float *temperature);
 
 #ifdef __cplusplus
 }

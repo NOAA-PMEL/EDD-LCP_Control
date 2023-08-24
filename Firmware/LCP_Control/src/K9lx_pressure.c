@@ -63,10 +63,10 @@
 // FreeRTOS include files.
 //
 //*****************************************************************************
-//#include "FreeRTOS.h"
-//#include "task.h"
-//#include "event_groups.h"
-//#include "semphr.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "event_groups.h"
+#include "semphr.h"
 
 //*****************************************************************************
 //
@@ -75,6 +75,7 @@
 //*****************************************************************************
 #include "buffer_c.h"
 #include "K9lx_pressure.h"
+#include "MAX14830.h"
 
 //*****************************************************************************
 //
@@ -183,15 +184,17 @@ static K9lx_t *pK9lx = &k9lx;
 // Static Function Prototypes
 //
 //*****************************************************************************
-
-static void module_k9lx_read_sensor(K9lx_data_t *data);
-static float module_k9lx_convert_pressure(uint32_t u32Pressure);
-static float module_k9lx_convert_temperature(float Temperature_c);
-static bool module_k9lx_read_status(void);
+static void module_k9lx_read_sensor_p(float *pressure);
+static void module_k9lx_read_sensor_pt(K9lx_data_pt *data);
 static void module_k9lx_device_info(uint8_t port);
 static uint16_t module_k9lx_crc16 (uint8_t *crc_h, uint8_t *crc_l, uint8_t *pData, uint8_t len);
 static int8_t module_k9lx_read_reg(uint8_t port, uint16_t reg_add, uint8_t reg_num, uint8_t *pData);
 static int8_t module_k9lx_data_integrity (uint8_t *Data, uint8_t len);
+
+/* Not Defined yet or not being used for the moment */
+static bool module_k9lx_read_status(void);
+static float module_k9lx_convert_pressure(uint32_t u32Pressure);
+static float module_k9lx_convert_temperature(float Temperature_c);
 
 //*****************************************************************************
 //
@@ -213,7 +216,11 @@ void K9lx_init(K9lx_init_param *p)
     am_hal_gpio_pinconfig(pK9lx->device.power.pin_number, *pK9lx->device.power.pin);
 
     /* set the baudrate */
-    artemis_max14830_Set_baudrate(pK9lx->device.uart.port, pK9lx->device.uart.baudrate);
+    // Polling-based
+    //artemis_max14830_Set_baudrate(pK9lx->device.uart.port, pK9lx->device.uart.baudrate);
+
+    // Interrupt-based
+    MAX14830_Set_baudrate(pK9lx->device.uart.port, pK9lx->device.uart.baudrate);
 
     /** Turn K-9LX On */
     K9lx_power_on();
@@ -223,7 +230,7 @@ void K9lx_init(K9lx_init_param *p)
 
     /** Read the module Firmware version, P-Mode, serial number, Active channels */
     module_k9lx_device_info(pK9lx->device.uart.port);
-    //am_util_stdio_printf("K9LX init Done\n");
+    am_util_stdio_printf("K9LX init Done\n");
     K9lx_power_off();
 }
 	
@@ -270,10 +277,17 @@ static uint16_t module_k9lx_crc16 (uint8_t *crc_h, uint8_t *crc_l, uint8_t *pDat
     return crc16 ;
 }
 
-void K9lx_read(float *pressure, float *temperature)
+void K9lx_read_P(float *pressure)
 {
-    K9lx_data_t data;
-    module_k9lx_read_sensor(&data);
+    float p;
+    module_k9lx_read_sensor_p(&p);
+    *pressure = p;
+}
+
+void K9lx_read_PT(float *pressure, float *temperature)
+{
+    K9lx_data_pt data;
+    module_k9lx_read_sensor_pt(&data);
     *pressure = data.pressure;
     *temperature = data.temperature;
 }
@@ -283,15 +297,33 @@ void K9lx_read(float *pressure, float *temperature)
 // Static Functions
 //
 //*****************************************************************************
-static void module_k9lx_read_sensor(K9lx_data_t *data)
+static void module_k9lx_read_sensor_p(float *pressure)
+{
+    uint8_t ret = 0;
+    uint8_t p[4] = {0};
+    u32_to_float_t pressure_bar;
+
+    ret = module_k9lx_read_reg(pK9lx->device.uart.port, K9LX_FL1_P1, 2, p);
+    if (ret == 0)
+    {
+        for (uint8_t i=0; i<4; i++){
+            pressure_bar.u[3-i] = p[i];
+        }
+    }
+
+    /** Convert the pressure */
+    //data->pressure = module_k9lx_convert_pressure(pressure_bar.f);
+    *pressure = pressure_bar.f;
+}
+
+static void module_k9lx_read_sensor_pt(K9lx_data_pt *data)
 {
     uint8_t ret = 0;
     uint8_t pt[8] = {0};
     u32_to_float_t pressure_bar;
     u32_to_float_t temperature_c;
 
-    // TODO: port = 3
-    ret = module_k9lx_read_reg(3, K9LX_FL1_P1, 4, pt);
+    ret = module_k9lx_read_reg(pK9lx->device.uart.port, K9LX_FL1_P1, 4, pt);
     if (ret == 0)
     {
         for (uint8_t i=0; i<4; i++){
@@ -306,9 +338,9 @@ static void module_k9lx_read_sensor(K9lx_data_t *data)
     //data->pressure = module_k9lx_convert_pressure(pressure_bar.f);
     data->pressure = pressure_bar.f;
 
-    /** Convert the temperature */
-    data->temperature = module_k9lx_convert_temperature(temperature_c.f);
-    //data->temperature = temperature_c.f;
+    /** Convert the temperature to Fahrenheit */
+    //data->temperature = module_k9lx_convert_temperature(temperature_c.f);
+    data->temperature = temperature_c.f;
 }
 
 static float module_k9lx_convert_pressure(uint32_t u32Pressure)
@@ -335,8 +367,7 @@ static float module_k9lx_convert_pressure(uint32_t u32Pressure)
 
 static float module_k9lx_convert_temperature(float temperature_c)
 {
-    //float temperature_f = temperature_c * (9/5) + 32 ;
-    float temperature_f = temperature_c;
+    float temperature_f = temperature_c * (9/5) + 32 ;
     return temperature_f;
 }
 
@@ -439,26 +470,61 @@ static int8_t module_k9lx_read_reg(uint8_t port, uint16_t reg_add, uint8_t reg_n
     cmd[6] = crc_l;
     cmd[7] = crc_h;
 
-    artemis_max14830_UART_Write(port, cmd, CMD_LENGTH);
-    artemis_max14830_UART_Read(port, rxData, &rxLen);
+
+    /*RTOS function, right now it's not functional :(*/
+    //MAX14830_UART_Write(port, cmd, CMD_LENGTH);
+
+    /* NON-RTOS*/
+    MAX14830_UART_Write_direct(port, cmd, CMD_LENGTH);
+
+    uint8_t len = 0;
+    uint8_t rData[16] = {0};
+
+    if (reg_num == 2)
+    {
+        /** expecting 9 bytes in response */
+        while (rxLen != 9)
+        {
+	        len = MAX14830_UART_Read (port, rData);
+            for (uint8_t i=0; i<len; i++)
+            {
+                rxData[i+rxLen] = rData[i];
+            }
+            rxLen += len;
+        }
+    }
+    else if (reg_num == 4)
+    {
+        /** expecting 13 bytes in response */
+        while (rxLen != 13)
+        {
+	        len = MAX14830_UART_Read (port, rData);
+            for (uint8_t i=0; i<len; i++)
+            {
+                rxData[i+rxLen] = rData[i];
+            }
+            rxLen += len;
+        }
+    }
+
+    /* Reading from artemis_max14830 functions */
+    //artemis_max14830_UART_Write(port, cmd, CMD_LENGTH);
+    //artemis_max14830_UART_Read(port, rxData, &rxLen);
 
     // check data integrity
     int8_t ret = module_k9lx_data_integrity (rxData,rxLen);
-
     if (ret == 0 && rxLen > 0)
     {
         for(uint8_t i=0; i<rxLen-5; i++)
         {
             pData[i] = rxData[i+3];
-            //am_util_stdio_printf ("%d ", pData[i]);
+            //ARTEMIS_DEBUG_PRINTF("%d ", pData[i]);
         }
     }
     else
     {
-        //am_util_stdio_printf ("Received ERROR (%d) at keller \n", ret);
+        ARTEMIS_DEBUG_PRINTF("\nReceived ERROR (%d) at keller \n", ret);
     }
-    //am_util_stdio_printf ("\n");
-
     return ret;
 }
 
@@ -559,7 +625,6 @@ static void module_k9lx_device_info(uint8_t port)
 
     ARTEMIS_DEBUG_PRINTF("\n");
     //am_util_delay_ms(1000);
-
     //am_util_delay_ms(100);
     //module_k9lx_read_reg(port, K9LX_FIRM_VER1, 1, firmware1);
 }
