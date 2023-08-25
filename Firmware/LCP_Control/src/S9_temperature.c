@@ -32,16 +32,17 @@
 #include "artemis_max14830.h"
 #include "artemis_debug.h"
 #include "artemis_stream.h"
+#include "MAX14830.h"
 
 //*****************************************************************************
 //
 // FreeRTOS include files.
 //
 //*****************************************************************************
-//#include "FreeRTOS.h"
-//#include "task.h"
-//#include "event_groups.h"
-//#include "semphr.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "event_groups.h"
+#include "semphr.h"
 
 //*****************************************************************************
 //
@@ -74,7 +75,8 @@ void S9T_init(S9_init_param *p)
     am_hal_gpio_pinconfig(pS9->device.power.pin_number, *pS9->device.power.pin);
 
     /* set the baudrate */
-    artemis_max14830_Set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
+    //artemis_max14830_Set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
+    MAX14830_Set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
 
     /* turn on the module*/
     S9T_ON();
@@ -94,7 +96,9 @@ STATIC void _module_s9_stop_sampling(void)
     S9_result_t result = S9_RESULT_FAIL;
     char sampleStr[12];
     uint8_t rxLen = 0;
-    artemis_max14830_UART_Write (pS9->device.uart.port, (uint8_t*)"stop\r", 5);
+
+    //artemis_max14830_UART_Write (pS9->device.uart.port, (uint8_t*)"stop\r", 5);
+    MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"stop\r", 5);
     result = receive_response(sampleStr, &rxLen);
     if (result == S9_RESULT_OK)
     {
@@ -115,9 +119,11 @@ void S9T_dev_info(void)
     uint8_t rxLen = 0;
     uint8_t i=0;
 
-    artemis_max14830_UART_Write (pS9->device.uart.port, "ver\r", 4);
-    //artemis_max14830_UART_Read (pS9->device.uart.port, verStr, &rxLen);
+    /* using artemis module */
+    //artemis_max14830_UART_Write (pS9->device.uart.port, "ver\r", 4);
 
+    /* using  MAX14830 c file, non-RTOS*/
+    MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"ver\r", 4);
     result = receive_response(verStr, &rxLen);
     if (result == S9_RESULT_OK)
     {
@@ -165,7 +171,7 @@ void S9T_dev_info(void)
         ////ARTEMIS_DEBUG_PRINTF("\n");
 
         // Sensor Status
-        ARTEMIS_DEBUG_PRINTF("\tStatus\t=  ");
+        ARTEMIS_DEBUG_PRINTF("\tStatus\t= ");
         for (i=0; i<2; i++){
             ARTEMIS_DEBUG_PRINTF("%c", pS9->info.status[i]);
         }
@@ -222,7 +228,9 @@ float S9T_Read(float *t, float *r)
     uint16_t rxLen = 0;
     S9_result_t result = S9_RESULT_FAIL;
 
-	artemis_max14830_UART_Write (pS9->device.uart.port, "sample\r", 7);
+	//artemis_max14830_UART_Write (pS9->device.uart.port, "sample\r", 7);
+    //MAX14830_UART_Write(pS9->device.uart.port, (uint8_t*)"sample\r", 7);
+    MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"sample\r", 7);
     result = receive_response(sampleStr, &rxLen);
 
     if (result == S9_RESULT_OK)
@@ -497,23 +505,24 @@ STATIC S9_result_t receive_response(uint8_t *rData, uint8_t *len)
     // maximum wait cycles
     while(contFlag && wait < 100000)
     {
-	    artemis_max14830_UART_Read (pS9->device.uart.port, lBuf, &msg_len);
+        //artemis_max14830_UART_Read (pS9->device.uart.port, lBuf, &msg_len);
+        msg_len = MAX14830_UART_Read_direct (pS9->device.uart.port, lBuf);
+        //ARTEMIS_DEBUG_PRINTF("\nS9: rxlen = %u\n", msg_len);
 
         if(msg_len > 0)
         {
             for (uint16_t i=0; i<msg_len; i++)
             {
                 rData[i] = lBuf[i];
-
                 /* Debug */
-	            //ARTEMIS_DEBUG_PRINTF("%c", lBuf[i]);
+                //ARTEMIS_DEBUG_PRINTF("%c", lBuf[i]);
             }
-
             *len = msg_len;
+
             do{
                 if(_parse_response(rData, "OK\r\n", *len) != -1)
                 {
-	                //ARTEMIS_DEBUG_PRINTF("\nTemp OK\n");
+                    //ARTEMIS_DEBUG_PRINTF("\nTemp OK\n");
                     result = S9_RESULT_OK;
                 }
                 else if(_parse_response(rData, "ERROR\r\n", *len) != -1)
@@ -522,16 +531,17 @@ STATIC S9_result_t receive_response(uint8_t *rData, uint8_t *len)
                 }
                 if(result == S9_RESULT_FAIL)
                 {
-	                artemis_max14830_UART_Read (pS9->device.uart.port, lBuf, &rem_len);
+                    //artemis_max14830_UART_Read (pS9->device.uart.port, lBuf, &rem_len);
+                    rem_len = MAX14830_UART_Read_direct (pS9->device.uart.port, lBuf);
+                    //rem_len = MAX14830_UART_Read (pS9->device.uart.port, lBuf);
                     if (rem_len > 0)
                     {
-	                    //ARTEMIS_DEBUG_PRINTF("\nremaining Lenth happened = %u \n", rem_len);
+                        //ARTEMIS_DEBUG_PRINTF("\nremaining Lenth happened = %u \n", rem_len);
                         for (uint16_t i=0; i<rem_len; i++)
                         {
                             rData[*len+i] = lBuf[i];
-
                             /* Debug */
-	                        //ARTEMIS_DEBUG_PRINTF("%c", lBuf[i]);
+                            //ARTEMIS_DEBUG_PRINTF("%c", lBuf[i]);
                         }
                         *len += rem_len;
                     }
@@ -543,10 +553,12 @@ STATIC S9_result_t receive_response(uint8_t *rData, uint8_t *len)
                     wait = 0;
                 }
                 wait++;
+                //ARTEMIS_DEBUG_PRINTF("\nPrinting in S9 inner loop\n");
                 //am_hal_systick_delay_us(50);
-            } while(result == S9_RESULT_FAIL && wait < 50000);
+            } while(result == S9_RESULT_FAIL && wait < 5000);
         }
         //am_hal_systick_delay_us(50);
+        //ARTEMIS_DEBUG_PRINTF("\nPrinting in S9 outer loop\n");
     }
     return result;
 }
