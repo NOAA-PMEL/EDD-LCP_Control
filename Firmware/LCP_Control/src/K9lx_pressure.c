@@ -485,7 +485,7 @@ static int8_t module_k9lx_read_reg(uint8_t port, uint16_t reg_add, uint8_t reg_n
         /** expecting 9 bytes in response */
         while (rxLen != 9)
         {
-	        len = MAX14830_UART_Read (port, rData);
+            len = MAX14830_UART_Read_direct (port, rData);
             for (uint8_t i=0; i<len; i++)
             {
                 rxData[i+rxLen] = rData[i];
@@ -498,7 +498,7 @@ static int8_t module_k9lx_read_reg(uint8_t port, uint16_t reg_add, uint8_t reg_n
         /** expecting 13 bytes in response */
         while (rxLen != 13)
         {
-	        len = MAX14830_UART_Read (port, rData);
+            len = MAX14830_UART_Read_direct (port, rData);
             for (uint8_t i=0; i<len; i++)
             {
                 rxData[i+rxLen] = rData[i];
