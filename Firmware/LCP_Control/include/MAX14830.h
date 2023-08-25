@@ -68,6 +68,7 @@ typedef enum
   MAX14830_COM_BAUDRATE_230400  = 230400
 }eMAX14830_Baudrate_t;
 
+#define MAX14830_GPIO_PIN_TO_BIT(x)     ( 1u << (x % 4))
 
 
 /**********************************************************************************
@@ -76,16 +77,17 @@ typedef enum
 #ifdef __cplusplus
 extern "C"{
 #endif
+
 void MAX14830_init(void);
-void MAX14830_enable(eMAX18430_ComPort_t port);
-void MAX14830_enable_direct(eMAX18430_ComPort_t port);
-void MAX14830_disable(eMAX18430_ComPort_t port);
-void MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate );
-void MAX14830_UART_Write(eMAX18430_ComPort_t port, char *data, uint32_t len);
-void MAX14830_UART_Write_direct(eMAX18430_ComPort_t port, char *data, uint32_t len);
-uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, char *pData, uint32_t max_len);
+void MAX14830_port_enable(eMAX18430_ComPort_t port);
+void MAX14830_port_enable_direct(eMAX18430_ComPort_t port);
+void MAX14830_port_disable(eMAX18430_ComPort_t port);
+uint32_t MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate);
+void MAX14830_UART_Write(eMAX18430_ComPort_t port, uint8_t *data, uint16_t txlen);
+void MAX14830_UART_Write_direct(eMAX18430_ComPort_t port, uint8_t *data, uint16_t len);
+uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData);
 uint32_t MAX14830_UART_Read_bytes_waiting(eMAX18430_ComPort_t port);
-uint32_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, char *pData, uint32_t max_len);
+uint16_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, uint8_t *pData);
 
 #ifdef __cplusplus
 } // extern "C"
