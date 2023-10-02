@@ -64,6 +64,14 @@ extern "C"
 
 //*****************************************************************************
 //
+//  ITM_SWO pin: ITM Serial Wire Output.
+//
+//*****************************************************************************
+#define AM_BSP_GPIO_ITM_SWO                 33
+extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_ITM_SWO;
+
+//*****************************************************************************
+//
 //  LED_GREEN pin: This pin is the Green LED pin (LED1).
 //
 //*****************************************************************************
@@ -629,8 +637,8 @@ extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_MSPI_D0;
 //  MSPI_D1 pin: MSPI data 1.
 //
 //*****************************************************************************
-#define AM_BSP_GPIO_MSPI_D1             	26
-extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_MSPI_D1;
+//#define AM_BSP_GPIO_MSPI_D1             	26
+//extern const am_hal_gpio_pincfg_t       g_AM_BSP_GPIO_MSPI_D1;
 
 //*****************************************************************************
 //

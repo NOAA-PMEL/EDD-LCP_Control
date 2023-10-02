@@ -52,6 +52,18 @@
 
 #include "am_bsp.h"
 
+
+//*****************************************************************************
+//
+//  ITM_SWO pin: ITM Serial Wire Output.
+//
+//*****************************************************************************
+const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_ITM_SWO =
+{
+    .uFuncSel            = AM_HAL_PIN_33_SWO,
+    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+};
+
 //*****************************************************************************
 //
 //  LED_GREEN pin: This pin is the Green LED pin (LED1).
@@ -60,7 +72,10 @@
 const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_LED_GREEN =
 {
     .uFuncSel            = AM_HAL_PIN_31_GPIO,
-    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL
+    //.eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
 };
 
 //*****************************************************************************
@@ -71,7 +86,11 @@ const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_LED_GREEN =
 const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_LED_RED =
 {
     .uFuncSel            = AM_HAL_PIN_32_GPIO,
-    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL
+    //.eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_TRISTATE
+    //.eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
 };
 
 //*****************************************************************************
@@ -82,7 +101,10 @@ const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_LED_RED =
 const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_LED_BLUE =
 {
     .uFuncSel            = AM_HAL_PIN_29_GPIO,
-    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL
+    //.eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
 };
 
 //*****************************************************************************
@@ -300,8 +322,11 @@ const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_S2U_NIRQ =
 {
     .uFuncSel            = AM_HAL_PIN_18_GPIO,
     .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
-    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
-    //.eGPRdZero           = AM_HAL_GPIO_PIN_RDZERO_ZERO
+    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_DISABLE,
+    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE,
+    .eGPRdZero           = AM_HAL_GPIO_PIN_RDZERO_READPIN,
+    .ePullup             = AM_HAL_GPIO_PIN_PULLUP_WEAK,
+    .eIntDir             = AM_HAL_GPIO_PIN_INTDIR_HI2LO
 };
 
 //*****************************************************************************
@@ -694,7 +719,7 @@ const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_CS =
 const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IOM3_MISO =
 {
     .uFuncSel            = AM_HAL_PIN_43_M3MISO,
-    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
+    //.eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
     .uIOMnum             = 3
 };
 //*****************************************************************************

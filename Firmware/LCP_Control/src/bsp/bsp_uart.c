@@ -1,6 +1,6 @@
 #include "am_bsp.h"
 #include "am_util.h"
-//#include "MAX14830.h"
+#include "MAX14830.h"
 
 #include "bsp_uart.h"
 #include "artemis_max14830.h"
