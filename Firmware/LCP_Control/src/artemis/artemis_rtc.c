@@ -8,8 +8,6 @@
 #include "artemis_rtc.h"
 
 static void artemis_rtc_timer(void);
-int toVal(char *pcAsciiStr);
-int mthToIndex(char *pcMon);
 
 //void artemis_rtc_set_time(void);
 //void artemis_rtc_get_time(void);
@@ -30,22 +28,22 @@ am_hal_rtc_time_t hal_time;
 uint32_t g_LastSecond = 0;
 uint32_t g_TestCount = 0;
 
-int toVal(char *pcAsciiStr)
+uint16_t toVal(char *pcAsciiStr)
 {
-    int iRetVal = 0;
+    uint16_t iRetVal = 0;
     iRetVal += pcAsciiStr[1] - '0';
     iRetVal += pcAsciiStr[0] == ' ' ? 0 : (pcAsciiStr[0] - '0') * 10;
     return iRetVal;
 }
 
-int mthToIndex(char *pcMon)
+uint8_t mthToIndex(char *pcMon)
 {
-    int idx;
+    uint8_t idx;
     for (idx = 0; idx < 12; idx++)
     {
         if ( am_util_string_strnicmp(Months[idx], pcMon, 3) == 0 )
         {
-            return idx;
+            return idx+1;
         }
     }
     return 12;
