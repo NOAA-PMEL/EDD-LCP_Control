@@ -296,8 +296,8 @@ static void module_max14830_init(void);
 static void module_max14830_Power_On(void);
 static void module_max14830_Power_Off(void);
 
-static void module_max14830_Read(eMAX18430_ComPort_t port, uint8_t reg, uint8_t *rData, uint8_t len);
-static void module_max14830_Write(eMAX18430_ComPort_t port, uint8_t reg, uint8_t *sData, uint8_t len);
+static void module_max14830_Read(emax18430_ComPort_t port, uint8_t reg, uint8_t *rData, uint8_t len);
+static void module_max14830_Write(emax18430_ComPort_t port, uint8_t reg, uint8_t *sData, uint8_t len);
 
 static uint8_t module_max14830_FastRead(void);
 uint8_t module_max14830_port_from_pin(uint8_t pin);
@@ -317,6 +317,7 @@ void artemis_max14830_init(void)
     spi->iom.module = ARTEMIS_IOM_MODULE_SPI3;
     spi->iom.config.eInterfaceMode = AM_HAL_IOM_SPI_MODE;
     spi->iom.config.ui32ClockFreq = AM_HAL_IOM_100KHZ;
+    //spi->iom.config.ui32ClockFreq = AM_HAL_IOM_1MHZ;
     spi->iom.config.eSpiMode = AM_HAL_IOM_SPI_MODE_0;
 
     artemis_iom_initialize(&spi->iom);
@@ -347,17 +348,17 @@ static void module_max14830_chip_disable(void)
 	am_hal_gpio_output_set(AM_BSP_GPIO_IOM3_CS);
 }
 
-void artemis_max14830_enable(eMAX18430_ComPort_t port)
+void artemis_max14830_enable(emax18430_ComPort_t port)
 {
 	module_max14830_Power_On();
 }
 
-void artemis_max14830_disable(eMAX18430_ComPort_t port)
+void artemis_max14830_disable(emax18430_ComPort_t port)
 {
 	module_max14830_Power_Off();
 }
 
-uint32_t artemis_max14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate)
+uint32_t artemis_max14830_Set_baudrate(emax18430_ComPort_t port, emax14830_Baudrate_t baudrate)
 {
 	float D = MAX14830_XTAL_FREQ / (16 * baudrate );
 	uint32_t DIV = (uint32_t)trunc(D) ;
@@ -375,7 +376,7 @@ uint32_t artemis_max14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudr
 	return ((16*MAX14830_XTAL_FREQ) / (16 * (16*DIV + FRACT)) );
 }
 
-void artemis_max14830_UART_Write(eMAX18430_ComPort_t port, uint8_t *sData, uint8_t len)
+void artemis_max14830_UART_Write(emax18430_ComPort_t port, uint8_t *sData, uint8_t len)
 {
 
 	uint8_t txFifoLen = 0 ;
@@ -452,7 +453,7 @@ void artemis_max14830_UART_Write(eMAX18430_ComPort_t port, uint8_t *sData, uint8
 // 
 }
 
-void artemis_max14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *rxData, uint8_t *rxLen)
+void artemis_max14830_UART_Read(emax18430_ComPort_t port, uint8_t *rxData, uint8_t *rxLen)
 {
     uint16_t len = 0;
     uint16_t txlen = 0;
@@ -602,24 +603,24 @@ void artemis_max14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *rxData, uint8
     //artemis_max14830_disable(port);
 }
 
-uint32_t artemis_max14830_UART_Read_bytes_waiting(eMAX18430_ComPort_t port)
+uint32_t artemis_max14830_UART_Read_bytes_waiting(emax18430_ComPort_t port)
 {
     // does this need to be implemented ?
     return 0;
 }
 
-void artemis_max14830_gpio_configure_output(uint8_t pin, eMAX14830_GPIO_Output_t type)
+void artemis_max14830_gpio_configure_output(uint8_t pin, emax14830_GPIO_Output_t type)
 {
     uint8_t port = module_max14830_port_from_pin(pin);
     uint8_t data;
 
     module_max14830_Read(port, MAX14830_REG_GPIOCONFIG, &data, 1);
     /** Set to output */
-    data |= MAX14830_GPIO_PIN_TO_BIT(pin);
+    data |= max14830_GPIO_PIN_TO_BIT(pin);
 
     if(type)
     {
-        data |= (MAX14830_GPIO_PIN_TO_BIT(pin) << 4);
+        data |= (max14830_GPIO_PIN_TO_BIT(pin) << 4);
     }
     module_max14830_Write(
                         port,
@@ -633,7 +634,7 @@ void artemis_max14830_gpio_set(uint8_t pin)
     uint8_t port = module_max14830_port_from_pin(pin);
     uint8_t data;
     module_max14830_Read(port, MAX14830_REG_GPIODATA, &data, 1);
-    data |= MAX14830_GPIO_PIN_TO_BIT(pin);
+    data |= max14830_GPIO_PIN_TO_BIT(pin);
     module_max14830_Write(
                         port,
                         MAX14830_REG_GPIODATA,
@@ -646,7 +647,7 @@ void artemis_max14830_gpio_clear(uint8_t pin)
     uint8_t port = module_max14830_port_from_pin(pin);
     uint8_t data;
     module_max14830_Read(port, MAX14830_REG_GPIODATA, &data, 1);
-    data &= ~MAX14830_GPIO_PIN_TO_BIT(pin);
+    data &= ~max14830_GPIO_PIN_TO_BIT(pin);
     module_max14830_Write(
                         port,
                         MAX14830_REG_GPIODATA,
@@ -678,119 +679,119 @@ static void module_max14830_init(void)
 
     /* Software Reset */
     uint8_t data = MAX14830_MODE2_RST;
-    module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
+    module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
     data = 0x00;
-    module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
+    module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
 
     /* FIFO Reset for all ports */
     data = MAX14830_MODE2_FIFO_RST;
-    module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT1, MAX14830_REG_MODE2, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT2, MAX14830_REG_MODE2, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT3, MAX14830_REG_MODE2, &data, 1);
+    module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
+    module_max14830_Write(max14830_COM_PORT1, MAX14830_REG_MODE2, &data, 1);
+    module_max14830_Write(max14830_COM_PORT2, MAX14830_REG_MODE2, &data, 1);
+    module_max14830_Write(max14830_COM_PORT3, MAX14830_REG_MODE2, &data, 1);
     data = 0x00;
-    module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT1, MAX14830_REG_MODE2, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT2, MAX14830_REG_MODE2, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT3, MAX14830_REG_MODE2, &data, 1);
+    module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
+    module_max14830_Write(max14830_COM_PORT1, MAX14830_REG_MODE2, &data, 1);
+    module_max14830_Write(max14830_COM_PORT2, MAX14830_REG_MODE2, &data, 1);
+    module_max14830_Write(max14830_COM_PORT3, MAX14830_REG_MODE2, &data, 1);
 
     /* enable the ClkSource , bypass the PLL,
     NOTE :: Clock Source is only enabled via Port0  */
     data = MAX14830_CLK_PLL_BYPASS | MAX14830_CLK_CRYSTAL_EN;
-    module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_CLKSOURCE, &data, 1);
+    module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_CLKSOURCE, &data, 1);
 
     /* Setup Modes */
     data = MAX14830_MODE1_IRQ_SEL | MAX14830_MODE1_TRNSCV_CTRL;
-    module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE1, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT1, MAX14830_REG_MODE1, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT2, MAX14830_REG_MODE1, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT3, MAX14830_REG_MODE1, &data, 1);
+    module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_MODE1, &data, 1);
+    module_max14830_Write(max14830_COM_PORT1, MAX14830_REG_MODE1, &data, 1);
+    module_max14830_Write(max14830_COM_PORT2, MAX14830_REG_MODE1, &data, 1);
+    module_max14830_Write(max14830_COM_PORT3, MAX14830_REG_MODE1, &data, 1);
 
     /* Enable Interrupts on RxFifo and TxFifo */
     data = MAX14830_IRQ_RFIFOEMTY | MAX14830_IRQ_TFIFOEMTY;
     //data = 0x01;
-    module_max14830_Write(MAX14830_COM_PORT1, MAX14830_REG_IRQEN, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT3, MAX14830_REG_IRQEN, &data, 1);
+    module_max14830_Write(max14830_COM_PORT1, MAX14830_REG_IRQEN, &data, 1);
+    module_max14830_Write(max14830_COM_PORT3, MAX14830_REG_IRQEN, &data, 1);
 
     //data = 0xFF;
-    //module_max14830_Write(MAX14830_COM_PORT1, MAX14830_REG_LSRINTEN, &data, 1);
+    //module_max14830_Write(max14830_COM_PORT1, MAX14830_REG_LSRINTEN, &data, 1);
     //data = 0xFF;
-    //module_max14830_Write(MAX14830_COM_PORT1, MAX14830_REG_STSINTEN, &data, 1);
+    //module_max14830_Write(max14830_COM_PORT1, MAX14830_REG_STSINTEN, &data, 1);
 
     data = 0x02;
-    module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_RXTIMEOUT, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT1, MAX14830_REG_RXTIMEOUT, &data, 1);
-    //module_max14830_Write(MAX14830_COM_PORT2, MAX14830_REG_RXTIMEOUT, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT3, MAX14830_REG_RXTIMEOUT, &data, 1);
+    module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_RXTIMEOUT, &data, 1);
+    module_max14830_Write(max14830_COM_PORT1, MAX14830_REG_RXTIMEOUT, &data, 1);
+    //module_max14830_Write(max14830_COM_PORT2, MAX14830_REG_RXTIMEOUT, &data, 1);
+    module_max14830_Write(max14830_COM_PORT3, MAX14830_REG_RXTIMEOUT, &data, 1);
 
     //data = 0x3F;
-    ////module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_LSRINTEN, &data, 1);
-    //module_max14830_Write(MAX14830_COM_PORT1, MAX14830_REG_LSRINTEN, &data, 1);
-    ////module_max14830_Write(MAX14830_COM_PORT2, MAX14830_REG_LSRINTEN, &data, 1);
-    //module_max14830_Write(MAX14830_COM_PORT3, MAX14830_REG_LSRINTEN, &data, 1);
+    ////module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_LSRINTEN, &data, 1);
+    //module_max14830_Write(max14830_COM_PORT1, MAX14830_REG_LSRINTEN, &data, 1);
+    ////module_max14830_Write(max14830_COM_PORT2, MAX14830_REG_LSRINTEN, &data, 1);
+    //module_max14830_Write(max14830_COM_PORT3, MAX14830_REG_LSRINTEN, &data, 1);
 
     /* configure LCR register, Set 8N1 mode as default for all ports
     and enable RTS on port2 and port3 */
     data = MAX14830_LCR_LENGTH_8 | MAX14830_LCR_RTS;
     //data = MAX14830_LCR_LENGTH_8;
-    module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_LCR, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT1, MAX14830_REG_LCR, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT2, MAX14830_REG_LCR, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT3, MAX14830_REG_LCR, &data, 1);
+    module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_LCR, &data, 1);
+    module_max14830_Write(max14830_COM_PORT1, MAX14830_REG_LCR, &data, 1);
+    module_max14830_Write(max14830_COM_PORT2, MAX14830_REG_LCR, &data, 1);
+    module_max14830_Write(max14830_COM_PORT3, MAX14830_REG_LCR, &data, 1);
 
     /* RX TX fifo trigger level */
     data = MAX14830_FIFOTRIGLVL_RX(64) | MAX14830_FIFOTRIGLVL_TX(64);
-    module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_FIFOTRGLVL, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT3, MAX14830_REG_FIFOTRGLVL, &data, 1);
+    module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_FIFOTRGLVL, &data, 1);
+    module_max14830_Write(max14830_COM_PORT3, MAX14830_REG_FIFOTRGLVL, &data, 1);
 
     /* enable RS-485 for Port3,
      * echo suppress  */
     data = MAX14830_MODE2_ECHO_SUPRS | MAX14830_MODE2_RX_EMTY_INV;
     //data = MAX14830_MODE2_ECHO_SUPRS ;
-    module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT3, MAX14830_REG_MODE2, &data, 1);
+    module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
+    module_max14830_Write(max14830_COM_PORT3, MAX14830_REG_MODE2, &data, 1);
 
 
     /* enable RS-232 for Port0 */
-    data = MAX14830_GPIO_PIN_TO_BIT(2);
-    module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_GPIOCONFIG, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_GPIODATA, &data, 1);
+    data = max14830_GPIO_PIN_TO_BIT(2);
+    module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_GPIOCONFIG, &data, 1);
+    module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_GPIODATA, &data, 1);
 
-    data = MAX14830_GPIO_PIN_TO_BIT(9);
-    module_max14830_Write(MAX14830_COM_PORT3, MAX14830_REG_GPIOCONFIG, &data, 1);
-    module_max14830_Write(MAX14830_COM_PORT3, MAX14830_REG_GPIODATA, &data, 1);
+    data = max14830_GPIO_PIN_TO_BIT(9);
+    module_max14830_Write(max14830_COM_PORT3, MAX14830_REG_GPIOCONFIG, &data, 1);
+    module_max14830_Write(max14830_COM_PORT3, MAX14830_REG_GPIODATA, &data, 1);
 }
 
-//  eMAX18430_ComPort_t channel = MAX14830_COM_PORT0;
+//  emax18430_ComPort_t channel = max14830_COM_PORT0;
 //  uint8_t data = MAX14830_MODE2_RST;
 //  
 //  for(uint8_t i=0; i<4; i++)
 //  {
-//    channel = (eMAX18430_ComPort_t)i;
+//    channel = (emax18430_ComPort_t)i;
 //      switch(channel)
 //      {
 //      case 0:
-//        channel = MAX14830_COM_PORT0;
+//        channel = max14830_COM_PORT0;
 //        break;
 //      case 1:
-//        channel = MAX14830_COM_PORT1;
+//        channel = max14830_COM_PORT1;
 //        break;
 //      case 2:
-//        channel = MAX14830_COM_PORT2;
+//        channel = max14830_COM_PORT2;
 //        break;
 //      case 3:
-//        channel = MAX14830_COM_PORT3;
+//        channel = max14830_COM_PORT3;
 //        break;
 //      default:
 //        break;
 //      }
 //    //  Max14830RegWrite(channel, MAX14830_MODE2_REG, MAX14830_MODE2_RST_BIT);
 //      data = MAX14830_MODE2_RST;
-////      module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
+////      module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
 //      module_max14830_Write(channel, MAX14830_REG_MODE2, &data, 1);
 //      
 //      data = 0u;
-////      module_max14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
+////      module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
 //      module_max14830_Write(channel, MAX14830_REG_MODE2, &data, 1);
 //
 //      // Wait until reset is cleared
@@ -798,7 +799,7 @@ static void module_max14830_init(void)
 //      while(--resetTimeout)
 //      {
 //        am_hal_systick_delay_us(50);
-////        module_max14830_Read(MAX14830_COM_PORT0, MAX14830_REG_DIVLSB, 1, &data);
+////        module_max14830_Read(max14830_COM_PORT0, MAX14830_REG_DIVLSB, 1, &data);
 //        module_max14830_Read(channel, MAX14830_REG_DIVLSB, 1, &data);
 //        if(data == 1)
 //        {
@@ -986,7 +987,7 @@ static uint8_t module_max14830_FastRead(void)
     return read_byte;
 }
 
-static void module_max14830_Read(eMAX18430_ComPort_t port, uint8_t reg, uint8_t *rData, uint8_t len)
+static void module_max14830_Read(emax18430_ComPort_t port, uint8_t reg, uint8_t *rData, uint8_t len)
 {
     /* CS high */
     module_max14830_chip_enable();
@@ -1017,7 +1018,7 @@ static void module_max14830_Read(eMAX18430_ComPort_t port, uint8_t reg, uint8_t 
     module_max14830_chip_disable();
 }
 
-static void module_max14830_Write(eMAX18430_ComPort_t port, uint8_t reg, uint8_t *sData, uint8_t len)
+static void module_max14830_Write(emax18430_ComPort_t port, uint8_t reg, uint8_t *sData, uint8_t len)
 {
     /* CS high */
     module_max14830_chip_enable();
@@ -1055,16 +1056,16 @@ uint8_t module_max14830_port_from_pin(uint8_t pin)
 {
     uint8_t port;
     if(pin < 4){
-        port = MAX14830_COM_PORT0;
+        port = max14830_COM_PORT0;
     }
     else if (pin < 8){
-        port = MAX14830_COM_PORT1;
+        port = max14830_COM_PORT1;
     }
     else if (pin < 12){
-        port = MAX14830_COM_PORT2;
+        port = max14830_COM_PORT2;
     }
     else if (pin < 16){
-        port = MAX14830_COM_PORT3;
+        port = max14830_COM_PORT3;
     }
     else{
         //@todo: ERROR
