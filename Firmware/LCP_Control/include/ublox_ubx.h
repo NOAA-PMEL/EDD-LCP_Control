@@ -14,6 +14,7 @@
 ************************************************************************/
 #include "stdint.h"
 #include "stdbool.h"
+#include "string.h"
 
 /************************************************************************
 *							HEADER FILES
@@ -42,7 +43,7 @@ typedef struct s_ubx_packet_t
   uint8_t cls;          /**< UBX Class */
   uint8_t id;           /**< UBX Class ID */
   uint16_t length;      /**< Payload Length */
-  char *payload;        /**< pointer to Payload */
+  uint8_t *payload;     /**< pointer to Payload */
   uint8_t chksumA;      /**< Checksum A */
   uint8_t chksumB;      /**< Checksum B */
   uint16_t rxCount;

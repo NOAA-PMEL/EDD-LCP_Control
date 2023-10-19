@@ -437,6 +437,8 @@ static ubx_ack_t module_ubx_parse_ack_or_nak_msg(ubx_packet_t *packet, uint8_t e
             }
         }
     }
+
+    return retVal;
 }
 
 /**
@@ -484,7 +486,6 @@ static void module_ubx_parse_nav_pvt_packet(ubx_packet_t *packet, ubx_nav_pvt_t 
     nav->headVeh = bytes_to_i32(&payload[84]);
     nav->magDec = bytes_to_i16(&payload[88]);
     nav->magAcc = bytes_to_u16(&payload[90]);
-
 }
 
 /**
@@ -508,7 +509,6 @@ static void module_ubx_parse_cfg_prt_packet(ubx_packet_t *packet, ubx_cfg_prt_t 
     prt-> outProtoMask = bytes_to_u16(&payload[14]);
     prt-> flags = bytes_to_u16(&payload[16]);
     prt-> reserved3 = bytes_to_u16(&payload[18]);
-
 } 
 
 /**

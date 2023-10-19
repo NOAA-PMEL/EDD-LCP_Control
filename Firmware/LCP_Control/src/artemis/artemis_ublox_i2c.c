@@ -152,8 +152,6 @@ void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.extint.pin, *module.extint.pinConfig));
     artemis_ublox_i2c_power_on();
-    am_hal_systick_delay_us(1000);
-    artemis_ublox_i2c_power_off();
     
     #ifdef TEST_ON_IOM4
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM4_SCL, g_AM_BSP_GPIO_IOM4_SCL));
@@ -172,6 +170,7 @@ void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
 void artemis_ublox_i2c_power_on(void)
 {
 	am_hal_gpio_output_clear(module.power.pin);
+    am_hal_systick_delay_us(300000);
 }
 
 /**
@@ -252,8 +251,7 @@ uint16_t artemis_ublox_i2c_read_data(uint8_t *pBuf)
 		return 0;
 	}
 
-	uint16_t len = (u8Len[0] << 8) | u8Len[1];
-	//printf("aui2c len = %u\n\n", len);
+	int16_t len = (u8Len[0] << 8) | u8Len[1];
 
 	uint8_t *pBufStart = pBuf;
 
@@ -285,5 +283,6 @@ uint16_t artemis_ublox_i2c_read_data(uint8_t *pBuf)
 		}
 	}
 
-	return (uint16_t)(pBuf - pBufStart);
+	int16_t retsize = (pBuf - pBufStart);
+	return (uint16_t) retsize;
 }
