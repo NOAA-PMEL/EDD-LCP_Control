@@ -28,17 +28,43 @@
 /**********************************************************************************
  * MACROS
  *********************************************************************************/
-#define PISTON_I2C_ADDR         ( 0x6C )        /**< I2C Address */
+#define PISTON_I2C_ADDR             ( 0x6C )        /**< I2C Address */
+
+/* MEM WRITE ADDRESSES */
+#define PISTON_I2C_W_SET_VOLUME     ( 0x00 )
+#define PISTON_I2C_W_SET_LENGTH     ( 0x20 )
+#define PISTON_I2C_W_RESET          ( 0x77 )
+#define PISTON_I2C_W_RESET_KEY      ( 0xCA )
+
+/* MEM READ and WRITE ADDRESSES */
+#define PISTON_I2C_RW_PST_CAL       ( 0x67 )
+#define PISTON_I2C_RW_TRV_DIR       ( 0x60 )
+#define PISTON_I2C_RW_TRV_ENG       ( 0x61 )
+
+/* MEM READ ADDRESSES */
+#define PISTON_I2C_R_VOLUME_TOTAL   ( 0x08 )
+#define PISTON_I2C_R_VOLUME_HOUSE   ( 0x0C )
+#define PISTON_I2C_R_VOLUME_S_PST   ( 0x18 )
+#define PISTON_I2C_R_VOLUME_L_PST   ( 0x1C )
+#define PISTON_I2C_R_LENGTH_TOTAL   ( 0x28 )
+#define PISTON_I2C_R_LENGTH_S_PST   ( 0x38 )
+#define PISTON_I2C_R_LENGTH_L_PST   ( 0x3C )
+#define PISTON_I2C_R_TRV_ZERO       ( 0x68 )
+#define PISTON_I2C_R_TRV_FULL       ( 0x69 )
+#define PISTON_I2C_R_TRV_MIN        ( 0x6A )
+#define PISTON_I2C_R_TRV_MAX        ( 0x6B )
+
+#define PISTON_I2C_R_SYS_ID         ( 0xE8 )
+#define PISTON_I2C_R_YEAR_BUILD     ( 0xF8 )
+#define PISTON_I2C_R_FIRMWARE_MAJ   ( 0xFA )
+#define PISTON_I2C_R_FIRMWARE_MIN   ( 0xFB )
+#define PISTON_I2C_R_FIRMWARE_BUILD ( 0xFC )
 
 
-#define PISTON_I2C_MEM_ADDR_VOLUME  ( 0x00 )    /**< Memory Address of Volume (double) */
-#define PISTON_I2C_MEM_ADDR_EXT_RET ( 0x60 )
-#define PISTON_I2C_MEM_ADDR_AT_ZERO ( 0x68 )
-#define PISTON_I2C_MEM_ADDR_AT_FULL ( 0x69 )
-#define PISTON_I2C_MEM_ADDR_TRV_ENG ( 0x61 )
+/*VOLUME AND LENGTH MAXIMUM DIFFERENCE ACCEPTABLE*/
+#define PISTON_VOLUME_DIFF_MAX      ( 0.03f )
+#define PISTON_LENGTH_DIFF_MAX      ( 0.008f )
 
-
-#define PISTON_VOLUME_DIFF_MAX      ( 0.008f )
 /**********************************************************************************
  * Typdefs
  *********************************************************************************/
@@ -50,7 +76,7 @@ typedef struct sPiston_t
         SemaphoreHandle_t semaphore;
     }rtos;
     double setpoint;        /**< User setpoint for volume */
-    double volume;           /**< Most recent volume estimate */
+    double volume;          /**< Most recent volume estimate */
     bool at_zero;           /**< At Zero flag */
     bool at_full;           /**< At Full extent flag */
 }Piston_t;
@@ -65,6 +91,8 @@ extern "C"{
 void task_move_piston_to_zero(void);
 void task_move_piston_to_full(void);
 void task_move_piston_to_volume(void);
+void task_move_piston_to_length(void);
+void PIS_set_piston_rate(uint8_t rate);
 
 void PIS_initialize(void);
 bool PIS_set_volume(double volume);
@@ -74,8 +102,14 @@ void PIS_extend(void);
 void PIS_retract(void);
 void PIS_stop(void);
 void PIS_is_at_zero(void);
-bool PIS_move_to_volume(double volume);
+bool PIS_move_to_volume(float volume);
+bool PIS_move_to_length(float length);
+float PIS_get_length(void);
+float PIS_get_volume(void);
 
+void PIS_calibration(bool cal);
+bool PIS_calibration_check(void);
+void PIS_Reset(void);
 
 /**********************************************************************************
  * Unit Test Variables & Static Prototpyes

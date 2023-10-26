@@ -65,4 +65,6 @@ void artemis_piston_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop);
 uint16_t artemis_piston_i2c_read_data(uint8_t *pBuf);
 void artemis_piston_set_write_mode(bool state);
 
+void artemis_piston_i2c_read(uint8_t addr, uint8_t *data, uint16_t len);
+
 #endif // ARTEMIS_PISTON_H
