@@ -50,6 +50,7 @@
 *							HEADER FILES
 ************************************************************************/
 #include "bsp_uart.h"
+#include "MAX14830.h"
 
 /************************************************************************
 *							MACROS
@@ -109,8 +110,8 @@ typedef enum eS9_result_t
 
 typedef struct
 {
-    e_uart_t port;
-    uint32_t baudrate;
+    eMAX18430_ComPort_t port;
+    eMAX14830_Baudrate_t baudrate;
     const am_hal_gpio_pincfg_t *pin_config;
     uint32_t pin_number;
 } S9_init_param;

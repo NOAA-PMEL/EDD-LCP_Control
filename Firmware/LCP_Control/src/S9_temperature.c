@@ -86,6 +86,7 @@ void S9T_init(S9_init_param *p)
 
     // fetch device info, if required
     S9T_dev_info();
+    ARTEMIS_DEBUG_PRINTF("S9 Temperature Sensor is initialized\n\n");
 
     /* turn off the module*/
     S9T_OFF();
@@ -134,33 +135,33 @@ void S9T_dev_info(void)
         _parse_version(verStr, pS9, rxLen);
 
         // print pS9 structure
-        ARTEMIS_DEBUG_PRINTF("\nS9 Temperature Sensor\n");
+        ARTEMIS_DEBUG_PRINTF("S9 Temperature Sensor\n");
         ARTEMIS_DEBUG_PRINTF("*****************************\n");
 
         // MID
-        ARTEMIS_DEBUG_PRINTF("\tMID\t= ");
+        ARTEMIS_DEBUG_PRINTF("\tMID\t: ");
         for (i=0; i<8; i++){
             ARTEMIS_DEBUG_PRINTF("%c", pS9->info.MID[i]);
         }
         ARTEMIS_DEBUG_PRINTF("\n");
 
         // C0-C3, R0
-        ARTEMIS_DEBUG_PRINTF("\tC0\t= %.7f\n", pS9->info.C0);
-        ARTEMIS_DEBUG_PRINTF("\tC1\t= %.7f\n", pS9->info.C1);
-        ARTEMIS_DEBUG_PRINTF("\tC2\t= %.7f\n", pS9->info.C2);
-        ARTEMIS_DEBUG_PRINTF("\tC3\t= %.7f\n", pS9->info.C3);
-        ARTEMIS_DEBUG_PRINTF("\tR0\t= %.7f\n", pS9->info.R0);
-        ARTEMIS_DEBUG_PRINTF("\tAverage\t= %u\n", pS9->info.average);
+        ARTEMIS_DEBUG_PRINTF("\tC0\t: %.7f\n", pS9->info.C0);
+        ARTEMIS_DEBUG_PRINTF("\tC1\t: %.7f\n", pS9->info.C1);
+        ARTEMIS_DEBUG_PRINTF("\tC2\t: %.7f\n", pS9->info.C2);
+        ARTEMIS_DEBUG_PRINTF("\tC3\t: %.7f\n", pS9->info.C3);
+        ARTEMIS_DEBUG_PRINTF("\tR0\t: %.7f\n", pS9->info.R0);
+        ARTEMIS_DEBUG_PRINTF("\tAverage\t: %u\n", pS9->info.average);
 
         // UID
-        ARTEMIS_DEBUG_PRINTF("\tUID\t= ");
+        ARTEMIS_DEBUG_PRINTF("\tUID\t: ");
         for (i=0; i<32; i++){
             ARTEMIS_DEBUG_PRINTF("%c", pS9->info.UID[i]);
         }
         ARTEMIS_DEBUG_PRINTF("\n");
 
         // Sensor Name
-        ARTEMIS_DEBUG_PRINTF("\tFirmware Ver = ");
+        ARTEMIS_DEBUG_PRINTF("\tFW Ver\t: ");
         for (i=0; i<10; i++){
             ARTEMIS_DEBUG_PRINTF("%c", pS9->info.sensor[i]);
         }
@@ -171,7 +172,7 @@ void S9T_dev_info(void)
         ////ARTEMIS_DEBUG_PRINTF("\n");
 
         // Sensor Status
-        ARTEMIS_DEBUG_PRINTF("\tStatus\t= ");
+        ARTEMIS_DEBUG_PRINTF("\tStatus\t: ");
         for (i=0; i<2; i++){
             ARTEMIS_DEBUG_PRINTF("%c", pS9->info.status[i]);
         }
