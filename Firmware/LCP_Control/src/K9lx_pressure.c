@@ -230,7 +230,7 @@ void K9lx_init(K9lx_init_param *p)
 
     /** Read the module Firmware version, P-Mode, serial number, Active channels */
     module_k9lx_device_info(pK9lx->device.uart.port);
-    am_util_stdio_printf("K9LX init Done\n");
+    ARTEMIS_DEBUG_PRINTF("K9lx Pressure Sensor is initialized\n\n");
     K9lx_power_off();
 }
 	
@@ -594,7 +594,7 @@ static void module_k9lx_device_info(uint8_t port)
     //}
 
     /* 32-bit floating point , access P and T in one cycle 8 bytes */
-    ARTEMIS_DEBUG_PRINTF("\n\tPressure\t: ");
+    ARTEMIS_DEBUG_PRINTF("\tPressure\t: ");
     ret = module_k9lx_read_reg(port, K9LX_FL1_P1, 4, pt);
     if (ret == 0)
     {
