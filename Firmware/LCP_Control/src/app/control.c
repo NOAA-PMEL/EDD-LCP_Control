@@ -15,6 +15,9 @@
 #include "depth.h"
 #include "sensors.h"
 #include "config.h"
+#include "i9603n.h"
+#include "artemis_debug.h"
+
 
 #define DEPTH_BOUND      ( 1.0f )
 
@@ -157,17 +160,17 @@ void task_move_to_park(void)
 {
 
     /** Set the depth */
-//    PST_set_depth(profiler.park.depth);
-  PST_set_depth(settings.park.depth);
+    //PST_set_depth(profiler.park.depth);
+    PST_set_depth(settings.park.depth);
 
     /** Monitor the movement */
-  bool moveFlag;
+    bool moveFlag;
     do
     {
         /* code */
-      moveFlag = true;
+        moveFlag = true;
+
     } while (moveFlag);
-    
 
     /** Kill the task */
     vTaskDelete(NULL);
@@ -175,7 +178,7 @@ void task_move_to_park(void)
 void task_move_to_depth(void)
 {   
     /** Send Command to Move to Depth */
-    PST_set_depth(settings.profile.depth);
+    //PST_set_depth(settings.profile.depth);
       
     PIS_move_to_volume();
 
@@ -221,18 +224,22 @@ int32_t CTRL_MoveToPark(float depth)
 
 
     /** Set the Depth we're moving to */
-    CTRL_set_park_depth(depth);
+    //CTRL_set_park_depth(depth);
+    SENS_set_depth_rate(2);
 
 
     /** Create the tasks */
     xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
-    xTaskCreate((TaskFunction_t) task_move_to_depth, "move_to_depth", 128, NULL, 1, &xPistonHandle);
+    //xTaskCreate((TaskFunction_t) task_move_to_park, "move_to_park", 128, NULL, 1, &xPistonHandle);
 
-    if( (xDepthHandle != NULL) && (xPistonHandle != NULL) )
+    //if( (xDepthHandle != NULL) && (xPistonHandle != NULL) )
+    if( (xDepthHandle != NULL) )
     {
+        ARTEMIS_DEBUG_PRINTF("DEBUG  :: Schedular is going to start\n");
         /** Start the tasks */
         vTaskStartScheduler();
 
+        ARTEMIS_DEBUG_PRINTF("DEBUG  :: Schedular is started\n");
         bool atDepth = false;
 
         float depth_max = depth + DEPTH_BOUND;
@@ -465,10 +472,11 @@ int32_t CTRL_MoveToSurface(uint32_t timeout)
 //*****************************************************************************
 static void module_turn_off_gps_and_iridium(void)
 {
-    /** @todo Add functions */
+    // turn off the iridium modem
+    i9603n_off();
+    // turn off ublox gps
+    GPS_off();
 }
-
-
 
 static float module_calculate_buoyancy_from_ascent_rate(float rate)
 {
