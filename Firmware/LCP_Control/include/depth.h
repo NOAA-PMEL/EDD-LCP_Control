@@ -41,7 +41,9 @@
 * Includes
 *********************************************************************************/
 #include "bsp_uart.h"
-#include "artemis_pa9ld.h"
+//#include "artemis_pa9ld.h"
+#include "artemis_max14830.h"
+#include "MAX14830.h"
 
 /**********************************************************************************
 * Configuration Constants
@@ -72,15 +74,16 @@ typedef enum {
 typedef struct {
     eDEPTH_Sensor_t sensor;     /**< Sensor Type */
     struct {
-        e_uart_t uart;          /**< UART Port */
+        //e_uart_t uart;          /**< UART Port */
+        eMAX18430_ComPort_t uart; /**< UART Port */
     }uart;
-    struct {
-        uint32_t i2c;           /**< I2C Channel (IOM Module)*/
-    }i2c;
-    struct {
-        module_manufacturer_t manufacturer; /**< Keller Manufacturer Info */
-        module_scaling_t scaling;           /**< Keller Scaling Coefficients */
-    }device;
+    //struct {
+    //    uint32_t i2c;           /**< I2C Channel (IOM Module)*/
+    //}i2c;
+    //struct {
+    //    module_manufacturer_t manufacturer; /**< Keller Manufacturer Info */
+    //    module_scaling_t scaling;           /**< Keller Scaling Coefficients */
+    //}device;
     struct {
         float density;          /**< Density of Water */
     }conversion;

@@ -23,8 +23,12 @@
 //
 //*****************************************************************************
 #include "depth.h"
-#include "artemis_pa9ld.h"
+//#include "artemis_pa9ld.h"
+#include "artemis_max14830.h"
+#include "K9lx_pressure.h"
+#include "artemis_debug.h"
 #include "am_bsp_pins.h"
+#include "MAX14830.h"
 
 
 //*****************************************************************************
@@ -36,15 +40,23 @@
  * This static struct holds all configuration
  * information for the pressure sensor selected.
  */
-static sDepth_t module ={
-    .sensor = DEPTH_Keller_Not_Configured,
-    .uart = {BSP_UART_NONE},
-    .i2c = {0},
-    .device.manufacturer = {0},
-    .device.scaling = {0},
-    .conversion.density = TYPICAL_DENSITY_OF_SALTWATER
+static sDepth_t module = {
+    .sensor = DEPTH_Keller_PR9LX,
+    //.uart.uart = MAX14830_COM_PORT3,
+    //.i2c = {0},
+    //.device.manufacturer = {0},
+    //.device.scaling = {0},
+    .conversion.density = TYPICAL_DENSITY_OF_SALTWATER,
 };
 
+static K9lx_init_param kParam = {
+    .port       =   MAX14830_COM_PORT3,
+    .baudrate   =   MAX14830_COM_BAUDRATE_9600,
+    .pin_config =   &g_AM_BSP_GPIO_COM3_POWER_PIN,
+    .pin_number =   AM_BSP_GPIO_COM3_POWER_PIN
+};
+
+static K9lx_init_param *pK;
 
 //*****************************************************************************
 //
@@ -92,12 +104,13 @@ void DEPTH_initialize(eDEPTH_Sensor_t sensor)
     switch(sensor)
     {
         case DEPTH_Keller_PA9LD:
-            module.i2c.i2c = 4;
-            artemis_pa9ld_initialize(&g_AM_BSP_GPIO_PRES_ON, AM_BSP_GPIO_PRES_ON);
-            artemis_pa9ld_get_calibration(&module.device.manufacturer, &module.device.scaling);
+            //module.i2c.i2c = 4;
+            //artemis_pa9ld_initialize(&g_AM_BSP_GPIO_PRES_ON, AM_BSP_GPIO_PRES_ON);
+            //artemis_pa9ld_get_calibration(&module.device.manufacturer, &module.device.scaling);
             break;
         case DEPTH_Keller_PR9LX:
-
+            pK = &kParam;
+            K9lx_init(pK);
             break;
         default:
             break;
@@ -110,14 +123,15 @@ void DEPTH_initialize(eDEPTH_Sensor_t sensor)
  */
 void DEPTH_Power_ON(void)
 {   
-    switch(module.sensor)
-    {
-        default:
-            break;
-      
-    }
+    //switch(module.sensor)
+    //{
+    //    default:
+    //        break;
+    //
+    //}
 
-    artemis_pa9ld_power_on();
+    K9lx_power_on();
+    //artemis_pa9ld_power_on();
 }
 
 /**
@@ -126,7 +140,8 @@ void DEPTH_Power_ON(void)
  */
 void DEPTH_Power_OFF(void)
 {
-    artemis_pa9ld_power_off();
+    K9lx_power_off();
+    //artemis_pa9ld_power_off();
 }
 
 /**
@@ -137,11 +152,17 @@ void DEPTH_Power_OFF(void)
 void DEPTH_Read(sDepth_Measurement_t *data)
 {
     float pressure;
-    float temperature;
-    artemis_pa9ld_read(&pressure, &temperature);
+    //artemis_pa9ld_read(&pressure, &temperature);
+    K9lx_read_P(&pressure);
     data->Pressure = pressure;
-    data->Temperature = temperature;
     data->Depth = module_DEPTH_Convert_Pressure_to_Depth(pressure);
+
+    //float temperature;
+    ////artemis_pa9ld_read(&pressure, &temperature);
+    //K9lx_read_PT(&pressure, &temperature);
+    //data->Pressure = pressure;
+    //data->Temperature = temperature;
+    //data->Depth = module_DEPTH_Convert_Pressure_to_Depth(pressure);
 }
 
 /**
