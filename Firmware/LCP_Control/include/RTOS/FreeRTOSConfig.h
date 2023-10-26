@@ -46,21 +46,26 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
+#include "am_mcu_apollo.h"
+#include "am_bsp.h"
+#include "am_util.h"
+
 #define configUSE_PREEMPTION                    1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION 0
 
-#ifdef AM_PART_APOLLO2
-    #define configCPU_CLOCK_HZ                  48000000UL
-#else
+#ifdef AM_PART_APOLLO
     #define configCPU_CLOCK_HZ                  24000000UL
+#else
+    #define configCPU_CLOCK_HZ                  48000000UL
 #endif
 #define configTICK_RATE_HZ                      1000
-#define configMAX_PRIORITIES                    10
+#define configMAX_PRIORITIES                    8
 #define configMINIMAL_STACK_SIZE                (256)
 #define configTOTAL_HEAP_SIZE                   (16 * 1024)
 #define configMAX_TASK_NAME_LEN                 16
@@ -71,11 +76,11 @@ extern "C"
 
 #define configUSE_MUTEXES                       1
 #define configUSE_RECURSIVE_MUTEXES             0
-#define configUSE_COUNTING_SEMAPHORES           0
+#define configUSE_COUNTING_SEMAPHORES           1
 #define configUSE_ALTERNATIVE_API               0 /* Deprecated! */
 #define configQUEUE_REGISTRY_SIZE               0
 #define configUSE_QUEUE_SETS                    0
-#define configUSE_TIME_SLICING                  0
+#define configUSE_TIME_SLICING                  1
 #define configUSE_NEWLIB_REENTRANT              0
 #define configENABLE_BACKWARD_COMPATIBILITY     0
 
@@ -97,34 +102,42 @@ extern "C"
 #define configTIMER_TASK_STACK_DEPTH            configMINIMAL_STACK_SIZE
 
 /* Interrupt nesting behaviour configuration. */
-#define configKERNEL_INTERRUPT_PRIORITY         (0x7 << 5)
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY    (0x4 << 5)
-#define NVIC_configKERNEL_INTERRUPT_PRIORITY        (0x7)
-#define NVIC_configMAX_SYSCALL_INTERRUPT_PRIORITY   (0x4)
+#define configKERNEL_INTERRUPT_PRIORITY                 (0x7 << 5)
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY            (0x4 << 5)
+#define NVIC_configKERNEL_INTERRUPT_PRIORITY            (0x7)
+#define NVIC_configMAX_SYSCALL_INTERRUPT_PRIORITY       (0x4)
 
 /* Define to trap errors during development. */
-#define configASSERT(x)     if (( x ) == 0) while(1);
+//#define configASSERT(x)     if (( x ) == 0) while(1);
+#define configASSERT(x)     if (( x ) == 0) { taskDISABLE_INTERRUPTS(); am_util_stdio_printf("\nERROR:: %s, %d\n", __FILE__, __LINE__); while(1);}
 
 /* FreeRTOS MPU specific definitions. */
 #define configINCLUDE_APPLICATION_DEFINED_PRIVILEGED_FUNCTIONS 0
 
 /* Optional functions - most linkers will remove unused functions anyway. */
-#define INCLUDE_vTaskPrioritySet                0
-#define INCLUDE_uxTaskPriorityGet               0
+#define INCLUDE_vTaskPrioritySet                1
+#define INCLUDE_uxTaskPriorityGet               1
 #define INCLUDE_vTaskDelete                     1
 #define INCLUDE_vTaskSuspend                    1
-#define INCLUDE_xResumeFromISR                  0
+#define INCLUDE_xResumeFromISR                  1
 #define INCLUDE_vTaskDelayUntil                 1
 #define INCLUDE_vTaskDelay                      1
-#define INCLUDE_xTaskGetSchedulerState          0
-#define INCLUDE_xTaskGetCurrentTaskHandle       0
+#define INCLUDE_xTaskGetSchedulerState          1
+#define INCLUDE_xTaskGetCurrentTaskHandle       1
 #define INCLUDE_uxTaskGetStackHighWaterMark     0
-#define INCLUDE_xTaskGetIdleTaskHandle          0
+#define INCLUDE_xTaskGetIdleTaskHandle          1
 #define INCLUDE_xTimerGetTimerDaemonTaskHandle  0
-#define INCLUDE_pcTaskGetTaskName               0
+#define INCLUDE_pcTaskGetTaskName               1
 #define INCLUDE_eTaskGetState                   1
 #define INCLUDE_xEventGroupSetBitFromISR        1
 #define INCLUDE_xTimerPendFunctionCall          1
+#define INCLUDE_vTaskSuspend                    1
+#define INCLUDE_xTaskResumeFromISR              1
+
+// added
+#define configUSE_TASK_NOTIFICATIONS            1
+#define INCLUDE_vTaskEndScheduler               1
+
 
 #define vPortSVCHandler                         SVC_Handler
 #define xPortPendSVHandler                      PendSV_Handler
