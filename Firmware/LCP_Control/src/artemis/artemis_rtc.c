@@ -4,8 +4,8 @@
 #include "am_bsp.h"
 #include "am_util.h"
 #include "am_util_delay.h"
-
 #include "artemis_rtc.h"
+#include "artemis_debug.h"
 
 static void artemis_rtc_timer(void);
 
@@ -130,8 +130,8 @@ void artemis_rtc_initialize(void)
     //
     am_hal_ctimer_start(0, AM_HAL_CTIMER_TIMERA);
 
-    am_util_stdio_printf("RTC Print Example\n");
-    am_util_stdio_printf("This example was built on %s at %s.\n\n", __DATE__, __TIME__);
+    ARTEMIS_DEBUG_PRINTF("RTC Print Example\n");
+    ARTEMIS_DEBUG_PRINTF("This example was built on %s at %s.\n\n", __DATE__, __TIME__);
 
 }
 
@@ -152,25 +152,24 @@ uint8_t artemis_rtc_get_time(rtc_time *time)
     time->sec = (uint8_t) hal_time.ui32Second;
     time->msec = (uint16_t) hal_time.ui32Hundredths / 10 ;
 
+    //ARTEMIS_DEBUG_PRINTF("Time : ");
+    //ARTEMIS_DEBUG_PRINTF("%d:", time->hour);
+    //ARTEMIS_DEBUG_PRINTF("%02d:", time->min);
+    //ARTEMIS_DEBUG_PRINTF("%02d.", time->sec);
+    //ARTEMIS_DEBUG_PRINTF("%02d ", time->msec);
 
-    am_util_stdio_printf("Time : ");
-    am_util_stdio_printf("%d:", time->hour);
-    am_util_stdio_printf("%02d:", time->min);
-    am_util_stdio_printf("%02d.", time->sec);
-    am_util_stdio_printf("%02d ", time->msec);
-
-    //am_util_stdio_printf("Time : ");
-    //am_util_stdio_printf("%d:", hal_time.ui32Hour);
-    //am_util_stdio_printf("%02d:", hal_time.ui32Minute);
-    //am_util_stdio_printf("%02d.", hal_time.ui32Second);
-    //am_util_stdio_printf("%02d ", hal_time.ui32Hundredths);
-    //am_util_stdio_printf(days[hal_time.ui32Weekday]);
-    //am_util_stdio_printf(" ");
-    //am_util_stdio_printf(Months[hal_time.ui32Month]);
-    //am_util_stdio_printf(" ");
-    //am_util_stdio_printf("%d, ", hal_time.ui32DayOfMonth);
-    //am_util_stdio_printf("20%02d", hal_time.ui32Year);
-    //am_util_stdio_printf("\n");
+    //ARTEMIS_DEBUG_PRINTF("Time : ");
+    //ARTEMIS_DEBUG_PRINTF("%d:", hal_time.ui32Hour);
+    //ARTEMIS_DEBUG_PRINTF("%02d:", hal_time.ui32Minute);
+    //ARTEMIS_DEBUG_PRINTF("%02d.", hal_time.ui32Second);
+    //ARTEMIS_DEBUG_PRINTF("%02d ", hal_time.ui32Hundredths);
+    //ARTEMIS_DEBUG_PRINTF(days[hal_time.ui32Weekday]);
+    //ARTEMIS_DEBUG_PRINTF(" ");
+    //ARTEMIS_DEBUG_PRINTF(Months[hal_time.ui32Month]);
+    //ARTEMIS_DEBUG_PRINTF(" ");
+    //ARTEMIS_DEBUG_PRINTF("%d, ", hal_time.ui32DayOfMonth);
+    //ARTEMIS_DEBUG_PRINTF("20%02d", hal_time.ui32Year);
+    //ARTEMIS_DEBUG_PRINTF("\n");
 
     return 0;
 }
