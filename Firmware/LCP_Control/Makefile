@@ -164,7 +164,7 @@ VPATH+=:$(PROJECTPATH)/src/sys
 # Compilation Units (Add all the .c files you need to compile)
 SRC  = main.c
 SRC += port.c
-SRC += heap_2.c
+SRC += heap_4.c
 SRC += am_devices_button.c
 SRC += am_devices_led.c
 SRC += event_groups.c
@@ -185,12 +185,10 @@ SRC += buffer_c.c
 SRC += buffer_u32.c
 SRC += dataframe.c
 SRC += depth.c
-##SRC += freertos_lowpower.c
 SRC += GPS.c
 SRC += i9603n.c
 SRC += isbd_at_cmd.c
 SRC += LED.c
-##SRC += led_task.c
 SRC += MAX14830.c
 SRC += piston.c
 SRC += control.c
@@ -221,6 +219,7 @@ SRC += S9_temperature.c
 SRC += K9lx_pressure.c
 SRC += artemis_rtc.c
 SRC += artemis_accel.c
+SRC += datalogger.c
 
 
 CSRC = $(filter %.c,$(SRC))
@@ -240,8 +239,9 @@ LIBS+= $(SDKPATH)/mcu/apollo3/hal/gcc/bin/libam_hal.a
 
 CFLAGS = -mthumb -mcpu=$(CPU) -mfpu=$(FPU) -mfloat-abi=$(FABI)
 CFLAGS+= -ffunction-sections -fdata-sections
-CFLAGS+= -MMD -MP -std=c99 -Wall -g
-CFLAGS+= -O0
+CFLAGS+= -MMD -MP -std=gnu99 -Wall -g
+CFLAGS+= -Wall -Wno-unused-function
+CFLAGS+= -O3
 CFLAGS+= $(DEFINES)
 CFLAGS+= $(INCLUDES)
 CFLAGS+=
@@ -263,7 +263,7 @@ ODFLAGS = -S
 # Targets / Rules
 #
 #******************************************************************************
-all: asb
+all: svl
 asb: directories $(BIN)/$(TARGET)_asb.bin
 svl: directories $(BIN)/$(TARGET)_svl.bin
 sim: directories $(BIN)/$(TARGET).bin
