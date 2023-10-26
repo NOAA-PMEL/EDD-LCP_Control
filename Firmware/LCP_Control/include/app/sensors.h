@@ -4,9 +4,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "FreeRTOSConfig.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "task.h"
+#include "rtos.h"
 
 
 typedef struct sSensorType_t{
@@ -30,23 +32,24 @@ typedef struct sSensorGps_t {
         bool data_valid;
         SemaphoreHandle_t semaphore;
 }SensorGps_t;
+
 typedef struct sSensorData_t
 {
     struct{
-        uint16_t rate;          /**< Sample rate (Hz) */
+        float rate;             /**< Sample rate (Hz) */
         float current;          /**< Current depth (m) */
         float previous;         /**< Previous depth (m) */
         float ascent_rate;      /**< Calculated ascnet rate (m/s) */
         bool data_valid;
-        SemaphoreHandle_t *semaphore;
+        SemaphoreHandle_t semaphore;
     }depth;
     struct {
         uint16_t rate;          /**< Sample rate (Hz) */
         float current;          /**< (int16_t) T_actual = temperature / 1000 */
         bool data_valid;
-        SemaphoreHandle_t *semaphore;
+        SemaphoreHandle_t semaphore;
     }temperature;
-    SensorGps_t GPS;
+    SensorGps_t gps;
 }SensorData_t;
 
 
@@ -57,9 +60,8 @@ typedef struct sSensorData_t
 *********************************************************************************/
 
 void task_depth(void);
-
 void task_temperature(void);
-
+void task_gps(void);
 
 void SENS_sensor_depth_off(void);
 void SENS_sensor_depth_on(void);
@@ -71,28 +73,23 @@ void SENS_sensor_temperature_off(void);
 void SENS_sensor_temperature_on(void);
 
 bool SENS_get_depth(float *depth, float *rate);
-
 bool SENS_get_temperature(float *temperature);
-
 bool SENS_get_gps(SensorGps_t *gps);
 
+//void SENS_task_profile_sensors(void);
+//void SENS_task_park_sensors(void);
+//void SENS_task_sample_depth_continuous(void);
 
+void SENS_task_profile_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp);
+void SENS_task_park_sensors(TaskHandle_t *xDepth);
+void SENS_task_sample_depth_continuous(TaskHandle_t *xDepth);
+void SENS_task_gps(TaskHandle_t *xGPS);
 
-void SENS_task_profile_sensors(void);
-
-void SENS_task_park_sensors(void);
-
-void SENS_task_sample_depth_continuous(void);
-
-
-void SENS_set_depth_rate(uint16_t rate);
-
+void SENS_set_depth_rate(float rate);
 void SENS_set_temperature_rate(uint16_t rate);
-
 void SENS_set_gps_rate(uint16_t rate);
 
 void SENS_initialize(void);
-
 
 
 #endif // SENSORS_H

@@ -31,7 +31,7 @@
 #define DATA_PROFILE_SAMPLES_MAX    ( 2310 )
 #define DATA_PROFILE_MAX_LEN        ( 25000 )
 
-#define DATA_PARK_SAMPLE_FREQ                   ( 1 / 60 )  /**< Sample every Minute */
+#define DATA_PARK_SAMPLE_FREQ                   ( 1.0 / 60.0 )  /**< Sample every Minute */
 #define DATA_PARK_PARK_MAX_DURATION_HOURS       ( 24 )
 #define DATA_NUM_SEC_IN_HOUR                   ( 60 * 60 )
 #define DATA_NUM_SEC_IN_DAY                     ( DATA_NUM_SEC_IN_HOUR * DATA_PARK_PARK_MAX_DURATION_HOURS )
@@ -55,8 +55,7 @@ typedef enum eSystemState_t{
     SYSST_Moored_mode,
     SYSST_AirDeploy_mode,
     SYSST_Popup_mode,
-}SystemState_t;
-
+}SystemMode_t;
 
 typedef enum ePredeploymentState_t
 {
@@ -70,6 +69,7 @@ typedef enum eAutoBallastState_t
     ABS_Sample,
     ABS_Validate
 }AutoBallastState_t;
+
 typedef enum eMooredState_t 
 {
     MOOR_Idle,
@@ -82,13 +82,11 @@ typedef enum eMooredState_t
     MOOR_RX_mode,
 }MooredState_t;
 
-
 typedef enum ePopupState_t
 {
     PUS_Idle,
     PUS_DoSomething
 }PopupState_t;
-
 
 typedef enum eAirDeployState_t
 {
@@ -108,10 +106,9 @@ typedef enum eSimpleProfilerState_t
     SPS_RX_mode,
 }SimpleProfilerState_t;
 
-
 typedef struct eSystem_t
 {
-    SystemState_t system;
+    SystemMode_t mode;
     struct {
         PredeploymentState_t state;
     }predeploy;
@@ -146,8 +143,8 @@ extern "C"{
 #endif
 
 
-void STATE_initialize(SystemState_t state);
-void STATE_MainState(SystemState_t state);
+void STATE_initialize(SystemMode_t mode);
+void STATE_MainState(SystemMode_t mode);
 void STATE_Predeploy(void);
 void STATE_AutoBallast(void);
 void STATE_Moored(void);
