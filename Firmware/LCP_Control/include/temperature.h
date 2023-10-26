@@ -10,25 +10,25 @@ typedef enum eTemperatureSensor_t{
     TEMP_SoundNine_OEM,
 }TemperatureSensor_t;
 
-
 typedef struct sTemperature_t
 {   
     TemperatureSensor_t sensor;
      struct {
         uint8_t uart;          /**< UART Port */
     }uart;
-    struct {
-        uint32_t i2c;           /**< I2C Channel (IOM Module)*/
-    }i2c;
-//    struct {
-//        module_manufacturer_t manufacturer; /**< Keller Manufacturer Info */
-//        module_scaling_t scaling;           /**< Keller Scaling Coefficients */
-//    }device;
+    //struct {
+    //    uint32_t i2c;           /**< I2C Channel (IOM Module)*/
+    //}i2c;
+    //struct {
+    //    module_manufacturer_t manufacturer; /**< Keller Manufacturer Info */
+    //    module_scaling_t scaling;           /**< Keller Scaling Coefficients */
+    //}device;
 }Temperature_t;
 
 typedef struct sTemperature_Measurement_t
 {
     float temperature;
+    float resistance;
 }Temperature_Measurement_t;
 
 
@@ -42,7 +42,7 @@ typedef struct sTemperature_Measurement_t
  *
  *  @return None
  */
-void TEMP_initialize(void);
+void TEMP_initialize(TemperatureSensor_t sensor);
 
 /** @brief Temperature Power On
  *
