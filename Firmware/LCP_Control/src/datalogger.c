@@ -16,12 +16,12 @@
  *
  **/
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "datalogger.h"
 #include "buffer_c.h"
 #include "artemis_debug.h"
-#include "string.h"
-#include "artemis_rtc.h"
-#include "stdio.h"
 
 static void datalogger_i2c_read(uint8_t offset, uint8_t offsetlen,
                                 uint8_t *pBuf, uint16_t size);
@@ -29,9 +29,11 @@ static void datalogger_i2c_write(uint8_t offset, uint8_t offsetlen,
                                 uint8_t *pBuf, uint16_t size);
 static void datalogger_write_sync(void);
 
-static module_t module;
+static module_d module;
+static uint16_t sps_count = 0;
+static uint16_t park_count = 0;
 
-void datalogger_init(uint8_t iomNo)
+bool datalogger_init(uint8_t iomNo)
 {
     artemis_i2c_t *i2c = &module.i2c;
 
@@ -60,14 +62,16 @@ void datalogger_init(uint8_t iomNo)
     else
     {
         ARTEMIS_DEBUG_PRINTF("ERROR:: Datalogger init -> Selete the iom number (1, 4)\n");
-        return;
+        return false;
     }
 
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
     datalogger_power_on();
     // print device information
     datalogger_device_info();
-    //datalogger_power_off();
+    datalogger_power_off();
+
+    return true;
 }
 
 void datalogger_device_info(void)
@@ -99,54 +103,169 @@ void datalogger_device_info(void)
     }
 }
 
-void datalogger_predeploy_mode(float temp, float depth, bool initialize)
+void datalogger_predeploy_mode(SensorGps_t *gps, bool check)
 {
     char *dirname = "pre-deploy_mode";
     rtc_time time;
 
+    int32_t lat = (int32_t) (gps->latitude * 10000000);
+    int32_t lon = (int32_t) (gps->longitude * 10000000);
+    int32_t alt = (int32_t) (gps->altitude * 10000000);
+
     /* if initialize is true, then create a directory and files*/
-    if (initialize == true)
+    datalogger_cd("..");
+    datalogger_mkdir(dirname);
+    datalogger_cd(dirname);
+
+    /* get time-stamp */
+    artemis_rtc_get_time(&time);
+    char filename[64] = {0};
+    sprintf (filename, "pds_%02d.%02d.20%02d.txt", time.month, time.day, time.year);
+
+    datalogger_createfile(filename);
+    datalogger_openfile(filename);
+
+    char data[256] = {0};
+    datalogger_writefile("\n******************************\n");
+    datalogger_writefile("\nLCP System Check information\n");
+    datalogger_writefile("\n******************************\n\n");
+
+    sprintf (data, "Check\t: %s\nTime\t: %02d:%02d:%02d\nDate\t: %02d.%02d.20%02d\nLatitude\t: %ld\nLongitude\t: %ld\nAltitude\t: %ld\n",
+                    check == true ? "OK" : "Failed", time.hour, time.min, time.sec, time.month, time.day, time.year, lat, lon, alt);
+
+    for (uint16_t i=0; i< strlen(data); i++)
     {
-        datalogger_cd("..");
-        datalogger_mkdir(dirname);
-        datalogger_cd(dirname);
-
-        /* get time-stamp */
-        artemis_rtc_get_time(&time);
-        char filename[26] = {0};
-        sprintf (filename, "pre_%02d.%02d.20%02d.txt", time.month, time.day, time.year);
-        datalogger_createfile(filename);
-        datalogger_openfile(filename);
-        datalogger_writefile("S.No.\t| Depth (m)\t| Temperature (°C)\t| Time-stamp\t\n");
-        datalogger_writefile("\n==============================================================\n\n");
-        ARTEMIS_DEBUG_PRINTF("%s file created\n", filename);
-        datalogger_write_sync();
-
-        ///* read file*/
-        //uint32_t size = datalogger_filesize(filename);
-        //ARTEMIS_DEBUG_PRINTF("file size = %u\n", size);
-
-        //char buf[1024];
-        //datalogger_readfile(filename, buf, size);
-
-        //for (uint32_t i=0; i<size; i++)
-        //{
-        //    ARTEMIS_DEBUG_PRINTF("%c", buf[i]);
-        //}
-        //ARTEMIS_DEBUG_PRINTF("\n");
+        ARTEMIS_DEBUG_PRINTF("%c", data[i]);
     }
-    else
-    {
-        artemis_rtc_get_time(&time);
-        
 
-        ARTEMIS_DEBUG_PRINTF("nothing yet\n");
-    }
+    datalogger_writefile(data);
+    datalogger_write_sync();
+
+    ///* read file*/
+    //uint32_t size = datalogger_filesize(filename);
+    //ARTEMIS_DEBUG_PRINTF("file size = %u\n", size);
+
+    //char buf[512];
+    //datalogger_readfile(filename, buf, size);
+
+    //for (uint32_t i=0; i<size; i++)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("%c", buf[i]);
+    //}
+    //ARTEMIS_DEBUG_PRINTF("\n");
+}
+
+char *datalogger_profile_create_file(uint16_t sps_nr)
+{
+    char *dirname = "profile_mode";
+    rtc_time time;
+
+    /* if initialize is true, then create a directory and files*/
+    datalogger_cd("..");
+    datalogger_mkdir(dirname);
+    datalogger_cd(dirname);
+
+    /* get time-stamp */
+    artemis_rtc_get_time(&time);
+
+    static char filename[64] = {0};
+
+    sprintf (filename, "%d_sps_%02d.%02d.20%02d.txt", sps_nr, time.month, time.day, time.year);
+    datalogger_createfile(filename);
+    datalogger_openfile(filename);
+    datalogger_writefile("S.No.\t| Depth(m)\t| Temperature(°C) | Volume(in3)\t| Time-stamp\t\n");
+    datalogger_writefile("\n============================================================================\n\n");
+    datalogger_write_sync();
+    ARTEMIS_DEBUG_PRINTF("%s file created\n", filename);
+    sps_count = 0;
+
+    return filename;
+}
+
+void datalogger_profile_mode(char *filename, float depth, float temp, float volume, rtc_time *time)
+{
+    char *dirname = "profile_mode";
+    //rtc_time time;
+
+    /* if initialize is true, then create a directory and files*/
+    datalogger_cd("..");
+    //datalogger_mkdir(dirname);
+    datalogger_cd(dirname);
+
+    ///* get time-stamp */
+    //artemis_rtc_get_time(&time);
+
+    sps_count++;
+    datalogger_openfile(filename);
+
+    int32_t Depth  =  (int32_t) (depth  * 10000);
+    int32_t Temp   =  (int32_t) (temp   * 10000);
+    int32_t Volume =  (int32_t) (volume * 10000);
+
+    char data[128] = {0};
+    sprintf (data, "\n%u\t  %ld.%04ld\t  %ld.%04ld\t   %ld.%04ld\t  %02d:%02d:%02d\n",
+                    sps_count, Depth/10000, Depth%10000, Temp/10000, Temp%10000,
+                    Volume/10000, Volume%10000, time->hour, time->min, time->sec);
+
+    datalogger_writefile(data);
+    datalogger_write_sync();
+}
+
+char *datalogger_park_create_file(uint16_t park_nr)
+{
+    char *dirname = "park_mode";
+    rtc_time time;
+
+    /* if initialize is true, then create a directory and files*/
+    datalogger_cd("..");
+    datalogger_mkdir(dirname);
+    datalogger_cd(dirname);
+
+    /* get time-stamp */
+    artemis_rtc_get_time(&time);
+
+    static char filename[64] = {0};
+
+    sprintf (filename, "%d_park_%02d.%02d.20%02d.txt", park_nr, time.month, time.day, time.year);
+    datalogger_createfile(filename);
+    datalogger_openfile(filename);
+    datalogger_writefile("S.No.\t| Depth(m)\t| Temperature(°C)\t| Time-stamp\t\n");
+    datalogger_writefile("\n===========================================================\n\n");
+    datalogger_write_sync();
+    ARTEMIS_DEBUG_PRINTF("%s file created\n", filename);
+    park_count = 0;
+
+    return filename;
+}
+
+void datalogger_park_mode(char *filename, float depth, float temp, rtc_time *time)
+{
+    char *dirname = "park_mode";
+    //rtc_time time;
+
+    /* if initialize is true, then create a directory and files*/
+    datalogger_cd("..");
+    datalogger_cd(dirname);
+
+    ///* get time-stamp */
+    //artemis_rtc_get_time(&time);
+
+    park_count++;
+    datalogger_openfile(filename);
+
+    int32_t Depth  =  (int32_t) (depth  * 10000);
+    int32_t Temp   =  (int32_t) (temp   * 10000);
+
+    char data[64] = {0};
+    sprintf (data, "\n%u\t  %ld.%04ld\t  %ld.%04ld\t %02d:%02d:%02d\n",
+                    park_count, Depth/10000, Depth%10000, Temp/10000, Temp%10000,
+                    time->hour, time->min, time->sec);
+
+    datalogger_writefile(data);
+    datalogger_write_sync();
 
 }
 
-void datalogger_park_mode(float temp, float depth);
-void datalogger_profile_mode(float temp, float depth);
 void datalogger_surface_mode(float temp, float depth);
 
 void datalogger_log_init(void)
