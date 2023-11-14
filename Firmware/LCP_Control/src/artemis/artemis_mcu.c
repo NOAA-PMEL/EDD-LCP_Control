@@ -24,7 +24,7 @@ void artemis_mcu_initialize(void)
 	ARTEMIS_DEBUG_HALSTATUS(am_hal_burst_mode_initialize(&burst_avail));
 
 	// configure the board for low power operation
-	// am_bsp_low_power_init();
+	am_bsp_low_power_init();
 
 	// enable interrupts
 	//ARTEMIS_DEBUG_HALSTATUS(am_hal_interrupt_master_enable());
