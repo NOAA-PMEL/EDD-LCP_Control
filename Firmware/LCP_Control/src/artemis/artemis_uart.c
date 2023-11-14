@@ -127,6 +127,8 @@ void artemis_uart_receive(artemis_stream_t *rxstream)
     }
     else
     {
+        memcpy(rxstream->buffer, NULL, 0);
+        rxstream->written = 0;
         // do nothing
     }
 }

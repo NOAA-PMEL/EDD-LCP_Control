@@ -135,19 +135,67 @@ void i9603n_initialize(void)
 
     /** Initialize the power circuitry */
     artemis_sc_initialize();
-    am_util_delay_ms(500);
+    //am_util_delay_ms(500);
+}
+
+void i9603n_uninitialize(void)
+{
+    artemis_i9603n_uninitialize();
+    artemis_sc_power_off();
 }
 
 void i9603n_on(void)
 {
     module_i9603_power_on();
-    am_util_delay_ms(1000);
+    //am_util_delay_ms(1000);
     //module_i9603n_echo_off();
 }
 
 void i9603n_off(void)
 {
     module_i9603_power_off();
+}
+
+void task_Iridium (void)
+{
+    TickType_t xLastWakeTime;
+    uint16_t period = 1000/0.3;
+    period /= portTICK_PERIOD_MS;
+
+    am_util_stdio_printf("\nIridium delay PERIOD = %d \n", period);
+
+    SemaphoreHandle_t semaphore = xSemaphoreCreateMutex();
+    xLastWakeTime = xTaskGetTickCount();
+
+    uint16_t len = 0;
+    uint8_t serial[64];
+
+    while(1)
+    {
+        len = i9603n_signal_quality(serial);
+        //len = i9603n_status(serial);
+        //len = i9603n_read_imei(serial);
+
+        if(xSemaphoreTake(semaphore, period)==pdTRUE)
+        //if(xSemaphoreTake(Isemaphore, period)==pdTRUE)
+        {
+            //len = i9603n_signal_quality(serial);
+            //len = i9603n_read_imei(serial);
+            if (len > 0)
+            {
+                for(uint16_t i=0; i<len; i++)
+                {
+                    am_util_stdio_printf("%d ", (int8_t)serial[i]);
+                    //am_util_stdio_printf("%c", serial[i]);
+                }
+                am_util_stdio_printf("\n");
+            }
+
+            xSemaphoreGive(semaphore);
+            //xSemaphoreGive(Isemaphore);
+        }
+        vTaskDelayUntil(&xLastWakeTime, period);
+    }
 }
 
 uint16_t i9603n_send_AT_cmd(uint8_t *cmd, uint8_t *rxData)

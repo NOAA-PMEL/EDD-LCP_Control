@@ -161,6 +161,11 @@ void artemis_i9603n_initialize(void)
     artemis_uart_flush(uart);
 }
 
+void artemis_i9603n_uninitialize(void)
+{
+	artemis_uart_t *uart = &module.uart;
+	artemis_uart_uninitialize(uart);
+}
 
 void artemis_i9603n_power_on(void)
 {

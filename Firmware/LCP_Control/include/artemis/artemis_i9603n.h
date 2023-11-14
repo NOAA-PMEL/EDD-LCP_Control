@@ -39,6 +39,7 @@
 ************************************************************************/
 
 void artemis_i9603n_initialize(void);
+void artemis_i9603n_uninitialize(void);
 void artemis_i9603n_power_on(void);
 void artemis_i9603n_power_off(void);
 bool artemis_i9603n_is_network_available(void);

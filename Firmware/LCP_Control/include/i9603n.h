@@ -71,6 +71,7 @@ typedef enum ei9603n_result_t
 ************************************************************************/
 
 void i9603n_initialize(void);
+void i9603n_uninitialize(void);
 void i9603n_on(void);
 void i9603n_off(void);
 
@@ -88,6 +89,9 @@ uint16_t i9603n_read_text(char *rxText);
 uint16_t i9603n_read_data(uint8_t *rxData);
 uint16_t i9603n_test_transfer(uint8_t *rxData);
 uint8_t i9603n_initiate_transfer(uint8_t *rxData);
+
+/* FreeRTOS task*/
+void task_Iridium (void);
 
 //#ifndef TEST
 ////*****************************************************************************
