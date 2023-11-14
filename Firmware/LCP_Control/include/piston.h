@@ -18,8 +18,11 @@
 #include <stdbool.h>
 
 #include "FreeRTOS.h"
+#include "FreeRTOSConfig.h"
+#include "event_groups.h"
 #include "task.h"
 #include "semphr.h"
+#include "rtos.h"
 /**********************************************************************************
  * Configuration Constants
  *********************************************************************************/
@@ -40,6 +43,9 @@
 #define PISTON_I2C_RW_PST_CAL       ( 0x67 )
 #define PISTON_I2C_RW_TRV_DIR       ( 0x60 )
 #define PISTON_I2C_RW_TRV_ENG       ( 0x61 )
+#define PISTON_I2C_RW_TRV_USER_OR   ( 0x63 )
+#define PISTON_I2C_RW_MOV_ZERO      ( 0x64 )
+#define PISTON_I2C_RW_MOV_FULL      ( 0x65 )
 
 /* MEM READ ADDRESSES */
 #define PISTON_I2C_R_VOLUME_TOTAL   ( 0x08 )
@@ -94,7 +100,7 @@ void task_move_piston_to_volume(void);
 void task_move_piston_to_length(void);
 void PIS_set_piston_rate(uint8_t rate);
 
-void PIS_initialize(void);
+bool PIS_initialize(void);
 bool PIS_set_volume(double volume);
 void PIS_move_to_zero(void);
 void PIS_move_to_full(void);
@@ -110,6 +116,9 @@ float PIS_get_volume(void);
 void PIS_calibration(bool cal);
 bool PIS_calibration_check(void);
 void PIS_Reset(void);
+
+// FreeRTOS get volume
+bool PIS_Get_Volume(double *volume);
 
 /**********************************************************************************
  * Unit Test Variables & Static Prototpyes
