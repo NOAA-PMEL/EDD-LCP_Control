@@ -90,6 +90,7 @@ size_t DATA_get_original(Data_t *p, uint32_t *time, float *depth, float *temp);
 
 size_t DATA_get_converted(Data_t *p, uint32_t *start, uint16_t *offset, uint16_t *depth, uint16_t *temp);
 
+uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec);
 
 /**********************************************************************************
  * Unit Test Variables & Static Prototpyes
