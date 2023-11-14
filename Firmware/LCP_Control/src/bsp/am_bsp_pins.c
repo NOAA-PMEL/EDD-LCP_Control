@@ -283,8 +283,10 @@ const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_ACCEL_SPI_CS =
 const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_PRES_ON =
 {
     .uFuncSel            = AM_HAL_PIN_44_GPIO,
-    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN,
-    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA
+    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
+    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    //.eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL
+    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN
 };
 
 //*****************************************************************************
@@ -407,7 +409,7 @@ const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_I2C_1_PWR =
 {
     .uFuncSel            = AM_HAL_PIN_16_GPIO,
     .eGPInput            = AM_HAL_GPIO_PIN_INPUT_NONE,
-    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
+    .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA,
     .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_PUSHPULL
 };
 
