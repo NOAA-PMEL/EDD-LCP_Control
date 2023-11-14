@@ -149,7 +149,7 @@ static float module_calculate_buoyancy_from_ascent_rate(float rate);
 static float module_calculate_volume_from_ascent_rate(float rate);
 static float module_calculate_buoyancy_from_descent_rate(float rate);
 static float module_calculate_volume_from_descent_rate(float rate);
-
+static float module_calculate_volume_from_buoyancy(float buoyancy);
 
 //*****************************************************************************
 //
@@ -454,17 +454,6 @@ int32_t CTRL_MoveToSurface(uint32_t timeout)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 //*****************************************************************************
 //
 // Static Functions
@@ -476,43 +465,6 @@ static void module_turn_off_gps_and_iridium(void)
     i9603n_off();
     // turn off ublox gps
     GPS_off();
-}
-
-static float module_calculate_buoyancy_from_ascent_rate(float rate)
-{
-    float f_gravity = 0;
-    float f_drag = 0;
-    float f_buoyant = 0;
-
-    /** Calculate Force due to gravity , F_g = m*g */
-    f_gravity = settings.weight * G_CONST;
-    
-    /** Calculate the drag force @ that velocity */
-    /** F_d = 1/2 (rho) * v^2 * Cd * A */
-    f_drag = 0.5;
-    f_drag *= settings.density;
-    f_drag *= (rate * rate);
-    f_drag *= CYLINDER_DRAG_COEFF;
-    f_drag *= settings.cross_section;
-
-    /** Calculate the required buoyant force */
-    f_buoyant = f_gravity + f_drag;
-
-    return f_buoyant;
-}
-
-
-
-
-static float module_calculate_volume_from_ascent_rate(float rate)
-{
-    float f_buoyant = module_calculate_buoyancy_from_ascent_rate(rate);
-
-    /** Calculate volume from buoyant force */
-    /** F_buoyant = V * (rho) * g */
-    /** so, V = (rho) * g / F_buoyant */
-    float volume = settings.density * G_CONST / f_buoyant;
-    return volume;
 }
 
 static float module_calculate_buoyancy_from_descent_rate(float rate)
@@ -538,24 +490,57 @@ static float module_calculate_buoyancy_from_descent_rate(float rate)
     return f_buoyant;
 }
 
+static float module_calculate_buoyancy_from_ascent_rate(float rate)
+{
+    float f_gravity = 0;
+    float f_drag = 0;
+    float f_buoyant = 0;
+
+    /** Calculate Force due to gravity , F_g = m*g */
+    f_gravity = settings.weight * G_CONST;
+
+    /** Calculate the drag force @ that velocity */
+    /** F_d = 1/2 (rho) * v^2 * Cd * A */
+    f_drag = 0.5;
+    f_drag *= settings.density;
+    f_drag *= (rate * rate);
+    f_drag *= CYLINDER_DRAG_COEFF;
+    f_drag *= settings.cross_section;
+
+    /** Calculate the required buoyant force */
+    f_buoyant = f_gravity + f_drag;
+
+    return f_buoyant;
+}
+
 static float module_calculate_volume_from_descent_rate(float rate)
 {
     float f_buoyant = module_calculate_buoyancy_from_descent_rate(rate);
 
     /** Calculate volume from buoyant force */
-    /** F_buoyant = V * (rho) * g */
-    /** so, V = (rho) * g / F_buoyant */
-    float volume = settings.density * G_CONST / f_buoyant;
+    float volume = module_calculate_volume_from_buoyancy(f_buoyant);
+    return volume;
+}
+
+static float module_calculate_volume_from_ascent_rate(float rate)
+{
+    float f_buoyant = module_calculate_buoyancy_from_ascent_rate(rate);
+
+    /** Calculate volume from buoyant force */
+    float volume = module_calculate_volume_from_buoyancy(f_buoyant);
     return volume;
 }
 
 static float module_calculate_volume_from_buoyancy(float buoyancy)
 {
-
+    /** Calculate volume from buoyant force */
+    /** F_buoyant = V * (rho) * g */
+    /** so, V = F_buoyant / (rho) * g */
+    float volume = buoyancy / (settings.density * G_CONST) ;
+    return volume;
 }
 
-
-static bool module_ctrl_set_buoyancy_from_rate(float rate, bool falling)
+float module_ctrl_set_buoyancy_from_rate(float rate, bool falling)
 {
     float buoyancy = 0.0f;
     float volume = 0.0f;
@@ -563,17 +548,20 @@ static bool module_ctrl_set_buoyancy_from_rate(float rate, bool falling)
     {
         buoyancy = module_calculate_buoyancy_from_descent_rate(rate);
         volume = module_calculate_volume_from_descent_rate(rate);
+        ARTEMIS_DEBUG_PRINTF("falling, buoyanc = %0.3f, volume=%0.3f\n", buoyancy, volume);
     } else {
         buoyancy = module_calculate_buoyancy_from_ascent_rate(rate);
         volume = module_calculate_volume_from_ascent_rate(rate);
+        ARTEMIS_DEBUG_PRINTF("rising, buoyanc = %0.3f, volume=%0.3f\n", buoyancy, volume);
     }
 
-    if(PIS_set_volume(volume))
-    {
-        task_move_piston_to_volume();
-        profiler.volume.previous = profiler.volume.current;
-        profiler.volume.current = volume;
-        profiler.buoyancy.previous = profiler.buoyancy.current;
-        profiler.buoyancy.current = buoyancy;
-    }
+    //if(PIS_set_volume(volume))
+    //{
+    //    task_move_piston_to_volume();
+    //    profiler.volume.previous = profiler.volume.current;
+    //    profiler.volume.current = volume;
+    //    profiler.buoyancy.previous = profiler.buoyancy.current;
+    //    profiler.buoyancy.current = buoyancy;
+    //}
+    return volume;
 }

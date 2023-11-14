@@ -37,16 +37,12 @@ typedef enum eCTRL_Error_t{
 //    }rate;
 //}Actual;
 
+//float module_calculate_buoyancy_from_ascent_rate(float rate);
+//float module_calculate_volume_from_ascent_rate(float rate);
+//float module_calculate_buoyancy_from_descent_rate(float rate);
+//float module_calculate_volume_from_descent_rate(float rate);
 
-
-
-
-
-
-
-
-
-
+float module_ctrl_set_buoyancy_from_rate(float rate, bool falling);
 
 int32_t CTRL_MoveToPark(float depth);
 int32_t CTRL_MoveToStartDepth(float depth);
@@ -55,8 +51,6 @@ int32_t CTRL_Profile(float top_depth, float rise_rate, bool break_thru_lens);
 int32_t CTRL_MoveToSurface(uint32_t timeout);
 int32_t CTRL_MoveToTransmit(uint32_t timeout);
 
-
-
 void CTRL_set_park_depth(float depth);
 void CTRL_set_park_residence_time(uint32_t sec);
 void CTRL_set_profile_depth(float depth);
@@ -64,8 +58,6 @@ void CTRL_set_profile_residence_time(uint32_t sec);
 void CTRL_set_profile_rise_rate(float rate);
 void CTRL_set_profile_break_thru(bool lens);
 void CTRL_set_crush_limit(float depth);
-
-
 
 
 #endif // CONTROL_H
