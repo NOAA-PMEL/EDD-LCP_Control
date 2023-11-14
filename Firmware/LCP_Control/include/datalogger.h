@@ -8,7 +8,10 @@
 //*****************************************************************************
 #include <stdint.h>
 #include "artemis_i2c.h"
+#include "artemis_rtc.h"
 #include "am_bsp_pins.h"
+#include "sensors.h"
+#include "stdbool.h"
 
 //*****************************************************************************
 //
@@ -42,7 +45,7 @@
 
 typedef uint8_t module_buffer_t[LOGGER_BUFFER_SIZE];
 
-typedef struct s_module_t
+typedef struct s_module_d
 {
 	artemis_i2c_t i2c;
 	module_buffer_t txbuffer;
@@ -51,7 +54,7 @@ typedef struct s_module_t
 		uint32_t pin;
 		am_hal_gpio_pincfg_t *pinConfig;
 	}power;
-} module_t;
+} module_d;
 
 typedef enum e_status_dl
 {
@@ -63,8 +66,8 @@ typedef enum e_status_dl
 
 } status_dl;
 
-void datalogger_init(uint8_t iomNo);    // iomNo. 1 or 4
-void datalogger_device_info(void);
+bool datalogger_init(uint8_t iomNo);    // iomNo. 1 or 4
+bool datalogger_device_info(void);
 void datalogger_log_init(void);
 void datalogger_power_on(void);
 void datalogger_power_off(void);
@@ -86,9 +89,16 @@ uint32_t datalogger_rmdir(char *dirname);
 uint32_t datalogger_filesize(char *filename);
 
 /* data logging functions */
-void datalogger_predeploy_mode(float temp, float depth, bool initialize);
-void datalogger_park_mode(float temp, float depth);
-void datalogger_profile_mode(float temp, float depth);
-void datalogger_surface_mode(float temp, float depth);
+void datalogger_predeploy_mode(SensorGps_t *gps, bool check);
+
+char *datalogger_park_create_file(uint16_t park_nr);
+void datalogger_park_mode(char *filename, float depth,
+                            float temp, rtc_time *time);
+
+char *datalogger_profile_create_file(uint16_t sps_nr);
+void datalogger_profile_mode(char *filename, float depth,
+                            float temp, float volume, rtc_time *time);
+
+void datalogger_surface_mode(float depth, float temp);
 
 #endif
