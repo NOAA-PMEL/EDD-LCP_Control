@@ -1,11 +1,14 @@
-/* @file artemis_main.c
+/* @file main.c
  *
  *
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "main.h"
 #include "bsp_uart.h"
-#include "stdlib.h"
 
 #include "artemis_debug.h"
 #include "artemis_mcu.h"
@@ -18,14 +21,10 @@
 #include "semphr.h"
 
 #include "sensors.h"
-#include "piston.h"
-#include "artemis_rtc.h"
-#include "temperature.h"
 #include "control.h"
 #include "StateMachine.h"
-#include "datalogger.h"
 
-#define FUNC
+#define FREE_RTOS
 
 int main(void)
 {
@@ -36,7 +35,6 @@ int main(void)
 
     am_util_delay_ms(1000);
     //am_util_stdio_terminal_clear();
-    am_util_stdio_printf("NDEBUG :: Hello LCP Controlboard\n");
     ARTEMIS_DEBUG_PRINTF("DEBUG  :: Hello LCP Controlboard\n");
 
     // initialize time functions
@@ -55,57 +53,24 @@ int main(void)
     // run the application
     // artemis_scheduler_run();
 
-    /* datalogger init */
-    //datalogger_init(4);
-    //datalogger_predeploy_mode(0.0, 0.0, true);
 
-
-#ifdef FUNC
+#ifdef FREE_RTOS
 
     /* initialize sensors */
-    SENS_initialize();
-    PIS_initialize();
-    PIS_set_piston_rate(1);
-    SENS_sensor_depth_on();
-    SENS_sensor_temperature_on();
+    STATE_initialize(SYSST_SimpleProfiler_mode);
 
-    ///* set rate, and turn on temperature sensor*/
-    //SENS_set_temperature_rate(1);
-    ///* set rate, and turn on pressure sensor*/
-    //SENS_set_depth_rate(2);
-    /* set rate, and turn on gps*/
-    //SENS_set_gps_rate(1);
-    //artemis_rtc_initialize();
-    //rtc_time time;
+    /* create tasks for PreDeploy_mode, Profile_mode, Popup_mode */
 
-    TaskHandle_t Depth, Temp, xGPS;
-    SENS_task_profile_sensors(&Depth, &Temp);
-    //SENS_task_park_sensors(&Depth);
-    //SENS_task_sample_depth_continuous(&Depth);
-    //SENS_task_gps(&xGPS);
-    ///* set rate, and turn on piston*/
-    //PIS_calibration(true);
-    //PIS_extend();
-    PIS_set_volume(655);
-    //PIS_Reset();
+    configASSERT(xTaskCreate( (TaskFunction_t) STATE_Predeploy, "PreDeploy_task", 512, NULL, tskIDLE_PRIORITY + 4UL, NULL) == pdPASS);
+    configASSERT(xTaskCreate( (TaskFunction_t) STATE_Profiler, "Profiler_task", 512, NULL, tskIDLE_PRIORITY + 4UL, NULL) == pdPASS);
+    configASSERT(xTaskCreate( (TaskFunction_t) STATE_Popup, "Popup_task", 256, NULL, tskIDLE_PRIORITY + 3UL, NULL) == pdPASS);
 
-    /* setpoint for length*/
-    //PIS_set_volume(0.05);
-
-    /* create tasks locally for now */
-    //configASSERT(xTaskCreate( (TaskFunction_t) task_temperature,"temperature task", 256, NULL, tskIDLE_PRIORITY + 3UL, NULL) == pdPASS);
-    //configASSERT(xTaskCreate( (TaskFunction_t) task_depth, "Pressure task", 256, NULL, tskIDLE_PRIORITY + 4UL, NULL) == pdPASS);
-    //configASSERT(xTaskCreate( (TaskFunction_t) task_gps, "GPS task", 256, NULL, tskIDLE_PRIORITY + 3UL, NULL) == pdPASS);
-    //configASSERT(xTaskCreate( (TaskFunction_t) task_move_piston_to_length, "Piston length task", 256, NULL, tskIDLE_PRIORITY + 4UL, NULL) == pdPASS);
-    configASSERT(xTaskCreate( (TaskFunction_t) task_move_piston_to_volume, "Piston volume task", 256, NULL, tskIDLE_PRIORITY + 4UL, NULL) == pdPASS);
-    //configASSERT(xTaskCreate(task_move_piston_to_full, "Piston volume task", 128, NULL, 5, NULL) == pdPASS);
-
-    ARTEMIS_DEBUG_PRINTF("\n\n****************************\n");
+    ARTEMIS_DEBUG_PRINTF("\n****************************\n");
     ARTEMIS_DEBUG_PRINTF("FreeRTOS here\n");
     ARTEMIS_DEBUG_PRINTF("schedular is going to start\n");
-    ARTEMIS_DEBUG_PRINTF("****************************\n\n");
+    ARTEMIS_DEBUG_PRINTF("******************************\n\n");
     vTaskStartScheduler();
-    ARTEMIS_DEBUG_PRINTF("Not here \n");
+    ARTEMIS_DEBUG_PRINTF("Do not get here\n");
 
 #endif
 
@@ -114,5 +79,6 @@ int main(void)
     {
         ARTEMIS_DEBUG_PRINTF("do not get here in case of RTOS\n");
         am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_DEEP);
+        am_util_delay_ms(1000);
     }
 }
