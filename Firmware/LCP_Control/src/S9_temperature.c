@@ -22,7 +22,9 @@
 #include "am_mcu_apollo.h"
 #include "am_bsp.h"
 #include "am_util.h"
-#include "string.h"
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 //*****************************************************************************
 //
@@ -82,7 +84,7 @@ void S9T_init(S9_init_param *p)
     S9T_ON();
 
     /* stop sampling*/
-    _module_s9_stop_sampling();
+    //_module_s9_stop_sampling();
 
     // fetch device info, if required
     S9T_dev_info();
@@ -200,7 +202,8 @@ void S9T_disable(void)
 void S9T_ON(void)
 {
     am_hal_gpio_output_clear(pS9->device.power.pin_number);
-    //am_hal_systick_delay_us(500000);
+    am_hal_systick_delay_us(5000);
+    _module_s9_stop_sampling();
 }
 
 void S9T_OFF(void)
@@ -397,7 +400,7 @@ STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p)
 
 STATIC void _parse_version(char *data, sS9_t *p, uint8_t rxLen)
 {
-    uint8_t i=0;
+    //uint8_t i=0;
     char temp[256];
     float temp_f;
 
