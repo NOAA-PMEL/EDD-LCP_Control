@@ -52,7 +52,7 @@ uint8_t SYS_get_lcp_variant(void)
     return System.lcp_variant;
 }
 
-void SYS_lcp_info(void)
+bool SYS_lcp_info(void)
 {
     ARTEMIS_DEBUG_PRINTF("\n\nLCP Profiler Information\n");
     ARTEMIS_DEBUG_PRINTF("*****************************\n");
@@ -73,4 +73,6 @@ void SYS_lcp_info(void)
     uint32_t lcp_ser = SYS_get_serial_num();
     ARTEMIS_DEBUG_PRINTF("\tLCP Serial\t: %c%u%u\n", lcp_ser>>16&0xFF, lcp_ser>>8&0xFF, lcp_ser&0xFF);
     ARTEMIS_DEBUG_PRINTF("\n");
+
+    return true;
 }

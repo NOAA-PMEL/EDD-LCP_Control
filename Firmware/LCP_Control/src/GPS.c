@@ -2,9 +2,10 @@
 #include "ublox.h"
 #include "artemis_ublox_i2c.h"
 
-void GPS_initialize(void)
+bool GPS_initialize(void)
 {
-	UBLOX_initialize(UBLOX_COM_I2C, UBLOX_MSG_UBX, UBLOX_MSG_UBX, 1);
+    UBLOX_initialize(UBLOX_COM_I2C, UBLOX_MSG_UBX, UBLOX_MSG_UBX, 1);
+    return true;
 }
 
 bool GPS_Read(GPS_Data_t *data)

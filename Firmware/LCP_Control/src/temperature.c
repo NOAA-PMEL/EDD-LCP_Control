@@ -15,7 +15,7 @@ static S9_init_param sParam = {
 };
 static S9_init_param *pS;
 
-void TEMP_initialize(TemperatureSensor_t sensor){
+bool TEMP_initialize(TemperatureSensor_t sensor){
 
     module.sensor = sensor;
 
@@ -30,16 +30,18 @@ void TEMP_initialize(TemperatureSensor_t sensor){
         default:
             break;
     }
+
+    return true;
 }
 
 void TEMP_Power_ON(void)
 {
-    S9T_ON();
+    S9T_enable();
 }
 
 void TEMP_Power_OFF(void)
 {
-    S9T_OFF();
+    S9T_disable();
 }
 
 void TEMP_Read(Temperature_Measurement_t *data)

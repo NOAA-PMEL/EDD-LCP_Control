@@ -113,7 +113,7 @@ extern "C"{
  *
  *  @return None
  */
-void DEPTH_initialize(eDEPTH_Sensor_t sensor);
+bool DEPTH_initialize(eDEPTH_Sensor_t sensor);
 
 /** @brief Depth Power On
  *

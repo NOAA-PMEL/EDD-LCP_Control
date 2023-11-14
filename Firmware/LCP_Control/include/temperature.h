@@ -2,6 +2,7 @@
 #define TEMPERATURE_H
 
 #include <stdint.h>
+#include <stdbool.h>
 //#include "artemis_pa9ld.h"
 
 
@@ -42,7 +43,7 @@ typedef struct sTemperature_Measurement_t
  *
  *  @return None
  */
-void TEMP_initialize(TemperatureSensor_t sensor);
+bool TEMP_initialize(TemperatureSensor_t sensor);
 
 /** @brief Temperature Power On
  *

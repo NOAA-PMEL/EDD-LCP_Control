@@ -2,6 +2,7 @@
 #define SYSINFO_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define SYSTEM_ID       ( 0x4D )        /** < NOAA system ID, 0x4D = 77 */
 
@@ -45,6 +46,6 @@ uint32_t SYS_get_serial_num(void);
 uint16_t SYS_get_firmware(void);
 uint8_t SYS_get_system_id(void);
 uint8_t SYS_get_lcp_variant(void);
-void SYS_lcp_info(void);
+bool SYS_lcp_info(void);
 
 #endif // SYSINFO_H

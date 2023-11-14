@@ -355,7 +355,7 @@ void module_MAX14830_RTOS_ISR(uint8_t irq);
  * @brief Initialize the MAX14830 IC
  * 
  */
-void MAX14830_init(void)
+bool MAX14830_init(void)
 {
     IomConfig.eInterfaceMode       = AM_HAL_IOM_SPI_MODE;
     //IomConfig.ui32ClockFreq        = AM_HAL_IOM_500KHZ;
@@ -399,6 +399,7 @@ void MAX14830_init(void)
 
     /* Enable global interrupt */
     /* putting in a low-power mode, do we have ? */
+    return true;
 }
 
 static void module_MAX14830_conf(void)

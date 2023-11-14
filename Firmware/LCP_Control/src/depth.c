@@ -98,7 +98,7 @@ static float module_DEPTH_Convert_Pressure_to_Depth(float pressure);
 * @see DEPTH_initialize
 * @see DEPTH_Power_ON
 *******************************************************************************/
-void DEPTH_initialize(eDEPTH_Sensor_t sensor)
+bool DEPTH_initialize(eDEPTH_Sensor_t sensor)
 {
     module.sensor = sensor;
     switch(sensor)
@@ -115,6 +115,8 @@ void DEPTH_initialize(eDEPTH_Sensor_t sensor)
         default:
             break;
     }
+
+    return true;
 }
 
 /**

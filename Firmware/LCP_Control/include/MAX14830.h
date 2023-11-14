@@ -23,6 +23,7 @@
 *********************************************************************************/
 
 #include <stdint.h>
+#include <stdbool.h>
 
 
 /**********************************************************************************
@@ -78,7 +79,7 @@ typedef enum
 extern "C"{
 #endif
 
-void MAX14830_init(void);
+bool MAX14830_init(void);
 void MAX14830_port_enable(eMAX18430_ComPort_t port);
 void MAX14830_port_enable_direct(eMAX18430_ComPort_t port);
 void MAX14830_port_disable(eMAX18430_ComPort_t port);
