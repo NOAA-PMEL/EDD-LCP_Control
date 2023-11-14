@@ -239,7 +239,8 @@ LIBS+= $(SDKPATH)/mcu/apollo3/hal/gcc/bin/libam_hal.a
 
 CFLAGS = -mthumb -mcpu=$(CPU) -mfpu=$(FPU) -mfloat-abi=$(FABI)
 CFLAGS+= -ffunction-sections -fdata-sections
-CFLAGS+= -MMD -MP -std=gnu99 -Wall -g
+##CFLAGS+= -MMD -MP -std=gnu99 -Wall -g
+CFLAGS+= -MMD -MP -std=c99 -Wall -g
 CFLAGS+= -Wall -Wno-unused-function
 CFLAGS+= -O3
 CFLAGS+= $(DEFINES)
@@ -251,6 +252,8 @@ LFLAGS+= $(LIBS)
 LFLAGS+= -nostartfiles -static
 LFLAGS+= -Wl,--gc-sections,--entry,Reset_Handler,-Map,$(BIN)/$(TARGET).map
 LFLAGS+= --specs=rdimon.specs -lgcc -lc -lm -lrdimon
+LFLAGS+= -u _printf_float
+LFLAGS+=
 
 # Additional user specified CFLAGS
 CFLAGS+=$(EXTRA_CFLAGS)
