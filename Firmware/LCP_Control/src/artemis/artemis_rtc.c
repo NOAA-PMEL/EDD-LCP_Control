@@ -1,4 +1,6 @@
-// @file artemis_rtc.c
+/** @file artemis_rtc.c
+ *  based on RTC print example from AmbiqSDK
+ */
 
 #include "am_mcu_apollo.h"
 #include "am_bsp.h"
@@ -28,7 +30,7 @@ am_hal_rtc_time_t hal_time;
 uint32_t g_LastSecond = 0;
 uint32_t g_TestCount = 0;
 
-uint16_t toVal(char *pcAsciiStr)
+uint16_t toVal(const char *pcAsciiStr)
 {
     uint16_t iRetVal = 0;
     iRetVal += pcAsciiStr[1] - '0';
@@ -36,7 +38,7 @@ uint16_t toVal(char *pcAsciiStr)
     return iRetVal;
 }
 
-uint8_t mthToIndex(char *pcMon)
+uint8_t mthToIndex(const char *pcMon)
 {
     uint8_t idx;
     for (idx = 0; idx < 12; idx++)
@@ -49,46 +51,44 @@ uint8_t mthToIndex(char *pcMon)
     return 12;
 }
 
+void am_ctimer_isr(void)
+{
+    am_hal_ctimer_int_clear(AM_HAL_CTIMER_INT_TIMERA0);
+    //am_hal_rtc_time_get(&hal_time);
+}
+
 static void artemis_rtc_timer(void)
 {
-    // Enable the LFRC.
+    /* Enable the LFRC */
     am_hal_clkgen_control(AM_HAL_CLKGEN_CONTROL_LFRC_START, 0);
 
-    // Set up timer A0.
+    /* Set up timer A0 */
     am_hal_ctimer_clear(0, AM_HAL_CTIMER_TIMERA);
     am_hal_ctimer_config(0, &g_sTimer0);
 
-    // Set the timing for timerA0.
+    /* Set the timing for timerA0 */
     am_hal_ctimer_period_set(0, AM_HAL_CTIMER_TIMERA, 31, 0);
 
-    // Clear the timer Interrupt
+    /* Clear the timer Interrupt */
     am_hal_ctimer_int_clear(AM_HAL_CTIMER_INT_TIMERA0);
     am_hal_stimer_int_enable(AM_HAL_STIMER_INT_OVERFLOW);
 }
 
 void artemis_rtc_initialize(void)
 {
-    //
-    // Enable the XT for the RTC.
-    //
+    /* Enable the XT for the RTC */
     am_hal_clkgen_control(AM_HAL_CLKGEN_CONTROL_XTAL_START, 0);
 
-    //
-    // Select XT for RTC clock source
-    //
+    /* Select XT for RTC clock source */
     am_hal_rtc_osc_select(AM_HAL_RTC_OSC_XT);
 
+    /* Enable 24 hours */
     am_hal_rtc_time_12hour(false);
-    //
-    // Enable the RTC.
-    //
+
+    /* Enable the RTC Oscillator */
     am_hal_rtc_osc_enable();
 
 #if defined(__GNUC__)  ||  defined(__ARMCC_VERSION)  ||  defined(__IAR_SYSTEMS_ICC__)
-    //
-    // The RTC is initialized from the date and time strings that are
-    // obtained from the compiler at compile time.
-    //
     hal_time.ui32Hour = toVal(&__TIME__[0]);
     hal_time.ui32Minute = toVal(&__TIME__[3]);
     hal_time.ui32Second = toVal(&__TIME__[6]);
@@ -99,45 +99,35 @@ void artemis_rtc_initialize(void)
     hal_time.ui32Year = toVal(&__DATE__[9]);
     hal_time.ui32Century = 0;
 #else
-    //
-    // The RTC is initialized from an arbitrary date.
-    //
     hal_time.ui32Hour = 14;
     hal_time.ui32Minute = 24;
     hal_time.ui32Second = 33;
     hal_time.ui32Hundredths = 50;
     hal_time.ui32Weekday = 3;
-    hal_time.ui32DayOfMonth = 15;
-    hal_time.ui32Month = 4;
-    hal_time.ui32Year = 14;
+    hal_time.ui32DayOfMonth = 11;
+    hal_time.ui32Month = 11;
+    hal_time.ui32Year = 23;
     hal_time.ui32Century = 0;
 #endif
 
-    //am_hal_rtc_time_set(&hal_time);
-    //artemis_rtc_timer();
+    am_hal_rtc_time_set(&hal_time);
+    artemis_rtc_timer();
 
-    //
-    // Enable the timer Interrupt.
-    //
+    /* Enable the timer Interrupt */
     am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERA0);
 
-    //
-    // Enable the timer interrupt in the NVIC.
-    // ???
+    /* Enable the timer interrupt in the NVIC */
+    NVIC_EnableIRQ(CTIMER_IRQn);
+    am_hal_interrupt_master_enable();
 
-    //
-    // Enable the timer.
-    //
+    /* Enable the timer */
     am_hal_ctimer_start(0, AM_HAL_CTIMER_TIMERA);
 
-    ARTEMIS_DEBUG_PRINTF("RTC Print Example\n");
-    ARTEMIS_DEBUG_PRINTF("This example was built on %s at %s.\n\n", __DATE__, __TIME__);
-
+    ARTEMIS_DEBUG_PRINTF("RTC Timer started on %s at %s.\n\n", __DATE__, __TIME__);
 }
 
 uint8_t artemis_rtc_get_time(rtc_time *time)
 {
-
     am_hal_rtc_time_get(&hal_time);
 
     if (hal_time.ui32ReadError){
@@ -176,7 +166,8 @@ uint8_t artemis_rtc_get_time(rtc_time *time)
 
 void artemis_rtc_set_time(rtc_time *pTime){
 
-    // The RTC is initialized from gps time
+    /* The RTC is initialized from gps time */
+    artemis_rtc_disable();
 
     hal_time.ui32Hour = pTime->hour;
     hal_time.ui32Minute = pTime->min;
@@ -185,24 +176,33 @@ void artemis_rtc_set_time(rtc_time *pTime){
     hal_time.ui32Weekday = pTime->day;
     hal_time.ui32DayOfMonth = pTime->day;
     hal_time.ui32Month = pTime->month;
-    hal_time.ui32Year = pTime->year;
+    hal_time.ui32Year = (pTime->year - 2000);
     hal_time.ui32Century = 0;
 
     am_hal_rtc_time_set(&hal_time);
+    am_hal_rtc_osc_enable();
 }
 
-uint8_t artemis_rtc_gps_calibration(GPS_Data_t *gps_time){
-
+//uint8_t artemis_rtc_gps_calibration(GPS_Data_t *gps_time)
+uint8_t artemis_rtc_gps_calibration(SensorGps_t *gps_time)
+{
     rtc_time time;
 
-    time.year = (uint16_t) gps_time->time.year;
-    time.month = (uint8_t) gps_time->time.month;
-    time.day = (uint8_t) gps_time->time.day;
-    time.hour = (uint8_t) gps_time->time.hour;
-    time.min = (uint8_t) gps_time->time.min;
-    time.sec = (uint8_t) gps_time->time.sec;
+    time.year = (uint16_t) gps_time->year;
+    time.month = (uint8_t) gps_time->month;
+    time.day = (uint8_t) gps_time->day;
+    time.hour = (uint8_t) gps_time->hour;
+    time.min = (uint8_t) gps_time->min;
+    time.sec = (uint8_t) gps_time->sec;
 
-    // Set the gps time
+    //time.year = (uint16_t) gps_time->time.year;
+    //time.month = (uint8_t) gps_time->time.month;
+    //time.day = (uint8_t) gps_time->time.day;
+    //time.hour = (uint8_t) gps_time->time.hour;
+    //time.min = (uint8_t) gps_time->time.min;
+    //time.sec = (uint8_t) gps_time->time.sec;
+
+    /* Set the gps time */
     artemis_rtc_set_time(&time);
     
     return 0;
@@ -215,7 +215,6 @@ void artemis_rtc_set12hour(void){
 void artemis_rtc_set24hour(void){
     am_hal_rtc_time_12hour(false);
 }
-
 
 void artemis_rtc_enable(void){
     am_hal_rtc_osc_enable();

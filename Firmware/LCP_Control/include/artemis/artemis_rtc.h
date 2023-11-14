@@ -6,6 +6,7 @@
 #include "stdbool.h"
 #include "stdint.h"
 #include "GPS.h"
+#include "sensors.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,13 +25,14 @@ typedef struct {
 
 } rtc_time;
 
-uint16_t toVal(char *pcAsciiStr);
-uint8_t mthToIndex(char *pcMon);
+uint16_t toVal(const char *pcAsciiStr);
+uint8_t mthToIndex(const char *pcMon);
 
 void artemis_rtc_initialize(void);
 void artemis_rtc_set_time(rtc_time *pTime);
 uint8_t artemis_rtc_get_time(rtc_time *pTime);
-uint8_t artemis_rtc_gps_calibration(GPS_Data_t *gps_time);
+//uint8_t artemis_rtc_gps_calibration(GPS_Data_t *gps_time);
+uint8_t artemis_rtc_gps_calibration(SensorGps_t *gps_time);
 void artemis_rtc_enable(void);
 void artemis_rtc_disable(void);
 
