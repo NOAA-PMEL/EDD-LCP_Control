@@ -45,7 +45,6 @@ static System_t system = {
     .predeploy.state = PDS_SystemCheck,
     .airdeploy.state = ADS_Idle,
     .profiler.state = SPS_Idle,
-    //.profiler.state = SPS_Sample_mode,
     .ballast.state = ABS_DiveToExpected,
     .moored.state = MOOR_Idle,
     .popup.state = PUS_Surface_float,
@@ -98,8 +97,10 @@ void module_pus_idle(void);
 void module_pus_surface_float(void);
 
 #define SPS_NUMBER  10
+static bool sensors_check = false;
 static uint16_t sps_number = 0;
 static uint16_t park_number = 0;
+
 //*****************************************************************************
 //
 // Global Functions
@@ -107,7 +108,11 @@ static uint16_t park_number = 0;
 //*****************************************************************************
 void STATE_initialize(SystemMode_t mode)
 {
-    gEventQueue = xQueueCreate(2, sizeof(Event_e));
+    /* initialize all the sensors */
+    sensors_check = SENS_initialize();
+
+    /* Create a global event for passing messages within LCP modes */
+    gEventQueue = xQueueCreate(3, sizeof(Event_e));
 
     /** Configure the Data buffer for the mode */
     switch(mode)
@@ -161,12 +166,11 @@ void STATE_MainState(SystemMode_t mode)
 
 void STATE_Popup(void)
 {
-    /* wait for the global event */
+    /* wait for its global event */
     while (1)
     {
         ARTEMIS_DEBUG_PRINTF("PUS :: Popup waiting for a global event ...\n");
         ReceiveEvent(gEventQueue, &gEvent);
-        vTaskDelay(pdMS_TO_TICKS(100UL));
         ARTEMIS_DEBUG_PRINTF("PUS :: Popup received a global event\n");
         if (gEvent == MODE_POPUP)
         {
@@ -180,7 +184,6 @@ void STATE_Popup(void)
 
     for (;;)
     {
-
         switch(system.popup.state)
         {
             case PUS_Idle:
@@ -203,7 +206,7 @@ void STATE_Popup(void)
 
         if(pusEvent == MODE_DONE)
         {
-            ARTEMIS_DEBUG_PRINTF("PUS :: Popup Surface done, going to Idle ... in 5 sec\n");
+            ARTEMIS_DEBUG_PRINTF("PUS :: Popup Surface done, going to Idle ...\n");
             system.popup.state = PUS_Idle;
             vTaskDelay(pdMS_TO_TICKS(5000UL));
         }
@@ -212,12 +215,6 @@ void STATE_Popup(void)
             ARTEMIS_DEBUG_PRINTF("PUS :: Popup mode, ERROR: something went wrong\n");
             vTaskDelay(portMAX_DELAY);
         }
-        //else if (pusEvent == MODE_IDLE)
-        //{
-        //    system.popup.state = PUS_Idle;
-        //    vTaskDelay(pdMS_TO_TICKS(3000UL));
-        //    //vTaskDelete(NULL);
-        //}
     }
 }
 
@@ -256,7 +253,7 @@ void module_pus_surface_float(void)
     while (run)
     {
         eStatus = eTaskGetState( xPiston );
-        ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston move to full status = %u\n", eStatus);
+        ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston move status = %u\n", eStatus);
 
         if (eStatus == eDeleted)
         {
@@ -299,54 +296,52 @@ void STATE_Predeploy(void)
                 break;
         }
 
-
         if (pdsEvent == MODE_PRE_DEPLOY)
         {
-            ARTEMIS_DEBUG_PRINTF("PDS :: Transitionng to PreDeplay Mode Idle\n");
+            ARTEMIS_DEBUG_PRINTF("PDS :: Transitionng to Idle State ...\n");
             system.predeploy.state = PDS_Idle;
-            vTaskDelay(pdMS_TO_TICKS(5000UL));
+            vTaskDelay(pdMS_TO_TICKS(3000UL));
         }
         else if (pdsEvent == MODE_PROFILE)
         {
+            ARTEMIS_DEBUG_PRINTF("PDS :: Switching to Profile Mode (SPS) ...\n");
+            vTaskDelay(pdMS_TO_TICKS(3000UL));
+
             gEvent = pdsEvent;
             SendEvent(gEventQueue, &gEvent);
             vQueueDelete( pdsEventQueue );
-            ARTEMIS_DEBUG_PRINTF("PDS :: Transitionng to Profile Mode, wait for 5 sec  ..\n");
-            vTaskDelay(pdMS_TO_TICKS(5000UL));
-            //vTaskDelay(portMAX_DELAY);
             vTaskDelete(NULL);
+            //vTaskDelay(portMAX_DELAY);
         }
     }
 }
 
 void module_pds_idle(void)
 {
-    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, wait for 1 min\n");
+    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, wait here for one min ...\n");
     Event_e pdsEvent;
 
-    /* wait for 1 min */
+    /* wait for one min */
     uint32_t wait_time = 60 * 1000;
     TickType_t xDelay = wait_time / portTICK_PERIOD_MS;
 
     bool run = true;
     while (run)
     {
-        vTaskDelay(xDelay);
         //vTaskDelay(portMAX_DELAY);
-        pdsEvent = MODE_PROFILE;
-        SendEvent(pdsEventQueue, &pdsEvent);
         run = false;
+        vTaskDelay(xDelay);
+        pdsEvent = MODE_PROFILE;
     }
+    SendEvent(pdsEventQueue, &pdsEvent);
     vTaskDelete(NULL);
 }
 
 void module_pds_systemcheck(void)
 {
-    bool check = false;
+    Event_e pdsEvent;
 
-    check = SENS_initialize();
-
-    if (check == true)
+    if (sensors_check == true)
     {
         /* Turn off all the sensors, except GPS */
         SENS_sensor_depth_off();
@@ -354,18 +349,25 @@ void module_pds_systemcheck(void)
         SENS_sensor_gps_on();
 
         /* GPS task handle */
+        uint8_t s_rate = 1.0;
+        uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
+        SENS_set_gps_rate(s_rate);
         TaskHandle_t xGps;
+
         /* Start GPS task */
         SENS_task_gps(&xGps);
-
-        /** Monitor piston position */
 
         SensorGps_t gps;
         bool run = true;
         uint8_t fix = 0;
-        Event_e pdsEvent;
 
-        rtc_time time;
+
+        /* turn on datalogger, wait for 100ms */
+        datalogger_power_on();
+        vTaskDelay(pdMS_TO_TICKS(100UL));
+
+        TickType_t xLastWakeTime;
+        xLastWakeTime = xTaskGetTickCount();
 
         while (run)
         {
@@ -384,6 +386,8 @@ void module_pds_systemcheck(void)
                     ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, RTC : Setting gps time\n");
                     artemis_rtc_gps_calibration(&gps);
                     am_hal_gpio_output_clear(AM_BSP_GPIO_LED_GREEN);
+
+                    //rtc_time time;
                     //artemis_rtc_get_time(&time);
                     //ARTEMIS_DEBUG_PRINTF("RTC : TimeStampe, %u.%u.%u, %u:%u:%u\n", time.month, time.day, time.year, time.hour, time.min, time.sec);
 
@@ -393,20 +397,19 @@ void module_pds_systemcheck(void)
                     SENS_sensor_gps_off();
 
                     /* store data in the SDcard */
-                    datalogger_power_on();
                     datalogger_predeploy_mode(&gps, true);
                     datalogger_power_off();
 
                     //vTaskDelay(portMAX_DELAY);
                     pdsEvent = MODE_PRE_DEPLOY;
-                    SendEvent(pdsEventQueue, &pdsEvent);
                 }
             }
             else
             {
                 ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS : No fix\n");
             }
-            vTaskDelay(pdMS_TO_TICKS(1000UL));
+
+            vTaskDelayUntil(&xLastWakeTime, period);
         }
     }
     else
@@ -416,26 +419,25 @@ void module_pds_systemcheck(void)
         am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
         vTaskDelay(portMAX_DELAY);
     }
+
+    /* task done, move to Idle state of the PreDeploy_mode */
+    SendEvent(pdsEventQueue, &pdsEvent);
     vTaskDelete(NULL);
 }
 
 void STATE_Profiler(void)
 {
-    /* wait for the global event */
+    /* wait for its global event */
     while (1)
     {
         ARTEMIS_DEBUG_PRINTF("SPS :: Profile waiting for a global event ...\n");
         ReceiveEvent(gEventQueue, &gEvent);
         ARTEMIS_DEBUG_PRINTF("SPS :: Profile received a global event\n");
-        //vQueueDelete( gEventQueue );
         if (gEvent == MODE_PROFILE)
         {
             break;
         }
     }
-
-    ///* test */
-    //SENS_initialize();
 
     /* create a local task event queue */
     spsEventQueue = xQueueCreate(2, sizeof(Event_e));
@@ -443,11 +445,9 @@ void STATE_Profiler(void)
 
     for (;;)
     {
-
         switch(system.profiler.state)
         {
             case SPS_Idle:
-                //success = module_sps_idle();
                 configASSERT(xTaskCreate((TaskFunction_t) module_sps_idle,
                                         "sps_idle", 256, NULL,
                                         tskIDLE_PRIORITY + 2UL,
@@ -455,7 +455,6 @@ void STATE_Profiler(void)
                 ReceiveEvent(spsEventQueue, &spsEvent);
                 break;
             case SPS_MoveToParkDepth_mode:
-                //success = module_sps_move_to_park();
                 configASSERT(xTaskCreate((TaskFunction_t) module_sps_move_to_park,
                                         "sps_move_to_park", 256, NULL,
                                         tskIDLE_PRIORITY + 2UL,
@@ -463,7 +462,6 @@ void STATE_Profiler(void)
                 ReceiveEvent(spsEventQueue, &spsEvent);
                 break;
             case SPS_Park_mode:
-                //success = module_sps_park();
                 configASSERT(xTaskCreate((TaskFunction_t) module_sps_park,
                                         "sps_park", 256, NULL,
                                         tskIDLE_PRIORITY + 2UL,
@@ -471,7 +469,6 @@ void STATE_Profiler(void)
                 ReceiveEvent(spsEventQueue, &spsEvent);
                 break;
             case SPS_MoveToSampleDepth_mode:
-                //success = module_sps_move_to_profile();
                 configASSERT(xTaskCreate((TaskFunction_t) module_sps_move_to_profile,
                                         "move_to_profile", 256, NULL,
                                         tskIDLE_PRIORITY + 2UL,
@@ -479,7 +476,6 @@ void STATE_Profiler(void)
                 ReceiveEvent(spsEventQueue, &spsEvent);
                 break;
             case SPS_Sample_mode:
-                //success = module_sps_profile();
                 configASSERT(xTaskCreate((TaskFunction_t) module_sps_profile,
                                         "profile", 2048, NULL,
                                         tskIDLE_PRIORITY + 2UL,
@@ -487,7 +483,6 @@ void STATE_Profiler(void)
                 ReceiveEvent(spsEventQueue, &spsEvent);
                 break;
             case SPS_Surface_mode:
-                //success = module_sps_move_to_surface();
                 configASSERT(xTaskCreate((TaskFunction_t) module_sps_move_to_surface,
                                         "move_to_surface", 256, NULL,
                                         tskIDLE_PRIORITY + 2UL,
@@ -495,7 +490,6 @@ void STATE_Profiler(void)
                 ReceiveEvent(spsEventQueue, &spsEvent);
                 break;
             case SPS_TX_mode:
-                //success = module_sps_tx();
                 configASSERT(xTaskCreate((TaskFunction_t) module_sps_tx,
                                         "task_iridium", 512, NULL,
                                         tskIDLE_PRIORITY + 2UL,
@@ -509,45 +503,28 @@ void STATE_Profiler(void)
                 break;
         }
 
-        //if(success)
-        //{
-        //    switch(system.profiler.state)
-        //    {
-        //        case SPS_Idle:
-        //        case SPS_MoveToParkDepth_mode:
-        //        case SPS_Park_mode:
-        //        case SPS_MoveToSampleDepth_mode:
-        //        case SPS_Sample_mode:
-        //        case SPS_Surface_mode:
-        //        case SPS_TX_mode:
-        //            system.profiler.state++;
-        //            break;
-        //        case SPS_RX_mode:
-        //        default:
-        //            system.profiler.state = SPS_Idle;
-        //            break;
-        //    }
-        //}
+        /* check the received event */
 
         if(spsEvent == MODE_DONE)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: Transitionng to next mode, waiting for 5 sec ...\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: Transitionng to next state ...\n");
             system.profiler.state++;
-            vTaskDelay(pdMS_TO_TICKS(5000UL));
+            vTaskDelay(pdMS_TO_TICKS(3000UL));
         }
         else if (spsEvent == MODE_IDLE)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: Profiling done, going to Idle ... 3 sec\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: Profiling done, going to Idle ...\n");
             system.profiler.state = SPS_Idle;
             vTaskDelay(pdMS_TO_TICKS(3000UL));
         }
         else if (spsEvent == MODE_POPUP)
         {
+            ARTEMIS_DEBUG_PRINTF("SPS :: Switching to Popup Mode ...\n");
+            vTaskDelay(pdMS_TO_TICKS(3000UL));
+
             gEvent = spsEvent;
             SendEvent(gEventQueue, &gEvent);
             vQueueDelete( spsEventQueue );
-            ARTEMIS_DEBUG_PRINTF("SPS :: Transitionng to Popup Mode, wait for 5 sec  ..\n");
-            vTaskDelay(pdMS_TO_TICKS(5000UL));
             vTaskDelete(NULL);
         }
     }
@@ -560,29 +537,29 @@ void module_sps_idle(void)
     SENS_sensor_depth_off();
     SENS_sensor_temperature_off();
 
-    /* create a timer */
-    // wait here for max min for now
-    uint32_t wait_time = 20 * 1000;
+    /* wait here for one min for now */
+    uint32_t wait_time = 60 * 1000;
     TickType_t xDelay = wait_time / portTICK_PERIOD_MS;
 
     Event_e spsEvent;
     bool run = true;
     while (run)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: Idle, waiting for 1 min ...\n");
+        ARTEMIS_DEBUG_PRINTF("SPS :: Idle, waiting for one min ...\n");
         vTaskDelay(xDelay);
         spsEvent = MODE_DONE;
-        SendEvent(spsEventQueue, &spsEvent);
         run = false;
     }
+
+    SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
 }
 
 void module_sps_move_to_park(void)
 {
     /** Calculate volume to move to */
-    float rate = 0.1;
-    float volume = module_ctrl_set_buoyancy_from_rate(rate, true);
+    float v_rate = 0.1;
+    float volume = module_ctrl_set_buoyancy_from_rate(v_rate, true);
 
     /** Set volume */
     //PIS_set_volume(volume);
@@ -594,6 +571,10 @@ void module_sps_move_to_park(void)
                                 &xPiston) == pdPASS );
 
     /** Start sampling depth @ 2Hz */
+    float s_rate = 2.0;
+    uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
+
+    SENS_set_depth_rate(s_rate);
     SENS_sensor_depth_on();
     TaskHandle_t xDepth;
     SENS_task_sample_depth_continuous(&xDepth);
@@ -605,11 +586,14 @@ void module_sps_move_to_park(void)
     Event_e spsEvent;
     uint8_t count_500ms = 0;
     
-    vTaskDelay(pdMS_TO_TICKS(500UL));
+    vTaskDelay(period);
+
+    TickType_t xLastWakeTime;
+    xLastWakeTime = xTaskGetTickCount();
 
     while (run)
     {
-
+        SENS_get_depth(&Depth, &Rate);
         count_500ms++;
 
         if (count_500ms == 2)
@@ -628,9 +612,9 @@ void module_sps_move_to_park(void)
             count_500ms = 0;
         }
 
-        SENS_get_depth(&Depth, &Rate);
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth  = %0.5f, rate = %0.5f \n", Depth, Rate);
-        vTaskDelay(pdMS_TO_TICKS(500UL));
+        //vTaskDelay(period);
+        vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     SendEvent(spsEventQueue, &spsEvent);
@@ -645,21 +629,32 @@ void module_sps_park(void)
     /* turn datalogger ON*/
     datalogger_power_on();
 
+    /** Sample at 1/60th Hz */
+    float s_rate = 1.0/60.01;
+    uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
+
+    SENS_set_depth_rate(s_rate);
+    SENS_set_temperature_rate(s_rate);
+
     SENS_sensor_depth_on();
     SENS_sensor_temperature_on();
+
     TaskHandle_t xDepth, xTemp;
     SENS_task_park_sensors(&xDepth, &xTemp);
 
-    /** Monitor Depth, and store it */
+    /** Monitor Depth and Temperature and store these */
     bool run = true;
     float Depth = 0, Rate = 0;
     float Temperature = 0;
-    uint8_t wait = 0;
+    uint8_t wait_min = 0;
     Event_e spsEvent;
     rtc_time time;
 
     char *filename = datalogger_park_create_file(park_number);
-    vTaskDelay(pdMS_TO_TICKS(500UL));
+    //vTaskDelay(pdMS_TO_TICKS(100UL));
+
+    TickType_t xLastWakeTime;
+    xLastWakeTime = xTaskGetTickCount();
 
     while (run)
     {
@@ -667,30 +662,34 @@ void module_sps_park(void)
         SENS_get_temperature(&Temperature);
 
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth  = %0.5f, rate = %0.5f \n", Depth, Rate);
-        ARTEMIS_DEBUG_PRINTF("SPS :: park, Temperature  = %0.5f, rate = %0.5f \n", Temperature);
+        ARTEMIS_DEBUG_PRINTF("SPS :: park, Temperature  = %0.5f\n", Temperature);
 
         artemis_rtc_get_time(&time);
         uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch = %ld \n", epoch);
 
         size_t data_size = DATA_add(&park, epoch, Depth, Temperature);
+
         /* store in park mode file */
         datalogger_park_mode(filename, Depth, Temperature, &time);
 
-        if (wait == 4)
+        wait_min++;
+        vTaskDelayUntil(&xLastWakeTime, period);
+
+        if (wait_min == 5)
         {
             run = false;
-            vTaskDelete(xDepth);
+
             vTaskDelete(xTemp);
+            vTaskDelete(xDepth);
+
             SENS_sensor_depth_off();
             SENS_sensor_temperature_off();
             datalogger_power_off();
             spsEvent = MODE_DONE;
         }
-        wait++;
-
-        vTaskDelay(pdMS_TO_TICKS(60000UL));
     }
+
     park_number++;
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
@@ -699,8 +698,8 @@ void module_sps_park(void)
 void module_sps_move_to_profile(void)
 {
     /** Calculate volume to move to */
-    float rate = 0.1;
-    float volume = module_ctrl_set_buoyancy_from_rate(rate, true);
+    float v_rate = 0.1;
+    float volume = module_ctrl_set_buoyancy_from_rate(v_rate, true);
 
     /** Set volume */
     //PIS_set_volume(volume);
@@ -711,6 +710,11 @@ void module_sps_move_to_profile(void)
                                 tskIDLE_PRIORITY + 3UL,
                                 &xPiston) == pdPASS );
 
+
+    /** Sample at 2 Hz */
+    float s_rate = 2.0;
+    uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
+    SENS_set_depth_rate(s_rate);
 
     SENS_sensor_depth_on();
     TaskHandle_t xDepth;
@@ -723,11 +727,17 @@ void module_sps_move_to_profile(void)
     Event_e spsEvent;
     uint8_t count_500ms = 0;
 
-    vTaskDelay(pdMS_TO_TICKS(1000UL));
+    vTaskDelay(period);
+
+    TickType_t xLastWakeTime;
+    xLastWakeTime = xTaskGetTickCount();
 
     while (run)
     {
         count_500ms++;
+
+        SENS_get_depth(&Depth, &Rate);
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth  = %0.5f, rate = %0.5f \n", Depth, Rate);
 
         if (count_500ms == 2)
         {
@@ -745,10 +755,7 @@ void module_sps_move_to_profile(void)
             count_500ms = 0;
         }
 
-        SENS_get_depth(&Depth, &Rate);
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth  = %0.5f, rate = %0.5f \n", Depth, Rate);
-
-        vTaskDelay(pdMS_TO_TICKS(500UL));
+        vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     SendEvent(spsEventQueue, &spsEvent);
@@ -758,12 +765,22 @@ void module_sps_move_to_profile(void)
 void module_sps_profile(void)
 {
     /** Calculate volume to move to (surface) */
-    float rate = 0.1;
-    float volume = module_ctrl_set_buoyancy_from_rate(rate, false);
+    float v_rate = 0.1;
+    float volume = module_ctrl_set_buoyancy_from_rate(v_rate, false);
 
+    /** Start Depth and Temperature Sensor @ 1Hz */
+    float s_rate = 1.0;
+    uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
+    SENS_set_depth_rate(s_rate);
+    SENS_set_temperature_rate(s_rate);
+
+    SENS_sensor_gps_off();
+    SENS_sensor_depth_on();
+    SENS_sensor_temperature_on();
 
     /* turn datalogger ON*/
     datalogger_power_on();
+    vTaskDelay(pdMS_TO_TICKS(100UL));
 
     /** Set volume */
     PIS_set_volume(680); // dummy volume for now
@@ -774,10 +791,6 @@ void module_sps_profile(void)
                                 &xPiston) == pdPASS );
 
 
-    SENS_sensor_gps_off();
-    SENS_sensor_depth_on();
-    SENS_sensor_temperature_on();
-    /** Start 1 Hz data (Depth & Temperature) */
     TaskHandle_t xDepth, xTemp;
     SENS_task_profile_sensors(&xDepth, &xTemp);
 
@@ -791,13 +804,14 @@ void module_sps_profile(void)
 
     /** Monitor depth & rate.  If rate fails, fix it.  If depth reaches surface, done */
     char *filename = datalogger_profile_create_file(sps_number);
+    vTaskDelay(pdMS_TO_TICKS(500UL));
 
-    vTaskDelay(pdMS_TO_TICKS(1000UL));
+    TickType_t xLastWakeTime;
+    xLastWakeTime = xTaskGetTickCount();
 
     bool run = true;
     while (run)
     {
-
         PIS_Get_Volume(&Volume);
         SENS_get_depth(&Depth, &Rate);
         SENS_get_temperature(&Temperature);
@@ -827,8 +841,10 @@ void module_sps_profile(void)
             spsEvent = MODE_DONE;
         }
 
-        vTaskDelay(pdMS_TO_TICKS(1000UL));
+        //vTaskDelay(period);
+        vTaskDelayUntil(&xLastWakeTime, period);
     }
+
     sps_number++;
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
@@ -848,7 +864,7 @@ void module_sps_move_to_surface(void)
     while (run)
     {
         eStatus = eTaskGetState( xPiston );
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full status = %u\n", eStatus);
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move status = %u\n", eStatus);
         if (eStatus == eDeleted)
         {
             run = false;
@@ -857,6 +873,10 @@ void module_sps_move_to_surface(void)
     }
 
     /** Turn on the GPS */
+    uint8_t s_rate = 1;
+    uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
+    SENS_set_gps_rate(s_rate);
+
     SENS_sensor_gps_on();
     TaskHandle_t xGps;
     SENS_task_gps(&xGps);
@@ -868,14 +888,16 @@ void module_sps_move_to_surface(void)
     uint16_t count = 0;
     Event_e spsEvent;
 
+    TickType_t xLastWakeTime;
+    xLastWakeTime = xTaskGetTickCount();
+
     while (run)
     {
-
         SENS_get_gps(&gps);
 
         if (gps.fix == true)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS : Time, %d:%02d:%02d\n", gps.hour, gps.min, gps.sec);
+            //ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS : Time, %d:%02d:%02d\n", gps.hour, gps.min, gps.sec);
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS : fixed, latitude=%0.7f , longitude=%0.7f, altitude=%0.2f\n", gps.latitude, gps.longitude, gps.altitude);
             count++;
 
@@ -895,10 +917,9 @@ void module_sps_move_to_surface(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS : No fix\n");
         }
 
-        vTaskDelay(pdMS_TO_TICKS(1000UL));
+        //vTaskDelay(pdMS_TO_TICKS(1000UL));
+        vTaskDelayUntil(&xLastWakeTime, period);
     }
-
-    /** Capture current GPS Location  */
 
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
@@ -939,7 +960,7 @@ void module_sps_tx(void)
             vTaskDelay(pdMS_TO_TICKS(100UL));
             i9603n_off();
 
-            if (sps_number > 2)
+            if (sps_number > 0)
             {
                 spsEvent = MODE_POPUP;
             }
@@ -950,6 +971,9 @@ void module_sps_tx(void)
         }
         vTaskDelay(pdMS_TO_TICKS(1000UL));
     }
+
+    i9603n_uninitialize();
+    i9603n_off();
 
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
