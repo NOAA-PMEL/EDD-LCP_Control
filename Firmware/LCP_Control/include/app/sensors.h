@@ -3,12 +3,15 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <assert.h>
 
-#include "FreeRTOSConfig.h"
 #include "FreeRTOS.h"
+#include "FreeRTOSConfig.h"
+#include "event_groups.h"
 #include "semphr.h"
 #include "task.h"
 #include "rtos.h"
+#include "timers.h"
 
 
 typedef struct sSensorType_t{
@@ -20,9 +23,9 @@ typedef struct sSensorType_t{
 typedef struct sSensorGps_t {        
         uint16_t rate;          /**< Sample rate (Hz) */
         bool fix;
-        uint32_t latitude;
-        uint32_t longitude;
-        uint32_t altitude;
+        float latitude;
+        float longitude;
+        float altitude;
         uint16_t year;  /**< Calendar Year UTC */
         uint8_t month;  /**< Calendar Month UTC */
         uint8_t day;    /**< Calendar Day UTC */
@@ -44,7 +47,7 @@ typedef struct sSensorData_t
         SemaphoreHandle_t semaphore;
     }depth;
     struct {
-        uint16_t rate;          /**< Sample rate (Hz) */
+        float rate;             /**< Sample rate (Hz) */
         float current;          /**< (int16_t) T_actual = temperature / 1000 */
         bool data_valid;
         SemaphoreHandle_t semaphore;
@@ -76,20 +79,24 @@ bool SENS_get_depth(float *depth, float *rate);
 bool SENS_get_temperature(float *temperature);
 bool SENS_get_gps(SensorGps_t *gps);
 
+//void SENS_get_depth(void *Depth_s);
+//void SENS_get_temperature(void *temperature);
+//void SENS_get_gps(void *gps);
+
 //void SENS_task_profile_sensors(void);
 //void SENS_task_park_sensors(void);
 //void SENS_task_sample_depth_continuous(void);
 
 void SENS_task_profile_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp);
-void SENS_task_park_sensors(TaskHandle_t *xDepth);
+void SENS_task_park_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp);
 void SENS_task_sample_depth_continuous(TaskHandle_t *xDepth);
 void SENS_task_gps(TaskHandle_t *xGPS);
 
 void SENS_set_depth_rate(float rate);
-void SENS_set_temperature_rate(uint16_t rate);
+void SENS_set_temperature_rate(float rate);
 void SENS_set_gps_rate(uint16_t rate);
 
-void SENS_initialize(void);
+bool SENS_initialize(void);
 
 
 #endif // SENSORS_H

@@ -7,6 +7,9 @@
 #include "artemis_debug.h"
 #include "MAX14830.h"
 #include "sysinfo.h"
+#include "piston.h"
+#include "artemis_rtc.h"
+#include "datalogger.h"
 
 #define SENSOR_MAX_DEPTH_RATE           ( 10 )
 #define SENSOR_MAX_TEMPERATURE_RATE     ( 2 )
@@ -22,34 +25,52 @@ static SensorData_t sensor_data;
 //  .temperature.semaphore = &xTempSemaphore
 //};
 
-void SENS_initialize(void)
+bool SENS_initialize(void)
 {
-    // LCP system information
-    SYS_lcp_info();
+    bool success = false;
 
-    // initialize MAX14830 chip for the sensors
+    /* LCP system information */
+    success = SYS_lcp_info();
+
+    /* Piston Board information */
+    success = PIS_initialize();
+    PIS_set_piston_rate(1);
+
+    /* initialize RTC module */
+    artemis_rtc_initialize();
+
+    /* initialize MAX14830 chip for the sensors */
     //artemis_max14830_init();
-    MAX14830_init();
+    success = MAX14830_init();
 
-    // initialize pressure sensor
-    DEPTH_initialize(DEPTH_Keller_PR9LX);
+    /* initialize pressure sensor */
+    success = DEPTH_initialize(DEPTH_Keller_PR9LX);
 
-    // initialize temperature sensor
-    TEMP_initialize(TEMP_SoundNine_OEM);
+    /* initialize temperature sensor */
+    success = TEMP_initialize(TEMP_SoundNine_OEM);
 
-    // initialize GPS
-    GPS_initialize();
+    /* initialize GPS */
+    success = GPS_initialize();
 
-    ARTEMIS_DEBUG_PRINTF("Sensors are initialized\n\n");
+    /* Qwiic I2C Datalogger */
+    success = datalogger_init(4);    // iomNo. 1 or 4
 
-    // create a single semaphore for Temperature and
-    // Pressure sensors for now
+    /* Create a single semaphore for Temperature and
+       Pressure sensors for now */
     xTDSemaphore = xSemaphoreCreateMutex();
 
     if (xTDSemaphore == NULL)
     {
         ARTEMIS_DEBUG_PRINTF("ERROR :: xTDSemaphore is NULL \n\n");
+        success = false;
     }
+    else
+    {
+        success = true;
+    }
+
+    ARTEMIS_DEBUG_PRINTF("Sensors are initialized\n\n");
+    return success;
 }
 
 void SENS_sensor_depth_off(void)        { DEPTH_Power_OFF();    }
@@ -63,7 +84,7 @@ bool SENS_get_depth(float *depth, float *rate)
 {
     bool retVal = false;
 
-    //if( xSemaphoreTake(sensor_data.depth.semaphore, 10/portTICK_PERIOD_MS) == pdTRUE)
+    //if( xSemaphoreTake(sensor_data.depth.semaphore, 100/portTICK_PERIOD_MS) == pdTRUE)
     //{
     //    *depth = sensor_data.depth.current;
     //    *rate = sensor_data.depth.ascent_rate;
@@ -71,11 +92,11 @@ bool SENS_get_depth(float *depth, float *rate)
     //    xSemaphoreGive(sensor_data.depth.semaphore);
     //}
 
-    configASSERT( xSemaphoreTake(xTDSemaphore, pdMS_TO_TICKS(10UL)) == pdTRUE );
+    taskENTER_CRITICAL();
     *depth = sensor_data.depth.current;
     *rate = sensor_data.depth.ascent_rate;
     retVal = true;
-    xSemaphoreGive(xTDSemaphore);
+    taskEXIT_CRITICAL();
 
     return retVal;
 }
@@ -91,10 +112,11 @@ bool SENS_get_temperature(float *temperature)
     //    xSemaphoreGive(sensor_data.temperature.semaphore);
     //}
 
-    configASSERT( xSemaphoreTake(xTDSemaphore, pdMS_TO_TICKS(10UL)) == pdTRUE );
+    taskENTER_CRITICAL();
     *temperature = sensor_data.temperature.current;
     retVal = true;
-    xSemaphoreGive(xTDSemaphore);
+    taskEXIT_CRITICAL();
+
     return retVal;
 }
 
@@ -109,46 +131,42 @@ bool SENS_get_gps(SensorGps_t *gps)
     //    xSemaphoreGive(sensor_data.gps.semaphore);
     //}
 
-    configASSERT( xSemaphoreTake(sensor_data.gps.semaphore, pdMS_TO_TICKS(10UL)) == pdTRUE );
+    taskENTER_CRITICAL();
     *gps = sensor_data.gps;
     retVal = true;
-    xSemaphoreGive(sensor_data.gps.semaphore);
+    taskEXIT_CRITICAL();
 
     return retVal;
 }
 
 void SENS_task_profile_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp)
 {
-    /** Start Depth Sensor @ 1 Hz */
-    SENS_set_depth_rate(1.0);
     configASSERT(xTaskCreate((TaskFunction_t)task_depth,
                                 "Depth_Task", 256, NULL,
                                 tskIDLE_PRIORITY + 4UL,
                                 xDepth) == pdPASS );
 
-    /** Start Temperature Sensor @ 1Hz */
-    SENS_set_temperature_rate(1);
     configASSERT(xTaskCreate((TaskFunction_t)task_temperature,
                                 "Temperature_Task", 256, NULL,
-                                tskIDLE_PRIORITY + 3UL,
+                                tskIDLE_PRIORITY + 4UL,
                                 xTemp) == pdPASS );
 }
 
-void SENS_task_park_sensors(TaskHandle_t *xDepth)
+void SENS_task_park_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp)
 {
-    /** Sample at 1/60th Hz */
-    float rate = 1.0/60.0;
-    SENS_set_depth_rate(rate);
     configASSERT(xTaskCreate((TaskFunction_t)task_depth,
                                 "Depth_Task", 256, NULL,
                                 tskIDLE_PRIORITY + 4UL,
                                 xDepth) == pdPASS );
+
+    configASSERT(xTaskCreate((TaskFunction_t)task_temperature,
+                                "Temperature_Task", 256, NULL,
+                                tskIDLE_PRIORITY + 4UL,
+                                xTemp) == pdPASS );
 }
 
 void SENS_task_sample_depth_continuous(TaskHandle_t *xDepth)
 {
-    /** Sample at 2 Hz */
-    SENS_set_depth_rate(2.0);
     configASSERT(xTaskCreate((TaskFunction_t)task_depth,
                                 "Depth_Task", 256, NULL,
                                 tskIDLE_PRIORITY + 4UL,
@@ -157,7 +175,6 @@ void SENS_task_sample_depth_continuous(TaskHandle_t *xDepth)
 
 void SENS_task_gps(TaskHandle_t *xGPS)
 {
-    SENS_set_gps_rate(1);
     configASSERT(xTaskCreate((TaskFunction_t)task_gps,
                                 "GPS_Task", 256, NULL,
                                 tskIDLE_PRIORITY + 4UL,
@@ -173,11 +190,11 @@ void SENS_set_depth_rate(float rate)
     }
 }
 
-void SENS_set_temperature_rate(uint16_t rate)
+void SENS_set_temperature_rate(float rate)
 {
     if( (rate > 0) && (rate < SENSOR_MAX_TEMPERATURE_RATE))
     {
-        ARTEMIS_DEBUG_PRINTF("Setting Temperature rate = %u\n", rate);
+        ARTEMIS_DEBUG_PRINTF("Setting Temperature rate = %.5f\n", rate);
         sensor_data.temperature.rate = rate;
     }
 }
@@ -195,15 +212,12 @@ void task_depth(void)
 {
     TickType_t xLastWakeTime;
     sDepth_Measurement_t depth = {0};
-    //assert(sensor_data.depth.rate != 0);
-    //uint16_t period = 1000/sensor_data.depth.rate;
-    //period /= portTICK_PERIOD_MS;
+    assert(sensor_data.depth.rate != 0);
 
-    uint16_t period = pdMS_TO_TICKS(1000UL)/sensor_data.depth.rate;
+    uint32_t period = pdMS_TO_TICKS(1000UL)/sensor_data.depth.rate;
     ARTEMIS_DEBUG_PRINTF("Setting Depth period = %u\n", period);
 
     /** Create the semaphore for the depth sensor read */
-    //*sensor_data.depth.semaphore = xSemaphoreCreateMutex();
     //sensor_data.depth.semaphore = xSemaphoreCreateMutex();
 
     /** Initialize the Depth Sensor */
@@ -227,19 +241,23 @@ void task_depth(void)
         /** Power Off */
         //DEPTH_Power_OFF();
         
-        //if(xSemaphoreTake(sensor_data.depth.semaphore, period/portTICK_PERIOD_MS) == pdTRUE)
-        configASSERT(xSemaphoreTake(xTDSemaphore, pdMS_TO_TICKS(1000UL)) == pdTRUE);
-
-        am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_GREEN);
-        DEPTH_Read(&depth);
-        ARTEMIS_DEBUG_PRINTF("Depth = %.3f\n", depth.Depth);
-        sensor_data.depth.previous = sensor_data.depth.current;
-        sensor_data.depth.current = depth.Depth;
-        sensor_data.depth.ascent_rate = (sensor_data.depth.current - sensor_data.depth.previous) / sensor_data.depth.rate;
+        //configASSERT(xSemaphoreTake(xTDSemaphore, pdMS_TO_TICKS(1000UL)) == pdTRUE);
+        if(xSemaphoreTake(xTDSemaphore, pdMS_TO_TICKS(1000UL)) == pdTRUE)
+        {
+            am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_GREEN);
+            DEPTH_Read(&depth);
+            sensor_data.depth.previous = sensor_data.depth.current;
+            sensor_data.depth.current = depth.Depth;
+            sensor_data.depth.ascent_rate = (sensor_data.depth.current - sensor_data.depth.previous) / sensor_data.depth.rate;
+            xSemaphoreGive(xTDSemaphore);
+        }
+        else
+        {
+            //sensor_data.depth.current = sensor_data.depth.previous;
+            ARTEMIS_DEBUG_PRINTF("Depth semaphore not available\n");
+        }
         //xSemaphoreGive(sensor_data.depth.semaphore);
-        xSemaphoreGive(xTDSemaphore);
 
-        //vTaskDelayUntil( &xLastWakeTime, 1000 / portTICK_PERIOD_MS );
         vTaskDelayUntil(&xLastWakeTime, period);
         //vTaskDelete(NULL);
     }
@@ -247,11 +265,12 @@ void task_depth(void)
 
 void task_temperature(void)
 {
-    TickType_t xLastWakeTime;
+    assert(sensor_data.temperature.rate != 0);
+
     Temperature_Measurement_t temperature = {0};
-    //uint16_t period = 1000/sensor_data.temperature.rate;
-    //period /= portTICK_PERIOD_MS;
-    uint16_t period = pdMS_TO_TICKS(1000UL)/sensor_data.temperature.rate;
+
+    uint32_t period = pdMS_TO_TICKS(1000UL)/sensor_data.temperature.rate;
+    ARTEMIS_DEBUG_PRINTF("Setting Temperature period = %u\n", period);
 
     /** Create the semaphore for the depth sensor read */
     //sensor_data.temperature.semaphore = xSemaphoreCreateMutex();
@@ -259,8 +278,10 @@ void task_temperature(void)
     /** Initialize the Depth Sensor */
     //TEMP_initialize();
 
-    // Initialise the xLastWakeTime variable with the current time.
+    /* Initialise the xLastWakeTime variable with the current time */
+    TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
+
     while(1)
     {
         /** Turn power on */
@@ -277,17 +298,21 @@ void task_temperature(void)
         /** Power off */
         //TEMP_Power_OFF();
         
-        configASSERT(xSemaphoreTake(xTDSemaphore, pdMS_TO_TICKS(1000UL)) == pdTRUE);
-        //if(xSemaphoreTake(sensor_data.temperature.semaphore, period) == pdTRUE)
-        //uint32_t size = xPortGetFreeHeapSize();
-        //ARTEMIS_DEBUG_PRINTF("\nTask Temperature :: HEAP size %d\n", size);
-        am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_BLUE);
-        TEMP_Read(&temperature);
-        ARTEMIS_DEBUG_PRINTF("Temperature = %.3f °C\n", temperature.temperature);
-        sensor_data.temperature.current = temperature.temperature;
-        xSemaphoreGive(xTDSemaphore);
+        //configASSERT(xSemaphoreTake(xTDSemaphore, pdMS_TO_TICKS(1000UL)) == pdTRUE);
+        if(xSemaphoreTake(xTDSemaphore, pdMS_TO_TICKS(1000UL)) == pdTRUE)
+        {
+            am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_BLUE);
+            TEMP_Read(&temperature);
+            //ARTEMIS_DEBUG_PRINTF("Temperature = %.3f °C\n", temperature.temperature);
+            sensor_data.temperature.current = temperature.temperature;
+            xSemaphoreGive(xTDSemaphore);
+        }
+        else
+        {
+            ARTEMIS_DEBUG_PRINTF("Temp semaphore not available\n");
+        }
+
         //xSemaphoreGive(sensor_data.temperature.semaphore);
-        //vTaskDelayUntil( &xLastWakeTime, 1000 / portTICK_PERIOD_MS );
         vTaskDelayUntil(&xLastWakeTime, period);
         //vTaskDelete(NULL);
     }
@@ -295,9 +320,10 @@ void task_temperature(void)
 
 void task_gps(void)
 {
-    TickType_t xLastWakeTime;
-    uint16_t period = pdMS_TO_TICKS(1000UL)/sensor_data.gps.rate;
+    assert(sensor_data.gps.rate != 0);
+
     GPS_Data_t gps = {0};
+    uint32_t period = pdMS_TO_TICKS(1000UL)/sensor_data.gps.rate;
 
     /** Create the semaphore for the gps */
     sensor_data.gps.semaphore = xSemaphoreCreateMutex();
@@ -305,22 +331,20 @@ void task_gps(void)
     /** Initialize the GPS */
     //GPS_initialize();
     //GPS_on();
-    vTaskDelay(pdMS_TO_TICKS(300UL));
+    //vTaskDelay(pdMS_TO_TICKS(300UL));
 
-    // Initialise the xLastWakeTime variable with the current time.
+    /* Initialise the xLastWakeTime variable with the current time */
+    TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
 
     while(1)
     {
-
         if(GPS_Read(&gps))
         {
             configASSERT(xSemaphoreTake(sensor_data.gps.semaphore, pdMS_TO_TICKS(1000UL)) == pdTRUE);
             //configASSERT(xSemaphoreTake(sensors, pdMS_TO_TICKS(100UL)) == pdTRUE);
 
             am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_RED);
-            ARTEMIS_DEBUG_PRINTF("GPS : Time, %d:%02d:%02d\n", gps.time.hour, gps.time.min, gps.time.sec);
-            ARTEMIS_DEBUG_PRINTF("GPS : fixed, latitude=%0.7f , longitude=%0.7f, altitude=%0.2f\n", gps.position.lat, gps.position.lon, gps.position.alt);
             sensor_data.gps.fix = true;
             sensor_data.gps.latitude = gps.position.lat;
             sensor_data.gps.longitude = gps.position.lon;
@@ -335,15 +359,13 @@ void task_gps(void)
         }
         else
         {
-            configASSERT(xSemaphoreTake(sensor_data.gps.semaphore, pdMS_TO_TICKS(1000UL)) == pdTRUE);
-            am_hal_gpio_output_set(AM_BSP_GPIO_LED_RED);
-            ARTEMIS_DEBUG_PRINTF("GPS : No fix \n");
+            configASSERT(xSemaphoreTake(sensor_data.gps.semaphore, pdMS_TO_TICKS(100UL)) == pdTRUE);
+            sensor_data.gps.fix = false;
             xSemaphoreGive(sensor_data.gps.semaphore);
         }
 
-        //uint32_t size = xPortGetFreeHeapSize();
-        //ARTEMIS_DEBUG_PRINTF("\nTask GPS :: HEAP size %d\n", size);
         vTaskDelayUntil(&xLastWakeTime, period);
+        //vTaskDelete(NULL);
     }
 }
 
