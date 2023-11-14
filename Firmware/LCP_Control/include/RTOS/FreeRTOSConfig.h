@@ -67,8 +67,8 @@ extern "C"
 #define configTICK_RATE_HZ                      1000
 #define configMAX_PRIORITIES                    8
 #define configMINIMAL_STACK_SIZE                (256)
-#define configTOTAL_HEAP_SIZE                   (16 * 1024)
-#define configMAX_TASK_NAME_LEN                 16
+#define configTOTAL_HEAP_SIZE                   (32 * 1024)
+#define configMAX_TASK_NAME_LEN                 32
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
   
@@ -100,6 +100,7 @@ extern "C"
 #define configTIMER_TASK_PRIORITY               3
 #define configTIMER_QUEUE_LENGTH                5
 #define configTIMER_TASK_STACK_DEPTH            configMINIMAL_STACK_SIZE
+#define configSUPPORT_DYNAMIC_ALLOCATION        1
 
 /* Interrupt nesting behaviour configuration. */
 #define configKERNEL_INTERRUPT_PRIORITY                 (0x7 << 5)
