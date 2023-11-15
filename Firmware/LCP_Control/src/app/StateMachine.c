@@ -231,9 +231,13 @@ void module_pus_idle(void)
     {
         /* go into deep sleep */
         ARTEMIS_DEBUG_PRINTF("PUS :: Idle, going to deep sleep\n");
-        am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_DEEP);
-
         ARTEMIS_DEBUG_PRINTF("PUS :: Idle, wait forever\n");
+        vTaskDelay(pdMS_TO_TICKS(1000UL));
+
+        /* turn off datalogger */
+        datalogger_power_off();
+
+        am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_DEEP);
         vTaskDelay(portMAX_DELAY);
         run = false;
     }
@@ -361,9 +365,6 @@ void module_pds_systemcheck(void)
         bool run = true;
         uint8_t fix = 0;
 
-
-        /* turn on datalogger, wait for 100ms */
-        datalogger_power_on();
         vTaskDelay(pdMS_TO_TICKS(100UL));
 
         TickType_t xLastWakeTime;
@@ -398,7 +399,6 @@ void module_pds_systemcheck(void)
 
                     /* store data in the SDcard */
                     datalogger_predeploy_mode(&gps, true);
-                    datalogger_power_off();
 
                     //vTaskDelay(portMAX_DELAY);
                     pdsEvent = MODE_PRE_DEPLOY;
@@ -626,9 +626,6 @@ void module_sps_park(void)
     /** Start 1/60Hz sampling of sensors for XXX minutes */
     /** Save data in Park Data strucutre */
 
-    /* turn datalogger ON*/
-    datalogger_power_on();
-
     /** Sample at 1/60th Hz */
     float s_rate = 1.0/60.01;
     uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
@@ -651,7 +648,7 @@ void module_sps_park(void)
     rtc_time time;
 
     char *filename = datalogger_park_create_file(park_number);
-    //vTaskDelay(pdMS_TO_TICKS(100UL));
+    vTaskDelay(pdMS_TO_TICKS(100UL));
 
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
@@ -685,7 +682,6 @@ void module_sps_park(void)
 
             SENS_sensor_depth_off();
             SENS_sensor_temperature_off();
-            datalogger_power_off();
             spsEvent = MODE_DONE;
         }
     }
@@ -778,8 +774,6 @@ void module_sps_profile(void)
     SENS_sensor_depth_on();
     SENS_sensor_temperature_on();
 
-    /* turn datalogger ON*/
-    datalogger_power_on();
     vTaskDelay(pdMS_TO_TICKS(100UL));
 
     /** Set volume */
@@ -837,7 +831,6 @@ void module_sps_profile(void)
             vTaskDelete(xTemp);
             SENS_sensor_depth_off();
             SENS_sensor_temperature_off();
-            datalogger_power_off();
             spsEvent = MODE_DONE;
         }
 

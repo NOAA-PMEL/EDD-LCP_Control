@@ -6,24 +6,44 @@
 #ifndef ARTEMIS_DEBUG_H
 #define ARTEMIS_DEBUG_H
 
-#include "stdbool.h"
-#include "stdint.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+
 #include "am_util_stdio.h"
 #include "am_hal_status.h"
-#include "stdio.h"
+#include "datalogger.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#define DATALOG_DEBUG true
+#define NDEBUG
+
 #ifdef NDEBUG
     #define ARTEMIS_DEBUG_ASSERT(expr) ((void)0)
-    #define ARTEMIS_DEBUG_PRINTF(...) ((void)0)
+    #define ARTEMIS_DEBUG_PRINTF(...)           \
+    do {                                        \
+        ((void)0);                              \
+        if (DATALOG_DEBUG == true)              \
+        {                                       \
+            datalogger_log_debug(__VA_ARGS__);  \
+        }                                       \
+    } while(0)
+
     #define ARTEMIS_DEBUG_HALSTATUS(hfunc) (hfunc)
+
 #else
     #define ARTEMIS_DEBUG_ASSERT(expr) (!!(expr) || (artemis_debug_assert(#expr, __FUNCTION__, __FILE__, __LINE__), 0))
-    #define ARTEMIS_DEBUG_PRINTF(...) (am_util_stdio_printf(__VA_ARGS__))
-    //#define ARTEMIS_DEBUG_PRINTF(...) (printf(__VA_ARGS__) )
+    #define ARTEMIS_DEBUG_PRINTF(...)           \
+    do {                                        \
+        am_util_stdio_printf(__VA_ARGS__);      \
+        if (DATALOG_DEBUG == true)              \
+        {                                       \
+            datalogger_log_debug(__VA_ARGS__);  \
+        }                                       \
+    } while(0)
 
     #define ARTEMIS_DEBUG_HALSTATUS(hfunc) \
     do { \
@@ -32,6 +52,7 @@ extern "C" {
             artemis_debug_halerror(#hfunc, artemis_debug_halstatus, __FUNCTION__, __FILE__, __LINE__); \
         } \
     } while(0)
+
 #endif
 
 void artemis_debug_initialize(void);

@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
+
 #include "datalogger.h"
 #include "buffer_c.h"
 #include "artemis_debug.h"
@@ -29,9 +31,24 @@ static void datalogger_i2c_write(uint8_t offset, uint8_t offsetlen,
                                 uint8_t *pBuf, uint16_t size);
 static void datalogger_write_sync(void);
 
+typedef uint8_t module_buffer_t[LOGGER_BUFFER_SIZE];
+typedef struct s_module_d
+{
+	artemis_i2c_t i2c;
+	module_buffer_t txbuffer;
+    module_buffer_t rxbuffer;
+
+	struct {
+		uint32_t pin;
+		am_hal_gpio_pincfg_t *pinConfig;
+	}power;
+} module_d;
+
 static module_d module;
 static uint16_t sps_count = 0;
 static uint16_t park_count = 0;
+static char lcp_log[256];
+static char *lcp_file = "LCP_LOG.txt";
 
 bool datalogger_init(uint8_t iomNo)
 {
@@ -120,14 +137,26 @@ bool datalogger_device_info(void)
     return success;
 }
 
+void datalogger_log_debug(const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    datalogger_cd("..");
+    datalogger_openfile(lcp_file);
+    am_util_stdio_vsprintf (lcp_log, fmt, args);
+    datalogger_writefile(lcp_log);
+    datalogger_write_sync();
+    va_end(args);
+}
+
 void datalogger_predeploy_mode(SensorGps_t *gps, bool check)
 {
     char *dirname = "pre-deploy_mode";
     rtc_time time;
 
-    int32_t lat = (int32_t) (gps->latitude * 10000000);
-    int32_t lon = (int32_t) (gps->longitude * 10000000);
-    int32_t alt = (int32_t) (gps->altitude * 10000000);
+    //int32_t lat = (int32_t) (gps->latitude * 10000000);
+    //int32_t lon = (int32_t) (gps->longitude * 10000000);
+    //int32_t alt = (int32_t) (gps->altitude * 10000000);
 
     /* if initialize is true, then create a directory and files*/
     datalogger_cd("..");
@@ -144,11 +173,11 @@ void datalogger_predeploy_mode(SensorGps_t *gps, bool check)
 
     char data[128] = {0};
     datalogger_writefile("\n******************************\n");
-    datalogger_writefile("\nLCP System Check information\n");
-    datalogger_writefile("\n******************************\n\n");
+    datalogger_writefile("LCP System Check information\n");
+    datalogger_writefile("******************************\n");
 
-    sprintf (data, "Check : %s\nTime : %02d:%02d:%02d\nDate : %02d.%02d.20%02d\nLatitude : %ld\nLongitude : %ld\nAltitude : %ld\n\n",
-                    check == true ? "OK" : "Failed", time.hour, time.min, time.sec, time.month, time.day, time.year, lat, lon, alt);
+    am_util_stdio_sprintf(data, "Check : %s\nTime : %02d:%02d:%02d\nDate : %02d.%02d.20%02d\nLatitude : %.7f\nLongitude : %.7f\nAltitude : %.7f\n\n",
+                                check == true ? "OK" : "Failed", time.hour, time.min, time.sec, time.month, time.day, time.year, gps->latitude, gps->longitude, gps->altitude);
 
     datalogger_writefile(data);
     datalogger_write_sync();
@@ -197,7 +226,7 @@ char *datalogger_profile_create_file(uint16_t sps_nr)
     datalogger_createfile(filename);
     datalogger_openfile(filename);
     datalogger_writefile("\nS.No.\t| Depth(m)\t| Temperature(°C) | Volume(in3)\t| Time-stamp\t\n");
-    datalogger_writefile("\n============================================================================\n\n");
+    datalogger_writefile("============================================================================\n\n");
     datalogger_write_sync();
     ARTEMIS_DEBUG_PRINTF("%s file created\n", filename);
     sps_count = 0;
@@ -221,14 +250,9 @@ void datalogger_profile_mode(char *filename, float depth, float temp, float volu
     sps_count++;
     datalogger_openfile(filename);
 
-    int32_t Depth  =  (int32_t) (depth  * 10000);
-    int32_t Temp   =  (int32_t) (temp   * 10000);
-    int32_t Volume =  (int32_t) (volume * 10000);
-
     char data[128] = {0};
-    sprintf (data, "\n%u\t  %ld.%04ld\t  %ld.%04ld\t   %ld.%04ld\t  %02d:%02d:%02d\n",
-                    sps_count, Depth/10000, Depth%10000, Temp/10000, Temp%10000,
-                    Volume/10000, Volume%10000, time->hour, time->min, time->sec);
+    am_util_stdio_sprintf(  data, "%u\t  %.4f\t  %.4f\t  %.4f\t  %02d:%02d:%02d\n",
+                            sps_count, depth, temp, volume, time->hour, time->min, time->sec);
 
     datalogger_writefile(data);
     datalogger_write_sync();
@@ -253,7 +277,7 @@ char *datalogger_park_create_file(uint16_t park_nr)
     datalogger_createfile(filename);
     datalogger_openfile(filename);
     datalogger_writefile("\nS.No.\t| Depth(m)\t| Temperature(°C)\t| Time-stamp\t\n");
-    datalogger_writefile("\n===========================================================\n\n");
+    datalogger_writefile("===========================================================\n\n");
     datalogger_write_sync();
     ARTEMIS_DEBUG_PRINTF("%s file created\n", filename);
     park_count = 0;
@@ -276,13 +300,9 @@ void datalogger_park_mode(char *filename, float depth, float temp, rtc_time *tim
     park_count++;
     datalogger_openfile(filename);
 
-    int32_t Depth  =  (int32_t) (depth  * 10000);
-    int32_t Temp   =  (int32_t) (temp   * 10000);
-
     char data[64] = {0};
-    sprintf (data, "\n%u\t  %ld.%04ld\t  %ld.%04ld\t\t %02d:%02d:%02d\n",
-                    park_count, Depth/10000, Depth%10000, Temp/10000, Temp%10000,
-                    time->hour, time->min, time->sec);
+    am_util_stdio_sprintf(  data, "%u\t  %.4f\t  %.4f\t\t %02d:%02d:%02d\n",
+                            park_count, depth, temp, time->hour, time->min, time->sec);
 
     datalogger_writefile(data);
     datalogger_write_sync();
@@ -345,7 +365,7 @@ uint32_t datalogger_filesize(char *filename)
 void datalogger_writefile(char *contents)
 {
     uint8_t cmd = LOGGER_WRITE_FILE;
-    uint32_t len = strlen (contents);
+    uint32_t len = strlen (contents)+1;
 
     uint8_t i = 0;
     uint32_t j = 0;
@@ -525,7 +545,8 @@ static void datalogger_i2c_read(uint8_t offset, uint8_t offsetlen,
     transfer.ui32PauseCondition = 0;
     transfer.ui32StatusSetClr = 0;
 
-    ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer));
+    //ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer));
+    am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
 }
 
 static void datalogger_i2c_write(uint8_t offset, uint8_t offsetlen,
@@ -544,5 +565,6 @@ static void datalogger_i2c_write(uint8_t offset, uint8_t offsetlen,
     transfer.ui32PauseCondition = 0;
     transfer.ui32StatusSetClr = 0;
 
-    ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer));
+    //ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer));
+    am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
 }

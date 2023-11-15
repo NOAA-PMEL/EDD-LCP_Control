@@ -2,13 +2,26 @@
 
 #include "artemis_debug.h"
 #include "am_bsp.h"
+#include "datalogger.h"
 
 void artemis_debug_initialize(void)
 {
-	// enable Single Wire Output (SWO) using Instrumentation Trace Macrocell (ITM)
-	// am_bsp_itm_printf_enable();
-	am_bsp_uart_printf_enable();
-	ARTEMIS_DEBUG_PRINTF("SWO ENABLED\n");
+    // enable Single Wire Output (SWO) using Instrumentation Trace Macrocell (ITM)
+    // am_bsp_itm_printf_enable();
+    am_bsp_uart_printf_enable();
+
+    bool success = false;
+    success = datalogger_init(1);
+
+    if (success)
+    {
+        datalogger_power_on();
+        ARTEMIS_DEBUG_PRINTF("UART ENABLED\n");
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("\n\nERROR :: SD Card is missing\n\n");
+    }
 }
 
 void artemis_debug_assert(const char *expr, const char *func, const char *file, uint32_t line)

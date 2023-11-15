@@ -42,20 +42,6 @@
 #define LOGGER_RM_RECUR         0x10
 #define LOGGER_SYNC_FILE        0x11
 
-
-typedef uint8_t module_buffer_t[LOGGER_BUFFER_SIZE];
-
-typedef struct s_module_d
-{
-	artemis_i2c_t i2c;
-	module_buffer_t txbuffer;
-    module_buffer_t rxbuffer;
-	struct {
-		uint32_t pin;
-		am_hal_gpio_pincfg_t *pinConfig;
-	}power;
-} module_d;
-
 typedef enum e_status_dl
 {
     SDINIT_GOOD = 0x00,     //  Bit 0: SD/Init Good
@@ -87,6 +73,8 @@ void datalogger_cd(char *dirname);
 uint32_t datalogger_rmfile(char *filename, bool recursive);
 uint32_t datalogger_rmdir(char *dirname);
 uint32_t datalogger_filesize(char *filename);
+
+void datalogger_log_debug(const char *fmt, ...);
 
 /* data logging functions */
 void datalogger_predeploy_mode(SensorGps_t *gps, bool check);

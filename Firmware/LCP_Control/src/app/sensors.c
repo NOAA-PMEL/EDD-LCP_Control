@@ -9,7 +9,6 @@
 #include "sysinfo.h"
 #include "piston.h"
 #include "artemis_rtc.h"
-#include "datalogger.h"
 
 #define SENSOR_MAX_DEPTH_RATE           ( 10 )
 #define SENSOR_MAX_TEMPERATURE_RATE     ( 2 )
@@ -51,9 +50,6 @@ bool SENS_initialize(void)
 
     /* initialize GPS */
     success = GPS_initialize();
-
-    /* Qwiic I2C Datalogger */
-    success = datalogger_init(4);    // iomNo. 1 or 4
 
     /* Create a single semaphore for Temperature and
        Pressure sensors for now */
