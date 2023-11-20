@@ -177,7 +177,7 @@ void i9603n_off(void)
     module_i9603_power_off();
 }
 
-bool GET_Iridium_status (int16_t *rData)
+bool GET_Iridium_status (uint8_t *rData)
 {
     bool retVal = false;
 
@@ -196,8 +196,8 @@ bool GET_Iridium_status (int16_t *rData)
 void task_Iridium_transfer(TaskHandle_t *xIridium)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_Iridium,
-                                "task_Iridium_transfer", 256, NULL,
-                                tskIDLE_PRIORITY + 2UL,
+                                "task_Iridium_transfer", 512, NULL,
+                                tskIDLE_PRIORITY + 3UL,
                                 xIridium) == pdPASS );
 }
 

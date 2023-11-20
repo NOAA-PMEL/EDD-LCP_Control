@@ -107,7 +107,7 @@ uint8_t i9603n_initiate_transfer(uint8_t *rxData);
 /* FreeRTOS task*/
 void task_Iridium (void);
 void task_Iridium_transfer(TaskHandle_t *xIridium);
-bool GET_Iridium_status (int16_t *rData);
+bool GET_Iridium_status (uint8_t *rData);
 
 //#ifndef TEST
 ////*****************************************************************************
