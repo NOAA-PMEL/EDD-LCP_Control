@@ -43,7 +43,11 @@
 /**********************************************************************************
  * Configuration Constants
  *********************************************************************************/
+#define IRID_DATA_OUT           ( 340 )
+#define IRID_DATA_IN            ( 270 )
 
+#define LCP_PARK_MODE           ( 1 )
+#define LCP_PROFILE_MODE        ( 2 )
 
 /**********************************************************************************
  * MACROS
@@ -66,10 +70,24 @@ typedef struct sData_t
     struct{
         uint32_t start_time;
         uint32_t *pTimeOffset;
-        float *pDepth;
+        float *pPressure;
         float *pTemperature;
     }data;
 }Data_t;
+
+typedef struct cData_t
+{
+    uint8_t pressure;
+    int16_t temp;
+} cData;
+
+typedef struct gData_t
+{
+    uint32_t start;
+    uint32_t stop;
+    float lat;
+    float lon;
+} gData;
 
 /**********************************************************************************
  * Function Prototypes
@@ -79,18 +97,22 @@ extern "C"{
 #endif
 
 void DATA_setbuffer(Data_t *p, uint32_t *pTime, 
-                            float *pDepth, float*pTemp,
+                            float *pPressure, float*pTemp,
                             size_t length);
-
 void DATA_reset(Data_t *p);
-
-size_t DATA_add(Data_t *buf, uint32_t time, float depth, float temp);
-
-size_t DATA_get_original(Data_t *p, uint32_t *time, float *depth, float *temp);
-
-size_t DATA_get_converted(Data_t *p, uint32_t *start, uint16_t *offset, uint16_t *depth, uint16_t *temp);
+size_t DATA_add(Data_t *buf, uint32_t time, float pressure, float temp);
+size_t DATA_get_original(Data_t *p, uint32_t *time, float *pressure, float *temp);
+size_t DATA_get_converted(Data_t *p, uint32_t *start, uint32_t *offset, uint8_t *pressure, int16_t *temp);
 
 uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec);
+
+void create_header(uint8_t *df, uint32_t start, uint32_t stop, float lat, float lon, uint8_t mode_type, uint8_t page);
+
+float std_div(float *value, uint16_t len, float *var, float *avg);
+float average(float *value, uint16_t len);
+
+void DATA_get_iridium_park(uint8_t *pData);
+void DATA_get_iridium_profile(uint8_t *pData);
 
 /**********************************************************************************
  * Unit Test Variables & Static Prototpyes
