@@ -221,7 +221,7 @@ void datalogger_predeploy_mode(SensorGps_t *gps, bool check)
     datalogger_writefile("LCP System Check information\n");
     datalogger_writefile("******************************\n");
 
-    am_util_stdio_sprintf(data, "Check : %s\nTime : %02d:%02d:%02d\nDate : %02d.%02d.20%02d\nLatitude : %.7f\nLongitude : %.7f\nAltitude : %.7f\n\n",
+    am_util_stdio_sprintf(data, "Check : %s\nTime : %02d:%02d:%02d\nDate : %02d.%02d.20%02d\nLatitude : %.7f\nLongitude : %.7f\nAltitude : %.7f\n\n\n",
                                 check == true ? "OK" : "Failed", time.hour, time.min, time.sec, time.month, time.day, time.year, gps->latitude, gps->longitude, gps->altitude);
 
     datalogger_writefile(data);
@@ -270,7 +270,7 @@ char *datalogger_profile_create_file(uint16_t sps_nr)
     sprintf (filename, "%d_sps_%02d.%02d.20%02d.txt", sps_nr, time.month, time.day, time.year);
     datalogger_createfile(filename);
     datalogger_openfile(filename);
-    datalogger_writefile("\nS.No.\t| Pressure (bar)\t| Temperature(°C) | Time-stamp\t\n");
+    datalogger_writefile("\nS.No.\t| Pressure(bar) | Temperature(°C) | Time-stamp\t\n");
     datalogger_writefile("=============================================================\n\n");
     datalogger_write_sync();
     ARTEMIS_DEBUG_PRINTF("%s file created\n", filename);
@@ -321,7 +321,7 @@ char *datalogger_park_create_file(uint16_t park_nr)
     sprintf (filename, "%d_park_%02d.%02d.20%02d.txt", park_nr, time.month, time.day, time.year);
     datalogger_createfile(filename);
     datalogger_openfile(filename);
-    datalogger_writefile("\nS.No.\t| Pressure (bar)\t| Temperature(°C) | Time-stamp\t\n");
+    datalogger_writefile("\nS.No.\t| Pressure(bar) | Temperature(°C) | Time-stamp\t\n");
     datalogger_writefile("=========================================================\n\n");
     datalogger_write_sync();
     ARTEMIS_DEBUG_PRINTF("%s file created\n", filename);
