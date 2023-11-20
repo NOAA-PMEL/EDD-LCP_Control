@@ -80,13 +80,17 @@ void datalogger_log_debug(const char *fmt, ...);
 void datalogger_predeploy_mode(SensorGps_t *gps, bool check);
 
 char *datalogger_park_create_file(uint16_t park_nr);
-void datalogger_park_mode(char *filename, float depth,
+void datalogger_park_mode(char *filename, float pressure,
                             float temp, rtc_time *time);
 
 char *datalogger_profile_create_file(uint16_t sps_nr);
-void datalogger_profile_mode(char *filename, float depth,
-                            float temp, float volume, rtc_time *time);
+void datalogger_profile_mode(char *filename, float pressure,
+                            float temp, rtc_time *time);
 
-void datalogger_surface_mode(float depth, float temp);
+void datalogger_surface_mode(float pressure, float temp);
+
+/* for reading pressure profile */
+void datalogger_pressure(float *pressure);
+void datalogger_read_test_profile(bool reset);
 
 #endif

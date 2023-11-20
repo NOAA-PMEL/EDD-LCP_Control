@@ -50,6 +50,10 @@ static uint16_t park_count = 0;
 static char lcp_log[256];
 static char *lcp_file = "LCP_LOG.txt";
 
+/* for testing profile pressure */
+static char test_buf[40000];
+static char *test_buffer = test_buf;
+
 bool datalogger_init(uint8_t iomNo)
 {
     artemis_i2c_t *i2c = &module.i2c;
@@ -100,6 +104,47 @@ bool datalogger_init(uint8_t iomNo)
     datalogger_power_off();
 
     return success;
+}
+
+/* for Reading test pressure profile */
+void datalogger_pressure(float *pressure)
+{
+    char p[9] = {0};
+    uint8_t i=0;
+
+    while (*test_buffer != '\n')
+    {
+        p[i] = *test_buffer++;
+        i++;
+    }
+    test_buffer++;
+
+    *pressure = strtof (p, NULL);
+}
+
+void datalogger_read_test_profile(bool reset)
+{
+    if (reset)
+    {
+        ARTEMIS_DEBUG_PRINTF("Reseting test profile pressure ...\n");
+        test_buffer = &test_buf[0];
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("Reading test profile pressure wait please ...\n");
+        uint16_t size = 0;
+        char *filename = "test_profile.txt";
+        /* read file*/
+        size = datalogger_filesize(filename);
+        if (size == 0)
+        {
+            ARTEMIS_DEBUG_PRINTF("ERROR :: file size = %u\n", size);
+            return;
+        }
+        ARTEMIS_DEBUG_PRINTF("file size = %u\n", size);
+        datalogger_readfile(filename, test_buf , size);
+        ARTEMIS_DEBUG_PRINTF("Reading test profile pressure DONE\n");
+    }
 }
 
 bool datalogger_device_info(void)
@@ -225,8 +270,8 @@ char *datalogger_profile_create_file(uint16_t sps_nr)
     sprintf (filename, "%d_sps_%02d.%02d.20%02d.txt", sps_nr, time.month, time.day, time.year);
     datalogger_createfile(filename);
     datalogger_openfile(filename);
-    datalogger_writefile("\nS.No.\t| Depth(m)\t| Temperature(°C) | Volume(in3)\t| Time-stamp\t\n");
-    datalogger_writefile("============================================================================\n\n");
+    datalogger_writefile("\nS.No.\t| Pressure (bar)\t| Temperature(°C) | Time-stamp\t\n");
+    datalogger_writefile("=============================================================\n\n");
     datalogger_write_sync();
     ARTEMIS_DEBUG_PRINTF("%s file created\n", filename);
     sps_count = 0;
@@ -234,7 +279,7 @@ char *datalogger_profile_create_file(uint16_t sps_nr)
     return filename;
 }
 
-void datalogger_profile_mode(char *filename, float depth, float temp, float volume, rtc_time *time)
+void datalogger_profile_mode(char *filename, float pressure, float temp, rtc_time *time)
 {
     char *dirname = "profile_mode";
     //rtc_time time;
@@ -251,8 +296,8 @@ void datalogger_profile_mode(char *filename, float depth, float temp, float volu
     datalogger_openfile(filename);
 
     char data[128] = {0};
-    am_util_stdio_sprintf(  data, "%u\t  %.4f\t  %.4f\t  %.4f\t  %02d:%02d:%02d\n",
-                            sps_count, depth, temp, volume, time->hour, time->min, time->sec);
+    am_util_stdio_sprintf(  data, "%u\t  %.4f\t  %.4f\t %02d:%02d:%02d\n",
+                            sps_count, pressure, temp, time->hour, time->min, time->sec);
 
     datalogger_writefile(data);
     datalogger_write_sync();
@@ -276,8 +321,8 @@ char *datalogger_park_create_file(uint16_t park_nr)
     sprintf (filename, "%d_park_%02d.%02d.20%02d.txt", park_nr, time.month, time.day, time.year);
     datalogger_createfile(filename);
     datalogger_openfile(filename);
-    datalogger_writefile("\nS.No.\t| Depth(m)\t| Temperature(°C)\t| Time-stamp\t\n");
-    datalogger_writefile("===========================================================\n\n");
+    datalogger_writefile("\nS.No.\t| Pressure (bar)\t| Temperature(°C) | Time-stamp\t\n");
+    datalogger_writefile("=========================================================\n\n");
     datalogger_write_sync();
     ARTEMIS_DEBUG_PRINTF("%s file created\n", filename);
     park_count = 0;
@@ -285,7 +330,7 @@ char *datalogger_park_create_file(uint16_t park_nr)
     return filename;
 }
 
-void datalogger_park_mode(char *filename, float depth, float temp, rtc_time *time)
+void datalogger_park_mode(char *filename, float pressure, float temp, rtc_time *time)
 {
     char *dirname = "park_mode";
     //rtc_time time;
@@ -301,8 +346,8 @@ void datalogger_park_mode(char *filename, float depth, float temp, rtc_time *tim
     datalogger_openfile(filename);
 
     char data[64] = {0};
-    am_util_stdio_sprintf(  data, "%u\t  %.4f\t  %.4f\t\t %02d:%02d:%02d\n",
-                            park_count, depth, temp, time->hour, time->min, time->sec);
+    am_util_stdio_sprintf(  data, "%u\t  %.4f\t  %.4f\t %02d:%02d:%02d\n",
+                            park_count, pressure, temp, time->hour, time->min, time->sec);
 
     datalogger_writefile(data);
     datalogger_write_sync();
