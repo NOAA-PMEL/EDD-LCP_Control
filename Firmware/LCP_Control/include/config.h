@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 #define PI                                  ( 3.14159265359 )
+#define G_CONST                             ( 9.80665 )
 
 #define SYS_SMALL_PISTON_DIAMETER           ( 2.25f )
 #define SYS_SMALL_PISTON_MAX_LENGTH         ( 6.00f )
@@ -38,7 +39,7 @@
 #define DRAG_PLATE_RADIUS_SRQ               ( DRAG_PLATE_RADIUS * DRAG_PLATE_RADIUS )
 #define DRAG_PLATE_AREA                     ( PI * DRAG_PLATE_RADIUS_SRQ )
 
-#define SYSTEM_WEIGHT_EST                   ( 10.963 ) /* in Kg */   //( 25.0f ) /* in lbs*/
+#define SYSTEM_WEIGHT_EST                   ( 24.17f )                      /* in lbs*/
 #define SYSTEM_CROSSSECTION_AREA            ( DRAG_PLATE_AREA )
 
 #define CYLINDER_DRAG_COEFF                 ( 0.81f )
@@ -68,6 +69,7 @@
 #define SYSTEM_PROFILER_PROFILE_EXTRA_OOMPH ( true )
 
 #define SYSTEM_CRUSH_LIMIT_DEPTH            ( 220.0f )
+#define SYSTEM_PROFILE_NUMBER               ( 1 )  /* for testing */
 
 #endif // CONFIG_H
 
