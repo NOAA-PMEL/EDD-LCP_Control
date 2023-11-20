@@ -32,6 +32,19 @@
 ************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
+
+//*****************************************************************************
+//
+// FreeRTOS include files.
+//
+//*****************************************************************************
+#include "FreeRTOS.h"
+#include "FreeRTOSConfig.h"
+#include "event_groups.h"
+#include "semphr.h"
+#include "task.h"
+#include "rtos.h"
+
 /************************************************************************
 *							HEADER FILES
 ************************************************************************/
@@ -41,6 +54,7 @@
 *							MACROS
 ************************************************************************/
 
+#define IRIDIUM_TMER    30   /* 5 mins for iridium task */
 
 /************************************************************************
 *							ENUM & STRUCTS
@@ -84,7 +98,7 @@ uint16_t i9603n_read_model(uint8_t *rxData);
 uint16_t i9603n_read_revision(uint8_t *rxData);
 
 bool i9603n_send_text(char *txText);
-bool i9603n_send_data(uint8_t *txData);
+bool i9603n_send_data(uint8_t *txData, uint16_t txlen);
 uint16_t i9603n_read_text(char *rxText);
 uint16_t i9603n_read_data(uint8_t *rxData);
 uint16_t i9603n_test_transfer(uint8_t *rxData);
@@ -92,6 +106,8 @@ uint8_t i9603n_initiate_transfer(uint8_t *rxData);
 
 /* FreeRTOS task*/
 void task_Iridium (void);
+void task_Iridium_transfer(TaskHandle_t *xIridium);
+bool GET_Iridium_status (int16_t *rData);
 
 //#ifndef TEST
 ////*****************************************************************************
