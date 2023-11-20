@@ -132,20 +132,26 @@ void PIS_task_move_zero(TaskHandle_t *xPiston)
 
 void task_move_piston_to_zero(void)
 {
+    assert(piston.rtos.rate != 0);
+    uint32_t period = pdMS_TO_TICKS(1000UL)/piston.rtos.rate;
 
-    TickType_t xLastWakeTime;
-    uint16_t period = 1000/piston.rtos.rate;
-    period /= portTICK_PERIOD_MS;
+    if(module_pis_trv_eng() == true)
+    {
+        ARTEMIS_DEBUG_PRINTF("PISTON ERROR:: Piston is moving already\n");
+        vTaskDelete(NULL);
+        return;
+    }
 
     /** Start Piston Retract to zero length */
     PIS_move_to_zero();
-    vTaskDelay(500/ portTICK_PERIOD_MS);
+    vTaskDelay(period);
 
     /** Start the task of reading until we hit the end stop */
     bool fullFlag = false;
 
     // Initialise the xLastWakeTime variable with the current time.
-    xLastWakeTime = xTaskGetTickCount();
+    //TickType_t xLastWakeTime;
+    //xLastWakeTime = xTaskGetTickCount();
     uint8_t count_reset = 0;
 
     while(!fullFlag)
@@ -157,30 +163,31 @@ void task_move_piston_to_zero(void)
             if(module_pis_trv_eng() == false)
             {
                 count_reset++;
-                //vTaskDelay(50/portTICK_PERIOD_MS);
-                //fullFlag = module_pis_read_if_zero();
+                vTaskDelay(period);
+                fullFlag = module_pis_read_if_zero();
 
-                if (count_reset == 5)
+                if (count_reset > 4)
                 {
                     ARTEMIS_DEBUG_PRINTF("Piston Board Reseting ...\n");
-                    vTaskDelay(200/portTICK_PERIOD_MS);
+                    vTaskDelay(period);
                     PIS_Reset();
-                    vTaskDelay(1500/portTICK_PERIOD_MS);
+                    vTaskDelay(period);
                     PIS_move_to_zero();
-                    vTaskDelay(1000/portTICK_PERIOD_MS);
+                    vTaskDelay(period);
                     count_reset = 0;
                 }
             }
             else
             {
-                vTaskDelay(100/portTICK_PERIOD_MS);
+                vTaskDelay(period);
                 fullFlag = module_pis_read_if_zero();
                 //vTaskDelay(100/portTICK_PERIOD_MS);
                 //ARTEMIS_DEBUG_PRINTF("Piston not zero yet\n");
             }
             xSemaphoreGive(piston.rtos.semaphore);
         }
-        vTaskDelayUntil( &xLastWakeTime, period );
+        vTaskDelay(period);
+        //vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     ARTEMIS_DEBUG_PRINTF("Piston is at zero length\n");
@@ -189,19 +196,26 @@ void task_move_piston_to_zero(void)
 
 void task_move_piston_to_full(void)
 {
-    TickType_t xLastWakeTime;
-    uint16_t period = 1000/piston.rtos.rate;
-    period /= portTICK_PERIOD_MS;
+    assert(piston.rtos.rate != 0);
+    uint32_t period = pdMS_TO_TICKS(1000UL)/piston.rtos.rate;
+
+    if(module_pis_trv_eng() == true)
+    {
+        ARTEMIS_DEBUG_PRINTF("PISTON ERROR:: Piston is moving already\n");
+        vTaskDelete(NULL);
+        return;
+    }
 
     /** Start Piston Extend to full length */
     PIS_move_to_full();
-    vTaskDelay(500/ portTICK_PERIOD_MS);
+    vTaskDelay(period);
 
     /** Start the task of reading until we hit the end stop */
     bool fullFlag = false;
 
-    // Initialise the xLastWakeTime variable with the current time.
-    xLastWakeTime = xTaskGetTickCount();
+    /* Initialise the xLastWakeTime variable with the current time*/
+    //TickType_t xLastWakeTime;
+    //xLastWakeTime = xTaskGetTickCount();
     uint8_t count_reset = 0;
 
     while(!fullFlag)
@@ -213,33 +227,31 @@ void task_move_piston_to_full(void)
             if(module_pis_trv_eng() == false)
             {
                 count_reset++;
-                vTaskDelay(200/portTICK_PERIOD_MS);
+                vTaskDelay(period);
                 fullFlag = module_pis_read_if_full();
 
-                if (count_reset == 5)
+                if (count_reset > 4)
                 {
                     ARTEMIS_DEBUG_PRINTF("Piston Board Reseting ...\n");
-                    vTaskDelay(200/portTICK_PERIOD_MS);
+                    vTaskDelay(period);
                     PIS_Reset();
-                    vTaskDelay(1500/portTICK_PERIOD_MS);
+                    vTaskDelay(period * 2);
                     PIS_move_to_full();
-                    vTaskDelay(500/portTICK_PERIOD_MS);
+                    vTaskDelay(period);
                     count_reset = 0;
                 }
             }
             else
             {
-                vTaskDelay(100/portTICK_PERIOD_MS);
+                vTaskDelay(period);
                 fullFlag = module_pis_read_if_full();
                 //vTaskDelay(100/portTICK_PERIOD_MS);
                 //ARTEMIS_DEBUG_PRINTF("Piston not full yet\n");
             }
             xSemaphoreGive(piston.rtos.semaphore);
         }
-
-        vTaskDelayUntil(&xLastWakeTime, period);
-        //ARTEMIS_DEBUG_PRINTF("Piston Task is being suspended\n");
-        //vTaskSuspend(NULL);
+        vTaskDelay(period);
+        //vTaskDelayUntil(&xLastWakeTime, period);
     }
     ARTEMIS_DEBUG_PRINTF("Piston is at full length\n");
     vTaskDelete(NULL);
@@ -249,8 +261,7 @@ void task_move_piston_to_length(void)
 {
     assert(piston.rtos.rate != 0);
 
-    TickType_t xLastWakeTime;
-    uint32_t period = 1000/piston.rtos.rate;
+    uint32_t period = pdMS_TO_TICKS(1000UL)/piston.rtos.rate;
 
     /*  before sending any write cmd to piston, read first
         if piston is already moving */
@@ -260,14 +271,14 @@ void task_move_piston_to_length(void)
         vTaskDelete(NULL);
         return;
     }
-    vTaskDelay(100/ portTICK_PERIOD_MS);
+    vTaskDelay(period);
 
     /** Start the move */
     PIS_move_to_length(piston.setpoint_l);
     /** wait 500ms to shoot an I2C command */
-    vTaskDelay(500/portTICK_PERIOD_MS);
-
-    xLastWakeTime = xTaskGetTickCount();
+    vTaskDelay(period);
+    //TickType_t xLastWakeTime;
+    //xLastWakeTime = xTaskGetTickCount();
 
     /** Start reading until we hit the volume */
     bool fullFlag = false;
@@ -281,7 +292,7 @@ void task_move_piston_to_length(void)
             if(module_pis_trv_eng() == false)
             {
                 count_reset++;
-                vTaskDelay(100/portTICK_PERIOD_MS);
+                vTaskDelay(period);
                 piston.length = module_pis_get_length();
                 ARTEMIS_DEBUG_PRINTF("Piston length %0.5f\n", piston.length);
 
@@ -293,31 +304,31 @@ void task_move_piston_to_length(void)
                 }
                 else
                 {
-                    if (count_reset == 5)
+                    if (count_reset > 4)
                     {
                         ARTEMIS_DEBUG_PRINTF("Piston Board Reseting ...\n");
-                        vTaskDelay(200/portTICK_PERIOD_MS);
+                        vTaskDelay(period);
                         PIS_Reset();
-                        vTaskDelay(1500/portTICK_PERIOD_MS);
+                        vTaskDelay(period * 2);
                         PIS_move_to_length(piston.setpoint_l);
-                        vTaskDelay(1000/portTICK_PERIOD_MS);
+                        vTaskDelay(period);
                         count_reset = 0;
                     }
                 }
             }
             else
             {
-                vTaskDelay(100/portTICK_PERIOD_MS);
+                vTaskDelay(period);
                 piston.length = module_pis_get_length();
-                vTaskDelay(100/portTICK_PERIOD_MS);
                 //ARTEMIS_DEBUG_PRINTF("Piston is moving ...\n");
             }
 
             xSemaphoreGive(piston.rtos.semaphore);
         }
-        vTaskDelayUntil(&xLastWakeTime, period);
+        vTaskDelay(period);
+        //vTaskDelayUntil(&xLastWakeTime, period);
     }
-    vTaskDelay(100/ portTICK_PERIOD_MS);
+    vTaskDelay(period);
 
     /** Check to see if length is valid , and update the last length */
     piston.length = module_pis_get_length();
@@ -363,8 +374,6 @@ bool PIS_Get_Length(double *length)
 void task_move_piston_to_volume(void)
 {
     assert(piston.rtos.rate != 0);
-
-    TickType_t xLastWakeTime;
     uint32_t period = pdMS_TO_TICKS(1000UL)/piston.rtos.rate;
 
     /*  before sending any write cmd to piston, read first
@@ -375,14 +384,15 @@ void task_move_piston_to_volume(void)
         vTaskDelete(NULL);
         return;
     }
-    vTaskDelay(100/portTICK_PERIOD_MS);
+    vTaskDelay(period);
 
     PIS_move_to_volume(piston.setpoint_v);
     /** wait 500ms to shoot an I2C command */
-    vTaskDelay(500/portTICK_PERIOD_MS);
+    vTaskDelay(period);
 
     ARTEMIS_DEBUG_PRINTF("Piston Volume is moving\n");
-    xLastWakeTime = xTaskGetTickCount();
+    //TickType_t xLastWakeTime;
+    //xLastWakeTime = xTaskGetTickCount();
 
     /** Start reading until we hit the volume */
     bool fullFlag = false;
@@ -397,10 +407,10 @@ void task_move_piston_to_volume(void)
 
             if(module_pis_trv_eng() == false)
             {
-                count_reset++;
-                vTaskDelay(100/portTICK_PERIOD_MS);
+                vTaskDelay(period);
                 piston.volume = module_pis_get_volume();
                 ARTEMIS_DEBUG_PRINTF("Piston volume %0.5f\n", piston.volume);
+                count_reset++;
 
                 if (piston.volume >=(piston.setpoint_v-0.1) && piston.volume <=(piston.setpoint_v+0.1))
                 {
@@ -410,31 +420,30 @@ void task_move_piston_to_volume(void)
                 }
                 else
                 {
-                    if (count_reset == 5)
+                    if (count_reset > 4)
                     {
                         ARTEMIS_DEBUG_PRINTF("Piston Board Reseting ...\n");
-                        vTaskDelay(200/portTICK_PERIOD_MS);
+                        vTaskDelay(period);
                         PIS_Reset();
-                        vTaskDelay(1500/portTICK_PERIOD_MS);
+                        vTaskDelay(period * 2);
                         PIS_move_to_volume(piston.setpoint_v);
-                        vTaskDelay(1000/portTICK_PERIOD_MS);
+                        vTaskDelay(period);
                         count_reset = 0;
                     }
                 }
             }
             else
             {
-                vTaskDelay(100/portTICK_PERIOD_MS);
+                vTaskDelay(period);
                 piston.volume = module_pis_get_volume();
-                //vTaskDelay(100/portTICK_PERIOD_MS);
-                //ARTEMIS_DEBUG_PRINTF("Piston is moving ...\n");
             }
 
             xSemaphoreGive(piston.rtos.semaphore);
         }
-        vTaskDelayUntil(&xLastWakeTime, period);
+        vTaskDelay(period);
+        //vTaskDelayUntil(&xLastWakeTime, period);
     }
-    vTaskDelay(100/portTICK_PERIOD_MS);
+    vTaskDelay(period);
 
     /** Check to see if volume is valid , and update the last volume*/
     piston.volume = module_pis_get_volume();
