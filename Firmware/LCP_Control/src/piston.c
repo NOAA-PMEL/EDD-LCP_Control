@@ -213,8 +213,8 @@ void task_move_piston_to_full(void)
             if(module_pis_trv_eng() == false)
             {
                 count_reset++;
-                //vTaskDelay(200/portTICK_PERIOD_MS);
-                //fullFlag = module_pis_read_if_full();
+                vTaskDelay(200/portTICK_PERIOD_MS);
+                fullFlag = module_pis_read_if_full();
 
                 if (count_reset == 5)
                 {
