@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 #define DATALOG_DEBUG true
-#define NDEBUG
+//#define NDEBUG
 
 #ifdef NDEBUG
     #define ARTEMIS_DEBUG_ASSERT(expr) ((void)0)

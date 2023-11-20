@@ -11,11 +11,15 @@ void artemis_debug_initialize(void)
     am_bsp_uart_printf_enable();
 
     bool success = false;
-    success = datalogger_init(1);
+    success = datalogger_init(4);
 
     if (success)
     {
         datalogger_power_on();
+        am_util_delay_ms(500);
+
+        /* reading from the file first time and fill up the buffer */
+        datalogger_read_test_profile(false);
         ARTEMIS_DEBUG_PRINTF("UART ENABLED\n");
     }
     else
