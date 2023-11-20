@@ -13,6 +13,7 @@
 #include "rtos.h"
 #include "timers.h"
 
+#define GPS_TIMER    10   /* 10 mins xGPS timer */
 
 typedef struct sSensorType_t{
     int16_t value;
@@ -46,6 +47,13 @@ typedef struct sSensorData_t
         bool data_valid;
         SemaphoreHandle_t semaphore;
     }depth;
+    struct{
+        float rate;             /**< Sample rate (Hz) */
+        float current;          /**< Current pressure (bar) */
+        float previous;         /**< Previous pressure (bar) */
+        float ascent_rate;      /**< Calculated ascnet rate (m/s) */
+        bool data_valid;
+    }pressure;
     struct {
         float rate;             /**< Sample rate (Hz) */
         float current;          /**< (int16_t) T_actual = temperature / 1000 */
@@ -75,7 +83,8 @@ void SENS_sensor_gps_on(void);
 void SENS_sensor_temperature_off(void);
 void SENS_sensor_temperature_on(void);
 
-bool SENS_get_depth(float *depth, float *rate);
+bool SENS_get_depth(float *depth, float *pressure, float *rate);
+//bool SENS_get_depth(float *depth, float *rate);
 bool SENS_get_temperature(float *temperature);
 bool SENS_get_gps(SensorGps_t *gps);
 

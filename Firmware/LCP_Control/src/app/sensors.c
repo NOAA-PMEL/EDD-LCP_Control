@@ -18,6 +18,19 @@
 //static SemaphoreHandle_t xTempSemaphore = NULL;
 static SemaphoreHandle_t xTDSemaphore = NULL;
 
+static bool xGPS_run = true;
+
+/* timer callback function */
+void xGPSTimer(TimerHandle_t xTimer)
+{
+    ARTEMIS_DEBUG_PRINTF("GPS timer has expired\n");
+    if (xGPS_run)
+    {
+        xGPS_run = false;
+    }
+}
+
+
 static SensorData_t sensor_data;
 //static SensorData_t sensor_data = {
 //  .depth.semaphore = &xDepthSemaphore,
@@ -30,10 +43,6 @@ bool SENS_initialize(void)
 
     /* LCP system information */
     success = SYS_lcp_info();
-
-    /* Piston Board information */
-    success = PIS_initialize();
-    PIS_set_piston_rate(1);
 
     /* initialize RTC module */
     artemis_rtc_initialize();
@@ -50,6 +59,10 @@ bool SENS_initialize(void)
 
     /* initialize GPS */
     success = GPS_initialize();
+
+    /* Piston Board information */
+    success = PIS_initialize();
+    PIS_set_piston_rate(1);
 
     /* Create a single semaphore for Temperature and
        Pressure sensors for now */
@@ -76,7 +89,8 @@ void SENS_sensor_gps_on(void)           { GPS_on();             }
 void SENS_sensor_temperature_off(void)  { TEMP_Power_OFF();     }
 void SENS_sensor_temperature_on(void)   { TEMP_Power_ON();      }
 
-bool SENS_get_depth(float *depth, float *rate)
+//bool SENS_get_depth(float *depth, float *rate)
+bool SENS_get_depth(float *depth, float *pressure, float *rate)
 {
     bool retVal = false;
 
@@ -91,6 +105,9 @@ bool SENS_get_depth(float *depth, float *rate)
     taskENTER_CRITICAL();
     *depth = sensor_data.depth.current;
     *rate = sensor_data.depth.ascent_rate;
+
+    /* get pressure as well */
+    *pressure = sensor_data.pressure.current;
     retVal = true;
     taskEXIT_CRITICAL();
 
@@ -245,6 +262,11 @@ void task_depth(void)
             sensor_data.depth.previous = sensor_data.depth.current;
             sensor_data.depth.current = depth.Depth;
             sensor_data.depth.ascent_rate = (sensor_data.depth.current - sensor_data.depth.previous) / sensor_data.depth.rate;
+
+            /* get pressure as well */
+            sensor_data.pressure.previous = sensor_data.pressure.current;
+            sensor_data.pressure.current = depth.Pressure;
+
             xSemaphoreGive(xTDSemaphore);
         }
         else
@@ -329,11 +351,28 @@ void task_gps(void)
     //GPS_on();
     //vTaskDelay(pdMS_TO_TICKS(300UL));
 
+    /* start a timer with GPS_TIMER in minutes */
+    TickType_t xTimeMinutes = GPS_TIMER * 60 * pdMS_TO_TICKS(1000UL);
+    TimerHandle_t xTimer = xTimerCreate("GPS_Timer", xTimeMinutes, pdFALSE, (void*)1, xGPSTimer);
+    if (xTimer != NULL)
+    {
+        /* Start the timer */
+        configASSERT(xTimerStart(xTimer, 0) == pdPASS);
+        ARTEMIS_DEBUG_PRINTF("GPS Timer has started for %i Minutes\n", GPS_TIMER);
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("GPS Timer did not start !!!\n");
+    }
+
     /* Initialise the xLastWakeTime variable with the current time */
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
 
-    while(1)
+    xGPS_run = true;
+    uint8_t xFix = 0;
+
+    while(xGPS_run)
     {
         if(GPS_Read(&gps))
         {
@@ -352,6 +391,14 @@ void task_gps(void)
             sensor_data.gps.min = gps.time.min;
             sensor_data.gps.sec = gps.time.sec;
             xSemaphoreGive(sensor_data.gps.semaphore);
+
+            xFix++;
+            if(xFix == 10)
+            {
+                xGPS_run = false;
+                xFix = 0;
+                xTimerStop(xTimer, 0);
+            }
         }
         else
         {
