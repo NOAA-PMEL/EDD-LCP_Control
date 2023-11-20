@@ -350,9 +350,19 @@ void module_pds_idle(void)
     while (run)
     {
         eStatus = eTaskGetState( xPiston );
-        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston fully out = %u\n", eStatus);
-        if (eStatus == eDeleted)
+        if ( (eStatus==eRunning) ||
+             (eStatus==eReady)   ||
+             (eStatus==eBlocked)  )
         {
+            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston full-out task is active\n");
+        }
+        else if (eStatus==eSuspended)
+        {
+            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston full-out task is suspended, who did this?\n");
+        }
+        else if (eStatus == eDeleted)
+        {
+            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston full-out task is deleted\n");
             run = false;
         }
         vTaskDelay(pdMS_TO_TICKS(1000UL));
@@ -424,6 +434,7 @@ void module_pds_systemcheck(void)
         SENS_task_gps(&xGps);
 
         SensorGps_t gps;
+        eTaskState eStatus;
         bool run = true;
         uint8_t fix = 0;
 
@@ -435,44 +446,58 @@ void module_pds_systemcheck(void)
         while (run)
         {
 
-            SENS_get_gps(&gps);
+            eStatus = eTaskGetState( xGps );
 
-            if (gps.fix == true)
+            if ( (eStatus==eRunning) ||
+                 (eStatus==eReady)   ||
+                 (eStatus==eBlocked)  )
             {
-                //ARTEMIS_DEBUG_PRINTF("GPS : TimeStampe, %u.%u.%u, %u:%u:%u\n", gps.month, gps.day, gps.year, gps.hour, gps.min, gps.sec);
-                ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS : fixed, latitude=%0.7f , longitude=%0.7f, altitude=%0.7f\n", gps.latitude, gps.longitude, gps.altitude);
-                fix++;
+                SENS_get_gps(&gps);
 
-                if (fix == 10)
+                if (gps.fix == true)
                 {
-                    /* update latitude and longitude globally */
-                    Lat = gps.latitude;
-                    Lon = gps.longitude;
+                    //ARTEMIS_DEBUG_PRINTF("GPS : TimeStampe, %u.%u.%u, %u:%u:%u\n", gps.month, gps.day, gps.year, gps.hour, gps.min, gps.sec);
+                    ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS : fixed, latitude=%0.7f , longitude=%0.7f, altitude=%0.7f\n", gps.latitude, gps.longitude, gps.altitude);
+                    fix++;
 
-                    /* Calibrate the GPS UTC time into RTC */
-                    ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, RTC : Setting gps time\n");
-                    artemis_rtc_gps_calibration(&gps);
-                    am_hal_gpio_output_clear(AM_BSP_GPIO_LED_GREEN);
+                    if (fix > 9)
+                    {
+                        /* update latitude and longitude globally */
+                        Lat = gps.latitude;
+                        Lon = gps.longitude;
 
-                    //rtc_time time;
-                    //artemis_rtc_get_time(&time);
-                    //ARTEMIS_DEBUG_PRINTF("RTC : TimeStampe, %u.%u.%u, %u:%u:%u\n", time.month, time.day, time.year, time.hour, time.min, time.sec);
+                        /* Calibrate the GPS UTC time into RTC */
+                        ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, RTC : Setting gps time\n");
+                        artemis_rtc_gps_calibration(&gps);
+                        am_hal_gpio_output_clear(AM_BSP_GPIO_LED_GREEN);
+                        fix = 0;
 
-                    run = false;
-                    vTaskDelete(xGps);
-                    vTaskDelay(pdMS_TO_TICKS(100UL));
-                    SENS_sensor_gps_off();
-
-                    /* store data in the SDcard */
-                    datalogger_predeploy_mode(&gps, true);
-
-                    //vTaskDelay(portMAX_DELAY);
-                    pdsEvent = MODE_PRE_DEPLOY;
+                        //rtc_time time;
+                        //artemis_rtc_get_time(&time);
+                        //ARTEMIS_DEBUG_PRINTF("RTC : TimeStampe, %u.%u.%u, %u:%u:%u\n", time.month, time.day, time.year, time.hour, time.min, time.sec);
+                    }
+                }
+                else
+                {
+                    ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS : No fix\n");
                 }
             }
-            else
+            else if (eStatus==eSuspended)
             {
-                ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS : No fix\n");
+                ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS task is suspended, who did this ?\n");
+            }
+            else if (eStatus == eDeleted)
+            {
+                ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS task is deleted\n");
+                run = false;
+                vTaskDelay(pdMS_TO_TICKS(1000UL));
+                SENS_sensor_gps_off();
+
+                /* store data in the SDcard */
+                datalogger_predeploy_mode(&gps, true);
+
+                //vTaskDelay(portMAX_DELAY);
+                pdsEvent = MODE_PRE_DEPLOY;
             }
 
             vTaskDelayUntil(&xLastWakeTime, period);
@@ -649,9 +674,9 @@ void module_sps_move_to_park(void)
 
     /**  Monitor depth until we get there */
     bool run = true;
-    double Volume = 0;
-    float Depth = 0, Rate = 0;
-    float Pressure = 0;
+    double Volume = 0.0;
+    float Depth = 0.0, Rate = 0.0;
+    float Pressure = 0.0;
     uint8_t count_500ms = 0;
     bool piston_move = true;
 
@@ -687,13 +712,23 @@ void module_sps_move_to_park(void)
             count_500ms++;
             if (count_500ms == 2)
             {
-                PIS_Get_Volume(&Volume);
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Volume = %0.4f\n", Volume);
-
                 eStatus = eTaskGetState( xPiston );
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston move status = %u\n", eStatus);
-                if (eStatus == eDeleted)
+
+                if ( (eStatus==eRunning) ||
+                     (eStatus==eReady)   ||
+                     (eStatus==eBlocked)  )
                 {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task is active\n");
+                    PIS_Get_Volume(&Volume);
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Volume = %0.4f\n", Volume);
+                }
+                else if (eStatus==eSuspended)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task is suspended, who did this?\n");
+                }
+                else if (eStatus == eDeleted)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task is deleted\n");
                     piston_move = false;
                 }
                 count_500ms = 0;
@@ -707,7 +742,6 @@ void module_sps_move_to_park(void)
     SendEvent(spsEventQueue, &spsEvent);
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Task is being deleted\n");
     vTaskDelete(NULL);
-    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Task is deleted, do not get here\n");
 }
 
 void module_sps_park(void)
@@ -742,15 +776,12 @@ void module_sps_park(void)
     char *filename = datalogger_park_create_file(park_number);
     vTaskDelay(pdMS_TO_TICKS(100UL));
 
-    TickType_t xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
-
     /** Set volume */
     //PIS_set_volume(735); // dummy volume for now 735
     eTaskState eStatus;
     TaskHandle_t xPiston;
     PIS_set_piston_rate(1);
-
+    double Volume = 0.0;
     bool piston_move = false;
     bool task_done = false;
 
@@ -759,7 +790,9 @@ void module_sps_park(void)
     float samples_t[10] = {0};
     uint8_t samples = 0;
     bool start_time = true;
-    //uint16_t read = 0;
+
+    TickType_t xLastWakeTime;
+    xLastWakeTime = xTaskGetTickCount();
 
     while (run)
     {
@@ -823,9 +856,22 @@ void module_sps_park(void)
         if (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston move status = %u\n", eStatus);
-            if (eStatus == eDeleted)
+
+            if ( (eStatus==eRunning) ||
+                 (eStatus==eReady)   ||
+                 (eStatus==eBlocked)  )
             {
+                ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task is active\n");
+                PIS_Get_Volume(&Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: park, Volume = %0.4f\n", Volume);
+            }
+            else if (eStatus==eSuspended)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task is suspended, who did this?\n");
+            }
+            else if (eStatus == eDeleted)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task is deleted\n");
                 piston_move = false;
             }
         }
@@ -933,13 +979,23 @@ void module_sps_move_to_profile(void)
             count_500ms++;
             if (count_500ms == 2)
             {
-                PIS_Get_Volume(&Volume);
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Volume = %0.4f \n", Volume);
-
                 eStatus = eTaskGetState( xPiston );
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston move status = %u\n", eStatus);
-                if (eStatus == eDeleted)
+
+                if ( (eStatus==eRunning) ||
+                     (eStatus==eReady)   ||
+                     (eStatus==eBlocked)  )
                 {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task is active\n");
+                    PIS_Get_Volume(&Volume);
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Volume = %0.4f \n", Volume);
+                }
+                else if (eStatus==eSuspended)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task is suspended, who did this?\n");
+                }
+                else if (eStatus == eDeleted)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task is deleted\n");
                     piston_move = false;
                 }
                 count_500ms = 0;
@@ -1087,13 +1143,22 @@ void module_sps_profile(void)
         /* check on piston movement */
         if (piston_move)
         {
-            PIS_Get_Volume(&Volume);
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Volume  = %0.4lf\n", Volume);
-
             eStatus = eTaskGetState( xPiston );
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston move status = %u\n", eStatus);
-            if (eStatus == eDeleted)
+            if ( (eStatus==eRunning) ||
+                 (eStatus==eReady)   ||
+                 (eStatus==eBlocked)  )
             {
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task is active\n");
+                PIS_Get_Volume(&Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Volume  = %0.4lf\n", Volume);
+            }
+            else if (eStatus==eSuspended)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task is suspended, who did this?\n");
+            }
+            else if (eStatus == eDeleted)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task is deleted\n");
                 piston_move = false;
             }
         }
@@ -1139,11 +1204,22 @@ void module_sps_move_to_surface(void)
     while (run)
     {
         eStatus = eTaskGetState( xPiston );
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move status = %u\n", eStatus);
-        if (eStatus == eDeleted)
+        if ( (eStatus==eRunning) ||
+             (eStatus==eReady)   ||
+             (eStatus==eBlocked)  )
         {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task is active\n");
+        }
+        else if (eStatus==eSuspended)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task is suspended, who did this?\n");
+        }
+        else if (eStatus == eDeleted)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task is deleted\n");
             run = false;
         }
+
         vTaskDelay(pdMS_TO_TICKS(1000UL));
     }
 
@@ -1160,7 +1236,7 @@ void module_sps_move_to_surface(void)
 
     SensorGps_t gps;
     run = true;
-    uint16_t count = 0;
+    uint8_t fix = 0;
     Event_e spsEvent;
 
     TickType_t xLastWakeTime;
@@ -1168,48 +1244,58 @@ void module_sps_move_to_surface(void)
 
     while (run)
     {
-        SENS_get_gps(&gps);
+        eStatus = eTaskGetState( xGps );
 
-        if (gps.fix == true)
-        //if (gps.fix == false)
+        if ( (eStatus==eRunning) ||
+             (eStatus==eReady)   ||
+             (eStatus==eBlocked)  )
         {
-            //ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS : Time, %d:%02d:%02d\n", gps.hour, gps.min, gps.sec);
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS : fixed, latitude=%0.7f , longitude=%0.7f, altitude=%0.2f\n", gps.latitude, gps.longitude, gps.altitude);
-            count++;
-
-            if (count == 10)
+            /* ask for gps data */
+            SENS_get_gps(&gps);
+            if (gps.fix == true)
             {
-                /* update latitude and longitude globally */
-                Lat = gps.latitude;
-                Lon = gps.longitude;
+                //ARTEMIS_DEBUG_PRINTF("GPS : TimeStampe, %u.%u.%u, %u:%u:%u\n", gps.month, gps.day, gps.year, gps.hour, gps.min, gps.sec);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS : fixed, latitude=%0.7f , longitude=%0.7f, altitude=%0.7f\n", gps.latitude, gps.longitude, gps.altitude);
+                fix++;
 
-                /* update RTC time */
-                artemis_rtc_gps_calibration(&gps);
+                if (fix > 9)
+                {
+                    /* update latitude and longitude globally */
+                    Lat = gps.latitude;
+                    Lon = gps.longitude;
 
-                run = false;
-                vTaskDelete(xGps);
-                vTaskDelay(pdMS_TO_TICKS(100UL));
-                /** GPS OFF */
-                SENS_sensor_gps_off();
-                spsEvent = MODE_DONE;
+                    /* Calibrate the GPS UTC time into RTC */
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, RTC : Setting gps time\n");
+                    artemis_rtc_gps_calibration(&gps);
+                    fix = 0;
+                }
+            }
+            else
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS : No fix\n");
             }
         }
-        else
+        else if (eStatus==eSuspended)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS : No fix\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS task is suspended, who did this ?\n");
+        }
+        else if (eStatus == eDeleted)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS task is deleted\n");
+            run = false;
+            vTaskDelay(pdMS_TO_TICKS(100UL));
 
-            ///* Test, Delete */
-            //run = false;
-            //vTaskDelete(xGps);
-            //vTaskDelay(pdMS_TO_TICKS(100UL));
-            ///** GPS OFF */
-            //SENS_sensor_gps_off();
-            //spsEvent = MODE_DONE;
+            /** GPS OFF */
+            SENS_sensor_gps_off();
+            spsEvent = MODE_DONE;
         }
 
         //vTaskDelay(pdMS_TO_TICKS(1000UL));
         vTaskDelayUntil(&xLastWakeTime, period);
     }
+
+    /* wait for 5 seconds here */
+    vTaskDelay(pdMS_TO_TICKS(5000UL));
 
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
@@ -1615,7 +1701,6 @@ void module_sps_rx(void)
 
     /** Iridium OFF */
 
-    return false;
 }
 
 static void SendEvent(QueueHandle_t eventQueue, Event_e *event)
