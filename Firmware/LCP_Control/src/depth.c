@@ -30,6 +30,10 @@
 #include "am_bsp_pins.h"
 #include "MAX14830.h"
 
+/* datalogger read pressure profile */
+#include "datalogger.h"
+
+#define PROF_TEST
 
 //*****************************************************************************
 //
@@ -155,9 +159,21 @@ void DEPTH_Read(sDepth_Measurement_t *data)
 {
     float pressure;
     //artemis_pa9ld_read(&pressure, &temperature);
+
+#ifdef PROF_TEST
+
+    /* read pressure test profile */
+    datalogger_pressure(&pressure);
+    data->Pressure = pressure;
+    data->Depth = module_DEPTH_Convert_Pressure_to_Depth(pressure);
+
+#else
+
     K9lx_read_P(&pressure);
     data->Pressure = pressure;
     data->Depth = module_DEPTH_Convert_Pressure_to_Depth(pressure);
+
+#endif
 
     //float temperature;
     ////artemis_pa9ld_read(&pressure, &temperature);
