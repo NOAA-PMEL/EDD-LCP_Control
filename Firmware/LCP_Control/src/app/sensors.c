@@ -393,7 +393,7 @@ void task_gps(void)
             xSemaphoreGive(sensor_data.gps.semaphore);
 
             xFix++;
-            if(xFix == 10)
+            if(xFix > 9)
             {
                 xGPS_run = false;
                 xFix = 0;
@@ -408,7 +408,7 @@ void task_gps(void)
         }
 
         vTaskDelayUntil(&xLastWakeTime, period);
-        //vTaskDelete(NULL);
     }
+    vTaskDelete(NULL);
 }
 
