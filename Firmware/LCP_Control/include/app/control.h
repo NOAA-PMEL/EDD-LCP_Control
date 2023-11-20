@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define G_CONST                                 ( 9.80665 )
-
 
 typedef enum eCTRL_Error_t{
     CTRL_ERROR_NONE  = 1,
