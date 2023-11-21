@@ -54,7 +54,8 @@
 *							MACROS
 ************************************************************************/
 
-#define IRIDIUM_TMER    30   /* 5 mins for iridium task */
+#define IRIDIUM_TRIES       30  /* try 20 times to transmit */
+#define SATELLITE_TIMER     60  /* 60 seconds for checking satellite visibility */
 
 /************************************************************************
 *							ENUM & STRUCTS
@@ -108,6 +109,10 @@ uint8_t i9603n_initiate_transfer(uint8_t *rxData);
 void task_Iridium (void);
 void task_Iridium_transfer(TaskHandle_t *xIridium);
 bool GET_Iridium_status (uint8_t *rData);
+
+void task_Iridium_satellite (void);
+void task_Iridium_satellite_visibility(TaskHandle_t *xSatellite);
+bool GET_Iridium_satellite (void);
 
 //#ifndef TEST
 ////*****************************************************************************

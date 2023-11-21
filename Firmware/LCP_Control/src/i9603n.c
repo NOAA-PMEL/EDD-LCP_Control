@@ -102,18 +102,7 @@ static volatile uint8_t irid_buf_rx[I9603N_RX_BUFFER_SIZE];
 //
 //*****************************************************************************
 
-static bool xIridium_run = true;
-
-/* timer callback function */
-void xIridiumTimer(TimerHandle_t xTimer)
-{
-    ARTEMIS_DEBUG_PRINTF("Iridium timer has expired\n");
-    if (xIridium_run)
-    {
-        xIridium_run = false;
-    }
-}
-
+static bool xVisible = false;
 static uint8_t xTStatus[6];
 
 //*****************************************************************************
@@ -177,6 +166,72 @@ void i9603n_off(void)
     module_i9603_power_off();
 }
 
+bool GET_Iridium_satellite (void)
+{
+    bool retVal = false;
+
+    taskENTER_CRITICAL();
+    retVal = xVisible;
+    taskEXIT_CRITICAL();
+
+    return retVal;
+}
+
+void task_Iridium_satellite_visibility (TaskHandle_t *xSatellite)
+{
+    configASSERT(xTaskCreate((TaskFunction_t) task_Iridium_satellite,
+                                "task_Iridium_satellite", 256, NULL,
+                                tskIDLE_PRIORITY + 4UL,
+                                xSatellite) == pdPASS );
+}
+
+void task_Iridium_satellite (void)
+{
+    /* 1 seocnds period delay */
+    uint32_t period = pdMS_TO_TICKS(1000UL / 1);
+
+    ARTEMIS_DEBUG_PRINTF("Satellite delay PERIOD=%dms, %isec\n", period, SATELLITE_TIMER);
+    SemaphoreHandle_t Ssemaphore = xSemaphoreCreateMutex();
+
+    /* timer */
+    uint16_t timer = 0;
+
+    bool run = true;
+    while(run)
+    {
+        /* check satellite visibility */
+        bool check = artemis_i9603n_is_network_available();
+        ARTEMIS_DEBUG_PRINTF("Satellite visibility check=%i\n", (uint8_t)check);
+
+        if( xSemaphoreTake(Ssemaphore, pdMS_TO_TICKS(1000UL)) == pdTRUE )
+        {
+            if (check)
+            {
+                taskENTER_CRITICAL();
+                xVisible = true;
+                taskEXIT_CRITICAL();
+                run = false;
+            }
+            else
+            {
+                taskENTER_CRITICAL();
+                xVisible = false;
+                taskEXIT_CRITICAL();
+            }
+            xSemaphoreGive(Ssemaphore);
+            timer++;
+            if (timer >= SATELLITE_TIMER)
+            {
+                run = false;
+                timer = 0;
+            }
+        }
+        vTaskDelay(period);
+    }
+    /* delete the task */
+    vTaskDelete(NULL);
+}
+
 bool GET_Iridium_status (uint8_t *rData)
 {
     bool retVal = false;
@@ -196,44 +251,33 @@ bool GET_Iridium_status (uint8_t *rData)
 void task_Iridium_transfer(TaskHandle_t *xIridium)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_Iridium,
-                                "task_Iridium_transfer", 512, NULL,
-                                tskIDLE_PRIORITY + 3UL,
+                                "task_Iridium_transfer", 1024, NULL,
+                                tskIDLE_PRIORITY + 4UL,
                                 xIridium) == pdPASS );
 }
 
 void task_Iridium (void)
 {
-    TickType_t xLastWakeTime;
+    /* 5 seocnds period delay */
     uint32_t period = pdMS_TO_TICKS(1000UL / 0.2);
 
-    ARTEMIS_DEBUG_PRINTF("Iridium task delay PERIOD = %d ms\n", period);
+    ARTEMIS_DEBUG_PRINTF("Iridium delay PERIOD=%dms, max tries=%i\n", period, IRIDIUM_TRIES);
     SemaphoreHandle_t Isemaphore = xSemaphoreCreateMutex();
 
     uint8_t len = 0;
-    uint8_t buf[6] = {0};
-    memset(xTStatus, 0, 6*sizeof(uint8_t));
+    uint8_t buf[32] = {0};
 
-    /* start a timer with IRIDIUM_TMER in minutes */
-    TickType_t xTimeMinutes = IRIDIUM_TMER * 60 * pdMS_TO_TICKS(1000UL);
-    TimerHandle_t xTimer = xTimerCreate("Iridium_Timer", xTimeMinutes, pdFALSE, (void*)0, xIridiumTimer);
-    if (xTimer != NULL)
-    {
-        /* Start the timer */
-        configASSERT(xTimerStart(xTimer, 0) == pdPASS);
-        ARTEMIS_DEBUG_PRINTF("Iridium Timer has started for %i Minutes\n", IRIDIUM_TMER);
-    }
-    else
-    {
-        ARTEMIS_DEBUG_PRINTF("Iridium Timer did not start !!!\n");
-    }
+    /* try tranmitting 20 times ? */
+    uint8_t timer = 0;
 
-    xIridium_run = true;
-    xLastWakeTime = xTaskGetTickCount();
-    while(xIridium_run)
+    bool run = true;
+    while(run)
     {
-        len = i9603n_initiate_transfer(buf);
-        if(xSemaphoreTake(Isemaphore, period)==pdTRUE)
+        //len = i9603n_initiate_transfer(buf);
+        if( xSemaphoreTake(Isemaphore, pdMS_TO_TICKS(10000UL)) == pdTRUE )
         {
+            len = i9603n_initiate_transfer(buf);
+
             if (len > 0)
             {
                 ARTEMIS_DEBUG_PRINTF("Transfer status : ");
@@ -250,32 +294,53 @@ void task_Iridium (void)
                     ARTEMIS_DEBUG_PRINTF("Iridium :: Transfer Successful, clearing buffer\n");
 
                     /* fill up the status to XTStatus buffer */
+                    taskENTER_CRITICAL();
                     for (uint8_t i=0; i<6; i++)
                     {
                         xTStatus[i] = buf[i];
                     }
+                    taskEXIT_CRITICAL();
 
                     // clear originated buffer
-                    vTaskDelay(pdMS_TO_TICKS(5000UL));
+                    vTaskDelay(pdMS_TO_TICKS(2000UL));
+                    ARTEMIS_DEBUG_PRINTF("Clearing the Originated buffer:\n");
                     len = i9603n_send_AT_cmd("AT+SBDD0\r", buf);
 
                     if(len>0)
                     {
-                        ARTEMIS_DEBUG_PRINTF("Clearing Originated buffer:\n");
                         for (uint8_t i=0; i<len; i++)
                         {
                             ARTEMIS_DEBUG_PRINTF("%c", (char)buf[i]);
                         }
                         ARTEMIS_DEBUG_PRINTF("\n");
-                        vTaskDelay(pdMS_TO_TICKS(2000UL));
-                        xIridium_run = false;
-                        xTimerStop(xTimer, 0);
+                        //vTaskDelay(pdMS_TO_TICKS(2000UL));
+                        run = false;
                     }
                 }
+                else
+                {
+                    /* fill up the status to XTStatus buffer */
+                    taskENTER_CRITICAL();
+                    for (uint8_t i=0; i<6; i++)
+                    {
+                        xTStatus[i] = buf[i];
+                    }
+                    taskEXIT_CRITICAL();
+                }
+
             }
+
             xSemaphoreGive(Isemaphore);
+
+            timer++;
+            if (timer >= IRIDIUM_TRIES)
+            {
+                ARTEMIS_DEBUG_PRINTF("Reached max tries\n");
+                run = false;
+            }
         }
-        vTaskDelayUntil(&xLastWakeTime, period);
+        vTaskDelay(period);
+        //vTaskDelayUntil(&xLastWakeTime, period);
     }
     /* delete the task */
     vTaskDelete(NULL);
