@@ -28,6 +28,8 @@
 /* add datalogger */
 #include "datalogger.h"
 
+//#define TEST
+
 //*****************************************************************************
 //
 // Static Variables
@@ -106,16 +108,17 @@ static uint8_t temp_park[312];    /* needed for creating a page */
 static uint8_t temp_prof[312];    /* needed for creating a page */
 
 /* linearize profile and park measurements for iridium */
-static uint16_t create_park_page(uint8_t *pPark);
-static uint16_t create_profile_page(uint8_t *pProf);
+static uint16_t create_park_page(uint8_t *pPark, uint16_t *readlength);
+static uint16_t create_profile_page(uint8_t *pProf, uint16_t *readlength);
 
 static bool sensors_check = false;
 static uint16_t prof_number = 0;
 static uint16_t park_number = 0;
-static uint8_t parkPage = 0;
-static uint8_t profPage = 0;
+static uint16_t parkPage = 0;
+static uint16_t profPage = 0;
 static float Lat = 0;
 static float Lon = 0;
+static bool iridium_init = false;
 
 //*****************************************************************************
 //
@@ -183,12 +186,13 @@ void STATE_MainState(SystemMode_t mode)
 
 void STATE_Popup(void)
 {
+
     /* wait for its global event */
     while (1)
     {
-        ARTEMIS_DEBUG_PRINTF("PUS :: Popup waiting for a global event ...\n");
+        ARTEMIS_DEBUG_PRINTF("PUS :: Popup global event wait...\n");
         ReceiveEvent(gEventQueue, &gEvent);
-        ARTEMIS_DEBUG_PRINTF("PUS :: Popup received a global event\n");
+        ARTEMIS_DEBUG_PRINTF("PUS :: Popup global event received\n");
         if (gEvent == MODE_POPUP)
         {
             break;
@@ -247,8 +251,8 @@ void module_pus_idle(void)
     while (run)
     {
         /* go into deep sleep */
-        ARTEMIS_DEBUG_PRINTF("PUS :: Idle, going to deep sleep\n");
-        ARTEMIS_DEBUG_PRINTF("PUS :: Idle, wait forever\n");
+        ARTEMIS_DEBUG_PRINTF("\n\nPUS :: Idle, going to deep sleep\n");
+        ARTEMIS_DEBUG_PRINTF("PUS :: Idle, << DONE HERE >>\n\n");
         vTaskDelay(pdMS_TO_TICKS(1000UL));
 
         /* turn off datalogger */
@@ -273,10 +277,20 @@ void module_pus_surface_float(void)
     while (run)
     {
         eStatus = eTaskGetState( xPiston );
-        ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston move status = %u\n", eStatus);
 
-        if (eStatus == eDeleted)
+        if ( (eStatus==eRunning) ||
+             (eStatus==eReady)   ||
+             (eStatus==eBlocked)  )
         {
+            ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->active\n");
+        }
+        else if (eStatus==eSuspended)
+        {
+            ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->suspended, who did this?\n");
+        }
+        else if (eStatus == eDeleted)
+        {
+            ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->finished\n");
             run = false;
             pusEvent = MODE_DONE;
         }
@@ -318,13 +332,13 @@ void STATE_Predeploy(void)
 
         if (pdsEvent == MODE_PRE_DEPLOY)
         {
-            ARTEMIS_DEBUG_PRINTF("PDS :: Transitionng to Idle State ...\n");
+            ARTEMIS_DEBUG_PRINTF("PDS :: Transitionng to Idle State...\n");
             system.predeploy.state = PDS_Idle;
             vTaskDelay(pdMS_TO_TICKS(3000UL));
         }
         else if (pdsEvent == MODE_PROFILE)
         {
-            ARTEMIS_DEBUG_PRINTF("PDS :: Switching to Profile Mode (SPS) ...\n");
+            ARTEMIS_DEBUG_PRINTF("PDS :: Switching to Profile Mode (SPS)...\n");
             vTaskDelay(pdMS_TO_TICKS(3000UL));
 
             gEvent = pdsEvent;
@@ -339,7 +353,7 @@ void STATE_Predeploy(void)
 void module_pds_idle(void)
 {
     /** Extend the piston fully out */
-    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, wait here for piston to fully out ...\n");
+    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, piston to move fully out...\n");
 
     TaskHandle_t xPiston;
     eTaskState eStatus;
@@ -354,15 +368,15 @@ void module_pds_idle(void)
              (eStatus==eReady)   ||
              (eStatus==eBlocked)  )
         {
-            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston full-out task is active\n");
+            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston full-out task->active\n");
         }
         else if (eStatus==eSuspended)
         {
-            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston full-out task is suspended, who did this?\n");
+            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston full-out task->suspended, who did this?\n");
         }
         else if (eStatus == eDeleted)
         {
-            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston full-out task is deleted\n");
+            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston full-out task->finished\n");
             run = false;
         }
         vTaskDelay(pdMS_TO_TICKS(1000UL));
@@ -467,7 +481,7 @@ void module_pds_systemcheck(void)
                         Lon = gps.longitude;
 
                         /* Calibrate the GPS UTC time into RTC */
-                        ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, RTC : Setting gps time\n");
+                        ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, RTC : <GPS Time Set>\n");
                         artemis_rtc_gps_calibration(&gps);
                         am_hal_gpio_output_clear(AM_BSP_GPIO_LED_GREEN);
                         fix = 0;
@@ -479,16 +493,16 @@ void module_pds_systemcheck(void)
                 }
                 else
                 {
-                    ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS : No fix\n");
+                    ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS task->active : No fix\n");
                 }
             }
             else if (eStatus==eSuspended)
             {
-                ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS task is suspended, who did this ?\n");
+                ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS task->suspended, who did this ?\n");
             }
             else if (eStatus == eDeleted)
             {
-                ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS task is deleted\n");
+                ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS task->finished\n");
                 run = false;
                 vTaskDelay(pdMS_TO_TICKS(1000UL));
                 SENS_sensor_gps_off();
@@ -518,17 +532,24 @@ void module_pds_systemcheck(void)
 
 void STATE_Profiler(void)
 {
+
+#ifdef TEST
+    /* do nothing */
+#else
+
     /* wait for its global event */
     while (1)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: Profile waiting for a global event ...\n");
+        ARTEMIS_DEBUG_PRINTF("SPS :: Profile global event wait...\n");
         ReceiveEvent(gEventQueue, &gEvent);
-        ARTEMIS_DEBUG_PRINTF("SPS :: Profile received a global event\n");
+        ARTEMIS_DEBUG_PRINTF("SPS :: Profile global event received\n");
         if (gEvent == MODE_PROFILE)
         {
             break;
         }
     }
+
+#endif
 
     /* create a local task event queue */
     spsEventQueue = xQueueCreate(2, sizeof(Event_e));
@@ -598,19 +619,19 @@ void STATE_Profiler(void)
 
         if(spsEvent == MODE_DONE)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: Transitionng to next state ...\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: Transitionng to next state...\n");
             system.profiler.state++;
             vTaskDelay(pdMS_TO_TICKS(3000UL));
         }
         else if (spsEvent == MODE_IDLE)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: Profiling done, going to Idle ...\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: Profiling done, going to Idle...\n");
             system.profiler.state = SPS_Idle;
             vTaskDelay(pdMS_TO_TICKS(3000UL));
         }
         else if (spsEvent == MODE_POPUP)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: Switching to Popup Mode ...\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: Switching to Popup Mode...\n");
             vTaskDelay(pdMS_TO_TICKS(3000UL));
 
             gEvent = spsEvent;
@@ -629,23 +650,22 @@ void module_sps_idle(void)
     SENS_sensor_temperature_off();
 
     /* wait here for one second for now */
-    uint32_t wait_time = 1 * 1000;
+    uint32_t wait_time = 3 * 1000;
     TickType_t xDelay = wait_time / portTICK_PERIOD_MS;
 
     Event_e spsEvent;
     bool run = true;
     while (run)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: Idle, waiting for one second ...\n");
+        ARTEMIS_DEBUG_PRINTF("SPS :: Idle, 3 sec wait...\n");
         vTaskDelay(xDelay);
         spsEvent = MODE_DONE;
         run = false;
     }
 
     SendEvent(spsEventQueue, &spsEvent);
-    ARTEMIS_DEBUG_PRINTF("SPS :: Idle, Task is being deleted\n");
+    ARTEMIS_DEBUG_PRINTF("SPS :: Idle, Task->finished\n");
     vTaskDelete(NULL);
-    ARTEMIS_DEBUG_PRINTF("SPS :: Idle, Task is deleted, do not get here\n");
 }
 
 void module_sps_move_to_park(void)
@@ -654,44 +674,60 @@ void module_sps_move_to_park(void)
     float v_rate = 0.1;
     float volume = module_ctrl_set_buoyancy_from_rate(v_rate, true);
 
+#ifdef TEST
+    /* do nothing */
+#else
     /** Set volume */
     //PIS_set_volume(volume);
     PIS_set_volume(730); // dummy volume for now 650
-
     eTaskState eStatus;
     TaskHandle_t xPiston;
     PIS_set_piston_rate(1);
-    PIS_task_move_volume(&xPiston);
 
+#endif
+
+#ifdef TEST
+    /** Start sampling depth @ 9Hz */
+    float s_rate = 9.0;
+    uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
+    bool run = false;
+    Event_e spsEvent;
+    spsEvent = MODE_DONE;
+#else
     /** Start sampling depth @ 2Hz */
     float s_rate = 2.0;
+    Event_e spsEvent;
+    PIS_task_move_volume(&xPiston);
     uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
 
     SENS_set_depth_rate(s_rate);
     SENS_sensor_depth_on();
     TaskHandle_t xDepth;
     SENS_task_sample_depth_continuous(&xDepth);
+    bool run = true;
+#endif
 
     /**  Monitor depth until we get there */
-    bool run = true;
     double Volume = 0.0;
     float Depth = 0.0, Rate = 0.0;
     float Pressure = 0.0;
     uint8_t count_500ms = 0;
     bool piston_move = true;
 
-    Event_e spsEvent;
     //vTaskDelay(period);
 
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
-
     while (run)
     {
         /* check on depth sensor */
         SENS_get_depth(&Depth, &Pressure, &Rate);
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure  = %f\n", Pressure);
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth     = %0.4f, rate = %0.4f\n", Depth, Rate);
+
+#ifdef TEST
+    /* do nothing */
+#else
 
         if (Pressure >= 19.13 && Pressure < 19.15)
         {
@@ -718,29 +754,31 @@ void module_sps_move_to_park(void)
                      (eStatus==eReady)   ||
                      (eStatus==eBlocked)  )
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task is active\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->active\n");
                     PIS_Get_Volume(&Volume);
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Volume = %0.4f\n", Volume);
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Volume=%0.4f\n", Volume);
                 }
                 else if (eStatus==eSuspended)
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task is suspended, who did this?\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->suspended, who did this?\n");
                 }
                 else if (eStatus == eDeleted)
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task is deleted\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->finished\n");
                     piston_move = false;
                 }
                 count_500ms = 0;
             }
         }
 
+#endif
+
         //vTaskDelay(period);
         vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     SendEvent(spsEventQueue, &spsEvent);
-    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Task is being deleted\n");
+    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Task->finished\n");
     vTaskDelete(NULL);
 }
 
@@ -749,8 +787,14 @@ void module_sps_park(void)
     /** Start 1/60Hz sampling of sensors for XXX minutes */
     /** Save data in Park Data strucutre */
 
+#ifdef TEST
+    /** Sample at 9Hz */
+    float s_rate = 9.0;
+#else
     /** Sample at 1/60th Hz */
     float s_rate = 1.0; //1.0/60.01;
+#endif
+
     uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
 
     SENS_set_depth_rate(s_rate);
@@ -761,15 +805,20 @@ void module_sps_park(void)
     vTaskDelay(pdMS_TO_TICKS(100UL));
 
     TaskHandle_t xDepth, xTemp;
-    SENS_task_park_sensors(&xDepth, &xTemp);
 
-    //SENS_task_sample_depth_continuous(&xDepth);
+#ifdef TEST
+    SENS_task_sample_depth_continuous(&xDepth);
+    float Temperature = 20.0;
+    uint16_t read = 0;
+#else
+    SENS_task_park_sensors(&xDepth, &xTemp);
+    float Temperature = 0.0;
+#endif
 
     /** Monitor Depth and Temperature and store these */
     bool run = true;
     float Depth = 0.0, Rate = 0.0;
     float Pressure = 0.0;
-    float Temperature = 0.0;
     Event_e spsEvent;
     rtc_time time;
 
@@ -797,7 +846,9 @@ void module_sps_park(void)
     while (run)
     {
         SENS_get_depth(&Depth, &Pressure, &Rate);
+#ifndef TEST
         SENS_get_temperature(&Temperature);
+#endif
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure    = %0.4f\n", Pressure);
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth       = %0.4f, rate = %0.4f\n", Depth, Rate);
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Temperature = %0.4f\n", Temperature);
@@ -810,6 +861,9 @@ void module_sps_park(void)
         {
             DATA_add(&park, epoch, Depth, Temperature);
             start_time = false;
+#ifdef TEST
+            read++;
+#endif
         }
 
         /* Average Data, and store samples */
@@ -817,8 +871,12 @@ void module_sps_park(void)
         samples_t[samples] = Temperature;
         samples++;
 
+#ifdef TEST
+        if (samples > 1)
+#else
         if (samples > 9)
-        //if (samples > 1)
+#endif
+
         {
             float var, avg_p, avg_t;
             float std = std_div(samples_p, samples, &var, &avg_p);
@@ -829,26 +887,28 @@ void module_sps_park(void)
             /* store averages data locally */
             DATA_add(&park, epoch, avg_p, avg_t);
             samples = 0;
+
+#ifdef TEST
+            read++;
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, sending measurements = %u\n", read);
+#else
             datalogger_park_mode(filename, avg_p, avg_t, &time);
+#endif
             /* just for testing */
-            //read++;
-            //ARTEMIS_DEBUG_PRINTF("SPS :: park, sending measurements = %u\n", read);
         }
 
-        ///* delete this in real test */
-        //if (read == 150)
-        //{
-        //    run = false;
-        //    //vTaskDelete(xTemp);
-        //    vTaskDelete(xDepth);
-        //    vTaskDelay(pdMS_TO_TICKS(100UL));
-
-        //    SENS_sensor_depth_off();
-        //    //SENS_sensor_temperature_off();
-        //    spsEvent = MODE_DONE;
-        //}
-        ///* delete */
-
+#ifdef TEST
+        /* delete this in real test */
+        if (read > 149)
+        {
+            run = false;
+            vTaskDelete(xDepth);
+            vTaskDelay(pdMS_TO_TICKS(100UL));
+            SENS_sensor_depth_off();
+            spsEvent = MODE_DONE;
+        }
+        /* delete */
+#else
         ///* store in park mode file */
         //datalogger_park_mode(filename, Depth, Temperature, &time);
 
@@ -861,17 +921,17 @@ void module_sps_park(void)
                  (eStatus==eReady)   ||
                  (eStatus==eBlocked)  )
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task is active\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->active\n");
                 PIS_Get_Volume(&Volume);
                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Volume = %0.4f\n", Volume);
             }
             else if (eStatus==eSuspended)
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task is suspended, who did this?\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->suspended, who did this?\n");
             }
             else if (eStatus == eDeleted)
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task is deleted\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->finished\n");
                 piston_move = false;
             }
         }
@@ -916,6 +976,7 @@ void module_sps_park(void)
             SENS_sensor_temperature_off();
             spsEvent = MODE_DONE;
         }
+#endif
 
         /* task delay time */
         vTaskDelayUntil(&xLastWakeTime, period);
@@ -923,9 +984,8 @@ void module_sps_park(void)
 
     park_number++;
     SendEvent(spsEventQueue, &spsEvent);
-    ARTEMIS_DEBUG_PRINTF("SPS :: park, Task is being deleted\n");
+    ARTEMIS_DEBUG_PRINTF("SPS :: park, Task->finished\n");
     vTaskDelete(NULL);
-    ARTEMIS_DEBUG_PRINTF("SPS :: park, Task is deleted, do not get here\n");
 }
 
 void module_sps_move_to_profile(void)
@@ -934,10 +994,13 @@ void module_sps_move_to_profile(void)
     float v_rate = 0.1;
     float volume = module_ctrl_set_buoyancy_from_rate(v_rate, true);
 
+#ifdef TEST
+    /* do nothing */
+
+#else
     /** Set volume */
     //PIS_set_volume(volume);
     PIS_set_volume(740); // dummy volume for now 670
-
     TaskHandle_t xPiston;
     eTaskState eStatus;
     PIS_set_piston_rate(1);
@@ -952,12 +1015,21 @@ void module_sps_move_to_profile(void)
     TaskHandle_t xDepth;
     SENS_task_sample_depth_continuous(&xDepth);
 
+#endif
+
+#ifdef TEST
+    bool run = false;
+    Event_e spsEvent;
+    spsEvent = MODE_DONE;
+
+#else
     /** Monitor Depth, when depth reached, mode is complete */
     bool run = true;
+    Event_e spsEvent;
+
     double Volume = 0;
     float Depth = 0, Rate = 0;
     float Pressure = 0;
-    Event_e spsEvent;
     uint8_t count_500ms = 0;
     bool piston_move = true;
 
@@ -968,7 +1040,6 @@ void module_sps_move_to_profile(void)
 
     while (run)
     {
-
         SENS_get_depth(&Depth, &Pressure, &Rate);
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure = %f\n", Pressure);
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth    = %0.4f, rate = %0.4f\n", Depth, Rate);
@@ -985,17 +1056,17 @@ void module_sps_move_to_profile(void)
                      (eStatus==eReady)   ||
                      (eStatus==eBlocked)  )
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task is active\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->active\n");
                     PIS_Get_Volume(&Volume);
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Volume = %0.4f \n", Volume);
                 }
                 else if (eStatus==eSuspended)
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task is suspended, who did this?\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->suspended, who did this?\n");
                 }
                 else if (eStatus == eDeleted)
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task is deleted\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->finished\n");
                     piston_move = false;
                 }
                 count_500ms = 0;
@@ -1022,10 +1093,11 @@ void module_sps_move_to_profile(void)
         vTaskDelayUntil(&xLastWakeTime, period);
     }
 
+#endif
+
     SendEvent(spsEventQueue, &spsEvent);
-    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Task is being deleted\n");
+    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Task->finished\n");
     vTaskDelete(NULL);
-    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Task is deleted, do not get here\n");
 }
 
 void module_sps_profile(void)
@@ -1034,18 +1106,30 @@ void module_sps_profile(void)
     float v_rate = 0.1;
     float volume = module_ctrl_set_buoyancy_from_rate(v_rate, false);
 
+#ifdef TEST
+    /** Start Depth and Temperature Sensor @ 9Hz */
+    float s_rate = 9.0;
+    uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
+    SENS_set_depth_rate(s_rate);
+    SENS_sensor_gps_off();
+    SENS_sensor_depth_on();
+
+#else
     /** Start Depth and Temperature Sensor @ 1Hz */
     float s_rate = 1.0;
     uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
     SENS_set_depth_rate(s_rate);
     SENS_set_temperature_rate(s_rate);
-
     SENS_sensor_gps_off();
     SENS_sensor_depth_on();
     SENS_sensor_temperature_on();
+#endif
 
     vTaskDelay(pdMS_TO_TICKS(100UL));
 
+#ifdef TEST
+    /* do nothing */
+#else
     /** Set volume */
     PIS_set_volume(745); // dummy volume for now
     eTaskState eStatus;
@@ -1053,13 +1137,19 @@ void module_sps_profile(void)
     PIS_set_piston_rate(1);
     PIS_task_move_volume(&xPiston);
     bool piston_move = true;
+#endif
 
     TaskHandle_t xDepth, xTemp;
+
+#ifdef TEST
+    SENS_task_sample_depth_continuous(&xDepth);
+    float Temperature = 40.0;
+#else
     SENS_task_profile_sensors(&xDepth, &xTemp);
-    //SENS_task_sample_depth_continuous(&xDepth);
+    float Temperature = 0.0;
+#endif
 
     /** Start recording samples */
-    float Temperature = 0.0;
     float Depth = 0.0, Rate = 0.0;
     float Pressure = 0.0;
     double Volume = 0.0;
@@ -1073,19 +1163,23 @@ void module_sps_profile(void)
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
 
-
     /* average 10 pressure, temperature values and store */
     float samples_p[10] = {0};
     float samples_t[10] = {0};
     uint8_t samples = 0;
     bool start_time = true;
-    //uint16_t read = 0;
+    uint16_t read = 0;
 
     bool run = true;
     while (run)
     {
         SENS_get_depth(&Depth, &Pressure, &Rate);
+
+#ifdef TEST
+        /* do nothing */
+#else
         SENS_get_temperature(&Temperature);
+#endif
 
         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure    = %f\n", Pressure);
         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Depth       = %0.4f, rate = %0.4f\n", Depth, Rate);
@@ -1104,6 +1198,9 @@ void module_sps_profile(void)
             DATA_add(&prof, epoch, Pressure, Temperature);
             datalogger_profile_mode(filename, Pressure, Temperature, &time);
             start_time = false;
+#ifdef TEST
+            read++;
+#endif
         }
 
         /* Average Data, and store samples */
@@ -1111,8 +1208,11 @@ void module_sps_profile(void)
         samples_t[samples] = Temperature;
         samples++;
 
+#ifdef TEST
+        if (samples > 1)
+#else
         if (samples > 9)
-        //if (samples > 1)
+#endif
         {
             float var, avg_p, avg_t;
             float std = std_div(samples_p, samples, &var, &avg_p);
@@ -1123,23 +1223,28 @@ void module_sps_profile(void)
             /* store average data locally */
             DATA_add(&prof, epoch, avg_p, avg_t);
             samples = 0;
+
+#ifdef TEST
+            read++;
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, sending measurements = %u\n", read);
+#else
             datalogger_profile_mode(filename, avg_p, avg_t, &time);
-            //read++;
-            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, sending measurements = %u\n", read);
+#endif
         }
 
-        ///* delete this */
-        //if (read == 150)
-        //{
-        //    run = false;
-        //    vTaskDelete(xDepth);
-        //    //vTaskDelete(xTemp);
-        //    SENS_sensor_depth_off();
-        //    //SENS_sensor_temperature_off();
-        //    spsEvent = MODE_DONE;
-        //}
-        ///* delete this end */
-
+#ifdef TEST
+        /* delete this */
+        if (read > 149)
+        {
+            run = false;
+            vTaskDelete(xDepth);
+            //vTaskDelete(xTemp);
+            SENS_sensor_depth_off();
+            //SENS_sensor_temperature_off();
+            spsEvent = MODE_DONE;
+        }
+        /* delete this end */
+#else
         /* check on piston movement */
         if (piston_move)
         {
@@ -1148,17 +1253,17 @@ void module_sps_profile(void)
                  (eStatus==eReady)   ||
                  (eStatus==eBlocked)  )
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task is active\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->active\n");
                 PIS_Get_Volume(&Volume);
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Volume  = %0.4lf\n", Volume);
             }
             else if (eStatus==eSuspended)
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task is suspended, who did this?\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->suspended, who did this?\n");
             }
             else if (eStatus == eDeleted)
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task is deleted\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->finished\n");
                 piston_move = false;
             }
         }
@@ -1179,7 +1284,7 @@ void module_sps_profile(void)
             SENS_sensor_temperature_off();
             spsEvent = MODE_DONE;
         }
-
+#endif
         //vTaskDelay(period);
         vTaskDelayUntil(&xLastWakeTime, period);
     }
@@ -1187,9 +1292,8 @@ void module_sps_profile(void)
     prof_number++;
     SendEvent(spsEventQueue, &spsEvent);
 
-    ARTEMIS_DEBUG_PRINTF("SPS :: profile, Task is being deleted\n");
+    ARTEMIS_DEBUG_PRINTF("SPS :: profile, Task->finished\n");
     vTaskDelete(NULL);
-    ARTEMIS_DEBUG_PRINTF("SPS :: profile, Task is deleted, do not get here\n");
 }
 
 void module_sps_move_to_surface(void)
@@ -1208,15 +1312,15 @@ void module_sps_move_to_surface(void)
              (eStatus==eReady)   ||
              (eStatus==eBlocked)  )
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task is active\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->active\n");
         }
         else if (eStatus==eSuspended)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task is suspended, who did this?\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->suspended, who did this?\n");
         }
         else if (eStatus == eDeleted)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task is deleted\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->finished\n");
             run = false;
         }
 
@@ -1228,11 +1332,15 @@ void module_sps_move_to_surface(void)
     uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
     SENS_set_gps_rate(s_rate);
 
+#ifdef TEST
+    /* do nothing */
+    Event_e spsEvent;
+    spsEvent = MODE_DONE;
+#else
+
     SENS_sensor_gps_on();
     TaskHandle_t xGps;
     SENS_task_gps(&xGps);
-
-    /** Monitor piston position */
 
     SensorGps_t gps;
     run = true;
@@ -1255,7 +1363,7 @@ void module_sps_move_to_surface(void)
             if (gps.fix == true)
             {
                 //ARTEMIS_DEBUG_PRINTF("GPS : TimeStampe, %u.%u.%u, %u:%u:%u\n", gps.month, gps.day, gps.year, gps.hour, gps.min, gps.sec);
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS : fixed, latitude=%0.7f , longitude=%0.7f, altitude=%0.7f\n", gps.latitude, gps.longitude, gps.altitude);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS task->active : fixed, latitude=%0.7f , longitude=%0.7f, altitude=%0.7f\n", gps.latitude, gps.longitude, gps.altitude);
                 fix++;
 
                 if (fix > 9)
@@ -1265,23 +1373,23 @@ void module_sps_move_to_surface(void)
                     Lon = gps.longitude;
 
                     /* Calibrate the GPS UTC time into RTC */
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, RTC : Setting gps time\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, RTC : <GPS Time Set>\n");
                     artemis_rtc_gps_calibration(&gps);
                     fix = 0;
                 }
             }
             else
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS : No fix\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS task->active : No fix\n");
             }
         }
         else if (eStatus==eSuspended)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS task is suspended, who did this ?\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS task->suspended, who did this ?\n");
         }
         else if (eStatus == eDeleted)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS task is deleted\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS task->finished\n");
             run = false;
             vTaskDelay(pdMS_TO_TICKS(100UL));
 
@@ -1294,9 +1402,11 @@ void module_sps_move_to_surface(void)
         vTaskDelayUntil(&xLastWakeTime, period);
     }
 
-    /* wait for 5 seconds here */
-    vTaskDelay(pdMS_TO_TICKS(5000UL));
+#endif
 
+    /* wait for 5 seconds here */
+    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, 5 sec wait...\n");
+    vTaskDelay(pdMS_TO_TICKS(5000UL));
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
 }
@@ -1305,14 +1415,57 @@ void module_sps_tx(void)
 {
 
     /** Initialize the Iridium Modem at least */
-    i9603n_initialize();
-    vTaskDelay(pdMS_TO_TICKS(100UL));
+    if (!iridium_init)
+    {
+        i9603n_initialize();
+        iridium_init = true;
+        vTaskDelay(pdMS_TO_TICKS(500UL));
+    }
     /* turn on the iridium module */
     i9603n_on();
     vTaskDelay(pdMS_TO_TICKS(1000UL));
 
-    TaskHandle_t xIridium;
+    TaskHandle_t xSatellite;
+    task_Iridium_satellite_visibility(&xSatellite);
     eTaskState eStatus;
+
+    /* run to see the satellites visibility */
+    while(1)
+    {
+        eStatus = eTaskGetState( xSatellite );
+
+        if ( (eStatus==eRunning) ||
+             (eStatus==eReady)   ||
+             (eStatus==eBlocked)  )
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite, task->active\n");
+        }
+        else if (eStatus==eSuspended)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite, task->suspended, who did this ?\n");
+        }
+        else if (eStatus == eDeleted)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite task->finished\n");
+            bool visible = GET_Iridium_satellite();
+            if (visible)
+            {
+                ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, Satellite <Visible>\n\n");
+                break;
+            }
+            else
+            {
+                ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, Satellite <NOT Visible>\n\n");
+                break;
+            }
+        }
+        vTaskDelay(pdMS_TO_TICKS(1000UL));
+    }
+
+    /* move to transmitting bytes */
+
+    TaskHandle_t xIridium;
+    //eTaskState eStatus;
     Event_e spsEvent;
     bool run = true;
     bool send_park = true;
@@ -1323,27 +1476,25 @@ void module_sps_tx(void)
         /* start off with sending Park measurements pages */
         while (send_park)
         {
-            uint8_t *ptrPark = &irid_park[0];
-            uint16_t txpark = create_park_page(ptrPark);
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, written=%u, read=%u\n", park.cbuf.written, park.cbuf.read);
 
-            /* Debug */
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park page %u, length = %u\n", parkPage, txpark);
+            uint8_t *ptrPark = &irid_park[0];
+            uint16_t nr_park = 0;
+            uint16_t txpark = create_park_page(ptrPark, &nr_park);
 
             if ( txpark > 0 )
             {
-                //for (uint16_t i=0; i<txpark; i++)
-                //{
-                //    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park measurements = 0x%02X\n", irid_park[i]);
-                //}
+                /* Debug */
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park page %u, bytes=%u\n", parkPage, txpark);
 
                 /* we do have a page to send */
                 /* send the bytes to the originated buffer */
                 bool ret = i9603n_send_data(irid_park, txpark);
                 if (ret)
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park Bytes sending\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park measurements are being transmitted\n");
                 }
-                vTaskDelay(pdMS_TO_TICKS(100UL));
+                vTaskDelay(pdMS_TO_TICKS(1000UL));
 
                 /* start iridium transfer task */
                 task_Iridium_transfer(&xIridium);
@@ -1353,21 +1504,23 @@ void module_sps_tx(void)
                 while (park_run)
                 {
                     /* Iridum task state checking */
+                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park checking task eState\n");
                     eStatus = eTaskGetState( xIridium );
 
                     if ( (eStatus==eRunning) ||
                          (eStatus==eReady)   ||
                          (eStatus==eBlocked)  )
                     {
-                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park Iridium task is active\n");
+                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park task->active\n");
                     }
                     else if (eStatus==eSuspended)
                     {
-                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park Iridium task is suspended, who did this ?\n");
+                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park task->suspended, who did this ?\n");
                     }
                     else if (eStatus == eDeleted)
                     {
-                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park Iridium task is deleted\n");
+                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park task->finished\n");
+                        vTaskDelay(pdMS_TO_TICKS(1000UL));
 
                         /* check if the page are transmitted successfully, tranmission number */
                         uint8_t recv[6] = {0};
@@ -1375,19 +1528,23 @@ void module_sps_tx(void)
 
                         if (ret)
                         {
-                            if ( recv[0] <= 5)
+                            if (recv[0] <= 5)
                             {
                                 park_run = false;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park transmission successful\n");
-                                vTaskDelay(pdMS_TO_TICKS(100UL));
+                                ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, Park transmit <Successful>\n\n");
                             }
                             else
                             {
                                 /* reset the read length */
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park read=%u, measurements=%u\n", park.cbuf.read, nr_park);
                                 parkPage--;
-                                park.cbuf.read = park.cbuf.read - txpark;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park transmission not successful\n");
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park reseting page\n");
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park reseting to page %u\n", parkPage);
+                                park.cbuf.read = park.cbuf.read - nr_park;
+                                park_run = false;
+                                send_park = false;
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park after reset read=%u\n", park.cbuf.read);
+                                ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, Park transmit <NOT Successful>\n");
+                                vTaskDelay(pdMS_TO_TICKS(1000UL));
                             }
                         }
                         else
@@ -1401,60 +1558,58 @@ void module_sps_tx(void)
             else
             {
                 send_park = false;
-                //parkPage = 0;
             }
+            vTaskDelay(pdMS_TO_TICKS(2000UL));
         }
 
         /* start off with sending Profile measurements pages */
         while (send_prof)
         {
-            uint8_t *ptrProf = &irid_prof[0];
-            uint16_t txprof = create_profile_page(ptrProf);
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, written=%u, read=%u\n", prof.cbuf.written, prof.cbuf.read);
 
-            /* Debug */
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile page %u, length = %u\n", profPage, txprof);
+            uint8_t *ptrProf = &irid_prof[0];
+            uint16_t nr_prof = 0;
+            uint16_t txprof = create_profile_page(ptrProf, &nr_prof);
 
             if ( txprof > 0 )
             {
-
-                //for (uint16_t i=0; i<txprof; i++)
-                //{
-                //    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile measurements = 0x%02X\n", irid_prof[i]);
-                //}
-
+                /* Debug */
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile page %u, bytes=%u\n", profPage, txprof);
 
                 /* we do have a page to send */
                 /* send the bytes to the originated buffer */
                 bool ret = i9603n_send_data(irid_prof, txprof);
                 if (ret)
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile Bytes sending\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile measurements are being transmitted\n");
                 }
-                vTaskDelay(pdMS_TO_TICKS(100UL));
+                vTaskDelay(pdMS_TO_TICKS(1000UL));
 
                 /* start iridium transfer task */
                 task_Iridium_transfer(&xIridium);
 
-                /* inner run */
-                bool profile_run = true;
-                while (profile_run)
+                /* prof run */
+                bool prof_run = true;
+                while (prof_run)
                 {
                     /* Iridum task state checking */
+                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Prof checking task eState\n");
                     eStatus = eTaskGetState( xIridium );
 
                     if ( (eStatus==eRunning) ||
                          (eStatus==eReady)   ||
                          (eStatus==eBlocked)  )
                     {
-                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile Iridium task is active\n");
+                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile task->active\n");
                     }
                     else if (eStatus==eSuspended)
                     {
-                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile Iridium task is suspended, who did this ?\n");
+                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile task->suspended, who did this ?\n");
                     }
                     else if (eStatus == eDeleted)
                     {
-                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile Iridium task is deleted\n");
+                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile task->finished\n");
+                        vTaskDelay(pdMS_TO_TICKS(1000UL));
 
                         /* check if the page are transmitted successfully, tranmission number */
                         uint8_t recv[6] = {0};
@@ -1462,19 +1617,23 @@ void module_sps_tx(void)
 
                         if (ret)
                         {
-                            if ( recv[0] <= 5)
+                            if (recv[0] <= 5)
                             {
-                                profile_run = false;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile transmission successful\n");
-                                vTaskDelay(pdMS_TO_TICKS(100UL));
+                                prof_run = false;
+                                ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, Profile transmit <Successful>\n\n");
                             }
                             else
                             {
                                 /* reset the read length */
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile measurements=%u, read=%u\n", nr_prof, prof.cbuf.read);
                                 profPage--;
-                                prof.cbuf.read = prof.cbuf.read - txprof;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile transmission not successful\n");
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile reseting page\n");
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile reseting to page %u\n", profPage);
+                                prof.cbuf.read = prof.cbuf.read - nr_prof;
+                                prof_run = false;
+                                send_prof = false;
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile after reset read=%u\n", prof.cbuf.read);
+                                ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, Profile transmit <NOT Successful>\n");
+                                vTaskDelay(pdMS_TO_TICKS(1000UL));
                             }
                         }
                         else
@@ -1488,28 +1647,28 @@ void module_sps_tx(void)
             else
             {
                 send_prof = false;
-                //profPage = 0;
             }
+            vTaskDelay(pdMS_TO_TICKS(2000UL));
         }
 
-        if (send_park | send_prof)
+        if (send_park || send_prof)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Transmission is not done yet, continue ...\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, task->not_done, continue...\n");
         }
         else
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Transmission task is done\n");
             /* if we are here then transmission either was successful or failed */
             run = false;
 
             /* uninitialize the iridium module */
             i9603n_off();
-            vTaskDelay(pdMS_TO_TICKS(1000UL));
+            //vTaskDelay(pdMS_TO_TICKS(1000UL));
 
             /* check if we have reached the maximum profiling numbers */
-            if (prof_number > SYSTEM_PROFILE_NUMBER)
+            if (prof_number >= SYSTEM_PROFILE_NUMBER)
             {
                 spsEvent = MODE_POPUP;
+                ARTEMIS_DEBUG_PRINTF("\n\n\nSPS :: tx, << %i Profiles has been reached >>\n\n\n", prof_number);
             }
             else
             {
@@ -1522,15 +1681,15 @@ void module_sps_tx(void)
         vTaskDelay(pdMS_TO_TICKS(2000UL));
     }
 
-    /* uinitialize the iridium module */
-    i9603n_uninitialize();
     i9603n_off();
+    vTaskDelay(pdMS_TO_TICKS(1000UL));
 
     SendEvent(spsEventQueue, &spsEvent);
+    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Task->finished\n");
     vTaskDelete(NULL);
 }
 
-static uint16_t create_park_page(uint8_t *pPark)
+static uint16_t create_park_page(uint8_t *pPark, uint16_t *readlength)
 {
     /** Collect Park measurements
      *  maximum 340 bytes can be transmit at a time,
@@ -1549,27 +1708,39 @@ static uint16_t create_park_page(uint8_t *pPark)
 
     /* set pointer to the temp park buffer */
     uint8_t *ptPark = &temp_park[0];
-    ARTEMIS_DEBUG_PRINTF("Collecting Park measurements\n\n");
     do
     {
         size = DATA_get_converted(&park, &start, &offset, &pressure, &temp);
         /* check, if we have no data available */
         if (size == 0)
         {
-            if (len > 0 && len < 103)
+            if (len > 0 && len <= 103)
             {
                 parkPage++;
+                ARTEMIS_DEBUG_PRINTF("collected measurements=%u\n", len);
+                ARTEMIS_DEBUG_PRINTF("\n<< no more measurements after page %u >>\n\n", parkPage);
             }
-            ARTEMIS_DEBUG_PRINTF("No more measurements are available\n");
+            else
+            {
+                ARTEMIS_DEBUG_PRINTF("all measurements are read\n");
+            }
             break;
         }
+        len++;
 
         /* check on the length, must be < 313 */
         if (len > 103)
         {
             /* we are done here, increase the page number */
+
+            *ptPark++ = (uint8_t) (pressure&0xFF);
+            *ptPark++ = (uint8_t) (temp>>8);
+            *ptPark++ = (uint8_t) (temp&0xFF);
             parkPage++;
-            ARTEMIS_DEBUG_PRINTF("collect more measurements in a different page\n");
+
+            ARTEMIS_DEBUG_PRINTF("collected measurements=%u\n", len);
+            ARTEMIS_DEBUG_PRINTF("\n< more measurements are available >\n\n");
+
             break;
         }
 
@@ -1581,9 +1752,6 @@ static uint16_t create_park_page(uint8_t *pPark)
         *ptPark++ = (uint8_t) (temp&0xFF);
         //ARTEMIS_DEBUG_PRINTF("Temperature = 0x%02X\n", *(ptPark-1) );
 
-        len++;
-
-        ARTEMIS_DEBUG_PRINTF("collecting Park page bytes length = %u\n", len*3);
 
     } while (1);
 
@@ -1610,10 +1778,11 @@ static uint16_t create_park_page(uint8_t *pPark)
             //ARTEMIS_DEBUG_PRINTF("0x%02X, 0x%02X, nrBytes = %u\n", *(pPark-1), *(ptPark-1), nrBytes);
         }
     }
+    *readlength = len;
     return nrBytes;
 }
 
-static uint16_t create_profile_page(uint8_t *pProf)
+static uint16_t create_profile_page(uint8_t *pProf, uint16_t *readlength)
 {
     /** Collect Profile measurements
      *  maximum 340 bytes can be transmit at a time,
@@ -1632,28 +1801,41 @@ static uint16_t create_profile_page(uint8_t *pProf)
 
     /* set pointer to the temp park buffer */
     uint8_t *ptProf = &temp_prof[0];
-    ARTEMIS_DEBUG_PRINTF("Collecting Profile measurements\n\n");
     do
     {
         size = DATA_get_converted(&prof, &start, &offset, &pressure, &temp);
         /* check, if we have no data available */
         if (size == 0)
         {
-            if (len > 0 && len < 103)
+            if (len > 0 && len <= 103)
             {
                 profPage++;
+                ARTEMIS_DEBUG_PRINTF("collected measurements=%u\n", len);
+                ARTEMIS_DEBUG_PRINTF("\n<< no more measurements after page %u >>\n\n", profPage);
             }
-            ARTEMIS_DEBUG_PRINTF("No more measurements are available\n");
+            else
+            {
+                ARTEMIS_DEBUG_PRINTF("all measurements are read\n");
+            }
             break;
         }
+        len++;
+
         /* check on the length, must be < 313 */
         if (len > 103)
         {
             /* we are done here, increase the page number */
+            *ptProf++ = (uint8_t) (pressure&0xFF);
+            *ptProf++ = (uint8_t) (temp>>8);
+            *ptProf++ = (uint8_t) (temp&0xFF);
             profPage++;
-            ARTEMIS_DEBUG_PRINTF("collect more measurements in a different page\n");
+
+            ARTEMIS_DEBUG_PRINTF("collected measurements=%u\n", len);
+            ARTEMIS_DEBUG_PRINTF("\n< more measurements are available >\n\n");
+
             break;
         }
+
         /* start collecting data into the temp park buffer */
         *ptProf++ = (uint8_t) (pressure&0xFF);
         //ARTEMIS_DEBUG_PRINTF("Pressure    = 0x%02X\n", *(ptProf-1) );
@@ -1661,8 +1843,7 @@ static uint16_t create_profile_page(uint8_t *pProf)
         //ARTEMIS_DEBUG_PRINTF("Temperature = 0x%02X\n", *(ptProf-1) );
         *ptProf++ = (uint8_t) (temp&0xFF);
         //ARTEMIS_DEBUG_PRINTF("Temperature = 0x%02X\n", *(ptProf-1) );
-        len++;
-        ARTEMIS_DEBUG_PRINTF("collecting Profile page bytes length = %u\n", len*3);
+        //ARTEMIS_DEBUG_PRINTF("collected measurements=%u\n", len);
 
     } while (1);
 
@@ -1690,6 +1871,7 @@ static uint16_t create_profile_page(uint8_t *pProf)
         }
     }
 
+    *readlength = len;
     return nrBytes;
 }
 
@@ -1710,7 +1892,7 @@ static void SendEvent(QueueHandle_t eventQueue, Event_e *event)
 
 static void ReceiveEvent(QueueHandle_t eventQueue, Event_e *event)
 {
-    ARTEMIS_DEBUG_PRINTF("Event waiting ...\n");
+    ARTEMIS_DEBUG_PRINTF("Event waiting...\n");
     xQueueReceive(eventQueue, event, portMAX_DELAY);
     ARTEMIS_DEBUG_PRINTF("Event waiting Done\n");
 }
