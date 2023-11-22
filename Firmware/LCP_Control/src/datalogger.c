@@ -296,7 +296,7 @@ void datalogger_profile_mode(char *filename, float pressure, float temp, rtc_tim
     datalogger_openfile(filename);
 
     char data[128] = {0};
-    am_util_stdio_sprintf(  data, "%u\t  %.4f\t  %.4f\t %02d:%02d:%02d\n",
+    am_util_stdio_sprintf(  data, "%u\t  %.4f\t  %.4f\t\t %02d:%02d:%02d\n",
                             sps_count, pressure, temp, time->hour, time->min, time->sec);
 
     datalogger_writefile(data);
@@ -346,7 +346,7 @@ void datalogger_park_mode(char *filename, float pressure, float temp, rtc_time *
     datalogger_openfile(filename);
 
     char data[64] = {0};
-    am_util_stdio_sprintf(  data, "%u\t  %.4f\t  %.4f\t %02d:%02d:%02d\n",
+    am_util_stdio_sprintf(  data, "%u\t  %.4f\t  %.4f\t\t %02d:%02d:%02d\n",
                             park_count, pressure, temp, time->hour, time->min, time->sec);
 
     datalogger_writefile(data);
