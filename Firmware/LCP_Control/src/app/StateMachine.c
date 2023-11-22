@@ -859,7 +859,8 @@ void module_sps_park(void)
         /* store first sample with start time */
         if (start_time)
         {
-            DATA_add(&park, epoch, Depth, Temperature);
+            DATA_add(&park, epoch, Pressure, Temperature);
+            datalogger_park_mode(filename, Pressure, Temperature, &time);
             start_time = false;
 #ifdef TEST
             read++;
@@ -892,6 +893,7 @@ void module_sps_park(void)
             read++;
             ARTEMIS_DEBUG_PRINTF("SPS :: park, sending measurements = %u\n", read);
 #else
+
             datalogger_park_mode(filename, avg_p, avg_t, &time);
 #endif
             /* just for testing */
@@ -1413,16 +1415,53 @@ void module_sps_move_to_surface(void)
 
 void module_sps_tx(void)
 {
+    Event_e spsEvent;
 
     /** Initialize the Iridium Modem at least */
     if (!iridium_init)
     {
         i9603n_initialize();
         iridium_init = true;
-        vTaskDelay(pdMS_TO_TICKS(500UL));
+        vTaskDelay(pdMS_TO_TICKS(1000UL));
     }
-    /* turn on the iridium module */
-    i9603n_on();
+
+    /* turn on the iridium module and wait for it be charged */
+    uint8_t wait = 0;
+    uint8_t tries = 0;
+    while (wait < 2 && tries < 2)
+    {
+        bool retVal = i9603n_on();
+        if (!retVal)
+        {
+            wait++;
+            if (wait >= 2)
+            {
+                tries++;
+                i9603n_off();
+                vTaskDelay(pdMS_TO_TICKS(1000UL));
+                wait = 0;
+            }
+        }
+        else
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Iridium looks fine\n");
+            tries = 0;
+            break;
+        }
+    }
+
+    if (tries >= 2)
+    {
+        i9603n_off();
+        /* reset test profile */
+        datalogger_read_test_profile(true);
+        spsEvent = MODE_IDLE;
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Iridium not charged, try again\n");
+        SendEvent(spsEventQueue, &spsEvent);
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Task->finished abruptly, NOT transmitting today\n");
+        vTaskDelete(NULL);
+    }
+
     vTaskDelay(pdMS_TO_TICKS(1000UL));
 
     TaskHandle_t xSatellite;
@@ -1465,8 +1504,6 @@ void module_sps_tx(void)
     /* move to transmitting bytes */
 
     TaskHandle_t xIridium;
-    //eTaskState eStatus;
-    Event_e spsEvent;
     bool run = true;
     bool send_park = true;
     bool send_prof = true;
@@ -1660,10 +1697,7 @@ void module_sps_tx(void)
             /* if we are here then transmission either was successful or failed */
             run = false;
 
-            /* uninitialize the iridium module */
-            i9603n_off();
             //vTaskDelay(pdMS_TO_TICKS(1000UL));
-
             /* check if we have reached the maximum profiling numbers */
             if (prof_number >= SYSTEM_PROFILE_NUMBER)
             {
