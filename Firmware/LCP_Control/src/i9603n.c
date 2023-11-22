@@ -112,7 +112,7 @@ static uint8_t xTStatus[6];
 //*****************************************************************************
 #ifndef TEST
 
-static void module_i9603_power_on(void);
+static bool module_i9603_power_on(void);
 static void module_i9603_power_off(void);
 
 static bool module_i9603_check_net_available(void);
@@ -154,9 +154,9 @@ void i9603n_uninitialize(void)
     artemis_sc_power_off();
 }
 
-void i9603n_on(void)
+bool i9603n_on(void)
 {
-    module_i9603_power_on();
+    return module_i9603_power_on();
     //am_util_delay_ms(1000);
     //module_i9603n_echo_off();
 }
@@ -356,7 +356,7 @@ uint16_t i9603n_send_AT_cmd(uint8_t *cmd, uint8_t *rxData)
     if (txLen > 120)
     {
         // Debug
-        am_util_stdio_printf("limit of cmd size is 120 bytes !, %u\n", txLen);
+        ARTEMIS_DEBUG_PRINTF("limit of cmd size is 120 bytes !, %u\n", txLen);
         return len;
     }
     else
@@ -455,7 +455,7 @@ uint16_t i9603n_test_transfer(uint8_t *rxData)
                             else
                             {
                                 number = number * 10 + (i_tok[i] - 48);
-                                //am_util_stdio_printf("number = %u\n", number);
+                                //ARTEMIS_DEBUG_PRINTF("number = %u\n", number);
                             }
                             i++;
                         }
@@ -468,7 +468,7 @@ uint16_t i9603n_test_transfer(uint8_t *rxData)
     }
     else
     {
-        am_util_stdio_printf("Transfer Result NOT OK\n");
+        ARTEMIS_DEBUG_PRINTF("Transfer Result NOT OK\n");
     }
     module_i9603n_flush(irid_buf_rx);
     return rxLen;
@@ -507,7 +507,7 @@ uint16_t i9603n_read_text(char *rxText)
     }
     else
     {
-        am_util_stdio_printf("Result NOT OK :: length = %u\n", len);
+        ARTEMIS_DEBUG_PRINTF("Result NOT OK :: length = %u\n", len);
         // handle this
         len = 0;
     }
@@ -526,7 +526,7 @@ bool i9603n_send_text(char *txText)
     if (txLen > 120)
     {
         // Debug
-        am_util_stdio_printf("limit of text size is 120 bytes, (%u !!!)\n", txLen);
+        ARTEMIS_DEBUG_PRINTF("limit of text size is 120 bytes, (%u !!!)\n", txLen);
         return ret;
     }
     else
@@ -619,7 +619,7 @@ uint16_t i9603n_read_data(uint8_t *rxData)
     {
         // Debug
         module_i9603n_flush(irid_buf_rx);
-        am_util_stdio_printf("Try again ...\n");
+        ARTEMIS_DEBUG_PRINTF("Try again ...\n");
         return 0;
     }
 }
@@ -636,7 +636,7 @@ bool i9603n_send_data(uint8_t *txData, uint16_t txlen)
     if (txLen > 340)
     {
         // Debug
-        am_util_stdio_printf("length exceeds 340 bytes !, (%u !!!)\n", txLen);
+        ARTEMIS_DEBUG_PRINTF("length exceeds 340 bytes !, (%u !!!)\n", txLen);
         return ret;
     }
 
@@ -649,12 +649,12 @@ bool i9603n_send_data(uint8_t *txData, uint16_t txlen)
         result = module_i9603n_read_AT(&len);
         if (result == I9603N_RESULT_READY)
         {
-            am_util_stdio_printf("Result is READY \n");
+            ARTEMIS_DEBUG_PRINTF("Result is READY \n");
             ret = true;
         }
         else
         {
-            am_util_stdio_printf("Result is NOT READY \n");
+            ARTEMIS_DEBUG_PRINTF("Result is NOT READY \n");
             ret = false;
         }
 
@@ -675,12 +675,12 @@ bool i9603n_send_data(uint8_t *txData, uint16_t txlen)
             i++;
 
             /* for Debugging */
-            //am_util_stdio_printf("Sending String = ");
+            //ARTEMIS_DEBUG_PRINTF("Sending String = ");
             //for (uint16_t i=0; i<strlen(irid_buf_tx); i++)
             //{
-            //    am_util_stdio_printf("0x%02X ", irid_buf_tx[i]);
+            //    ARTEMIS_DEBUG_PRINTF("0x%02X ", irid_buf_tx[i]);
             //}
-            //am_util_stdio_printf("\n");
+            //ARTEMIS_DEBUG_PRINTF("\n");
 
             // send bytes
             module_i9603n_send(irid_buf_tx, i);
@@ -911,7 +911,7 @@ uint16_t i9603n_read_revision(uint8_t *rxData)
 //
 //*****************************************************************************
 
-static void module_i9603_power_on(void)
+static bool module_i9603_power_on(void)
 {
 	bool retVal = false;
 	retVal = artemis_sc_power_startup();
@@ -920,10 +920,12 @@ static void module_i9603_power_on(void)
 		artemis_i9603n_power_on();
         am_util_delay_ms(500);
 	}
+    return retVal;
 }
 
 static void module_i9603_power_off(void)
 {
+    artemis_i9603n_power_off();
     artemis_sc_power_off();
 }
 
@@ -968,7 +970,7 @@ static bool module_i9603_check_net_available(void)
         /** Send the packet */
 
         // /** Query for connection strength */
-        // sprintf(irid_buf, "AT+CSQ\r");
+        // am_util_stdio_sprintf(irid_buf, "AT+CSQ\r");
         // module_i9603n_send(irid_buf, 7);
 
         // /** Read & Parse result */
@@ -1204,12 +1206,12 @@ static uint16_t parse_data(uint8_t *inData, uint8_t *outData)
     }
 
     // Debug
-    //am_util_stdio_printf("Received String = ");
+    //ARTEMIS_DEBUG_PRINTF("Received String = ");
     //for (uint8_t i=0; lData[i]!='\0'; i++)
     //{
-    //    am_util_stdio_printf("%c", lData[i]);
+    //    ARTEMIS_DEBUG_PRINTF("%c", lData[i]);
     //}
-    //am_util_stdio_printf("\n");
+    //ARTEMIS_DEBUG_PRINTF("\n");
 
     char *o_tok = strtok(lData, "\r\n");
     while (o_tok !=NULL)
@@ -1314,10 +1316,10 @@ static i9603n_result_t module_i9603n_read_AT(uint16_t *len)
             ///* Debug */
             //for (uint16_t i=0; i<msg_len; i++)
             //{
-            //    am_util_stdio_printf("0x%02X ", pStart[i]);
+            //    ARTEMIS_DEBUG_PRINTF("0x%02X ", pStart[i]);
             //}
-            //am_util_stdio_printf("\n");
-            //am_util_stdio_printf("msg_len = %i, rem_len = %i\n", msg_len, rem_len);
+            //ARTEMIS_DEBUG_PRINTF("\n");
+            //ARTEMIS_DEBUG_PRINTF("msg_len = %i, rem_len = %i\n", msg_len, rem_len);
 
             do{
                 if(parse_AT(pStart, "OK\r\n", msg_len+rem_len) != -1)
@@ -1349,18 +1351,18 @@ static i9603n_result_t module_i9603n_read_AT(uint16_t *len)
                         for (uint16_t i=0; i<rem_len; i++)
                         {
                             irid_buf_rx[msg_len+i] = remBuff[i];
-                            //am_util_stdio_printf("0x%02X ", pStart[msg_len+i]);
+                            //ARTEMIS_DEBUG_PRINTF("0x%02X ", pStart[msg_len+i]);
                         }
 
                         ///* Debug */
-                        //am_util_stdio_printf("\n");
+                        //ARTEMIS_DEBUG_PRINTF("\n");
                         //for (uint16_t i=0; i<rem_len+msg_len; i++)
                         //{
-                        //    am_util_stdio_printf("%c", pStart[i]);
-                        //    //am_util_stdio_printf("%c", irid_buf_rx[i]);
-                        //    //am_util_stdio_printf("%c", remBuff[i]);
+                        //    ARTEMIS_DEBUG_PRINTF("%c", pStart[i]);
+                        //    //ARTEMIS_DEBUG_PRINTF("%c", irid_buf_rx[i]);
+                        //    //ARTEMIS_DEBUG_PRINTF("%c", remBuff[i]);
                         //}
-                        //am_util_stdio_printf("\n");
+                        //ARTEMIS_DEBUG_PRINTF("\n");
                     }
                     wait++;
                 }

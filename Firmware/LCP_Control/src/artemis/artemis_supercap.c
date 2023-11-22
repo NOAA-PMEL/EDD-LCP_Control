@@ -96,10 +96,10 @@ bool artemis_sc_power_startup(void)
 	{
 		if(artemis_sc_power_good())
 		{
-			am_util_stdio_printf("Capacitors charged\n");
+			ARTEMIS_DEBUG_PRINTF("Capacitors charged\n");
 			return true;
 		}
-		am_util_stdio_printf("Capacitor charging ... \n");
+		ARTEMIS_DEBUG_PRINTF("Capacitor charging...\n");
 		am_hal_systick_delay_us(1000000);   /** 1 Seconds delay */
 	}
 

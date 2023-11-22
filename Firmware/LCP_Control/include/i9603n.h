@@ -54,8 +54,8 @@
 *							MACROS
 ************************************************************************/
 
-#define IRIDIUM_TRIES       30  /* try 20 times to transmit */
-#define SATELLITE_TIMER     60  /* 60 seconds for checking satellite visibility */
+#define IRIDIUM_TRIES       20  /* try 20 times to transmit */
+#define SATELLITE_TIMER     30  /* 30 seconds for checking satellite visibility */
 
 /************************************************************************
 *							ENUM & STRUCTS
@@ -87,7 +87,7 @@ typedef enum ei9603n_result_t
 
 void i9603n_initialize(void);
 void i9603n_uninitialize(void);
-void i9603n_on(void);
+bool i9603n_on(void);
 void i9603n_off(void);
 
 uint8_t i9603n_status(uint8_t *rxData);
