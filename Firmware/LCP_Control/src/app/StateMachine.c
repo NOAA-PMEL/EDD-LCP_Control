@@ -545,6 +545,7 @@ void STATE_Profiler(void)
         ARTEMIS_DEBUG_PRINTF("SPS :: Profile global event received\n");
         if (gEvent == MODE_PROFILE)
         {
+            ARTEMIS_DEBUG_PRINTF("\n\nStarting Profile %u\n\n", prof_number+1);
             break;
         }
     }
@@ -626,6 +627,7 @@ void STATE_Profiler(void)
         else if (spsEvent == MODE_IDLE)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: Profiling done, going to Idle...\n");
+            ARTEMIS_DEBUG_PRINTF("\n\nStarting Profile %u\n\n", prof_number+1);
             system.profiler.state = SPS_Idle;
             vTaskDelay(pdMS_TO_TICKS(3000UL));
         }
