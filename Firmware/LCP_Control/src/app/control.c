@@ -5,8 +5,6 @@
 //
 //*****************************************************************************
 
-
-
 //*****************************************************************************
 //
 // Project Files
@@ -15,89 +13,88 @@
 #include "depth.h"
 #include "sensors.h"
 #include "config.h"
-#include "i9603n.h"
 #include "artemis_debug.h"
-
 
 #define DEPTH_BOUND      ( 1.0f )
 
-static void module_turn_off_gps_and_iridium(void);
-static void task_move_to_depth(void);
-static void task_maintain_depth(void);
-static void task_profile(void);
+typedef struct sProfilerSettings_t
+{
+    float mass;                     /**< Mass (lbs) */
+    float cross_section;            /**< Surface area of profiler for terminal velocity */
+    float drag_coefficient;         /**< Coefficient of drag for a cylinder */
+    float thermal_coefficient;      /**< Coefficient of thermal expansion */
+    float compress_coefficient;     /**< Coefficient of volume compressibility */
+    float water_density;            /**< Water density */
 
-typedef struct sProfilerSettings_t{
-
-    float weight;                 /**< Weight (kg) */
-    const float cross_section;    /**< Surface area of profiler for terminal velocity */
-    const float drag_coefficient;   /**< Coefficient of drag for a cylinder */
-    float density;                /**< Water density */
     struct {
-        const float min;          /**< Minimum volume of system (mL) */
-        const float max;          /**< Maximum volume of system (without reserve) (mL) */
-        const float reserve;      /**< Used to surface (mL) */  
+        const float min;            /**< Minimum volume of system (mL) */
+        const float max;            /**< Maximum volume of system (without reserve) (mL) */
+        const float reserve;        /**< Used to surface (mL) */
     }volume;
     struct {
-        float neutral;            /**< System neutral buoyancy (N) */
+        float neutral;              /**< System neutral buoyancy (N) */
         
     }buoyancy;
     
     struct {
-        float depth;            /**< Park depth (m) */
-        float error;            /**< +/- error allowed (m) */
-        uint32_t duration;        /**< Duration of park (seconds) */
-        float rate;             /**< Depth Sensor Rate */
+        float depth;                /**< Park depth (m) */
+        float error;                /**< +/- error allowed (m) */
+        uint32_t duration;          /**< Duration of park (seconds) */
+        float rate;                 /**< Depth Sensor Rate */
     }park;
     struct {
-        float depth;            /**< Start depth of profile (m) */
-        float error;            /**< +/- error allowed (m) */
-        float rate;             /**< All Ocean Sensor rate */
-        float off;              /**< Depth to stop profile (m) */
-        bool extra_oomph;       /**< Help break through lens */
+        float depth;                /**< Start depth of profile (m) */
+        float error;                /**< +/- error allowed (m) */
+        float rate;                 /**< All Ocean Sensor rate */
+        float off;                  /**< Depth to stop profile (m) */
+        bool extra_oomph;           /**< Help break through lens */
     }profile;
     struct {
         struct {
-            const float max;    /** Maximum rise rate (m/s) */
-            const float min;    /** Minimum rise rate (m/s) */
-            float setpoint;     /**< Rise rate setpoint (m/s) */
+            const float max;        /** Maximum rise rate (m/s) */
+            const float min;        /** Minimum rise rate (m/s) */
+            float setpoint;         /**< Rise rate setpoint (m/s) */
         }rise;
         struct {
-            const float max;    /** Maximum fall rate (m/s) */
-            const float min;    /** Minimum fall rate (m/s) */
-            float setpoint;     /**< Fall rate setpoint (m/s) */
+            const float max;        /** Maximum fall rate (m/s) */
+            const float min;        /** Minimum fall rate (m/s) */
+            float setpoint;         /**< Fall rate setpoint (m/s) */
         }fall;
     }rate;
     const float crush_limit;
 }ProfilerSettings_t;
 
-typedef struct sProfiler_t{
+typedef struct sProfiler_t
+{
     struct {
-        float previous;     /**< Previous volume setting (mL) */
-        float current;      /**< Current volume of system (mL) */
+        float previous;             /**< Previous volume setting (mL) */
+        float current;              /**< Current volume of system (mL) */
     }volume;
 
     struct{
-        float previous;     /**< Previous volume setting (N) */
-        float current;      /**< Current system buoyancy (N) */
+        float previous;             /**< Previous volume setting (N) */
+        float current;              /**< Current system buoyancy (N) */
     }buoyancy;
+
     struct {
         struct {
-            float records[3];   /**< Previous 3 rate data record */
-            float average;      /**< Average of previous 3 rates */
+            float records[3];       /**< Previous 3 rate data record */
+            float average;          /**< Average of previous 3 rates */
         }previous;
 
-        float current;          /**< Current rate */
+        float current;              /**< Current rate */
     }rate;
-}Profiler_t;
 
-
-
+} Profiler_t;
 
 static ProfilerSettings_t settings = {
-    .weight = SYSTEM_WEIGHT_EST,
+    .mass = SYSTEM_MASS_EST,
     .cross_section = SYSTEM_CROSSSECTION_AREA,
     .drag_coefficient = CYLINDER_DRAG_COEFF,
-    .density = SYSTEM_DENSITY_SEAWATER,
+    .water_density = SYSTEM_DENSITY_SEAWATER,
+    .thermal_coefficient = VOLUME_THERMAL_EXPANSION_COEFF,
+    .compress_coefficient = VOLUME_COMPRESSIBILITY_COEFF,
+
     .volume = {
         .max = SYSTEM_VOLUME_MAX,
         .min = SYSTEM_VOLUME_MIN,
@@ -151,320 +148,107 @@ static float module_calculate_buoyancy_from_descent_rate(float rate);
 static float module_calculate_volume_from_descent_rate(float rate);
 static float module_calculate_volume_from_buoyancy(float buoyancy);
 
-//*****************************************************************************
-//
-// Global Functions
-//
-//*****************************************************************************
-void task_move_to_park(void)
+
+float CTRL_calculate_depth(float pressure)
 {
+    /* P = rgh , r -> rho (water density) , convert pressure pascal to bar */
+    float depth = (pressure*100000) / (settings.water_density * G_CONST) ;
+    //ARTEMIS_DEBUG_PRINTF("LCP Depth = %0.4f\n", depth);
+    return depth;
+}
 
-    /** Set the depth */
-    //PST_set_depth(profiler.park.depth);
-    PST_set_depth(settings.park.depth);
+float CTRL_set_lcp_density(float density)
+{
+    /* density = mass / volume , in kg/m3 */
+    /* volume = mass / density */
 
-    /** Monitor the movement */
-    bool moveFlag;
-    do
+    settings.water_density = density;
+    float volume = (settings.mass * 0.453592) / settings.water_density;
+
+    /* convert volume from m³ to in³, 1m³ = 61023.7 in³ and mass to kg */
+    volume *= 61023.7 ;
+    //ARTEMIS_DEBUG_PRINTF("LCP Density = %0.4f\n", density);
+    return volume;
+}
+
+float CTRL_calculate_lcp_density(float volume)
+{
+    /* density = mass / volume , in kg/m3 */
+    /* convert volume from in³ to m³, 1 in³=0.000016387m³ and mass to kg */
+    float density = (settings.mass * 0.453592) / (volume*0.000016387);
+    //ARTEMIS_DEBUG_PRINTF("LCP Density = %0.4f\n", density);
+    return density;
+}
+
+float CTRL_calculate_piston_position(float pressure, float temp)
+{
+    /*  guess volume_minimum = lcp_volume_min * [(1-r*pressure)+(a*(t0-temperatre))]
+     *  r = gamma -> volume compressibility coefficient
+     *  a = alpha -> linear expansion cofficient
+     *  t0 = room temperature
+     */
+    float volume_min = settings.volume.min;
+    volume_min *= ((1-settings.compress_coefficient*pressure)+(settings.thermal_coefficient*(25.0 - temp)));
+
+    ARTEMIS_DEBUG_PRINTF("LCP Piston minimum volume=%0.4f\n", volume_min);
+
+    /* convert to cubic inches for pistonboard, 1m³ = 61023.7in³ */
+
+    float volume_target = (settings.mass * 0.453592) / (settings.water_density);
+    volume_target *= 61023.7;
+
+    float volume_change = (volume_target - volume_min);
+
+    float position_change = volume_change / (PI * SMALL_PISTON_RADIUS_SQR );
+
+    ARTEMIS_DEBUG_PRINTF("LCP Piston volume change = %0.4f\n", volume_change);
+    ARTEMIS_DEBUG_PRINTF("LCP Piston position change = %0.4f\n", position_change);
+
+    return position_change;
+}
+
+float CTRL_calculate_volume_from_length(float length)
+{
+    float volume = HOUSING_VOLUME;
+
+    if ((length>0.0f) && (length<=SMALL_PISTON_MAX_LENGTH))
     {
-        /* code */
-        moveFlag = true;
-
-    } while (moveFlag);
-
-    /** Kill the task */
-    vTaskDelete(NULL);
-}
-void task_move_to_depth(void)
-{   
-    /** Send Command to Move to Depth */
-    //PST_set_depth(settings.profile.depth);
-      
-    PIS_move_to_volume();
-
-    /** Loop forever */
-    while(1);
-
-}
-
-void task_maintain_depth(void)
-{
-    /** @todo is there anything to this? Probably not */
-}
-
-
-void task_profile(void)
-{
-    
-    /** Send Command to surface (well, float depth) */
-    /** @todo Add function call */
-
-    /** Loop forever */
-    while(1);
-}
-
-void task_move_to_surface(void)
-{
-    /** Send command to move to surface, but not tx position */
-//    PST_set_depth();
-}
-
-
-
-int32_t CTRL_MoveToPark(float depth)
-{
-    int32_t retVal = CTRL_ERROR_FAILURE;
-    sDepth_Measurement_t measurement = {0};
-    TaskHandle_t xDepthHandle = NULL;
-    TaskHandle_t xPistonHandle = NULL;
-    
-
-    /** In any move, GPS & Iridium should be off to save power */
-    module_turn_off_gps_and_iridium();
-
-
-    /** Set the Depth we're moving to */
-    //CTRL_set_park_depth(depth);
-    SENS_set_depth_rate(2);
-
-
-    /** Create the tasks */
-    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
-    //xTaskCreate((TaskFunction_t) task_move_to_park, "move_to_park", 128, NULL, 1, &xPistonHandle);
-
-    //if( (xDepthHandle != NULL) && (xPistonHandle != NULL) )
-    if( (xDepthHandle != NULL) )
-    {
-        ARTEMIS_DEBUG_PRINTF("DEBUG  :: Schedular is going to start\n");
-        /** Start the tasks */
-        vTaskStartScheduler();
-
-        ARTEMIS_DEBUG_PRINTF("DEBUG  :: Schedular is started\n");
-        bool atDepth = false;
-
-        float depth_max = depth + DEPTH_BOUND;
-        float depth_min = depth - DEPTH_BOUND;
-
-        while(!atDepth)
-        {
-            DEPTH_Read(&measurement);
-
-            if(measurement.Depth >= settings.crush_limit)
-            {
-                /** Emergency blow !!! */
-
-            } else if ( (measurement.Depth >= depth_min) && (measurement.Depth <= depth_max) )
-            {   
-                /** Wait for X # of seconds to validate at we're not drifting */
-
-            }
-        }
-
-        vTaskDelete(xDepthHandle);
-        vTaskDelete(xPistonHandle);
-    } else {
-
-
+        volume += (PI*SMALL_PISTON_RADIUS_SQR*length);
     }
-    return retVal;
-}
-
-int32_t CTRL_MoveToStartDepth(float depth)
-{
-    int32_t retVal = CTRL_ERROR_FAILURE;
-    sDepth_Measurement_t measurement = {0};
-    TaskHandle_t xDepthHandle = NULL;
-    TaskHandle_t xPistonHandle = NULL;
-    
-
-    /** In any move, GPS & Iridium should be off to save power */
-    module_turn_off_gps_and_iridium();
-
-
-    /** Set the Depth we're moving to */
-    CTRL_set_park_depth(depth);
-
-
-    /** Create the tasks */
-    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
-    xTaskCreate((TaskFunction_t) task_move_to_depth, "move_to_depth", 128, NULL, 1, &xPistonHandle);
-
-    if( (xDepthHandle != NULL) && (xPistonHandle != NULL) )
+    else if ((length>0.0) && (length<=(SMALL_PISTON_MAX_LENGTH+LARGE_PISTON_MAX_LENGTH)))
     {
-        /** Start the tasks */
-        vTaskStartScheduler();
-
-        bool atDepth = false;
-
-        float depth_max = depth + DEPTH_BOUND;
-        float depth_min = depth - DEPTH_BOUND;
-
-        while(!atDepth)
-        {
-            DEPTH_Read(&measurement);
-
-            if(measurement.Depth >= settings.crush_limit)
-            {
-                /** Emergency blow !!! */
-
-            } else if ( (measurement.Depth >= depth_min) && (measurement.Depth <= depth_max) )
-            {   
-                /** Wait for X # of seconds to validate at we're not drifting */
-
-            }
-        }
-
-        vTaskDelete(xDepthHandle);
-        vTaskDelete(xPistonHandle);
-    } else {
-
-
-    }
-    return retVal;
-}
-
-
-int32_t CTRL_MaintainDepth(float depth, uint32_t time_s)
-{
-    int32_t retVal = CTRL_ERROR_FAILURE;
-//    sDepth_Measurement_t measurement = {0};
-    TaskHandle_t xDepthHandle = NULL;
-    TaskHandle_t xPistonHandle = NULL;
-
-    /** In any move, GPS & Iridium should be off to save power */
-    module_turn_off_gps_and_iridium();
-
-    /** Set a 1 Hz rate to the pressure sensor */
-    SENS_set_depth_rate(1);
-
-    /** Create the tasks */
-    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
-    xTaskCreate((TaskFunction_t) task_maintain_depth, "move_to_depth", 128, NULL, 1, &xPistonHandle);
-
-
-    uint32_t time = time_s;
-
-    while(time--)
-    {
-
+        volume += (PI*SMALL_PISTON_RADIUS_SQR*SMALL_PISTON_MAX_LENGTH);
+        volume += (PI*SMALL_PISTON_RADIUS_SQR*length);
     }
 
-    vTaskDelete(xDepthHandle);
-    vTaskDelete(xPistonHandle);
-    
-    return retVal;
-    
+    /* convert into cubic inches */
+    //volume *= 61023.7;
+    ARTEMIS_DEBUG_PRINTF("LCP Length to Volume = %0.4f\n", volume);
+    return volume;
 }
 
-
-int32_t CTRL_Profile(float top_depth, float rise_rate, bool break_thru_lens)
+float CTRL_calculate_length_from_volume(float volume)
 {
-    int32_t retVal = CTRL_ERROR_FAILURE;
-//    sDepth_Measurement_t depth = {0};
-    TaskHandle_t xDepthHandle = NULL;
-    TaskHandle_t xTemperatureHandle = NULL;
-    TaskHandle_t xPistonHandle = NULL;
+    float length = 0.0;
 
-    /** In any move, GPS & Iridium should be off to save power */
-    module_turn_off_gps_and_iridium();
-
-    /** Set a 1 Hz rate to the pressure sensor */
-    SENS_set_depth_rate(4);
-
-    /** Set the temperature setting */
-    SENS_set_temperature_rate(4);
-
-    /** Create the tasks */
-    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
-    xTaskCreate((TaskFunction_t) task_temperature, "temperature", 128, NULL, 1, &xTemperatureHandle);
-    xTaskCreate((TaskFunction_t) task_profile, "move_to_depth", 128, NULL, 1, &xPistonHandle);
-
-
-    if( (xDepthHandle != NULL) && (xPistonHandle != NULL))
+    if ( (volume>0.0) && (volume<=HOUSING_VOLUME) )
     {
-
-        /** */
-        bool completeFlag = false;
-        while(!completeFlag)
-        {
-
-
-
-        }
-
+        length = 0.0;
     }
-
-    
-    return retVal;
-}
-
-int32_t CTRL_MoveToSurface(uint32_t timeout)
-{
-    int32_t retVal = CTRL_ERROR_FAILURE;
-    sDepth_Measurement_t depth = {0};
-    TaskHandle_t xDepthHandle = NULL;
-    TaskHandle_t xPistonHandle = NULL;
-    
-
-    /** In any move, GPS & Iridium should be off to save power */
-    module_turn_off_gps_and_iridium();
-
-
-    /** Set the Depth we're moving to */
-    CTRL_set_park_depth(0.0f);
-
-
-    /** Create the tasks */
-    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
-    xTaskCreate((TaskFunction_t) task_move_to_depth, "move_to_depth", 128, NULL, 1, &xPistonHandle);
-
-    if( (xDepthHandle != NULL) && (xPistonHandle != NULL) )
+    else if ( (volume>0.0) && (volume<=SYSTEM_VOLUME_MAX) )
     {
-        /** Start the tasks */
-        vTaskStartScheduler();
-
-        bool atDepth = false;
-
-        float depth_max = 0.0f + DEPTH_BOUND;
-        float depth_min = 0.0f - DEPTH_BOUND;
-
-        while(!atDepth)
-        {
-            DEPTH_Read(&depth);
-
-            if(depth.Depth >= settings.crush_limit)
-            {
-                /** Emergency blow !!! */
-
-            } else if ( (depth.Depth >= depth_min) && (depth.Depth <= depth_max) )
-            {   
-                /** Wait for X # of seconds to validate at we're not drifting */
-
-            }
-        }
-
-        vTaskDelete(xDepthHandle);
-        vTaskDelete(xPistonHandle);
-    } else {
-
-
+        volume -= HOUSING_VOLUME;
+        length = volume/(PI*SMALL_PISTON_RADIUS_SQR);
     }
-    
-    return retVal;
-}
-
-
-//*****************************************************************************
-//
-// Static Functions
-//
-//*****************************************************************************
-static void module_turn_off_gps_and_iridium(void)
-{
-    // turn off the iridium modem
-    i9603n_off();
-    // turn off ublox gps
-    GPS_off();
+    else if ( (volume>0.0) && (volume<=SYSTEM_MAX_VOLUME) )
+    {
+        volume -= HOUSING_VOLUME;
+        length = volume/((PI*LARGE_PISTON_RADIUS_SQR)+SMALL_PISTON_MAX_LENGTH) ;
+    }
+    /* convert into inches */
+    //length *= 39.3701;
+    ARTEMIS_DEBUG_PRINTF("LCP Volume to Length = %0.4f\n", length);
+    return length;
 }
 
 static float module_calculate_buoyancy_from_descent_rate(float rate)
@@ -474,15 +258,15 @@ static float module_calculate_buoyancy_from_descent_rate(float rate)
     float f_buoyant = 0;
 
     /** Calculate Force due to gravity , F_g = m*g */
-    f_gravity = settings.weight * G_CONST;
+    f_gravity = ( settings.mass * 0.453592 ) * G_CONST;
 
     /** Calculate the drag force @ that velocity */
     /** F_d = 1/2 (rho) * v^2 * Cd * A */
     f_drag = 0.5f;
-    f_drag *= settings.density;
+    f_drag *= settings.water_density;
     f_drag *= (rate * rate);
     f_drag *= CYLINDER_DRAG_COEFF;
-    f_drag *= settings.cross_section;
+    f_drag *= ( settings.cross_section * 0.00064516 );
 
     /** Calculate the required buoyant force */
     f_buoyant = f_gravity - f_drag;
@@ -497,15 +281,15 @@ static float module_calculate_buoyancy_from_ascent_rate(float rate)
     float f_buoyant = 0;
 
     /** Calculate Force due to gravity , F_g = m*g */
-    f_gravity = settings.weight * G_CONST;
+    f_gravity = ( settings.mass * 0.453592) * G_CONST;
 
     /** Calculate the drag force @ that velocity */
     /** F_d = 1/2 (rho) * v^2 * Cd * A */
     f_drag = 0.5;
-    f_drag *= settings.density;
+    f_drag *= settings.water_density;
     f_drag *= (rate * rate);
     f_drag *= CYLINDER_DRAG_COEFF;
-    f_drag *= settings.cross_section;
+    f_drag *= ( settings.cross_section * 0.00064516 );
 
     /** Calculate the required buoyant force */
     f_buoyant = f_gravity + f_drag;
@@ -536,23 +320,27 @@ static float module_calculate_volume_from_buoyancy(float buoyancy)
     /** Calculate volume from buoyant force */
     /** F_buoyant = V * (rho) * g */
     /** so, V = F_buoyant / (rho) * g */
-    float volume = buoyancy / (settings.density * G_CONST) ;
+    float volume = buoyancy / (settings.water_density * G_CONST) ;
+    /* convert volume from m^3 to in^3 */
+    volume *= 61023.7;
     return volume;
 }
 
 float module_ctrl_set_buoyancy_from_rate(float rate, bool falling)
 {
+    ARTEMIS_DEBUG_PRINTF("Setting rate = %0.3f, falling = %i\n", rate, (uint8_t)falling);
+
     float buoyancy = 0.0f;
     float volume = 0.0f;
     if(falling)
     {
         buoyancy = module_calculate_buoyancy_from_descent_rate(rate);
         volume = module_calculate_volume_from_descent_rate(rate);
-        ARTEMIS_DEBUG_PRINTF("falling, buoyanc = %0.3f, volume=%0.3f\n", buoyancy, volume);
+        ARTEMIS_DEBUG_PRINTF("falling, buoyancy = %0.3f, volume=%0.3f\n", buoyancy, volume);
     } else {
         buoyancy = module_calculate_buoyancy_from_ascent_rate(rate);
         volume = module_calculate_volume_from_ascent_rate(rate);
-        ARTEMIS_DEBUG_PRINTF("rising, buoyanc = %0.3f, volume=%0.3f\n", buoyancy, volume);
+        ARTEMIS_DEBUG_PRINTF("rising, buoyancy = %0.3f, volume=%0.3f\n", buoyancy, volume);
     }
 
     //if(PIS_set_volume(volume))
