@@ -138,7 +138,7 @@ void S9T_dev_info(void)
 
         // print pS9 structure
         ARTEMIS_DEBUG_PRINTF("S9 Temperature Sensor\n");
-        ARTEMIS_DEBUG_PRINTF("*****************************\n");
+        ARTEMIS_DEBUG_PRINTF("**************************************\n");
 
         // MID
         ARTEMIS_DEBUG_PRINTF("\tMID\t: ");

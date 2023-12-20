@@ -548,7 +548,7 @@ static void module_k9lx_device_info(uint8_t port)
     int8_t ret = 0;
 
     ARTEMIS_DEBUG_PRINTF("\nK9LX Pressure Sensor\n");
-    ARTEMIS_DEBUG_PRINTF("*****************************\n");
+    ARTEMIS_DEBUG_PRINTF("**************************************\n");
 
     //Get the Firmware version : 5.20.12.28
     ARTEMIS_DEBUG_PRINTF("\tFirmware Ver\t: ");
