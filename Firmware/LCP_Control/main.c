@@ -21,7 +21,6 @@
 #include "semphr.h"
 
 #include "sensors.h"
-#include "control.h"
 #include "StateMachine.h"
 
 #define FREE_RTOS
@@ -44,15 +43,17 @@ int main(void)
 	am_hal_gpio_pinconfig(AM_BSP_GPIO_LED_GREEN, g_AM_BSP_GPIO_LED_GREEN);
 	am_hal_gpio_pinconfig(AM_BSP_GPIO_LED_RED, g_AM_BSP_GPIO_LED_RED);
 	am_hal_gpio_pinconfig(AM_BSP_GPIO_LED_BLUE, g_AM_BSP_GPIO_LED_BLUE);
-	am_hal_gpio_output_set(AM_BSP_GPIO_LED_GREEN);
-	am_hal_gpio_output_set(AM_BSP_GPIO_LED_RED);
-	am_hal_gpio_output_set(AM_BSP_GPIO_LED_BLUE);
+	//am_hal_gpio_output_set(AM_BSP_GPIO_LED_GREEN);
+	//am_hal_gpio_output_set(AM_BSP_GPIO_LED_RED);
+	//am_hal_gpio_output_set(AM_BSP_GPIO_LED_BLUE);
+	am_hal_gpio_output_clear(AM_BSP_GPIO_LED_GREEN);
+	am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
+	am_hal_gpio_output_clear(AM_BSP_GPIO_LED_BLUE);
 
     // initialize the scheduler
     // artemis_scheduler_initialize();
     // run the application
     // artemis_scheduler_run();
-
 
 #ifdef FREE_RTOS
 
