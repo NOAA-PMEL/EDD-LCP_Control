@@ -81,10 +81,10 @@ typedef struct sPiston_t
         bool data_valid;
         SemaphoreHandle_t semaphore;
     }rtos;
-    double setpoint_v;      /**< User setpoint for volume */
-    double setpoint_l;      /**< User setpoint for length */
-    double volume;          /**< Most recent volume estimate */
-    double length;          /**< Most recent length estimate */
+    float setpoint_v;       /**< User setpoint for volume */
+    float setpoint_l;       /**< User setpoint for length */
+    float volume;           /**< Most recent volume estimate */
+    float length;           /**< Most recent length estimate */
     bool at_zero;           /**< At Zero flag */
     bool at_full;           /**< At Full extent flag */
 }Piston_t;
@@ -97,7 +97,8 @@ extern "C"{
 #endif
 
 bool PIS_initialize(void);
-bool PIS_set_volume(double volume);
+bool PIS_set_volume(float volume);
+bool PIS_set_length(float length);
 void PIS_move_to_zero(void);
 void PIS_move_to_full(void);
 void PIS_extend(void);
@@ -114,8 +115,8 @@ bool PIS_calibration_check(void);
 void PIS_Reset(void);
 
 // FreeRTOS functions get volume and length
-bool PIS_Get_Volume(double *volume);
-bool PIS_Get_Length(double *length);
+bool PIS_Get_Volume(float *volume);
+bool PIS_Get_Length(float *length);
 void PIS_task_move_length(TaskHandle_t *xPiston);
 void PIS_task_move_volume(TaskHandle_t *xPiston);
 void PIS_task_move_full(TaskHandle_t *xPiston);
