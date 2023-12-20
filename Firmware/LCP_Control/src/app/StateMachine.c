@@ -50,12 +50,7 @@ static System_t system = {
     .mode = SYSST_Predeployment_mode,
     .predeploy.state = PDS_SystemCheck,
     .airdeploy.state = ADS_Idle,
-    //.profiler.state = SPS_TX_mode,
     .profiler.state = SPS_Idle,
-    //.profiler.state = SPS_Park_mode,
-    //.profiler.state = SPS_MoveToSampleDepth_mode,
-    //.profiler.state = SPS_MoveToParkDepth_mode,
-    //.profiler.state = SPS_Sample_mode,
     .ballast.state = ABS_DiveToExpected,
     .moored.state = MOOR_Idle,
     .popup.state = PUS_Surface_float,
@@ -111,14 +106,20 @@ static uint8_t temp_prof[312];    /* needed for creating a page */
 static uint16_t create_park_page(uint8_t *pPark, uint16_t *readlength);
 static uint16_t create_profile_page(uint8_t *pProf, uint16_t *readlength);
 
+/* global variables */
 static bool sensors_check = false;
 static uint16_t prof_number = 0;
 static uint16_t park_number = 0;
 static uint16_t parkPage = 0;
 static uint16_t profPage = 0;
-static float Lat = 0;
-static float Lon = 0;
+static float Lat = 0.0;
+static float Lon = 0.0;
 static bool iridium_init = false;
+static float park_piston_length = 0.0;
+static bool park_length_update = false;
+static float prof_piston_length = 0.0;
+static float prof_length_update = false;
+static bool crush_depth = false;
 
 //*****************************************************************************
 //
@@ -267,14 +268,22 @@ void module_pus_idle(void)
 
 void module_pus_surface_float(void)
 {
+    uint32_t piston_period = pdMS_TO_TICKS(1000UL)/1.0;
+    uint32_t piston_timer = 0;
+    bool piston_move = true;
+
     TaskHandle_t xPiston;
     eTaskState eStatus;
     PIS_set_piston_rate(1);
-    PIS_task_move_full(&xPiston);
+    PIS_set_length(5.0);
 
-    bool run = true;
+    vTaskDelay(piston_period);
+    //PIS_task_move_full(&xPiston);
+    PIS_task_move_length(&xPiston);
+    vTaskDelay(piston_period);
+
     Event_e pusEvent;
-    while (run)
+    while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
 
@@ -283,19 +292,37 @@ void module_pus_surface_float(void)
              (eStatus==eBlocked)  )
         {
             ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->active\n");
+
+            piston_timer += piston_period;
+            if (piston_timer >= 300000)
+            {
+                ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston time-out, task->finished\n");
+                vTaskDelete ( xPiston );
+                vTaskDelay(piston_period);
+                PIS_Reset();
+                vTaskDelay(piston_period);
+                piston_move = false;
+                piston_timer = 0;
+                pusEvent = MODE_DONE;
+            }
         }
         else if (eStatus==eSuspended)
         {
             ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->suspended, who did this?\n");
+            vTaskDelete ( xPiston );
+            piston_move = false;
+            piston_timer = 0;
+            pusEvent = MODE_DONE;
         }
-        else if (eStatus == eDeleted)
+        else if (eStatus==eDeleted)
         {
             ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->finished\n");
-            run = false;
+            piston_move = false;
+            piston_timer = 0;
             pusEvent = MODE_DONE;
         }
 
-        vTaskDelay(pdMS_TO_TICKS(1000UL));
+        vTaskDelay(piston_period);
     }
 
     SendEvent(pusEventQueue, &pusEvent);
@@ -353,37 +380,65 @@ void STATE_Predeploy(void)
 void module_pds_idle(void)
 {
     /** Extend the piston fully out */
-    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, piston to move fully out...\n");
+    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, piston to move to certain density\n");
+
+    float Density = PARK_DENSITY;
+    float Volume = CTRL_set_lcp_density(Density);
+
+    uint32_t piston_period = pdMS_TO_TICKS(1000UL)/1.0;
+    uint32_t piston_timer = 0;
+    bool piston_move = true;
+    vTaskDelay(piston_period);
 
     TaskHandle_t xPiston;
     eTaskState eStatus;
     PIS_set_piston_rate(1);
-    PIS_task_move_full(&xPiston);
+    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, density=%.4f kg/m³, volume=%.4fin³\n", Density, Volume);
+    PIS_set_volume(Volume);
+    PIS_task_move_volume(&xPiston);
 
-    bool run = true;
-    while (run)
+    vTaskDelay(piston_period * 2);
+
+    while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
         if ( (eStatus==eRunning) ||
              (eStatus==eReady)   ||
              (eStatus==eBlocked)  )
         {
-            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston full-out task->active\n");
+            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task->active\n");
+
+            piston_timer += piston_period;
+            if (piston_timer >= 300000)
+            {
+                ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston time-out, task->finished\n");
+                vTaskDelete ( xPiston );
+                vTaskDelay(piston_period);
+                PIS_Reset();
+                vTaskDelay(piston_period);
+                piston_move = false;
+                piston_timer = 0;
+            }
         }
         else if (eStatus==eSuspended)
         {
-            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston full-out task->suspended, who did this?\n");
+            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task->suspended, who did this?\n");
+            vTaskDelete ( xPiston );
+            piston_move = false;
+            piston_timer = 0;
         }
-        else if (eStatus == eDeleted)
+        else if (eStatus==eDeleted)
         {
-            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston full-out task->finished\n");
-            run = false;
+            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task->finished\n");
+            piston_move = false;
+            piston_timer = 0;
         }
-        vTaskDelay(pdMS_TO_TICKS(1000UL));
+
+        vTaskDelay(piston_period);
     }
 
-    /** Start sampling depth @ 1Hz */
-    float s_rate = 1.0;
+    /** Start sampling depth @ 1.0/30.0 Hz */
+    float s_rate = 1.0/1.0;
     uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
 
     SENS_set_depth_rate(s_rate);
@@ -392,7 +447,7 @@ void module_pds_idle(void)
     SENS_task_sample_depth_continuous(&xDepth);
 
     /** Monitor Depth */
-    run = true;
+    bool run = true;
     float Depth = 0, Rate = 0;
     float Pressure = 0;
     rtc_time time;
@@ -400,7 +455,6 @@ void module_pds_idle(void)
     Event_e pdsEvent;
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
-
     while (run)
     {
         SENS_get_depth(&Depth, &Pressure, &Rate);
@@ -410,17 +464,17 @@ void module_pds_idle(void)
         uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
         ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Epoch    = %ld\n", epoch);
 
-        vTaskDelayUntil(&xLastWakeTime, period);
-        if ( Pressure > 1.0135)
+        if ( Depth > BALLAST_DEPTH )
         {
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Pressure reached = %f\n", Pressure);
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Depth reached    = %0.4f\n", Depth);
-            ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Start Dive to Park @ 180m, increment piston to Park Actuator position\n");
+            //ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Start Dive to Park @ 180m, increment piston to Park Actuator position\n");
             run = false;
             vTaskDelete(xDepth);
             SENS_sensor_depth_off();
             pdsEvent = MODE_PROFILE;
         }
+        vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     SendEvent(pdsEventQueue, &pdsEvent);
@@ -500,7 +554,7 @@ void module_pds_systemcheck(void)
             {
                 ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS task->suspended, who did this ?\n");
             }
-            else if (eStatus == eDeleted)
+            else if (eStatus==eDeleted)
             {
                 ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS task->finished\n");
                 run = false;
@@ -651,15 +705,15 @@ void module_sps_idle(void)
     SENS_sensor_depth_off();
     SENS_sensor_temperature_off();
 
-    /* wait here for one second for now */
-    uint32_t wait_time = 3 * 1000;
+    /* wait here for 1 second for now */
+    uint32_t wait_time = 1 * 1000;
     TickType_t xDelay = wait_time / portTICK_PERIOD_MS;
 
     Event_e spsEvent;
     bool run = true;
     while (run)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: Idle, 3 sec wait...\n");
+        ARTEMIS_DEBUG_PRINTF("SPS :: Idle, 1 sec wait...\n");
         vTaskDelay(xDelay);
         spsEvent = MODE_DONE;
         run = false;
@@ -672,19 +726,94 @@ void module_sps_idle(void)
 
 void module_sps_move_to_park(void)
 {
-    /** Calculate volume to move to */
-    float v_rate = 0.1;
-    float volume = module_ctrl_set_buoyancy_from_rate(v_rate, true);
+    float Volume = 0.0;
+    float Length = 0.0;
+    float Density = 0.0;
+    float length_update = 0.0;
 
 #ifdef TEST
     /* do nothing */
 #else
-    /** Set volume */
-    //PIS_set_volume(volume);
-    PIS_set_volume(730); // dummy volume for now 650
+
+    /** Set park_piston_length */
+    /* for now , pressure and temperature variables are zeros for compressibility and thermal expansion */
+    if (park_piston_length == 0.0)
+    {
+        CTRL_set_lcp_density(PARK_DENSITY);
+        park_piston_length = CTRL_calculate_piston_position(0.0, 0.0);
+        length_update = park_piston_length;
+    }
+    else
+    {
+        /* assigned to local_length, assumed that length was set previously */
+        length_update = park_piston_length;
+    }
+
+    Volume = CTRL_calculate_volume_from_length(park_piston_length);
+    Density = CTRL_calculate_lcp_density(Volume);
+    ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_park, Set Length, Volume, and Density\n");
+    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Density=%.4f kg/m³, Volume=%.4fin³, Length=%.4f\n\n\n", Density, Volume, length_update);
+
+    uint32_t piston_period = pdMS_TO_TICKS(1000UL)/1.0;
+    uint32_t piston_timer = 0;
+    bool piston_move = true;
+
     eTaskState eStatus;
     TaskHandle_t xPiston;
     PIS_set_piston_rate(1);
+    PIS_set_length(length_update);
+    vTaskDelay(piston_period);
+    PIS_task_move_length(&xPiston);
+    vTaskDelay(piston_period * 2);
+
+    /* check on piston movement */
+    /* piston_time out is 10 mins */
+    while (piston_move)
+    {
+        eStatus = eTaskGetState( xPiston );
+
+        if ( (eStatus==eRunning) ||
+             (eStatus==eReady)   ||
+             (eStatus==eBlocked)  )
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->active\n");
+            PIS_Get_Length(&Length);
+            Volume = CTRL_calculate_volume_from_length(Length);
+            Density = CTRL_calculate_lcp_density(Volume);
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
+
+            piston_timer += piston_period;
+            if (piston_timer >= 300000)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston time-out, task->finished\n");
+                vTaskDelete ( xPiston );
+                vTaskDelay(piston_period);
+                PIS_Reset();
+                vTaskDelay(piston_period);
+                piston_move = false;
+                piston_timer = 0;
+            }
+        }
+        else if (eStatus==eSuspended)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->suspended, who did this?\n");
+            vTaskDelete ( xPiston );
+            piston_move = false;
+            piston_timer = 0;
+        }
+        else if (eStatus==eDeleted)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->finished\n");
+            PIS_Get_Length(&Length);
+            Volume = CTRL_calculate_volume_from_length(Length);
+            Density = CTRL_calculate_lcp_density(Volume);
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
+            piston_move = false;
+            piston_timer = 0;
+        }
+
+        vTaskDelay(piston_period);
+    }
 
 #endif
 
@@ -699,7 +828,6 @@ void module_sps_move_to_park(void)
     /** Start sampling depth @ 2Hz */
     float s_rate = 2.0;
     Event_e spsEvent;
-    PIS_task_move_volume(&xPiston);
     uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
 
     SENS_set_depth_rate(s_rate);
@@ -710,28 +838,47 @@ void module_sps_move_to_park(void)
 #endif
 
     /**  Monitor depth until we get there */
-    double Volume = 0.0;
     float Depth = 0.0, Rate = 0.0;
     float Pressure = 0.0;
-    uint8_t count_500ms = 0;
-    bool piston_move = true;
+    vTaskDelay(period);
 
-    //vTaskDelay(period);
-
-    TickType_t xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
     while (run)
     {
         /* check on depth sensor */
         SENS_get_depth(&Depth, &Pressure, &Rate);
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure  = %f\n", Pressure);
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth     = %0.4f, rate = %0.4f\n", Depth, Rate);
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure  = %.4f\n", Pressure);
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth     = %.4f, rate = %.4f\n", Depth, Rate);
 
 #ifdef TEST
     /* do nothing */
 #else
+        /* check if rate is positive, negative or stable */
+        if (Rate > 0.0)
+        {
+            /* do nothing for now, */
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure Rate is positive\n");
+        }
+        else if (Rate < 0.0 && !piston_move)
+        {
+            /* decrease piston position by 0.05 inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure Rate is negative, decrease 0.05 in\n");
+            length_update -= 0.05;
+            PIS_set_length(length_update);
+            PIS_task_move_length(&xPiston);
+            piston_move = true;
+        }
+        else if (Rate == 0.0 && !piston_move)
+        {
+            /* decrease piston position by 0.015 inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure Rate is stable, decrease 0.015 in\n");
+            length_update -= 0.015;
+            PIS_set_length(length_update);
+            PIS_task_move_length(&xPiston);
+            piston_move = true;
+        }
 
-        if (Pressure >= 19.13 && Pressure < 19.15)
+        /* check on depth to reach */
+        if (Depth >= PARK_DEPTH-PARK_DEPTH_ERR && Depth <= PARK_DEPTH+PARK_DEPTH_ERR && !piston_move)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure Reached = %0.4f\n", Pressure);
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Reached    = %0.4f, rate = %0.4f\n", Depth, Rate);
@@ -742,41 +889,80 @@ void module_sps_move_to_park(void)
             vTaskDelete(xDepth);
             SENS_sensor_depth_off();
             spsEvent = MODE_DONE;
+            vTaskDelay(pdMS_TO_TICKS(500UL));
         }
 
         /* check on piston movement */
         if (piston_move)
         {
-            count_500ms++;
-            if (count_500ms == 2)
-            {
-                eStatus = eTaskGetState( xPiston );
+            eStatus = eTaskGetState( xPiston );
 
-                if ( (eStatus==eRunning) ||
-                     (eStatus==eReady)   ||
-                     (eStatus==eBlocked)  )
+            if ( (eStatus==eRunning) ||
+                 (eStatus==eReady)   ||
+                 (eStatus==eBlocked)  )
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->active\n");
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
+
+                piston_timer += period;
+                if (piston_timer >= 300000)
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->active\n");
-                    PIS_Get_Volume(&Volume);
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Volume=%0.4f\n", Volume);
-                }
-                else if (eStatus==eSuspended)
-                {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->suspended, who did this?\n");
-                }
-                else if (eStatus == eDeleted)
-                {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->finished\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston time-out, task->finished\n");
+                    vTaskDelete ( xPiston );
+                    vTaskDelay(period);
+                    PIS_Reset();
+                    vTaskDelay(period);
                     piston_move = false;
+                    piston_timer = 0;
                 }
-                count_500ms = 0;
+            }
+            else if (eStatus==eSuspended)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->suspended, who did this?\n");
+                vTaskDelete( xPiston );
+                piston_move = false;
+                piston_timer = 0;
+                vTaskDelete ( xPiston );
+            }
+            else if (eStatus==eDeleted)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->finished\n");
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
+                piston_move = false;
+
+                if (crush_depth)
+                {
+                    /* stop here, in case of emergency blow */
+                    run = false;
+                    vTaskDelete(xDepth);
+                    SENS_sensor_depth_off();
+                    spsEvent = MODE_POPUP;
+                    vTaskDelay(pdMS_TO_TICKS(500UL));
+                }
             }
         }
 
-#endif
+        /* keep checking for crush depth */
+        if (Depth >= CRUSH_DEPTH && !piston_move)
+        {
+            /* reset the piston, this will stop the movement already */
+            PIS_Reset();
+            vTaskDelay(pdMS_TO_TICKS(1500UL));
+            PIS_task_move_full(&xPiston);
+            piston_move = true;
+            crush_depth = true;
+            ARTEMIS_DEBUG_PRINTF("\n\n\nSPS :: move_to_park, <<< CRUSH DEPTH activated >>> \n\n\n");
+        }
 
-        //vTaskDelay(period);
-        vTaskDelayUntil(&xLastWakeTime, period);
+#endif
+        vTaskDelay(period);
+        //vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     SendEvent(spsEventQueue, &spsEvent);
@@ -786,31 +972,32 @@ void module_sps_move_to_park(void)
 
 void module_sps_park(void)
 {
-    /** Start 1/60Hz sampling of sensors for XXX minutes */
+    /** Start 1/60Hz sampling of sensors for PARK_TIME seconds */
     /** Save data in Park Data strucutre */
+    uint32_t park_time = pdMS_TO_TICKS(1000UL) * PARK_TIME;
+    ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME=%u >\n\n", park_time);
+    uint32_t wait_time = 0;
 
 #ifdef TEST
     /** Sample at 9Hz */
     float s_rate = 9.0;
 #else
     /** Sample at 1/60th Hz */
-    float s_rate = 1.0; //1.0/60.01;
+    float s_rate = PARK_RATE;
 #endif
 
     uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
 
     SENS_set_depth_rate(s_rate);
     SENS_set_temperature_rate(s_rate);
-
     SENS_sensor_depth_on();
     SENS_sensor_temperature_on();
-    vTaskDelay(pdMS_TO_TICKS(100UL));
-
     TaskHandle_t xDepth, xTemp;
+    vTaskDelay(pdMS_TO_TICKS(100UL));
 
 #ifdef TEST
     SENS_task_sample_depth_continuous(&xDepth);
-    float Temperature = 20.0;
+    float Temperature = -5.0;
     uint16_t read = 0;
 #else
     SENS_task_park_sensors(&xDepth, &xTemp);
@@ -818,7 +1005,6 @@ void module_sps_park(void)
 #endif
 
     /** Monitor Depth and Temperature and store these */
-    bool run = true;
     float Depth = 0.0, Rate = 0.0;
     float Pressure = 0.0;
     Event_e spsEvent;
@@ -827,14 +1013,17 @@ void module_sps_park(void)
     char *filename = datalogger_park_create_file(park_number);
     vTaskDelay(pdMS_TO_TICKS(100UL));
 
-    /** Set volume */
-    //PIS_set_volume(735); // dummy volume for now 735
+    /** Set piston variables */
     eTaskState eStatus;
     TaskHandle_t xPiston;
     PIS_set_piston_rate(1);
-    double Volume = 0.0;
+    uint32_t piston_timer = 0;
+    float Volume = 0.0;
+    float Density = 0.0;
+    float Length = 0.0;
     bool piston_move = false;
-    bool task_done = false;
+    uint8_t stable_count = 0;
+    float length_update = park_piston_length;
 
     /* average 10 pressure, temperature values and store */
     float samples_p[10] = {0};
@@ -842,9 +1031,7 @@ void module_sps_park(void)
     uint8_t samples = 0;
     bool start_time = true;
 
-    TickType_t xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
-
+    bool run = true;
     while (run)
     {
         SENS_get_depth(&Depth, &Pressure, &Rate);
@@ -895,7 +1082,6 @@ void module_sps_park(void)
             read++;
             ARTEMIS_DEBUG_PRINTF("SPS :: park, sending measurements = %u\n", read);
 #else
-
             datalogger_park_mode(filename, avg_p, avg_t, &time);
 #endif
             /* just for testing */
@@ -913,8 +1099,42 @@ void module_sps_park(void)
         }
         /* delete */
 #else
-        ///* store in park mode file */
-        //datalogger_park_mode(filename, Depth, Temperature, &time);
+        /* check if rate is positive, negative or stable*/
+        if (Rate > 0.0 && !piston_move && !park_length_update)
+        {
+            /* increase piston position by 0.015 inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Rate is positive, increase 0.015 in\n");
+            length_update += 0.015;
+            PIS_set_length(length_update);
+            PIS_task_move_length(&xPiston);
+            piston_move = true;
+            vTaskDelay(pdMS_TO_TICKS(500UL));
+        }
+        else if (Rate < 0.0 && !piston_move && !park_length_update)
+        {
+            /* decrease piston position by 0.015 inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Rate is negative, decrease 0.015 in\n");
+            length_update -= 0.015;
+            PIS_set_length(length_update);
+            PIS_task_move_length(&xPiston);
+            piston_move = true;
+            vTaskDelay(pdMS_TO_TICKS(500UL));
+        }
+        else if (Rate == 0.0 && !park_length_update)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Rate is stable\n");
+
+            /* get at least 2 stable rates */
+            stable_count++;
+            if (stable_count > 2)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Rate is stable, stable_count=%u\n", stable_count);
+                park_length_update = true;
+                park_piston_length = length_update;
+                stable_count = 0;
+                ARTEMIS_DEBUG_PRINTF("SPS :: park, PARK DEPTH length updated\n");
+            }
+        }
 
         /* check on piston movement */
         if (piston_move)
@@ -926,51 +1146,83 @@ void module_sps_park(void)
                  (eStatus==eBlocked)  )
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->active\n");
-                PIS_Get_Volume(&Volume);
-                ARTEMIS_DEBUG_PRINTF("SPS :: park, Volume = %0.4f\n", Volume);
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: park, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
+
+                piston_timer += period;
+                if (piston_timer >= 300000)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston time-out, task->finished\n");
+                    vTaskDelete ( xPiston );
+                    vTaskDelay(period);
+                    PIS_Reset();
+                    vTaskDelay(period);
+                    piston_move = false;
+                    piston_timer = 0;
+                }
             }
             else if (eStatus==eSuspended)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->suspended, who did this?\n");
+                vTaskDelete( xPiston );
+                piston_move = false;
+                piston_timer = 0;
             }
-            else if (eStatus == eDeleted)
+            else if (eStatus==eDeleted)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->finished\n");
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: park, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
                 piston_move = false;
+                piston_timer = 0;
+
+                if (crush_depth)
+                {
+                    /* stop here, in case of emergency blow */
+                    run = false;
+                    vTaskDelete(xDepth);
+                    SENS_sensor_depth_off();
+                    spsEvent = MODE_POPUP;
+                    vTaskDelay(pdMS_TO_TICKS(500UL));
+                }
             }
         }
 
-        /* check on pressure */
-
-        if ( (Pressure >= 19.1785 && Pressure < 19.1790) && !task_done && !piston_move)
+        /* emergency blow , extend piston to full */
+        if (Depth >= CRUSH_DEPTH && !piston_move)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Stay at PARK within +/-10m for 3min\n");
-        }
-        else if( (Pressure >= 19.1383 && Pressure < 19.1400) && task_done && !piston_move)
-        {
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Reached = %f\n", Pressure);
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth Reached    = %0.4f, rate = %0.4f\n", Depth, Rate);
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Start to move outside of PDR limit\n");
-            PIS_set_volume(735); // dummy volume for now 735
-            PIS_task_move_volume(&xPiston);
+            /* reset the piston, this will stop the movement already */
+            PIS_Reset();
+            vTaskDelay(pdMS_TO_TICKS(1500UL));
+            PIS_task_move_full(&xPiston);
             piston_move = true;
+            crush_depth = true;
+            ARTEMIS_DEBUG_PRINTF("\n\n\nSPS :: park, <<< CRUSH DEPTH activated >>> \n\n\n");
         }
-        else if ( (Pressure >= 19.1785 && Pressure < 19.1790) && !task_done && piston_move)
-        {
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Reached = %f\n", Pressure);
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth Reached    = %0.4f, rate = %0.4f\n", Depth, Rate);
-            task_done = true;
-        }
-        else if ((Pressure >= 19.1383 && Pressure < 19.1385) && !task_done && piston_move)
-        {
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Back at PARK for 30s\n");
-        }
-        else if (Pressure >= 19.1634 && Pressure < 19.1640)
-        {
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Reached = %f\n", Pressure);
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth Reached    = %0.4f, rate = %0.4f\n", Depth, Rate);
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Start to FALL to Profile Depth @ 0.25m/s, ADJUST PISTON TO FALL\n");
 
+        /* check on Maximum park depth = ? */
+        if (Depth >= PARK_DEPTH_MAX && !piston_move)
+        {
+            run = false;
+            vTaskDelete(xTemp);
+            vTaskDelete(xDepth);
+            vTaskDelay(pdMS_TO_TICKS(100UL));
+
+            SENS_sensor_depth_off();
+            SENS_sensor_temperature_off();
+            spsEvent = MODE_DONE;
+            ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Reached maximum Park Depth >> \n\n");
+        }
+#endif
+        /* park depth timer */
+        wait_time += period;
+        if (wait_time >= park_time && !piston_move)
+        {
+            ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Timer out >>\n\n");
             run = false;
             vTaskDelete(xTemp);
             vTaskDelete(xDepth);
@@ -980,10 +1232,9 @@ void module_sps_park(void)
             SENS_sensor_temperature_off();
             spsEvent = MODE_DONE;
         }
-#endif
 
         /* task delay time */
-        vTaskDelayUntil(&xLastWakeTime, period);
+        vTaskDelay(period);
     }
 
     park_number++;
@@ -994,21 +1245,97 @@ void module_sps_park(void)
 
 void module_sps_move_to_profile(void)
 {
-    /** Calculate volume to move to */
-    float v_rate = 0.1;
-    float volume = module_ctrl_set_buoyancy_from_rate(v_rate, true);
+    float Volume = 0.0;
+    float Length = 0.0;
+    float Density = 0.0;
+    float length_update = 0.0;
+    uint32_t piston_period = pdMS_TO_TICKS(1000UL);
+    uint32_t piston_timer = 0;
+    bool piston_move = true;
+
 
 #ifdef TEST
     /* do nothing */
-
 #else
-    /** Set volume */
-    //PIS_set_volume(volume);
-    PIS_set_volume(740); // dummy volume for now 670
+
+    /** Set prof_piston_length */
+    /* for now , pressure and temperature variables are zeros for compressibility and thermal expansion */
+    if (prof_piston_length == 0.0)
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, << Setting Profile Piston Length the first time >>\n");
+        CTRL_set_lcp_density(PROFILE_DENSITY);
+        prof_piston_length = CTRL_calculate_piston_position(0.0, 0.0);
+        length_update = prof_piston_length;
+    }
+    else
+    {
+        /* assigned to local_length, assumed that length was set previously */
+        length_update = prof_piston_length;
+    }
+
+    Volume = CTRL_calculate_volume_from_length(prof_piston_length);
+    Density = CTRL_calculate_lcp_density(Volume);
+    ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_profile, Set Length, Volume, and Density\n");
+    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Density=%.4f kg/m³, Volume=%.4fin³, Length=%.4f\n\n\n", Density, Volume, prof_piston_length);
+
+    /** move to length */
     TaskHandle_t xPiston;
     eTaskState eStatus;
     PIS_set_piston_rate(1);
-    PIS_task_move_volume(&xPiston);
+    PIS_set_length(prof_piston_length);
+
+    vTaskDelay(piston_period);
+    PIS_task_move_length(&xPiston);
+    vTaskDelay(piston_period * 2);
+
+    /* check on piston movement */
+    while (piston_move)
+    {
+        eStatus = eTaskGetState( xPiston );
+
+        if ( (eStatus==eRunning) ||
+             (eStatus==eReady)   ||
+             (eStatus==eBlocked)  )
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->active\n");
+            PIS_Get_Length(&Length);
+            Volume = CTRL_calculate_volume_from_length(Length);
+            Density = CTRL_calculate_lcp_density(Volume);
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
+
+            piston_timer += piston_period;
+            if (piston_timer >= 300000)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston time-out, task->finished\n");
+                vTaskDelete ( xPiston );
+                vTaskDelay(piston_period);
+                PIS_Reset();
+                vTaskDelay(piston_period);
+                piston_move = false;
+                piston_timer = 0;
+            }
+        }
+        else if (eStatus==eSuspended)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->suspended, who did this?\n");
+            vTaskDelete( xPiston);
+            piston_move = false;
+            piston_timer = 0;
+        }
+        else if (eStatus==eDeleted)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->finished\n");
+            PIS_Get_Length(&Length);
+            Volume = CTRL_calculate_volume_from_length(Length);
+            Density = CTRL_calculate_lcp_density(Volume);
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
+            piston_move = false;
+            piston_timer = 0;
+        }
+
+        vTaskDelay(piston_period);
+    }
+
 
     /** Sample at 2 Hz */
     float s_rate = 2.0;
@@ -1025,76 +1352,133 @@ void module_sps_move_to_profile(void)
     bool run = false;
     Event_e spsEvent;
     spsEvent = MODE_DONE;
-
 #else
+
     /** Monitor Depth, when depth reached, mode is complete */
-    bool run = true;
     Event_e spsEvent;
 
-    double Volume = 0;
     float Depth = 0, Rate = 0;
     float Pressure = 0;
-    uint8_t count_500ms = 0;
-    bool piston_move = true;
-
     vTaskDelay(period);
 
-    TickType_t xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
-
+    bool run = true;
     while (run)
     {
         SENS_get_depth(&Depth, &Pressure, &Rate);
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure = %f\n", Pressure);
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth    = %0.4f, rate = %0.4f\n", Depth, Rate);
 
+        /* check if rate is positive, negative or stable */
+        if (Rate > 0.0)
+        {
+            /* do nothing for now, */
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Rate is positive\n");
+        }
+        else if (Rate < 0.0 && !piston_move)
+        {
+            /* decrease piston position by 0.05 inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Rate is negative, decrease 0.05 in\n");
+            length_update -= 0.05;
+            PIS_set_length(length_update);
+            PIS_task_move_length(&xPiston);
+            piston_move = true;
+        }
+        else if (Rate == 0.0 && !piston_move)
+        {
+            /* decrease piston position by 0.015 inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Rate is stable, decrease 0.015 in\n");
+            length_update -= 0.015;
+            PIS_set_length(length_update);
+            PIS_task_move_length(&xPiston);
+            piston_move = true;
+        }
+
+        /* check on depth to reach */
+        if (Depth >= PROFILE_DEPTH-PROFILE_DEPTH_ERR && Depth <= PROFILE_DEPTH+PROFILE_DEPTH_ERR && !piston_move)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Reached = %0.4f\n", Pressure);
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Reached    = %0.4f, rate = %0.4f\n", Depth, Rate);
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Reach PARK Depth\n");
+
+            /* stop here, and delete the task and turn off pressure sensor, move to next state */
+            run = false;
+            vTaskDelete(xDepth);
+            vTaskDelay(pdMS_TO_TICKS(100UL));
+            SENS_sensor_depth_off();
+            spsEvent = MODE_DONE;
+            vTaskDelay(pdMS_TO_TICKS(500UL));
+        }
+
         /* check on piston movement */
         if (piston_move)
         {
-            count_500ms++;
-            if (count_500ms == 2)
-            {
-                eStatus = eTaskGetState( xPiston );
+            eStatus = eTaskGetState( xPiston );
 
-                if ( (eStatus==eRunning) ||
-                     (eStatus==eReady)   ||
-                     (eStatus==eBlocked)  )
+            if ( (eStatus==eRunning) ||
+                 (eStatus==eReady)   ||
+                 (eStatus==eBlocked)  )
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_porfile, Piston task->active\n");
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_porfile, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
+
+                piston_timer += period;
+                if (piston_timer >= 600000)
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->active\n");
-                    PIS_Get_Volume(&Volume);
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Volume = %0.4f \n", Volume);
-                }
-                else if (eStatus==eSuspended)
-                {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->suspended, who did this?\n");
-                }
-                else if (eStatus == eDeleted)
-                {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->finished\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston time-out, task->finished\n");
+                    vTaskDelete ( xPiston );
+                    vTaskDelay(period);
+                    PIS_Reset();
+                    vTaskDelay(period);
                     piston_move = false;
+                    piston_timer = 0;
                 }
-                count_500ms = 0;
+            }
+            else if (eStatus==eSuspended)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_porfile, Piston task->suspended, who did this?\n");
+                vTaskDelete( xPiston );
+                piston_move = false;
+                piston_timer = 0;
+            }
+            else if (eStatus==eDeleted)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->finished\n");
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
+                piston_move = false;
+                piston_timer = 0;
+
+                if (crush_depth)
+                {
+                    /* stop here, in case of emergency blow */
+                    run = false;
+                    vTaskDelete(xDepth);
+                    SENS_sensor_depth_off();
+                    spsEvent = MODE_POPUP;
+                    vTaskDelay(pdMS_TO_TICKS(500UL));
+                }
             }
         }
 
-        if (Pressure >= 21.1521 && Pressure < 21.1523)
+        /* keep checking for crush depth */
+        if (Depth >= CRUSH_DEPTH && !piston_move)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Reached = %f\n", Pressure);
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Reached    = %0.4f, rate = %0.4f\n", Depth, Rate);
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, AT PROFILE DEPTH, ADJUST piston for PROFILE, start collecting data\n");
-
-            run = false;
-            vTaskDelete(xDepth);
-            SENS_sensor_depth_off();
-            spsEvent = MODE_DONE;
+            /* reset the piston, this will stop the movement already */
+            PIS_Reset();
+            vTaskDelay(pdMS_TO_TICKS(1500UL));
+            PIS_task_move_full(&xPiston);
+            piston_move = true;
+            piston_timer = 0;
+            crush_depth = true;
+            ARTEMIS_DEBUG_PRINTF("\n\n\nSPS :: move_to_profile, <<< CRUSH DEPTH activated >>> \n\n\n");
         }
 
-        //run = false;
-        //vTaskDelete(xDepth);
-        //SENS_sensor_depth_off();
-        //spsEvent = MODE_DONE;
-
-        vTaskDelayUntil(&xLastWakeTime, period);
+        vTaskDelay(period);
     }
 
 #endif
@@ -1106,9 +1490,7 @@ void module_sps_move_to_profile(void)
 
 void module_sps_profile(void)
 {
-    /** Calculate volume to move to (surface) */
-    float v_rate = 0.1;
-    float volume = module_ctrl_set_buoyancy_from_rate(v_rate, false);
+    /* turn on temperature sensor first , in order to stop its sampling !!! */
 
 #ifdef TEST
     /** Start Depth and Temperature Sensor @ 9Hz */
@@ -1124,39 +1506,113 @@ void module_sps_profile(void)
     uint32_t period = pdMS_TO_TICKS(1000UL)/s_rate;
     SENS_set_depth_rate(s_rate);
     SENS_set_temperature_rate(s_rate);
-    SENS_sensor_gps_off();
     SENS_sensor_depth_on();
     SENS_sensor_temperature_on();
+    SENS_sensor_gps_off();
+
+    vTaskDelay(period);
+
 #endif
 
-    vTaskDelay(pdMS_TO_TICKS(100UL));
+    float Volume = 0.0;
+    float Density = 0.0;
+    float Length = 0.0;
+    float length_update = 0.0;
 
 #ifdef TEST
     /* do nothing */
 #else
-    /** Set volume */
-    PIS_set_volume(745); // dummy volume for now
+
+    /** Calculate length for profiling at 0.1m/s upward */
+    ARTEMIS_DEBUG_PRINTF("\n\nSPS :: profile, Setting volume for profiling\n");
+    float v_rate = 0.1;
+    Volume = module_ctrl_set_buoyancy_from_rate(v_rate, false);
+    Density = CTRL_calculate_lcp_density(Volume);
+    length_update = CTRL_calculate_length_from_volume(Volume);
+    ARTEMIS_DEBUG_PRINTF("SPS :: profile, Density=%.4f kg/m³, Volume=%.3fin³, Length=%.4f\n\n\n", Density, Volume, length_update);
+
+    /** Set volume or length */
+    uint32_t piston_period = pdMS_TO_TICKS(1000UL);
+    uint8_t profile_length_count = 0;
+    bool piston_move = true;
+    uint32_t piston_timer = 0;
+
     eTaskState eStatus;
     TaskHandle_t xPiston;
     PIS_set_piston_rate(1);
-    PIS_task_move_volume(&xPiston);
-    bool piston_move = true;
+    PIS_set_length(length_update);
+
+    vTaskDelay(piston_period);
+    PIS_task_move_length(&xPiston);
+    vTaskDelay(piston_period * 2);
+
+    /* check on piston movement */
+    while (piston_move)
+    {
+        eStatus = eTaskGetState( xPiston );
+
+        if ( (eStatus==eRunning) ||
+             (eStatus==eReady)   ||
+             (eStatus==eBlocked)  )
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->active\n");
+            PIS_Get_Length(&Length);
+            Volume = CTRL_calculate_volume_from_length(Length);
+            Density = CTRL_calculate_lcp_density(Volume);
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
+
+            piston_timer += piston_period;
+            if (piston_timer >= 600000)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston time-out, task->finished\n");
+                vTaskDelete ( xPiston );
+                vTaskDelay(period);
+                PIS_Reset();
+                vTaskDelay(period);
+                piston_move = false;
+                piston_timer = 0;
+            }
+        }
+        else if (eStatus==eSuspended)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->suspended, who did this?\n");
+            vTaskDelete ( xPiston );
+            piston_move = false;
+            piston_timer = 0;
+        }
+        else if (eStatus==eDeleted)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->finished\n");
+            PIS_Get_Length(&Length);
+            Volume = CTRL_calculate_volume_from_length(Length);
+            Density = CTRL_calculate_lcp_density(Volume);
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
+            piston_move = false;
+            piston_timer = 0;
+        }
+
+        vTaskDelay(piston_period);
+    }
+
 #endif
 
+    vTaskDelay(pdMS_TO_TICKS(100UL));
     TaskHandle_t xDepth, xTemp;
 
 #ifdef TEST
     SENS_task_sample_depth_continuous(&xDepth);
     float Temperature = 40.0;
+    uint16_t read = 0;
 #else
+
     SENS_task_profile_sensors(&xDepth, &xTemp);
     float Temperature = 0.0;
+
 #endif
 
     /** Start recording samples */
     float Depth = 0.0, Rate = 0.0;
     float Pressure = 0.0;
-    double Volume = 0.0;
     Event_e spsEvent;
     rtc_time time;
 
@@ -1164,15 +1620,12 @@ void module_sps_profile(void)
     char *filename = datalogger_profile_create_file(prof_number);
     vTaskDelay(pdMS_TO_TICKS(500UL));
 
-    TickType_t xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
-
     /* average 10 pressure, temperature values and store */
     float samples_p[10] = {0};
     float samples_t[10] = {0};
     uint8_t samples = 0;
     bool start_time = true;
-    uint16_t read = 0;
+
 
     bool run = true;
     while (run)
@@ -1249,38 +1702,118 @@ void module_sps_profile(void)
         }
         /* delete this end */
 #else
+
+        /* check if rate is positive, negative or stable*/
+        if (Rate > 0.0 && !piston_move && !prof_length_update)
+        {
+            /* increase piston position by 0.015 inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Rate is positive, increase 0.015 in\n");
+            length_update += 0.015;
+            PIS_set_length(length_update);
+            PIS_task_move_length(&xPiston);
+            piston_move = true;
+            prof_length_update = false;
+            vTaskDelay(pdMS_TO_TICKS(500UL));
+        }
+        else if (Rate == 0.0 && !piston_move && !prof_length_update)
+        {
+            /* increase piston position by 0.015 inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Rate is stable, increase 0.015 in\n");
+            length_update += 0.015;
+            PIS_set_length(length_update);
+            PIS_task_move_length(&xPiston);
+            piston_move = true;
+            prof_length_update = false;
+            vTaskDelay(pdMS_TO_TICKS(500UL));
+        }
+        else if (Rate < 0.0 && !prof_length_update)
+        {
+            /* pressure rate is negative , which is good maybe update the prof_piston_length ? */
+            /* after 5 counts */
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Rate is negative, update the piston_length\n");
+            profile_length_count++;
+            if (profile_length_count > 2)
+            {
+                prof_length_update = true;
+                prof_piston_length = length_update;
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, updated the prof_piston_length\n");
+                profile_length_count = 0;
+            }
+        }
+
         /* check on piston movement */
         if (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
+
             if ( (eStatus==eRunning) ||
                  (eStatus==eReady)   ||
                  (eStatus==eBlocked)  )
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->active\n");
-                PIS_Get_Volume(&Volume);
-                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Volume  = %0.4lf\n", Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: porfile, Piston task->active\n");
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: porfile, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
+
+                piston_timer += period;
+                if (piston_timer >= 600000)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston time-out, task->finished\n");
+                    vTaskDelete ( xPiston );
+                    vTaskDelay(period);
+                    PIS_Reset();
+                    vTaskDelay(period);
+                    piston_move = false;
+                    piston_timer = 0;
+                }
             }
             else if (eStatus==eSuspended)
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->suspended, who did this?\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: porfile, Piston task->suspended, who did this?\n");
+                vTaskDelete( xPiston );
+                piston_move = false;
+                piston_timer = 0;
             }
-            else if (eStatus == eDeleted)
+            else if (eStatus==eDeleted)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->finished\n");
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
                 piston_move = false;
+                piston_timer = 0;
+
+                if (crush_depth)
+                {
+                    /* stop here, in case of emergency blow */
+                    run = false;
+                    vTaskDelete(xDepth);
+                    vTaskDelete(xTemp);
+                    SENS_sensor_depth_off();
+                    SENS_sensor_temperature_off();
+                    spsEvent = MODE_POPUP;
+                    vTaskDelay(pdMS_TO_TICKS(500UL));
+                }
             }
         }
 
-        if (Pressure > 21.2931 && Pressure < 21.3000)
+        /* emergency blow , extend piston to full */
+        if (Depth >= CRUSH_DEPTH && !piston_move)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Reached = %f\n", Pressure);
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Depth Reached    = %0.4f, rate = %0.4f\n", Depth, Rate);
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Profile starts rising after some overshoot\n");
+            /* reset the piston, this will stop the movement already */
+            PIS_Reset();
+            vTaskDelay(pdMS_TO_TICKS(1500UL));
+            PIS_task_move_full(&xPiston);
+            piston_move = true;
+            crush_depth = true;
+            ARTEMIS_DEBUG_PRINTF("\n\n\nSPS :: profile, <<< CRUSH DEPTH activated >>> \n\n\n");
         }
-        else if (Pressure > 1.01 && Pressure < 1.03)
+
+        //if (Pressure <= BALLAST_DEPTH && !piston_move)
+        if (Pressure <= 0.0352 && !piston_move)
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Back at the SURFACE for 2 min, START SURFACE routine\n");
             run = false;
             vTaskDelete(xDepth);
             vTaskDelete(xTemp);
@@ -1288,9 +1821,10 @@ void module_sps_profile(void)
             SENS_sensor_temperature_off();
             spsEvent = MODE_DONE;
         }
+
 #endif
-        //vTaskDelay(period);
-        vTaskDelayUntil(&xLastWakeTime, period);
+
+        vTaskDelay(period);
     }
 
     prof_number++;
@@ -1303,32 +1837,56 @@ void module_sps_profile(void)
 void module_sps_move_to_surface(void)
 {
     /** Extend the piston fully out */
+    uint32_t piston_period = pdMS_TO_TICKS(1000UL);
+    uint32_t piston_timer = 0;
+    bool piston_move = true;
+
     TaskHandle_t xPiston;
     eTaskState eStatus;
     PIS_set_piston_rate(1);
-    PIS_task_move_full(&xPiston);
+    PIS_set_length(5.0);
 
-    bool run = true;
-    while (run)
+    vTaskDelay(piston_period);
+    //PIS_task_move_full(&xPiston);
+    PIS_task_move_length(&xPiston);
+    vTaskDelay(piston_period);
+
+    while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
         if ( (eStatus==eRunning) ||
              (eStatus==eReady)   ||
              (eStatus==eBlocked)  )
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->active\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->active, timer = %u\n", piston_timer);
+
+            piston_timer += piston_period;
+            if (piston_timer >= 300000)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston time-out, task->finished\n");
+                vTaskDelete ( xPiston );
+                vTaskDelay(piston_period);
+                PIS_Reset();
+                vTaskDelay(piston_period);
+                piston_move = false;
+                piston_timer = 0;
+            }
         }
         else if (eStatus==eSuspended)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->suspended, who did this?\n");
+            vTaskDelete ( xPiston );
+            piston_move = false;
+            piston_timer = 0;
         }
-        else if (eStatus == eDeleted)
+        else if (eStatus==eDeleted)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->finished\n");
-            run = false;
+            piston_move = false;
+            piston_timer = 0;
         }
 
-        vTaskDelay(pdMS_TO_TICKS(1000UL));
+        vTaskDelay(piston_period);
     }
 
     /** Turn on the GPS */
@@ -1347,7 +1905,7 @@ void module_sps_move_to_surface(void)
     SENS_task_gps(&xGps);
 
     SensorGps_t gps;
-    run = true;
+    bool run = true;
     uint8_t fix = 0;
     Event_e spsEvent;
 
@@ -1391,7 +1949,7 @@ void module_sps_move_to_surface(void)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS task->suspended, who did this ?\n");
         }
-        else if (eStatus == eDeleted)
+        else if (eStatus==eDeleted)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS task->finished\n");
             run = false;
@@ -1399,7 +1957,8 @@ void module_sps_move_to_surface(void)
 
             /** GPS OFF */
             SENS_sensor_gps_off();
-            spsEvent = MODE_DONE;
+            //spsEvent = MODE_DONE;
+            spsEvent = MODE_IDLE;
         }
 
         //vTaskDelay(pdMS_TO_TICKS(1000UL));
@@ -1419,7 +1978,7 @@ void module_sps_tx(void)
 {
     Event_e spsEvent;
 
-    /** Initialize the Iridium Modem at least */
+    /** Initialize the Iridium Modem */
     if (!iridium_init)
     {
         i9603n_initialize();
@@ -1485,7 +2044,7 @@ void module_sps_tx(void)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite, task->suspended, who did this ?\n");
         }
-        else if (eStatus == eDeleted)
+        else if (eStatus==eDeleted)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite task->finished\n");
             bool visible = GET_Iridium_satellite();
@@ -1556,7 +2115,7 @@ void module_sps_tx(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park task->suspended, who did this ?\n");
                     }
-                    else if (eStatus == eDeleted)
+                    else if (eStatus==eDeleted)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park task->finished\n");
                         vTaskDelay(pdMS_TO_TICKS(1000UL));
@@ -1645,7 +2204,7 @@ void module_sps_tx(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile task->suspended, who did this ?\n");
                     }
-                    else if (eStatus == eDeleted)
+                    else if (eStatus==eDeleted)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile task->finished\n");
                         vTaskDelay(pdMS_TO_TICKS(1000UL));
