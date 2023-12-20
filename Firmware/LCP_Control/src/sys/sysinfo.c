@@ -1,6 +1,8 @@
 #include "sysinfo.h"
 #include "artemis_rtc.h"
 #include "artemis_debug.h"
+#include "control.h"
+#include "config.h"
 
 static SysInfo_t System = {
 
@@ -55,7 +57,7 @@ uint8_t SYS_get_lcp_variant(void)
 bool SYS_lcp_info(void)
 {
     ARTEMIS_DEBUG_PRINTF("\n\nLCP Profiler Information\n");
-    ARTEMIS_DEBUG_PRINTF("*****************************\n");
+    ARTEMIS_DEBUG_PRINTF("**************************************\n");
 
     uint8_t lcp_id = SYS_get_system_id();
     ARTEMIS_DEBUG_PRINTF("\tSystem ID\t: %u\n", lcp_id);
@@ -72,6 +74,15 @@ bool SYS_lcp_info(void)
 
     uint32_t lcp_ser = SYS_get_serial_num();
     ARTEMIS_DEBUG_PRINTF("\tLCP Serial\t: %c%u%u\n", lcp_ser>>16&0xFF, lcp_ser>>8&0xFF, lcp_ser&0xFF);
+    ARTEMIS_DEBUG_PRINTF("\n");
+
+    ARTEMIS_DEBUG_PRINTF("**************************************\n");
+    ARTEMIS_DEBUG_PRINTF("\tLCP Physical parameters\n");
+    ARTEMIS_DEBUG_PRINTF("**************************************\n");
+    ARTEMIS_DEBUG_PRINTF("Estimated Mass\t: %.3f kg, %.3f lbs\n", SYSTEM_MASS_EST * 0.453592, SYSTEM_MASS_EST);
+    ARTEMIS_DEBUG_PRINTF("Minimum Volume\t: %.3f m^3, %.3f in^3\n", SYSTEM_VOLUME_MIN*0.000016387, SYSTEM_VOLUME_MIN);
+    float density = CTRL_calculate_lcp_density(SYSTEM_VOLUME_MIN);
+    ARTEMIS_DEBUG_PRINTF("Maximum Density\t: %.3f kg/m^3, %.3f lbs/in^3\n", density, density*0.000036127);
     ARTEMIS_DEBUG_PRINTF("\n");
 
     return true;
