@@ -13,7 +13,7 @@
 #include "rtos.h"
 #include "timers.h"
 
-#define GPS_TIMER    10   /* 10 mins xGPS timer */
+#define GPS_TIMER    5.0f   /* 10 mins xGPS timer */
 
 typedef struct sSensorType_t{
     int16_t value;

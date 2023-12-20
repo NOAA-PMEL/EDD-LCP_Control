@@ -358,7 +358,7 @@ void task_gps(void)
     {
         /* Start the timer */
         configASSERT(xTimerStart(xTimer, 0) == pdPASS);
-        ARTEMIS_DEBUG_PRINTF("GPS Timer has started for %i Minutes\n", GPS_TIMER);
+        ARTEMIS_DEBUG_PRINTF("GPS Timer has started for %f Minutes\n", GPS_TIMER);
     }
     else
     {
