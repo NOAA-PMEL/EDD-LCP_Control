@@ -975,7 +975,7 @@ void module_sps_park(void)
     /** Start 1/60Hz sampling of sensors for PARK_TIME seconds */
     /** Save data in Park Data strucutre */
     uint32_t park_time = pdMS_TO_TICKS(1000UL) * PARK_TIME;
-    ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME=%u >\n\n", park_time);
+    ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME=%u mins>\n\n", PARK_TIME/60.0);
     uint32_t wait_time = 0;
 
 #ifdef TEST
@@ -1222,7 +1222,7 @@ void module_sps_park(void)
         wait_time += period;
         if (wait_time >= park_time && !piston_move)
         {
-            ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Timer out >>\n\n");
+            ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Timer out %u mins>>\n\n", wait_time/(60.0 * period));
             run = false;
             vTaskDelete(xTemp);
             vTaskDelete(xDepth);
