@@ -114,7 +114,7 @@
 #define PROFILE_DEPTH                       ( 24.0f )
 #define PROFILE_DEPTH_ERR                   ( 1.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
-#define PROFILE_DENSITY                     ( 1000.0f )
+#define PROFILE_DENSITY                     ( 1025.0f )
 #define CRUSH_DEPTH                         ( 30.0f )
 
 #endif // CONFIG_H
