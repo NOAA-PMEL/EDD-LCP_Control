@@ -1957,8 +1957,7 @@ void module_sps_move_to_surface(void)
 
             /** GPS OFF */
             SENS_sensor_gps_off();
-            //spsEvent = MODE_DONE;
-            spsEvent = MODE_IDLE;
+            spsEvent = MODE_DONE;
         }
 
         //vTaskDelay(pdMS_TO_TICKS(1000UL));
