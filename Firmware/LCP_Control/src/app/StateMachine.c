@@ -975,7 +975,7 @@ void module_sps_park(void)
     /** Start 1/60Hz sampling of sensors for PARK_TIME seconds */
     /** Save data in Park Data strucutre */
     uint32_t park_time = pdMS_TO_TICKS(1000UL) * PARK_TIME;
-    ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME=%u mins>\n\n", PARK_TIME/60.0);
+    ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME=%f mins>\n\n", (float) (park_time/(1000*60)));
     uint32_t wait_time = 0;
 
 #ifdef TEST
@@ -1207,6 +1207,7 @@ void module_sps_park(void)
         /* check on Maximum park depth = ? */
         if (Depth >= PARK_DEPTH_MAX && !piston_move)
         {
+            park_length_update = true;
             run = false;
             vTaskDelete(xTemp);
             vTaskDelete(xDepth);
@@ -1222,7 +1223,7 @@ void module_sps_park(void)
         wait_time += period;
         if (wait_time >= park_time && !piston_move)
         {
-            ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Timer out %u mins>>\n\n", wait_time/(60.0 * period));
+            ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Timer out %f mins>>\n\n", (float) (wait_time/(60.0 * period)));
             run = false;
             vTaskDelete(xTemp);
             vTaskDelete(xDepth);
@@ -1263,7 +1264,7 @@ void module_sps_move_to_profile(void)
     if (prof_piston_length == 0.0)
     {
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, << Setting Profile Piston Length the first time >>\n");
-        CTRL_set_lcp_density(PROFILE_DENSITY);
+        CTRL_set_lcp_density(TO_PROFILE_DENSITY);
         prof_piston_length = CTRL_calculate_piston_position(0.0, 0.0);
         length_update = prof_piston_length;
     }
@@ -1282,7 +1283,7 @@ void module_sps_move_to_profile(void)
     TaskHandle_t xPiston;
     eTaskState eStatus;
     PIS_set_piston_rate(1);
-    PIS_set_length(prof_piston_length);
+    PIS_set_length(length_update);
 
     vTaskDelay(piston_period);
     PIS_task_move_length(&xPiston);
@@ -1398,12 +1399,12 @@ void module_sps_move_to_profile(void)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Reached = %0.4f\n", Pressure);
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Reached    = %0.4f, rate = %0.4f\n", Depth, Rate);
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Reach PARK Depth\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Reach Porfile Depth\n");
 
             /* stop here, and delete the task and turn off pressure sensor, move to next state */
             run = false;
             vTaskDelete(xDepth);
-            vTaskDelay(pdMS_TO_TICKS(100UL));
+            vTaskDelay(pdMS_TO_TICKS(500UL));
             SENS_sensor_depth_off();
             spsEvent = MODE_DONE;
             vTaskDelay(pdMS_TO_TICKS(500UL));
@@ -1425,7 +1426,7 @@ void module_sps_move_to_profile(void)
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_porfile, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4f\n", Density, Volume, Length);
 
                 piston_timer += period;
-                if (piston_timer >= 600000)
+                if (piston_timer >= 300000)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston time-out, task->finished\n");
                     vTaskDelete ( xPiston );
@@ -2135,7 +2136,7 @@ void module_sps_tx(void)
                                 /* reset the read length */
                                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park read=%u, measurements=%u\n", park.cbuf.read, nr_park);
                                 parkPage--;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park reseting to page %u\n", parkPage);
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park resetting to page %u\n", parkPage);
                                 park.cbuf.read = park.cbuf.read - nr_park;
                                 park_run = false;
                                 send_park = false;
@@ -2224,7 +2225,7 @@ void module_sps_tx(void)
                                 /* reset the read length */
                                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile measurements=%u, read=%u\n", nr_prof, prof.cbuf.read);
                                 profPage--;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile reseting to page %u\n", profPage);
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile resetting to page %u\n", profPage);
                                 prof.cbuf.read = prof.cbuf.read - nr_prof;
                                 prof_run = false;
                                 send_prof = false;
