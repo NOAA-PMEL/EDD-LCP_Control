@@ -223,7 +223,7 @@ float CTRL_calculate_volume_from_length(float length)
 
     /* convert into cubic inches */
     //volume *= 61023.7;
-    ARTEMIS_DEBUG_PRINTF("LCP Length to Volume = %0.4f\n", volume);
+    //ARTEMIS_DEBUG_PRINTF("LCP Length to Volume = %0.4f\n", volume);
     return volume;
 }
 
