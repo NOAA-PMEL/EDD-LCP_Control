@@ -169,7 +169,7 @@ void task_move_piston_to_zero(void)
 
                 if (count_reset > 4)
                 {
-                    ARTEMIS_DEBUG_PRINTF("Piston Board Reseting ...\n");
+                    ARTEMIS_DEBUG_PRINTF("Piston Board Resetting ...\n");
                     vTaskDelay(period);
                     PIS_Reset();
                     vTaskDelay(period * 2);
@@ -272,6 +272,7 @@ void task_move_piston_to_length(void)
         vTaskDelete(NULL);
         return;
     }
+
     vTaskDelay(period);
 
     /** Start the move */
@@ -295,7 +296,7 @@ void task_move_piston_to_length(void)
                 count_reset++;
                 vTaskDelay(period);
                 piston.length = module_pis_get_length();
-                ARTEMIS_DEBUG_PRINTF("Piston length %0.5f\n", piston.length);
+                //ARTEMIS_DEBUG_PRINTF("Piston length %0.5f\n", piston.length);
 
                 if (piston.length >=(piston.setpoint_l-0.09) && piston.length <=(piston.setpoint_l+0.09))
                 {
@@ -305,12 +306,12 @@ void task_move_piston_to_length(void)
                 }
                 else
                 {
-                    if (count_reset > 4)
+                    if (count_reset > 3)
                     {
                         ARTEMIS_DEBUG_PRINTF("Piston Board Reseting ...\n");
                         vTaskDelay(period);
                         PIS_Reset();
-                        vTaskDelay(period * 2);
+                        vTaskDelay(period);
                         PIS_move_to_length(piston.setpoint_l);
                         vTaskDelay(period);
                         count_reset = 0;
@@ -319,9 +320,9 @@ void task_move_piston_to_length(void)
             }
             else
             {
-                vTaskDelay(period);
+                vTaskDelay(pdMS_TO_TICKS(500UL));
                 piston.length = module_pis_get_length();
-                ARTEMIS_DEBUG_PRINTF("Piston length is moving...\n");
+                //ARTEMIS_DEBUG_PRINTF("Piston length is moving...\n");
             }
 
             xSemaphoreGive(piston.rtos.semaphore);
@@ -329,20 +330,21 @@ void task_move_piston_to_length(void)
         vTaskDelay(period);
         //vTaskDelayUntil(&xLastWakeTime, period);
     }
-    vTaskDelay(period);
 
-    /** Check to see if length is valid , and update the last length */
-    piston.length = module_pis_get_length();
-    if( fabs(piston.length - piston.setpoint_l) >= PISTON_LENGTH_DIFF_MAX )
-    {
-        /** ERROR - Alert the system somehow */
-        ARTEMIS_DEBUG_PRINTF("ERROR :: Piston length diff = %0.5f\n", (piston.length - piston.setpoint_l));
-    }
-    else
-    {
-        ARTEMIS_DEBUG_PRINTF("SUCCESS :: Piston length = %0.5f, diff = %0.5f, max_diff = %0.5f\n",
-                            piston.length, (piston.length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
-    }
+    //vTaskDelay(period);
+
+    ///** Check to see if length is valid , and update the last length */
+    //piston.length = module_pis_get_length();
+    //if( fabs(piston.length - piston.setpoint_l) >= PISTON_LENGTH_DIFF_MAX )
+    //{
+    //    /** ERROR - Alert the system somehow */
+    //    ARTEMIS_DEBUG_PRINTF("ERROR :: Piston length diff = %0.5f\n", (piston.length - piston.setpoint_l));
+    //}
+    //else
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("SUCCESS :: Piston length = %0.5f, diff = %0.5f, max_diff = %0.5f\n",
+    //                        piston.length, (piston.length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
+    //}
     vTaskDelete(NULL);
 }
 
@@ -385,7 +387,7 @@ void task_move_piston_to_volume(void)
         vTaskDelete(NULL);
         return;
     }
-    vTaskDelay(period);
+    vTaskDelay(pdMS_TO_TICKS(500UL));
 
     PIS_move_to_volume(piston.setpoint_v);
     /** wait 500ms to shoot an I2C command */
@@ -421,12 +423,12 @@ void task_move_piston_to_volume(void)
                 }
                 else
                 {
-                    if (count_reset > 4)
+                    if (count_reset > 3)
                     {
                         ARTEMIS_DEBUG_PRINTF("Piston Board Reseting ...\n");
                         vTaskDelay(period);
                         PIS_Reset();
-                        vTaskDelay(period * 2);
+                        vTaskDelay(period);
                         PIS_move_to_volume(piston.setpoint_v);
                         vTaskDelay(period);
                         count_reset = 0;
@@ -435,7 +437,8 @@ void task_move_piston_to_volume(void)
             }
             else
             {
-                vTaskDelay(period);
+                //vTaskDelay(period);
+                vTaskDelay(pdMS_TO_TICKS(500UL));
                 piston.volume = module_pis_get_volume();
             }
 
@@ -446,18 +449,18 @@ void task_move_piston_to_volume(void)
     }
     vTaskDelay(period);
 
-    /** Check to see if volume is valid , and update the last volume*/
-    piston.volume = module_pis_get_volume();
-    if( (piston.volume - piston.setpoint_v) >= PISTON_VOLUME_DIFF_MAX )
-    {
-        /** ERROR - Alert the system somehow */
-        ARTEMIS_DEBUG_PRINTF("ERROR :: Piston volume diff = %0.5f\n", (piston.volume - piston.setpoint_v));
-    }
-    else
-    {
-        ARTEMIS_DEBUG_PRINTF("SUCCESS :: Piston volume = %0.5f, diff = %0.5f, max_diff = %0.5f\n",
-                            piston.volume, (piston.volume - piston.setpoint_v), PISTON_VOLUME_DIFF_MAX);
-    }
+    ///** Check to see if volume is valid , and update the last volume*/
+    //piston.volume = module_pis_get_volume();
+    //if( (piston.volume - piston.setpoint_v) >= PISTON_VOLUME_DIFF_MAX )
+    //{
+    //    /** ERROR - Alert the system somehow */
+    //    ARTEMIS_DEBUG_PRINTF("ERROR :: Piston volume diff = %0.5f\n", (piston.volume - piston.setpoint_v));
+    //}
+    //else
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("SUCCESS :: Piston volume = %0.5f, diff = %0.5f, max_diff = %0.5f\n",
+    //                        piston.volume, (piston.volume - piston.setpoint_v), PISTON_VOLUME_DIFF_MAX);
+    //}
 
     vTaskDelete(NULL);
 }
