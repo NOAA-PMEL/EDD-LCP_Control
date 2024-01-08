@@ -126,7 +126,7 @@ void datalogger_read_test_profile(bool reset)
 {
     if (reset)
     {
-        ARTEMIS_DEBUG_PRINTF("Reseting test profile pressure ...\n");
+        ARTEMIS_DEBUG_PRINTF("Resetting test profile pressure ...\n");
         test_buffer = &test_buf[0];
     }
     else
@@ -578,7 +578,7 @@ static void datalogger_write_sync(void)
 static void datalogger_i2c_read(uint8_t offset, uint8_t offsetlen,
                                 uint8_t *pBuf, uint16_t size)
 {
-    am_hal_status_e status = AM_HAL_STATUS_SUCCESS;
+    //am_hal_status_e status = AM_HAL_STATUS_SUCCESS;
     am_hal_iom_transfer_t transfer;
 
     transfer.uPeerInfo.ui32I2CDevAddr = LOGGER_I2C_ADDRESS;
@@ -593,17 +593,18 @@ static void datalogger_i2c_read(uint8_t offset, uint8_t offsetlen,
     transfer.ui32StatusSetClr = 0;
 
     //ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer));
-    status = am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
-    if (status != AM_HAL_STATUS_SUCCESS)
-    {
-        ARTEMIS_DEBUG_PRINTF("DATALOGGER:: READ I2C ERROR\n");
-    }
+    am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
+    //status = am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
+    //if (status != AM_HAL_STATUS_SUCCESS)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("DATALOGGER:: READ I2C ERROR\n");
+    //}
 }
 
 static void datalogger_i2c_write(uint8_t offset, uint8_t offsetlen,
                                  uint8_t *pBuf, uint16_t size)
 {
-    am_hal_status_e status = AM_HAL_STATUS_SUCCESS;
+    //am_hal_status_e status = AM_HAL_STATUS_SUCCESS;
     am_hal_iom_transfer_t transfer;
 
     transfer.uPeerInfo.ui32I2CDevAddr = LOGGER_I2C_ADDRESS;
@@ -618,9 +619,10 @@ static void datalogger_i2c_write(uint8_t offset, uint8_t offsetlen,
     transfer.ui32StatusSetClr = 0;
 
     //ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer));
-    status = am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
-    if (status != AM_HAL_STATUS_SUCCESS)
-    {
-        ARTEMIS_DEBUG_PRINTF("DATALOGGER:: WRITE I2C ERROR\n");
-    }
+    am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
+    //status = am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
+    //if (status != AM_HAL_STATUS_SUCCESS)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("DATALOGGER:: WRITE I2C ERROR\n");
+    //}
 }
