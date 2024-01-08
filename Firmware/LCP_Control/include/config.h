@@ -74,7 +74,7 @@
 #define SYSTEM_PROFILER_PROFILE_EXTRA_OOMPH ( true )
 
 #define SYSTEM_CRUSH_LIMIT_DEPTH            ( 220.0f )      /* crash limit depth in meters */
-#define SYSTEM_PROFILE_NUMBER               ( 3 )           /* for testing */
+#define SYSTEM_PROFILE_NUMBER               ( 10 )          /* for testing */
 
 //#define BALLAST_DEPTH                       ( 1.0135f )
 //#define PARK_DEPTH                          ( SYSTEM_PROFILER_PARK_DEPTH )
@@ -109,11 +109,12 @@
 #define PARK_DEPTH_ERR                      ( 1.0f )
 #define PARK_DEPTH_MAX                      ( 23.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
-#define PARK_TIME                           ( 3.0 * 60.0f ) /* 3 mins */
+#define PARK_TIME                           ( 3.0f * 60.0f ) /* 3 mins */
 #define PARK_DENSITY                        ( 1033.0f )
 #define PROFILE_DEPTH                       ( 24.0f )
 #define PROFILE_DEPTH_ERR                   ( 1.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
+#define TO_PROFILE_DENSITY                  ( 1035.0f )
 #define PROFILE_DENSITY                     ( 1025.0f )
 #define CRUSH_DEPTH                         ( 30.0f )
 
