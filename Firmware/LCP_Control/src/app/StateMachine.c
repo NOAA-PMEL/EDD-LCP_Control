@@ -1212,6 +1212,7 @@ void module_sps_park(void)
             vTaskDelete(xTemp);
             vTaskDelete(xDepth);
             vTaskDelay(pdMS_TO_TICKS(100UL));
+            wait_time = 0;
 
             SENS_sensor_depth_off();
             SENS_sensor_temperature_off();
@@ -1526,7 +1527,7 @@ void module_sps_profile(void)
 
     /** Calculate length for profiling at 0.1m/s upward */
     ARTEMIS_DEBUG_PRINTF("\n\nSPS :: profile, Setting volume for profiling\n");
-    float v_rate = 0.1;
+    float v_rate = SYSTEM_RISE_RATE_SETPOINT;
     Volume = module_ctrl_set_buoyancy_from_rate(v_rate, false);
     Density = CTRL_calculate_lcp_density(Volume);
     length_update = CTRL_calculate_length_from_volume(Volume);
