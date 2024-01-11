@@ -76,7 +76,11 @@
 #define SYSTEM_CRUSH_LIMIT_DEPTH            ( 220.0f )      /* crash limit depth in meters */
 #define SYSTEM_PROFILE_NUMBER               ( 10 )          /* for testing */
 
-//#define BALLAST_DEPTH                       ( 1.0135f )
+
+/** Settable Variable */
+
+/** Ocean , set the values accordingly */
+//#define BALLAST_DEPTH                       ( 2.0f )
 //#define PARK_DEPTH                          ( SYSTEM_PROFILER_PARK_DEPTH )
 //#define PARK_DEPTH_MAX                      ( SYSTEM_PROFILER_PARK_DEPTH + 10.f)
 //#define PARK_DEPTH_ERR                      ( SYSTEM_PROFILER_PARK_DEPTH_ERR )
@@ -86,25 +90,29 @@
 //#define PROFILE_DEPTH                       ( SYSTEM_PROFILER_PROFILE_DEPTH )
 //#define PROFILE_DEPTH_ERR                   ( SYSTEM_PROFILER_PROFILE_DEPTH_ERR )
 //#define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
-//#define PROFILE_DENSITY                     ( SYSTEM_DENSITY_SEAWATER )
+//#define TO_PROFILE_DENSITY                  ( SYSTEM_DENSITY_SEAWATER )
+//#define PROFILE_DENSITY                     ( SYSTEM_NEUTRAL_BUOYANCY )
 //#define CRUSH_DEPTH                         ( SYSTEM_CRUSH_LIMIT_DEPTH )
 
 
-/** TANK Testing */
-//#define BALLAST_DEPTH                       ( 1.0f )
-//#define PARK_DEPTH                          ( 4.0f )
-//#define PARK_DEPTH_ERR                      ( 1.0f )
-//#define PARK_DEPTH_MAX                      ( 6.0f )
+///** TEST profile1 */
+//#define BALLAST_DEPTH                       ( 1.0f )    // pressure reading ( 0.0101f )
+//#define PARK_DEPTH                          ( 180.0f )
+//#define PARK_DEPTH_ERR                      ( 10.0f )
+//#define PARK_DEPTH_MAX                      ( 190.0f )
 //#define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
-//#define PARK_TIME                           ( 3.0 * 60.0f ) /* 3 mins */
+//#define PARK_TIME                           ( 3.0f * 60.0f ) /* 3 mins */
 //#define PARK_DENSITY                        ( 1033.0f )
-//#define PROFILE_DEPTH                       ( 4.5f )
-//#define PROFILE_DEPTH_ERR                   ( 1.0f )
+//#define PROFILE_DEPTH                       ( 200.0f )
+//#define PROFILE_DEPTH_ERR                   ( 10.0f )
 //#define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
-//#define PROFILE_DENSITY                     ( 1000.0f )
-//#define CRUSH_DEPTH                         ( 6.0f )
+//#define TO_PROFILE_DENSITY                  ( 1035.0f )
+//#define PROFILE_DENSITY                     ( 1025.0f )
+//#define CRUSH_DEPTH                         ( 220.0f )
 
-#define BALLAST_DEPTH                       ( 0.0101f )
+
+/** TEST profile2 */
+#define BALLAST_DEPTH                       ( 0.1f )    // pressure reading ( 0.0101f )
 #define PARK_DEPTH                          ( 20.0f )
 #define PARK_DEPTH_ERR                      ( 1.0f )
 #define PARK_DEPTH_MAX                      ( 23.0f )
@@ -117,6 +125,39 @@
 #define TO_PROFILE_DENSITY                  ( 1035.0f )
 #define PROFILE_DENSITY                     ( 1025.0f )
 #define CRUSH_DEPTH                         ( 30.0f )
+
+
+/** TANK Testing */
+//#define BALLAST_DEPTH                       ( 0.1f )
+//#define PARK_DEPTH                          ( 4.0f )
+//#define PARK_DEPTH_ERR                      ( 1.0f )
+//#define PARK_DEPTH_MAX                      ( 5.0f )
+//#define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
+//#define PARK_TIME                           ( 3.0 * 60.0f ) /* 3 mins */
+//#define PARK_DENSITY                        ( 1001.0f )
+//#define PROFILE_DEPTH                       ( 4.5f )
+//#define PROFILE_DEPTH_ERR                   ( 1.0f )
+//#define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
+//#define TO_PROFILE_DENSITY                  ( 1005.0f )
+//#define PROFILE_DENSITY                     ( 1000.0f )
+//#define CRUSH_DEPTH                         ( 6.0f )
+
+
+/** LAKE Testing */
+//#define BALLAST_DEPTH                       ( )
+//#define PARK_DEPTH                          ( )
+//#define PARK_DEPTH_ERR                      ( )
+//#define PARK_DEPTH_MAX                      ( )
+//#define PARK_RATE                           ( )
+//#define PARK_TIME                           ( )
+//#define PARK_DENSITY                        ( )
+//#define PROFILE_DEPTH                       ( )
+//#define PROFILE_DEPTH_ERR                   ( )
+//#define PROFILE_RATE                        ( )
+//#define TO_PROFILE_DENSITY                  ( )
+//#define PROFILE_DENSITY                     ( )
+//#define CRUSH_DEPTH                         ( )
+
 
 #endif // CONFIG_H
 
