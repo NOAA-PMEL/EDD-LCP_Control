@@ -273,7 +273,8 @@ void task_move_piston_to_length(void)
         return;
     }
 
-    vTaskDelay(period);
+    //vTaskDelay(period);
+    vTaskDelay(pdMS_TO_TICKS(100UL));
 
     /** Start the move */
     PIS_move_to_length(piston.setpoint_l);
