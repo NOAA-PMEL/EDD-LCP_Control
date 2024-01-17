@@ -1396,11 +1396,24 @@ void module_sps_move_to_profile(void)
         }
 
         /* check on depth to reach */
-        if (Depth >= PROFILE_DEPTH-PROFILE_DEPTH_ERR && Depth <= PROFILE_DEPTH+PROFILE_DEPTH_ERR && !piston_move)
+        //if (Depth >= PROFILE_DEPTH-PROFILE_DEPTH_ERR && Depth <= PROFILE_DEPTH+PROFILE_DEPTH_ERR && !piston_move)
+        if (Depth >= PROFILE_DEPTH-PROFILE_DEPTH_ERR && Depth <= PROFILE_DEPTH+PROFILE_DEPTH_ERR)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Reached = %0.4f\n", Pressure);
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Reached    = %0.4f, rate = %0.4f\n", Depth, Rate);
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Reach Porfile Depth\n");
+
+            /* check if piston is still moving then reset it and stop */
+            if (piston_move)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stop the Piston, and resetting ...\n");
+                vTaskDelete ( xPiston );
+                vTaskDelay(period);
+                PIS_Reset();
+                vTaskDelay(period);
+                piston_move = false;
+                piston_timer = 0;
+            }
 
             /* stop here, and delete the task and turn off pressure sensor, move to next state */
             run = false;
@@ -2006,7 +2019,7 @@ void module_sps_tx(void)
         }
         else
         {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Iridium looks fine\n");
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium looks fine\n");
             tries = 0;
             break;
         }
@@ -2018,7 +2031,7 @@ void module_sps_tx(void)
         /* reset test profile */
         datalogger_read_test_profile(true);
         spsEvent = MODE_IDLE;
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Iridium not charged, try again\n");
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium not charged, try again\n");
         SendEvent(spsEventQueue, &spsEvent);
         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Task->finished abruptly, NOT transmitting today\n");
         vTaskDelete(NULL);
