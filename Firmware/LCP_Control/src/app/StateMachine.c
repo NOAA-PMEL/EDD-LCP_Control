@@ -860,29 +860,46 @@ void module_sps_move_to_park(void)
         }
         else if (Rate < 0.0 && !piston_move)
         {
-            /* decrease piston position by 0.05 inches */
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure Rate is negative, decrease 0.05 in\n");
-            length_update -= 0.05;
+            /* decrease piston position by PARK_POSITION_INCREMENT inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure Rate is negative, decrease %f in\n", PARK_POSITION_INCREMENT);
+            length_update -= PARK_POSITION_INCREMENT;
             PIS_set_length(length_update);
             PIS_task_move_length(&xPiston);
             piston_move = true;
         }
         else if (Rate == 0.0 && !piston_move)
         {
-            /* decrease piston position by 0.015 inches */
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure Rate is stable, decrease 0.015 in\n");
-            length_update -= 0.015;
+            /* decrease piston position by PARK_POSITION_INCREMENT inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure Rate is stable, decrease %f in\n", PARK_POSITION_INCREMENT);
+            length_update -= PARK_POSITION_INCREMENT;
             PIS_set_length(length_update);
             PIS_task_move_length(&xPiston);
             piston_move = true;
         }
 
         /* check on depth to reach */
-        if (Depth >= PARK_DEPTH-PARK_DEPTH_ERR && Depth <= PARK_DEPTH+PARK_DEPTH_ERR && !piston_move)
+        //if (Depth >= PARK_DEPTH-PARK_DEPTH_ERR && Depth <= PARK_DEPTH+PARK_DEPTH_ERR && !piston_move)
+        if (Depth >= PARK_DEPTH-PARK_DEPTH_ERR && Depth <= PARK_DEPTH+PARK_DEPTH_ERR)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure Reached = %0.4f\n", Pressure);
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Reached    = %0.4f, rate = %0.4f\n", Depth, Rate);
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Reach PARK Depth\n");
+
+            /* check if piston is still moving then reset it and stop */
+            if (piston_move)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, deliberately stopping the Piston, and resetting ...\n");
+                vTaskDelete ( xPiston );
+                vTaskDelay(period);
+
+                /* try to stop first*/
+                //PIS_stop();
+
+                PIS_Reset();
+                vTaskDelay(period);
+                piston_move = false;
+                piston_timer = 0;
+            }
 
             /* stop here, and delete the task and turn off pressure sensor, move to next state */
             run = false;
@@ -949,7 +966,7 @@ void module_sps_move_to_park(void)
         }
 
         /* keep checking for crush depth */
-        if (Depth >= CRUSH_DEPTH && !piston_move)
+        if (Depth >= CRUSH_DEPTH)
         {
             /* reset the piston, this will stop the movement already */
             PIS_Reset();
@@ -1102,9 +1119,9 @@ void module_sps_park(void)
         /* check if rate is positive, negative or stable*/
         if (Rate > 0.0 && !piston_move && !park_length_update)
         {
-            /* increase piston position by 0.015 inches */
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Rate is positive, increase 0.015 in\n");
-            length_update += 0.015;
+            /* increase piston position by PARK_POSITION_INCREMENT inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Rate is positive, increase %f in\n", PARK_POSITION_INCREMENT);
+            length_update += PARK_POSITION_INCREMENT;
             PIS_set_length(length_update);
             PIS_task_move_length(&xPiston);
             piston_move = true;
@@ -1112,9 +1129,9 @@ void module_sps_park(void)
         }
         else if (Rate < 0.0 && !piston_move && !park_length_update)
         {
-            /* decrease piston position by 0.015 inches */
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Rate is negative, decrease 0.015 in\n");
-            length_update -= 0.015;
+            /* decrease piston position by PARK_POSITION_INCREMENT inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Rate is negative, decrease %f in\n", PARK_POSITION_INCREMENT);
+            length_update -= PARK_POSITION_INCREMENT;
             PIS_set_length(length_update);
             PIS_task_move_length(&xPiston);
             piston_move = true;
@@ -1193,7 +1210,7 @@ void module_sps_park(void)
         }
 
         /* emergency blow , extend piston to full */
-        if (Depth >= CRUSH_DEPTH && !piston_move)
+        if (Depth >= CRUSH_DEPTH)
         {
             /* reset the piston, this will stop the movement already */
             PIS_Reset();
@@ -1378,18 +1395,18 @@ void module_sps_move_to_profile(void)
         }
         else if (Rate < 0.0 && !piston_move)
         {
-            /* decrease piston position by 0.05 inches */
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Rate is negative, decrease 0.05 in\n");
-            length_update -= 0.05;
+            /* decrease piston position by PARK_POSITION_INCREMENT inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Rate is negative, decrease %f in\n", PARK_POSITION_INCREMENT);
+            length_update -= PARK_POSITION_INCREMENT;
             PIS_set_length(length_update);
             PIS_task_move_length(&xPiston);
             piston_move = true;
         }
         else if (Rate == 0.0 && !piston_move)
         {
-            /* decrease piston position by 0.015 inches */
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Rate is stable, decrease 0.015 in\n");
-            length_update -= 0.015;
+            /* decrease piston position by PARK_POSITION_INCREMENT inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Rate is stable, decrease %f in\n", PARK_POSITION_INCREMENT);
+            length_update -= PARK_POSITION_INCREMENT;
             PIS_set_length(length_update);
             PIS_task_move_length(&xPiston);
             piston_move = true;
@@ -1406,9 +1423,13 @@ void module_sps_move_to_profile(void)
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stop the Piston, and resetting ...\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston, and resetting ...\n");
                 vTaskDelete ( xPiston );
                 vTaskDelay(period);
+
+                /* try to stop first*/
+                //PIS_stop();
+
                 PIS_Reset();
                 vTaskDelay(period);
                 piston_move = false;
@@ -1481,7 +1502,7 @@ void module_sps_move_to_profile(void)
         }
 
         /* keep checking for crush depth */
-        if (Depth >= CRUSH_DEPTH && !piston_move)
+        if (Depth >= CRUSH_DEPTH)
         {
             /* reset the piston, this will stop the movement already */
             PIS_Reset();
@@ -1721,9 +1742,9 @@ void module_sps_profile(void)
         /* check if rate is positive, negative or stable*/
         if (Rate > 0.0 && !piston_move && !prof_length_update)
         {
-            /* increase piston position by 0.015 inches */
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Rate is positive, increase 0.015 in\n");
-            length_update += 0.015;
+            /* increase piston position by PARK_POSITION_INCREMENT inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Rate is positive, increase %f in\n", PARK_POSITION_INCREMENT);
+            length_update += PARK_POSITION_INCREMENT;
             PIS_set_length(length_update);
             PIS_task_move_length(&xPiston);
             piston_move = true;
@@ -1732,9 +1753,9 @@ void module_sps_profile(void)
         }
         else if (Rate == 0.0 && !piston_move && !prof_length_update)
         {
-            /* increase piston position by 0.015 inches */
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Rate is stable, increase 0.015 in\n");
-            length_update += 0.015;
+            /* increase piston position by PARK_POSITION_INCREMENT inches */
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Rate is stable, increase %f in\n", PARK_POSITION_INCREMENT);
+            length_update += PARK_POSITION_INCREMENT;
             PIS_set_length(length_update);
             PIS_task_move_length(&xPiston);
             piston_move = true;
@@ -1815,7 +1836,7 @@ void module_sps_profile(void)
         }
 
         /* emergency blow , extend piston to full */
-        if (Depth >= CRUSH_DEPTH && !piston_move)
+        if (Depth >= CRUSH_DEPTH)
         {
             /* reset the piston, this will stop the movement already */
             PIS_Reset();
@@ -1826,9 +1847,26 @@ void module_sps_profile(void)
             ARTEMIS_DEBUG_PRINTF("\n\n\nSPS :: profile, <<< CRUSH DEPTH activated >>> \n\n\n");
         }
 
-        //if (Pressure <= BALLAST_DEPTH && !piston_move)
-        if (Pressure <= 0.0352 && !piston_move)
+        if (Pressure <= BALLAST_DEPTH)
         {
+
+            /* check if piston is still moving then reset it and stop */
+            if (piston_move)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston, and resetting ...\n");
+                vTaskDelete ( xPiston );
+                vTaskDelay(period);
+
+                /* try to stop first*/
+                //PIS_stop();
+
+                PIS_Reset();
+                vTaskDelay(period);
+                piston_move = false;
+                piston_timer = 0;
+            }
+
+
             run = false;
             vTaskDelete(xDepth);
             vTaskDelete(xTemp);

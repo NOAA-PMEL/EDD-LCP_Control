@@ -75,6 +75,7 @@
 
 #define SYSTEM_CRUSH_LIMIT_DEPTH            ( 220.0f )      /* crash limit depth in meters */
 #define SYSTEM_PROFILE_NUMBER               ( 10 )          /* for testing */
+#define PISTON_POSITION_INCREMENT           ( 0.015f )      /* Piston position increment-decrement in inches */
 
 
 /** Settable Variable */
@@ -93,6 +94,7 @@
 //#define TO_PROFILE_DENSITY                  ( SYSTEM_DENSITY_SEAWATER )
 //#define PROFILE_DENSITY                     ( SYSTEM_NEUTRAL_BUOYANCY )
 //#define CRUSH_DEPTH                         ( SYSTEM_CRUSH_LIMIT_DEPTH )
+//#define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 
 
 ///** TEST profile1 */
@@ -109,6 +111,7 @@
 //#define TO_PROFILE_DENSITY                  ( 1035.0f )
 //#define PROFILE_DENSITY                     ( 1025.0f )
 //#define CRUSH_DEPTH                         ( 220.0f )
+//#define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 
 
 /** TEST profile2 */
@@ -125,6 +128,7 @@
 #define TO_PROFILE_DENSITY                  ( 1035.0f )
 #define PROFILE_DENSITY                     ( 1025.0f )
 #define CRUSH_DEPTH                         ( 30.0f )
+#define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 
 
 /** TANK Testing */
@@ -141,6 +145,7 @@
 //#define TO_PROFILE_DENSITY                  ( 1005.0f )
 //#define PROFILE_DENSITY                     ( 1000.0f )
 //#define CRUSH_DEPTH                         ( 6.0f )
+//#define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 
 
 /** LAKE Testing */
@@ -157,6 +162,7 @@
 //#define TO_PROFILE_DENSITY                  ( )
 //#define PROFILE_DENSITY                     ( )
 //#define CRUSH_DEPTH                         ( )
+//#define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 
 
 #endif // CONFIG_H
