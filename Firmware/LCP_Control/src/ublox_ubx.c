@@ -610,7 +610,7 @@ static int32_t bytes_to_i32(uint8_t *data)
  */
 static uint16_t bytes_to_u16(uint8_t *data)
 {
-    uint16_t value;
+    //uint16_t value;
     return (data[1]<<8 | data[0]);
 }
 
@@ -638,7 +638,7 @@ static int16_t bytes_to_i16(uint8_t *data)
  */
 static void rmemcpy(uint8_t *dst, void *src, size_t n)
 {
-    char *d = dst;
+    char *d = (char *)dst;
     const char *s = src;
     for(size_t i=0; i<n; i++)
     {
