@@ -80,9 +80,9 @@ bool SYS_lcp_info(void)
     ARTEMIS_DEBUG_PRINTF("\tLCP Physical parameters\n");
     ARTEMIS_DEBUG_PRINTF("**************************************\n");
     ARTEMIS_DEBUG_PRINTF("Estimated Mass\t: %.3f kg, %.3f lbs\n", SYSTEM_MASS_EST * 0.453592, SYSTEM_MASS_EST);
-    ARTEMIS_DEBUG_PRINTF("Minimum Volume\t: %.3f m^3, %.3f in^3\n", SYSTEM_VOLUME_MIN*0.000016387, SYSTEM_VOLUME_MIN);
+    ARTEMIS_DEBUG_PRINTF("Minimum Volume\t: %.3f m³, %.3f in³\n", SYSTEM_VOLUME_MIN*0.000016387, SYSTEM_VOLUME_MIN);
     float density = CTRL_calculate_lcp_density(SYSTEM_VOLUME_MIN);
-    ARTEMIS_DEBUG_PRINTF("Maximum Density\t: %.3f kg/m^3, %.3f lbs/in^3\n", density, density*0.000036127);
+    ARTEMIS_DEBUG_PRINTF("Maximum Density\t: %.3f kg/m³, %.3f lbs/in³\n", density, density*0.000036127);
     ARTEMIS_DEBUG_PRINTF("\n");
 
     return true;
