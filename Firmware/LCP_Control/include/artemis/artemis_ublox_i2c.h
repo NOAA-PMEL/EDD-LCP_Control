@@ -56,6 +56,7 @@
 ************************************************************************/
 
 void artemis_ublox_i2c_initialize(uint8_t i2c_addr);
+void artemis_ublox_i2c_uninitialize(void);
 void artemis_ublox_i2c_power_on(void);
 void artemis_ublox_i2c_power_off(void);
 void artemis_ublox_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop);

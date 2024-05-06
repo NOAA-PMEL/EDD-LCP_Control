@@ -137,7 +137,6 @@ void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
     module.extint.pin = AM_BSP_GPIO_GPS_EXTINT;
     #endif
 
-
     i2c->address = i2c_addr;
     
     #ifdef TEST_ON_IOM4
@@ -160,12 +159,28 @@ void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM1_SCL, g_AM_BSP_GPIO_IOM1_SCL));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM1_SDA, g_AM_BSP_GPIO_IOM1_SDA));
     #endif
-           
+}
+
+/**
+ * @brief DeInitialize the UBLOX Module
+ *
+ * uninitializes IOM Module for I2C.
+ *
+ */
+void artemis_ublox_i2c_uninitialize(void)
+{
+    artemis_i2c_t *i2c = &module.i2c;
+    #ifdef TEST_ON_IOM4
+    i2c->iom.module = 4;
+    #else
+    i2c->iom.module = 1;
+    #endif
+    artemis_iom_uninitialize(&i2c->iom);
 }
 
 /**
  * @brief Power Up the UBLOX Module
- * 
+ *
  */
 void artemis_ublox_i2c_power_on(void)
 {
@@ -175,7 +190,7 @@ void artemis_ublox_i2c_power_on(void)
 
 /**
  * @brief Power Down the UBLOX Module
- * 
+ *
  */
 void artemis_ublox_i2c_power_off(void)
 {
@@ -184,7 +199,7 @@ void artemis_ublox_i2c_power_off(void)
 
 /**
  * @brief Send I2C message
- * 
+ *
  * Send a message over I2C.
  * 
  * @param msg Pointer to message buffer
