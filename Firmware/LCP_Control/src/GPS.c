@@ -8,6 +8,11 @@ bool GPS_initialize(void)
     return true;
 }
 
+void GPS_uninitialize(void)
+{
+    UBLOX_uninitialize();
+}
+
 bool GPS_Read(GPS_Data_t *data)
 {
 	bool fix = false;
