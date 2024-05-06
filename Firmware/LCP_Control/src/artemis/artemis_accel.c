@@ -167,7 +167,7 @@ void artemis_accel_init(void)
     //artemis_accel_write_reg(ACCEL_CTRL_1, &data, 1);
     //artemis_accel_read_reg(ACCEL_CTRL_1, str, 1);
 
-    int8_t temp = 0;
+    uint8_t temp = 0;
     artemis_accel_read_reg(ACCEL_OUT_T, &temp, 1);
 
     //int16_t temp = 0;
