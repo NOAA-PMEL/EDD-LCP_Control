@@ -33,6 +33,10 @@ void artemis_uart_send(artemis_uart_t *uart, artemis_stream_t *txstream);
 //void artemis_uart_receive(artemis_uart_t *uart, artemis_stream_t *rxstream, uint32_t rxnumber);
 void artemis_uart_receive(artemis_stream_t *rxstream);
 
+/* FreeRTOS functions */
+void artemis_uart_send_RTOS(artemis_uart_t *uart, artemis_stream_t *txstream);
+void artemis_uart_receive_RTOS(artemis_stream_t *rxstream);
+
 #ifdef __cplusplus
 }
 #endif

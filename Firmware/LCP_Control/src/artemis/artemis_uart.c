@@ -4,7 +4,13 @@
 #include "artemis_uart.h"
 #include "string.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+#include "event_groups.h"
+#include "semphr.h"
+
 #define ARTEMIS_UART_BUFFER_LENGTH (512) // transmit and receive buffer length
+#define FREERTOS
 
 typedef uint8_t module_buffer_t[ARTEMIS_UART_BUFFER_LENGTH];
 
@@ -20,6 +26,10 @@ void *uHandle;
 static uint8_t rxbuffer[512] = {0};
 static volatile uint16_t rxindex = 0;
 static volatile bool Flag = false;
+
+#ifdef FREERTOS
+EventGroupHandle_t xUartEventHandle;
+#endif
 
 void artemis_uart_initialize(artemis_uart_t *uart, uint32_t baudrate)
 {
@@ -38,19 +48,33 @@ void artemis_uart_initialize(artemis_uart_t *uart, uint32_t baudrate)
     ARTEMIS_DEBUG_HALSTATUS(am_hal_uart_power_control(uart->handle, AM_HAL_SYSCTRL_WAKE, false));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_uart_configure(uart->handle, &uart->config));
 
-    NVIC_EnableIRQ((IRQn_Type)(UART1_IRQn));
     am_hal_uart_interrupt_enable(uart->handle, (AM_HAL_UART_INT_RX | AM_HAL_UART_INT_RX_TMOUT));
-    am_hal_interrupt_master_enable();
 
+#ifdef FREERTOS
+    NVIC_SetPriority(UART1_IRQn, NVIC_configMAX_SYSCALL_INTERRUPT_PRIORITY);
+    xUartEventHandle = xEventGroupCreate();
+    if( xUartEventHandle == NULL )
+    {
+        ARTEMIS_DEBUG_PRINTF("UART xUartEventHandle:: ERROR\n");
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("UART xUartEventHandle:: Created\n");
+    }
+#endif
+
+    NVIC_EnableIRQ((IRQn_Type)(UART1_IRQn));
+    am_hal_interrupt_master_enable();
     uHandle = uart->handle;
+    ARTEMIS_DEBUG_PRINTF("Iridium :: initialized\n");
 }
 
 void artemis_uart_uninitialize(artemis_uart_t *uart)
 {
     ARTEMIS_DEBUG_HALSTATUS(am_hal_uart_power_control(uart->handle, AM_HAL_SYSCTRL_DEEPSLEEP, false));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_uart_deinitialize(uart->handle));
-    uart->handle = 0;
-    uHandle = 0;
+    uart->handle = NULL;
+    uHandle = NULL;
 }
 
 void artemis_uart_flush(artemis_uart_t *uart)
@@ -71,7 +95,7 @@ void artemis_uart_send(artemis_uart_t *uart, artemis_stream_t *txstream)
 
     ARTEMIS_DEBUG_HALSTATUS(am_hal_uart_transfer(uart->handle, &transfer));
 
-    // update the number of bytes read from the txstream
+    /* update the number of bytes read from the txstream */
     txstream->read = read;
     artemis_uart_flush(uart);
 }
@@ -79,16 +103,14 @@ void artemis_uart_send(artemis_uart_t *uart, artemis_stream_t *txstream)
 /* UART RX Interrupt, */
 void am_uart1_isr(void)
 {
-    uint32_t status;
-
+    uint32_t status, idle;
     am_hal_uart_interrupt_status_get(uHandle, &status, true);
     am_hal_uart_interrupt_clear(uHandle, status);
-    am_hal_uart_interrupt_service(uHandle, status, 0);
+    am_hal_uart_interrupt_service(uHandle, status, &idle);
 
     if (status & (AM_HAL_UART_INT_RX_TMOUT | AM_HAL_UART_INT_RX))
     {
         uint32_t bytesread;
-
         am_hal_uart_transfer_t sRead =
         {
             .ui32Direction = AM_HAL_UART_READ,
@@ -98,24 +120,59 @@ void am_uart1_isr(void)
             .pui32BytesTransferred = &bytesread,
         };
 
-        ARTEMIS_DEBUG_HALSTATUS(am_hal_uart_transfer(uHandle, &sRead));
+        //ARTEMIS_DEBUG_HALSTATUS(am_hal_uart_transfer(uHandle, &sRead));
+        uint32_t Status = am_hal_uart_transfer(uHandle, &sRead);
+        if (Status != AM_HAL_STATUS_SUCCESS)
+        {
+            ARTEMIS_DEBUG_PRINTF("UART :: Receive error\n");
+            //return;
+        }
+
         rxindex += bytesread;
 
         if (status & (AM_HAL_UART_INT_RX_TMOUT))
         {
+#ifdef FREERTOS
+            BaseType_t xHigherPriorityTaskWoken, xResult;
+            xHigherPriorityTaskWoken = pdFALSE;
+            xResult = xEventGroupSetBitsFromISR(xUartEventHandle, 0x01, &xHigherPriorityTaskWoken);
+            if (xResult != pdFAIL)
+            {
+                portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+                NVIC_DisableIRQ((IRQn_Type)(UART1_IRQn));
+            }
+#else
             Flag = true;
             NVIC_DisableIRQ((IRQn_Type)(UART1_IRQn));
+#endif
         }
     }
 }
 
 void artemis_uart_receive(artemis_stream_t *rxstream)
 {
-    //uint32_t wait_cycles = 0;;
-    //while(Flag == false && wait_cycles < 5000)
-    //{
-    //    wait_cycles++;
-    //}
+#ifdef FREERTOS
+    uint8_t ret;
+    bool run = true;
+    while (run)
+    {
+        ret = xEventGroupWaitBits(xUartEventHandle, 0x07, pdTRUE, pdFALSE, portMAX_DELAY);
+        if (ret == 0x01)
+        {
+            memcpy(rxstream->buffer, rxbuffer, rxindex);
+            rxstream->written = rxindex;
+            memset(rxbuffer, 0, rxindex);
+            rxindex = 0;
+            run = false;
+            NVIC_EnableIRQ((IRQn_Type)(UART1_IRQn));
+        }
+        else
+        {
+            run = false;
+            NVIC_EnableIRQ((IRQn_Type)(UART1_IRQn));
+        }
+    }
+#else
     if (Flag == true)
     {
         memcpy(rxstream->buffer, rxbuffer, rxindex);
@@ -127,10 +184,11 @@ void artemis_uart_receive(artemis_stream_t *rxstream)
     }
     else
     {
-        memcpy(rxstream->buffer, NULL, 0);
+        //memset(rxstream->buffer, 0, 0);
         rxstream->written = 0;
         // do nothing
     }
+#endif
 }
 
 //void artemis_uart_receive(artemis_uart_t *uart, artemis_stream_t *rxstream, uint32_t rxnumber)

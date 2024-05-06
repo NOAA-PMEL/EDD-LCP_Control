@@ -4,6 +4,8 @@
  * @brief 
  * @version 0.1
  * @date 2021-09-30
+ *
+ * @co-author Basharat Martin (basharat.martin@noaa.gov)
  * 
  */
 #ifndef I9603N_H
@@ -54,8 +56,8 @@
 *							MACROS
 ************************************************************************/
 
-#define IRIDIUM_TRIES       20  /* try 20 times to transmit */
-#define SATELLITE_TIMER     30  /* 30 seconds for checking satellite visibility */
+#define IRIDIUM_TRIES       03  /* try XX number of times to transmit */
+#define SATELLITE_TIMER     15  /* try XX seconds for checking satellite visibility */
 
 /************************************************************************
 *							ENUM & STRUCTS
@@ -89,10 +91,15 @@ void i9603n_initialize(void);
 void i9603n_uninitialize(void);
 bool i9603n_on(void);
 void i9603n_off(void);
+void i9603n_sleep(void);
+void i9603n_wakeup(void);
 
 uint8_t i9603n_status(uint8_t *rxData);
 uint8_t i9603n_signal_quality(uint8_t *rxData);
-uint16_t i9603n_send_AT_cmd(uint8_t *cmd, uint8_t *rxData);
+uint16_t i9603n_send_AT_cmd(char *cmd, char *rxData);
+uint8_t i9603n_traffic_mgmt_time(uint16_t *rxData);
+uint8_t i9603n_system_network_time(uint8_t *rxData);
+void i9603n_indicator_event_reporting(uint8_t *rssi, uint8_t *network_service);
 
 uint16_t i9603n_read_imei(uint8_t *rxData);
 uint16_t i9603n_read_model(uint8_t *rxData);
@@ -103,7 +110,8 @@ bool i9603n_send_data(uint8_t *txData, uint16_t txlen);
 uint16_t i9603n_read_text(char *rxText);
 uint16_t i9603n_read_data(uint8_t *rxData);
 uint16_t i9603n_test_transfer(uint8_t *rxData);
-uint8_t i9603n_initiate_transfer(uint8_t *rxData);
+uint8_t i9603n_initiate_transfer(uint16_t *rxData);
+void i9603n_stop_flowcontrol(void);
 
 /* FreeRTOS task*/
 void task_Iridium (void);
@@ -113,6 +121,7 @@ bool GET_Iridium_status (uint8_t *rData);
 void task_Iridium_satellite (void);
 void task_Iridium_satellite_visibility(TaskHandle_t *xSatellite);
 bool GET_Iridium_satellite (void);
+void SET_Iridium_delay_rate(float rate);
 
 //#ifndef TEST
 ////*****************************************************************************

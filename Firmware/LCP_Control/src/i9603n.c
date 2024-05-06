@@ -10,6 +10,7 @@
 
 #include "artemis_i9603n.h"
 #include "artemis_supercap.h"
+#include "sensors.h"
 
 //*****************************************************************************
 //
@@ -23,6 +24,7 @@
 #include <math.h>
 #include <assert.h>
 #include <stdio.h>
+#include <ctype.h>
 
 #ifndef TEST
 //*****************************************************************************
@@ -69,8 +71,8 @@
 //  Macros & Constants
 //
 //*****************************************************************************
-#define I9603N_TX_BUFFER_SIZE  ( 400 )
-#define I9603N_RX_BUFFER_SIZE  ( 300 )
+#define I9603N_TX_BUFFER_SIZE       ( 400 )
+#define I9603N_RX_BUFFER_SIZE       ( 300 )
 #define I9603N_CONN_ATTEMPT_COUNT   ( 120 )
 //*****************************************************************************
 //
@@ -93,8 +95,8 @@
  * 
  */
 //static module_t module;
-static volatile uint8_t irid_buf_tx[I9603N_TX_BUFFER_SIZE];
-static volatile uint8_t irid_buf_rx[I9603N_RX_BUFFER_SIZE];
+static char irid_buf_tx[I9603N_TX_BUFFER_SIZE];
+static char irid_buf_rx[I9603N_RX_BUFFER_SIZE];
 
 //*****************************************************************************
 //
@@ -102,8 +104,11 @@ static volatile uint8_t irid_buf_rx[I9603N_RX_BUFFER_SIZE];
 //
 //*****************************************************************************
 
+#define IRIDIUM_MAXIMUM_RATE    (0.5f)
+#define FREERTOS
 static bool xVisible = false;
 static uint8_t xTStatus[6];
+static float iridium_delay_rate = 0.333f;
 
 //*****************************************************************************
 //
@@ -116,7 +121,7 @@ static bool module_i9603_power_on(void);
 static void module_i9603_power_off(void);
 
 static bool module_i9603_check_net_available(void);
-static void module_i9603n_send(uint8_t *txData, uint16_t txlen);
+static void module_i9603n_send(char *txData, uint16_t txlen);
 static uint16_t module_i603n_receive(uint8_t *rxData);
 
 static bool module_i9603n_echo_off(void);
@@ -125,11 +130,11 @@ static bool module_i9603n_echo_on(void);
 static bool module_i9603n_clear_oBuff(void);
 static bool module_i9603n_clear_iBuff(void);
 static bool module_i9603n_clear_MOMSN(void);
-static void module_i9603n_flush(uint8_t *buff);
+static void module_i9603n_flush(char *buff);
 static bool module_i9603n_AT_check(void);
 
-static int16_t parse_AT(uint8_t *rxData, uint8_t *pattern, uint16_t len);
-static uint16_t parse_data(uint8_t *inData, uint8_t *outData);
+static int16_t parse_AT(char *rxData, char *pattern, uint16_t len);
+static uint16_t parse_data(char *inData, uint16_t *outData);
 static i9603n_result_t module_i9603n_read_AT(uint16_t *len);
 
 #endif
@@ -145,7 +150,6 @@ void i9603n_initialize(void)
 
     /** Initialize the power circuitry */
     artemis_sc_initialize();
-    //am_util_delay_ms(500);
 }
 
 void i9603n_uninitialize(void)
@@ -157,13 +161,120 @@ void i9603n_uninitialize(void)
 bool i9603n_on(void)
 {
     return module_i9603_power_on();
-    //am_util_delay_ms(1000);
     //module_i9603n_echo_off();
 }
 
 void i9603n_off(void)
 {
     module_i9603_power_off();
+}
+
+void i9603n_sleep(void)
+{
+    artemis_i9603n_power_off();
+}
+
+void i9603n_wakeup(void)
+{
+    artemis_i9603n_power_on();
+}
+
+void i9603n_indicator_event_reporting(uint8_t *rssi, uint8_t *network_service)
+{
+    /* Enable indicator event report for RSSI and Network Service Availability */
+    char *cmd = "AT+CIER=1,1,1\r";
+    uint16_t len = 0;
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint8_t cmd_len = strlen(cmd);
+
+    module_i9603n_send(cmd, cmd_len);
+    result = module_i9603n_read_AT(&len);
+
+    if (result == I9603N_RESULT_OK)
+    {
+        if (irid_buf_rx[0] == 'A' && irid_buf_rx[1] == 'T')
+        {
+            uint16_t i=0;
+            while (irid_buf_rx[i]!=':' && i<len)
+            {
+                i++;
+            }
+            i++;
+            while(irid_buf_rx[i]!='\r' && i<len)
+            {
+                i++;
+            }
+
+            /* Collect RSSI value */
+            *rssi = (uint8_t)(irid_buf_rx[i-1] - 48);
+
+            i++;
+            while (irid_buf_rx[i]!=':' && i<len)
+            {
+                i++;
+            }
+            i++;
+            while(irid_buf_rx[i]!='\r' && i<len)
+            {
+                i++;
+            }
+
+            /* Collect Network Service value */
+            *network_service = (uint8_t) (irid_buf_rx[i-1] - 48);
+            *rssi = 0;
+        }
+    }
+    module_i9603n_flush(irid_buf_rx);
+}
+
+uint8_t i9603n_system_network_time(uint8_t *rxData)
+{
+    char *cmd = "AT-MSSTM\r";
+    uint16_t rxLen = 0;
+    uint16_t len = 0;
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint8_t cmd_len = strlen(cmd);
+
+    module_i9603n_send(cmd, cmd_len);
+    result = module_i9603n_read_AT(&len);
+
+    if (result == I9603N_RESULT_OK)
+    {
+        if (irid_buf_rx[0] == 'A' && irid_buf_rx[1] == 'T')
+        {
+            uint16_t i=0;
+            while (irid_buf_rx[i]!=':' && i<len)
+            {
+                i++;
+            }
+            i+=2;
+
+            while(irid_buf_rx[i]!='\r' && i<len)
+            {
+                rxData[rxLen++] = irid_buf_rx[i];
+                i++;
+            }
+        }
+    }
+    module_i9603n_flush(irid_buf_rx);
+    return rxLen;
+}
+
+void i9603n_stop_flowcontrol(void)
+{
+    char *cmd = "AT&K0\r";
+    uint8_t len = 0;
+    char res[16] = {0};
+
+    len = i9603n_send_AT_cmd(cmd, res);
+    if (len > 0)
+    {
+        for(uint8_t i=0; i<len; i++)
+        {
+            ARTEMIS_DEBUG_PRINTF("%c", res[i]);
+        }
+        ARTEMIS_DEBUG_PRINTF("\n");
+    }
 }
 
 bool GET_Iridium_satellite (void)
@@ -188,29 +299,37 @@ void task_Iridium_satellite_visibility (TaskHandle_t *xSatellite)
 void task_Iridium_satellite (void)
 {
     /* 1 seocnds period delay */
-    uint32_t period = pdMS_TO_TICKS(1000UL / 1);
+    uint32_t period = xDelay1000ms;
 
-    ARTEMIS_DEBUG_PRINTF("Satellite delay PERIOD=%dms, %isec\n", period, SATELLITE_TIMER);
+    ARTEMIS_DEBUG_PRINTF("Iridium :: Satellite delay PERIOD=%dms, %isec\n", period, SATELLITE_TIMER);
     SemaphoreHandle_t Ssemaphore = xSemaphoreCreateMutex();
 
     /* timer */
     uint16_t timer = 0;
-
     bool run = true;
+    bool check = false;
+    uint8_t visibility_count = 0;
+
     while(run)
     {
         /* check satellite visibility */
-        bool check = artemis_i9603n_is_network_available();
-        ARTEMIS_DEBUG_PRINTF("Satellite visibility check=%i\n", (uint8_t)check);
+        check = artemis_i9603n_is_network_available();
+        ARTEMIS_DEBUG_PRINTF("Iridium :: Satellite visibility check=%i\n", (uint8_t)check);
 
-        if( xSemaphoreTake(Ssemaphore, pdMS_TO_TICKS(1000UL)) == pdTRUE )
+        if( xSemaphoreTake(Ssemaphore, period) == pdTRUE )
         {
             if (check)
             {
                 taskENTER_CRITICAL();
                 xVisible = true;
                 taskEXIT_CRITICAL();
-                run = false;
+
+                visibility_count++;
+                if (visibility_count == 3)
+                {
+                    run = false;
+                    visibility_count = 0;
+                }
             }
             else
             {
@@ -251,21 +370,31 @@ bool GET_Iridium_status (uint8_t *rData)
 void task_Iridium_transfer(TaskHandle_t *xIridium)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_Iridium,
-                                "task_Iridium_transfer", 1024, NULL,
+                                "task_Iridium_transfer", 512, NULL,
                                 tskIDLE_PRIORITY + 4UL,
                                 xIridium) == pdPASS );
 }
 
+void SET_Iridium_delay_rate(float rate)
+{
+    if( (rate > 0.0) && (rate <= IRIDIUM_MAXIMUM_RATE))
+    {
+        ARTEMIS_DEBUG_PRINTF("Iridium :: Setting Iridium delay rate = %.3fHz\n", rate);
+        iridium_delay_rate = rate;
+    }
+}
+
 void task_Iridium (void)
 {
-    /* 5 seocnds period delay */
-    uint32_t period = pdMS_TO_TICKS(1000UL / 0.2);
+    /* default 5 seocnds period delay */
+    uint32_t period = xDelay1000ms/iridium_delay_rate;
 
-    ARTEMIS_DEBUG_PRINTF("Iridium delay PERIOD=%dms, max tries=%i\n", period, IRIDIUM_TRIES);
+    ARTEMIS_DEBUG_PRINTF("Iridium :: Delay PERIOD=%ums, Max Tries=%u\n", period, IRIDIUM_TRIES);
     SemaphoreHandle_t Isemaphore = xSemaphoreCreateMutex();
 
     uint8_t len = 0;
-    uint8_t buf[32] = {0};
+    uint16_t buf[10] = {0};
+    char buf_AT[16] = {0};
 
     /* try tranmitting 20 times ? */
     uint8_t timer = 0;
@@ -273,90 +402,131 @@ void task_Iridium (void)
     bool run = true;
     while(run)
     {
-        //len = i9603n_initiate_transfer(buf);
-        if( xSemaphoreTake(Isemaphore, pdMS_TO_TICKS(10000UL)) == pdTRUE )
+        if( xSemaphoreTake(Isemaphore, portMAX_DELAY) == pdTRUE )
         {
             len = i9603n_initiate_transfer(buf);
-
             if (len > 0)
             {
-                ARTEMIS_DEBUG_PRINTF("Transfer status : ");
+                /* fill up the status to XTStatus buffer */
+                taskENTER_CRITICAL();
+                for (uint8_t i=0; i<len; i++)
+                {
+                    xTStatus[i] = buf[i];
+                }
+                taskEXIT_CRITICAL();
+
+
+                ARTEMIS_DEBUG_PRINTF("Iridium :: Transfer status : ");
                 for(uint16_t i=0; i<len; i++)
                 {
-                    ARTEMIS_DEBUG_PRINTF("%i ", (int8_t)buf[i]);
-                    //ARTEMIS_DEBUG_PRINTF("%c", buf[i]);
+                    ARTEMIS_DEBUG_PRINTF("%u ", buf[i]);
                 }
                 ARTEMIS_DEBUG_PRINTF("\n");
 
                 /* check the transfer status */
-                if(buf[0] <= 5)
+                if(buf[0] <= 4)
                 {
                     ARTEMIS_DEBUG_PRINTF("Iridium :: Transfer Successful, clearing buffer\n");
-
-                    /* fill up the status to XTStatus buffer */
-                    taskENTER_CRITICAL();
-                    for (uint8_t i=0; i<6; i++)
-                    {
-                        xTStatus[i] = buf[i];
-                    }
-                    taskEXIT_CRITICAL();
-
-                    // clear originated buffer
-                    vTaskDelay(pdMS_TO_TICKS(2000UL));
-                    ARTEMIS_DEBUG_PRINTF("Clearing the Originated buffer:\n");
-                    len = i9603n_send_AT_cmd("AT+SBDD0\r", buf);
-
+                    // clear originated buffer, wait for 2 seconds
+                    vTaskDelay(xDelay2000ms);
+                    ARTEMIS_DEBUG_PRINTF("Iridium :: Clearing the Originated buffer:\n");
+                    len = i9603n_send_AT_cmd("AT+SBDD0\r", buf_AT);
                     if(len>0)
                     {
-                        for (uint8_t i=0; i<len; i++)
-                        {
-                            ARTEMIS_DEBUG_PRINTF("%c", (char)buf[i]);
-                        }
-                        ARTEMIS_DEBUG_PRINTF("\n");
-                        //vTaskDelay(pdMS_TO_TICKS(2000UL));
+                        ARTEMIS_DEBUG_PRINTF("Iridium :: Originated buffer is cleared\n");
+                        ///* for Debugging */
+                        //for (uint8_t i=0; i<len; i++)
+                        //{
+                        //    ARTEMIS_DEBUG_PRINTF("%c", buf_AT[i]);
+                        //}
                         run = false;
                     }
                 }
+                else if (buf[0] == 32)
+                {
+                    ARTEMIS_DEBUG_PRINTF("Iridium :: No Network Service\n");
+                }
                 else
                 {
-                    /* fill up the status to XTStatus buffer */
-                    taskENTER_CRITICAL();
-                    for (uint8_t i=0; i<6; i++)
+                    if (buf[0] == 18)
                     {
-                        xTStatus[i] = buf[i];
+                        ARTEMIS_DEBUG_PRINTF("Iridium :: Connection Lost (RF drop).\n");
                     }
-                    taskEXIT_CRITICAL();
+                    else if (buf[0] == 37)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("Iridium :: SBD service is temporarily disabled.\n");
+                    }
+                    else if (buf[0] == 38)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("Iridium :: Try later, Traffic management period.\n");
+                    }
+
+                    // clear originated buffer, wait for 2 seconds
+                    vTaskDelay(xDelay2000ms);
+                    ARTEMIS_DEBUG_PRINTF("Iridium :: Clearing the Originated buffer:\n");
+                    len = i9603n_send_AT_cmd("AT+SBDD0\r", buf_AT);
+                    if(len>0)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("Iridium :: Originated buffer is cleared\n");
+                        ///* for Debugging */
+                        //for (uint8_t i=0; i<len; i++)
+                        //{
+                        //    ARTEMIS_DEBUG_PRINTF("%c", buf_AT[i]);
+                        //}
+                        run = false;
+                    }
                 }
-
             }
-
             xSemaphoreGive(Isemaphore);
 
+            /* continue checking the iridium max tries */
             timer++;
             if (timer >= IRIDIUM_TRIES)
             {
-                ARTEMIS_DEBUG_PRINTF("Reached max tries\n");
-                run = false;
+                if (run)
+                {
+                    ARTEMIS_DEBUG_PRINTF("Iridium :: Reached Max Tries\n");
+                    // clear originated buffer, wait for 2 seconds
+                    vTaskDelay(xDelay2000ms);
+                    ARTEMIS_DEBUG_PRINTF("Iridium :: Clearing the Originated buffer:\n");
+                    len = i9603n_send_AT_cmd("AT+SBDD0\r", buf_AT);
+                    if(len>0)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("Iridium :: Originated buffer is cleared\n");
+                        ///* for Debugging */
+                        //for (uint8_t i=0; i<len; i++)
+                        //{
+                        //    ARTEMIS_DEBUG_PRINTF("%c", buf_AT[i]);
+                        //}
+                        run = false;
+                    }
+                }
             }
         }
-        vTaskDelay(period);
+
+        if (run)
+        {
+            vTaskDelay(period);
+        }
         //vTaskDelayUntil(&xLastWakeTime, period);
     }
+
     /* delete the task */
+    ARTEMIS_DEBUG_PRINTF("Iridium :: Task Deleted\n");
     vTaskDelete(NULL);
 }
 
-uint16_t i9603n_send_AT_cmd(uint8_t *cmd, uint8_t *rxData)
+uint16_t i9603n_send_AT_cmd(char *cmd, char *rxData)
 {
     i9603n_result_t result = I9603N_RESULT_FAIL;
     uint16_t txLen = strlen(cmd);
-    uint8_t lData[300] = {0};
+    char lData[300] = {0};
     uint16_t len=0;
 
     if (txLen > 120)
     {
         // Debug
-        ARTEMIS_DEBUG_PRINTF("limit of cmd size is 120 bytes !, %u\n", txLen);
+        ARTEMIS_DEBUG_PRINTF("Iridium :: limit of cmd size is 120 bytes !, %u\n", txLen);
         return len;
     }
     else
@@ -365,7 +535,6 @@ uint16_t i9603n_send_AT_cmd(uint8_t *cmd, uint8_t *rxData)
         result = module_i9603n_read_AT(&len);
         if (result == I9603N_RESULT_OK)
         {
-            len += 1;
             memcpy (lData, irid_buf_rx, len);
             for (uint16_t i=0; i<len; i++)
             {
@@ -384,7 +553,7 @@ uint16_t i9603n_send_AT_cmd(uint8_t *cmd, uint8_t *rxData)
 uint16_t i9603n_test_transfer(uint8_t *rxData)
 {
     i9603n_result_t result = I9603N_RESULT_FAIL;
-    uint8_t *cmd = "AT+SBDTC\r";
+    char *cmd = "AT+SBDTC\r";
     uint16_t rxLen = 0;
     uint8_t cmd_len = strlen(cmd);
 
@@ -394,8 +563,7 @@ uint16_t i9603n_test_transfer(uint8_t *rxData)
 
     if (result == I9603N_RESULT_OK)
     {
-        uint8_t *lData = NULL;
-        uint16_t len = 0;
+        char *lData = NULL;
         uint16_t number = 0;
         uint16_t i=0;
 
@@ -480,7 +648,7 @@ uint16_t i9603n_read_text(char *rxText)
     char lData[300] = {0};
     uint16_t len = 0;
 
-    uint8_t *cmd = "AT+SBDRT\r";
+    char *cmd = "AT+SBDRT\r";
     uint8_t cmd_len = strlen(cmd);
 
     module_i9603n_send(cmd, cmd_len);
@@ -554,7 +722,7 @@ uint16_t i9603n_read_data(uint8_t *rxData)
     i9603n_result_t result = I9603N_RESULT_FAIL;
     uint8_t lData[300] = {0};
     uint16_t len = 0;
-    uint8_t *cmd = "AT+SBDRB\r";
+    char *cmd = "AT+SBDRB\r";
     uint8_t cmd_len = strlen(cmd);
 
     module_i9603n_send(cmd, cmd_len);
@@ -636,7 +804,7 @@ bool i9603n_send_data(uint8_t *txData, uint16_t txlen)
     if (txLen > 340)
     {
         // Debug
-        ARTEMIS_DEBUG_PRINTF("length exceeds 340 bytes !, (%u !!!)\n", txLen);
+        ARTEMIS_DEBUG_PRINTF("Iridium :: length exceeds 340 bytes !, (%u !!!)\n", txLen);
         return ret;
     }
 
@@ -649,12 +817,12 @@ bool i9603n_send_data(uint8_t *txData, uint16_t txlen)
         result = module_i9603n_read_AT(&len);
         if (result == I9603N_RESULT_READY)
         {
-            ARTEMIS_DEBUG_PRINTF("Result is READY \n");
+            ARTEMIS_DEBUG_PRINTF("Iridium :: Result is READY \n");
             ret = true;
         }
         else
         {
-            ARTEMIS_DEBUG_PRINTF("Result is NOT READY \n");
+            ARTEMIS_DEBUG_PRINTF("Iridium :: Result is NOT READY \n");
             ret = false;
         }
 
@@ -708,9 +876,9 @@ bool i9603n_send_data(uint8_t *txData, uint16_t txlen)
     return ret;
 }
 
-uint8_t i9603n_signal_quality(uint8_t *rxData)
+uint8_t i9603n_traffic_mgmt_time(uint16_t *rxData)
 {
-    uint8_t *cmd = "AT+CSQ\r";
+    char *cmd = "AT+SBDLOE\r";
     i9603n_result_t result = I9603N_RESULT_FAIL;
     uint16_t rxLen = 0;
     uint16_t len = 0;
@@ -727,9 +895,28 @@ uint8_t i9603n_signal_quality(uint8_t *rxData)
     return rxLen;
 }
 
-uint8_t i9603n_initiate_transfer(uint8_t *rxData)
+uint8_t i9603n_signal_quality(uint8_t *rxData)
 {
-    uint8_t *cmd = "AT+SBDIX\r";
+    char *cmd = "AT+CSQ\r";
+    i9603n_result_t result = I9603N_RESULT_FAIL;
+    uint16_t rxLen = 0;
+    uint16_t len = 0;
+
+    uint8_t cmd_len = strlen(cmd);
+    module_i9603n_send(cmd, cmd_len);
+    result = module_i9603n_read_AT(&len);
+
+    if (result == I9603N_RESULT_OK)
+    {
+        rxLen = parse_data(irid_buf_rx, (uint16_t *)rxData);
+    }
+    module_i9603n_flush(irid_buf_rx);
+    return rxLen;
+}
+
+uint8_t i9603n_initiate_transfer(uint16_t *rxData)
+{
+    char *cmd = "AT+SBDIX\r";
     i9603n_result_t result = I9603N_RESULT_FAIL;
     uint16_t rxLen =0;
     uint16_t len = 0;
@@ -748,7 +935,7 @@ uint8_t i9603n_initiate_transfer(uint8_t *rxData)
 
 uint8_t i9603n_status(uint8_t *rxData)
 {
-    uint8_t *cmd = "AT+SBDSX\r";
+    char *cmd = "AT+SBDSX\r";
     i9603n_result_t result = I9603N_RESULT_FAIL;
     uint16_t rxLen = 0;
     uint16_t len = 0;
@@ -759,7 +946,7 @@ uint8_t i9603n_status(uint8_t *rxData)
 
     if (result == I9603N_RESULT_OK)
     {
-        rxLen = parse_data(irid_buf_rx, rxData);
+        rxLen = parse_data(irid_buf_rx, (uint16_t *)rxData);
     }
 
     module_i9603n_flush(irid_buf_rx);
@@ -768,7 +955,7 @@ uint8_t i9603n_status(uint8_t *rxData)
 
 uint16_t i9603n_read_imei(uint8_t *rxData)
 {
-    uint8_t *cmd = "AT+CGSN\r";
+    char *cmd = "AT+CGSN\r";
     i9603n_result_t result = I9603N_RESULT_FAIL;
     uint16_t rxLen = 0;
     uint16_t len = 0;
@@ -779,7 +966,7 @@ uint16_t i9603n_read_imei(uint8_t *rxData)
 
     if (result == I9603N_RESULT_OK)
     {
-        uint8_t *lData = NULL;
+        char *lData = NULL;
         if (irid_buf_rx[0] == 'A' && irid_buf_rx[1] == 'T')
         {
             uint16_t i=0;
@@ -802,8 +989,8 @@ uint16_t i9603n_read_imei(uint8_t *rxData)
                 break;
             }
 
-            len = strlen(tok);
-            strncpy (rxData, tok, len);
+            len = strlen(tok)+1;
+            strncpy ((char *)rxData, tok, len);
             rxData += len;
             rxLen += len;
             tok = strtok(NULL, "\r\n");
@@ -815,7 +1002,7 @@ uint16_t i9603n_read_imei(uint8_t *rxData)
 
 uint16_t i9603n_read_model(uint8_t *rxData)
 {
-    uint8_t *cmd = "AT+GMM\r";
+    char *cmd = "AT+GMM\r";
     i9603n_result_t result = I9603N_RESULT_FAIL;
     uint16_t rxLen = 0;
     uint16_t len = 0;
@@ -826,7 +1013,7 @@ uint16_t i9603n_read_model(uint8_t *rxData)
 
     if (result == I9603N_RESULT_OK)
     {
-        uint8_t *lData = NULL;
+        char *lData = NULL;
         if (irid_buf_rx[0] == 'A' && irid_buf_rx[1] == 'T')
         {
             uint16_t i=0;
@@ -848,8 +1035,8 @@ uint16_t i9603n_read_model(uint8_t *rxData)
             {
                 break;
             }
-            len = strlen(tok);
-            strncpy (rxData, tok, len);
+            len = strlen(tok)+1;
+            strncpy ((char *)rxData, tok, len);
             rxData += len;
             rxLen += len;
             tok = strtok(NULL, "\r\n");
@@ -861,7 +1048,7 @@ uint16_t i9603n_read_model(uint8_t *rxData)
 
 uint16_t i9603n_read_revision(uint8_t *rxData)
 {
-    uint8_t *cmd = "AT+CGMR\r";
+    char *cmd = "AT+CGMR\r";
     uint16_t rxLen = 0;
     uint16_t len = 0;
     i9603n_result_t result = I9603N_RESULT_FAIL;
@@ -872,7 +1059,7 @@ uint16_t i9603n_read_revision(uint8_t *rxData)
 
     if (result == I9603N_RESULT_OK)
     {
-        uint8_t *lData = NULL;
+        char *lData = NULL;
         if (irid_buf_rx[0] == 'A' && irid_buf_rx[1] == 'T')
         {
             uint16_t i=0;
@@ -894,8 +1081,8 @@ uint16_t i9603n_read_revision(uint8_t *rxData)
             {
                 break;
             }
-            len = strlen(tok);
-            strncpy (rxData, tok, len);
+            len = strlen(tok)+1;
+            strncpy ((char *)rxData, tok, len);
             rxData += len;
             rxLen += len;
             tok = strtok(NULL, "\r");
@@ -918,7 +1105,7 @@ static bool module_i9603_power_on(void)
 	if (retVal)
     {
 		artemis_i9603n_power_on();
-        am_util_delay_ms(500);
+        //am_hal_systick_delay_us(500000);
 	}
     return retVal;
 }
@@ -937,7 +1124,7 @@ static bool module_i9603_attempt_network_connection(uint8_t attempts, uint16_t a
     i9603n_on();
 
     /** Ensure there is network connection via pin*/
-    uint8_t connection_attempts = attempts;
+    //uint8_t connection_attempts = attempts;
 
     while( (attempts-- > 0) &&  
             !module_i9603_check_net_available())
@@ -958,14 +1145,14 @@ static bool module_i9603_check_net_available(void)
         retVal = true;
     }
 
-    if(retVal)
-    {
-        isbd_at_packet_t packet = {0};
-        /** Create the packet */
-        retVal = ISBD_AT_create_packet( ISBD_AT_CMD_CSQ,
-                                        0,
-                                        NULL,
-                                        &packet );
+    //if(retVal)
+    //{
+    //    isbd_at_packet_t packet = {0};
+    //    /** Create the packet */
+    //    retVal = ISBD_AT_create_packet( ISBD_AT_CMD_CSQ,
+    //                                    0,
+    //                                    NULL,
+    //                                    &packet );
 
         /** Send the packet */
 
@@ -974,9 +1161,9 @@ static bool module_i9603_check_net_available(void)
         // module_i9603n_send(irid_buf, 7);
 
         // /** Read & Parse result */
+    //}
 
-            
-    }
+    return retVal;
 }
 
 static uint16_t module_i9603n_send_packet(
@@ -985,7 +1172,7 @@ static uint16_t module_i9603n_send_packet(
                             )
 {
     /** Send the command */
-    artemis_i9603n_send(packet->cmd.msg, strlen(packet->cmd.msg));
+    artemis_i9603n_send((char *)packet->cmd.msg, strlen((char *)packet->cmd.msg));
 
     /** */
 
@@ -1007,15 +1194,16 @@ static uint16_t module_i9603n_send_packet(
         default:
             break;  
     }
+    return 0;
 }   
 
 static uint16_t module_i603n_receive(uint8_t *rxData)
 {
-    uint16_t len = artemis_i9603n_receive(rxData);
+    uint16_t len = artemis_i9603n_receive((char *)rxData);
     return len;
 }
 
-static void module_i9603n_send(uint8_t *txData, uint16_t txlen)
+static void module_i9603n_send(char *txData, uint16_t txlen)
 {
     artemis_i9603n_send(txData, txlen);
 }
@@ -1059,7 +1247,7 @@ static bool module_i9603n_echo_on(void)
     return ret;
 }
 
-static void module_i9603n_flush(uint8_t *buff)
+static void module_i9603n_flush(char *buff)
 {
     uint16_t len = strlen(buff)+1;
     for (uint16_t i=0; i<len; i++)
@@ -1083,7 +1271,7 @@ static bool module_i9603n_clear_MOMSN(void)
         }
         else if (rxData[1] > 0)
         {
-            uint8_t *cmd = "AT+SBDC\r";
+            char *cmd = "AT+SBDC\r";
             uint8_t cmd_len = strlen(cmd);
             module_i9603n_send(cmd, cmd_len);
             result = module_i9603n_read_AT(&len);
@@ -1120,7 +1308,7 @@ static bool module_i9603n_clear_oBuff(void)
         }
         else if (rxData[0] == 1)
         {
-            uint8_t *cmd = "AT+SBDD0\r";
+            char *cmd = "AT+SBDD0\r";
 
             module_i9603n_send(cmd, 9);
             result = module_i9603n_read_AT(&len);
@@ -1157,7 +1345,7 @@ static bool module_i9603n_clear_iBuff(void)
         }
         else if (rxData[2] == 1)
         {
-            uint8_t *cmd = "AT+SBDD1\r";
+            char *cmd = "AT+SBDD1\r";
             uint8_t cmd_len = strlen(cmd);
 
             module_i9603n_send(cmd, cmd_len);
@@ -1180,14 +1368,14 @@ static bool module_i9603n_clear_iBuff(void)
     }
 }
 
-static uint16_t parse_data(uint8_t *inData, uint8_t *outData)
+static uint16_t parse_data(char *inData, uint16_t *outData)
 {
     uint16_t rxLen=0;
     uint16_t len = 0;
     int16_t number = 0;
     bool negative = false;
-    uint8_t *lData = NULL;
-    uint8_t buff[300] = {0};
+    char *lData = NULL;
+    char buff[300] = {0};
 
     memcpy(buff, inData, strlen(inData)+1);
 
@@ -1205,14 +1393,6 @@ static uint16_t parse_data(uint8_t *inData, uint8_t *outData)
         lData = &buff[0];
     }
 
-    // Debug
-    //ARTEMIS_DEBUG_PRINTF("Received String = ");
-    //for (uint8_t i=0; lData[i]!='\0'; i++)
-    //{
-    //    ARTEMIS_DEBUG_PRINTF("%c", lData[i]);
-    //}
-    //ARTEMIS_DEBUG_PRINTF("\n");
-
     char *o_tok = strtok(lData, "\r\n");
     while (o_tok !=NULL)
     {
@@ -1223,6 +1403,8 @@ static uint16_t parse_data(uint8_t *inData, uint8_t *outData)
         char *i_tok = strtok(o_tok, ":");
         while (i_tok != NULL)
         {
+
+
             if (i_tok[0] != '+')
             {
                 len = strlen(i_tok);
@@ -1263,12 +1445,12 @@ static uint16_t parse_data(uint8_t *inData, uint8_t *outData)
     return rxLen;
 }
 
-static int16_t parse_AT(uint8_t *rxData, uint8_t *pattern, uint16_t len)
+static int16_t parse_AT(char *rxData, char *pattern, uint16_t len)
 {
     int16_t pos = -1;
     uint16_t i, j, k = 0;
     uint16_t rxLen = len;
-    uint8_t pattLen = strlen((char*)pattern);
+    uint8_t pattLen = strlen(pattern);
 
     if (pattLen > rxLen)
     {
@@ -1303,25 +1485,25 @@ static i9603n_result_t module_i9603n_read_AT(uint16_t *len)
     uint16_t msg_len = 0;
     uint16_t rem_len = 0;
     char *pStart = &irid_buf_rx[0];
-    uint8_t remBuff[64] = {0};
+    char remBuff[64] = {0};
     bool contFlag = true;
-    uint32_t wait = 0;
+    uint8_t wait = 30 * 2; //30 seconds maximum for iridium response
 
-    while(contFlag && wait < 400000)
+    while(contFlag && wait-- > 0)
     {
         msg_len = artemis_i9603n_receive(irid_buf_rx);
 
         if(msg_len > 0)
         {
-            ///* Debug */
+            /* Debug */
             //for (uint16_t i=0; i<msg_len; i++)
             //{
             //    ARTEMIS_DEBUG_PRINTF("0x%02X ", pStart[i]);
             //}
             //ARTEMIS_DEBUG_PRINTF("\n");
-            //ARTEMIS_DEBUG_PRINTF("msg_len = %i, rem_len = %i\n", msg_len, rem_len);
 
             do{
+
                 if(parse_AT(pStart, "OK\r\n", msg_len+rem_len) != -1)
                 {
                     result = I9603N_RESULT_OK;
@@ -1345,37 +1527,52 @@ static i9603n_result_t module_i9603n_read_AT(uint16_t *len)
 
                 if(result == I9603N_RESULT_FAIL)
                 {
-                    rem_len = artemis_i9603n_receive(remBuff);
-                    if (rem_len > 0)
+                    uint16_t length = artemis_i9603n_receive(remBuff);
+                    if (length > 0)
                     {
-                        for (uint16_t i=0; i<rem_len; i++)
+                        for (uint16_t i=0; i<length; i++)
                         {
                             irid_buf_rx[msg_len+i] = remBuff[i];
-                            //ARTEMIS_DEBUG_PRINTF("0x%02X ", pStart[msg_len+i]);
+                            //ARTEMIS_DEBUG_PRINTF("0x%02X ", pStart[msg_len+i+1]);
                         }
-
+                        rem_len += length;
                         ///* Debug */
                         //ARTEMIS_DEBUG_PRINTF("\n");
-                        //for (uint16_t i=0; i<rem_len+msg_len; i++)
+                        //for (uint16_t i=0; i<(msg_len+rem_len); i++)
                         //{
-                        //    ARTEMIS_DEBUG_PRINTF("%c", pStart[i]);
+                        //    //ARTEMIS_DEBUG_PRINTF("%c", pStart[i]);
                         //    //ARTEMIS_DEBUG_PRINTF("%c", irid_buf_rx[i]);
+                        //    ARTEMIS_DEBUG_PRINTF("0x%02X ", irid_buf_rx[i]);
                         //    //ARTEMIS_DEBUG_PRINTF("%c", remBuff[i]);
                         //}
                         //ARTEMIS_DEBUG_PRINTF("\n");
                     }
-                    wait++;
                 }
                 else
                 {
                     contFlag = false;
-                    wait = 0;
+                    //wait = 0;
                 }
-                wait++;
-            } while(result == I9603N_RESULT_FAIL && wait < 5000);
+
+#ifdef FREERTOS
+                /* 500ms delay */
+                vTaskDelay(xDelay500ms);
+#else
+                /* 500ms delay */
+                am_hal_systick_delay_us(500000);
+#endif
+            } while(result == I9603N_RESULT_FAIL && wait-- > 0);
         }
-        am_hal_systick_delay_us(50);
+
+#ifdef FREERTOS
+        /* 500ms delay */
+        vTaskDelay(xDelay500ms);
+#else
+        /* 500ms delay */
+        am_hal_systick_delay_us(500000);
+#endif
     }
+
     *len = msg_len+rem_len;
     return result;
 }
