@@ -35,6 +35,17 @@
 #include "artemis_debug.h"
 #include "artemis_supercap.h"
 
+//*****************************************************************************
+//
+// FreeRTOS include files.
+//
+//*****************************************************************************
+#include "FreeRTOS.h"
+#include "task.h"
+#include "event_groups.h"
+#include "semphr.h"
+
+#define FREERTOS
 
 //*****************************************************************************
 //
@@ -100,7 +111,14 @@ bool artemis_sc_power_startup(void)
 			return true;
 		}
 		ARTEMIS_DEBUG_PRINTF("Capacitor charging...\n");
-		am_hal_systick_delay_us(1000000);   /** 1 Seconds delay */
+
+		/** 1 second delay */
+#ifdef FREERTOS
+        vTaskDelay(pdMS_TO_TICKS(1000UL));
+#else
+        am_hal_systick_delay_us(1000000);
+#endif
+
 	}
 
 	return false;
