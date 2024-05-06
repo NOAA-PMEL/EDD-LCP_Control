@@ -76,8 +76,8 @@ typedef struct
         float C3;
         float R0;
         uint8_t average;
-        uint8_t UID[32];
-        uint8_t sensor[10];
+        char UID[32];
+        char sensor[10];
         struct
         {
             uint8_t major;
@@ -182,6 +182,7 @@ float S9T_Read_R(void);
  * @return None
  */
 float S9T_Read(float *t, float *r);
+void _module_s9_stop_sampling_RTOS(void);
 
 //#ifdef TEST
 //STATIC void _parse_msg(char *data, uint8_t len, sS9_t *p);
