@@ -183,12 +183,9 @@ SRC += startup_gcc.c
 ### custom inclusion
 SRC += buffer_c.c
 SRC += buffer_u32.c
-SRC += dataframe.c
 SRC += depth.c
 SRC += GPS.c
 SRC += i9603n.c
-SRC += isbd_at_cmd.c
-SRC += LED.c
 SRC += MAX14830.c
 SRC += piston.c
 SRC += control.c
@@ -199,7 +196,6 @@ SRC += artemis_debug.c
 SRC += artemis_i2c.c
 SRC += artemis_i9603n.c
 SRC += artemis_iom.c
-SRC += artemis_max14830.c
 SRC += artemis_mcu.c
 SRC += artemis_pa9ld.c
 SRC += artemis_piston.c
@@ -209,7 +205,6 @@ SRC += artemis_supercap.c
 SRC += artemis_time.c
 SRC += artemis_uart.c
 SRC += artemis_ublox_i2c.c
-SRC += bsp_uart.c
 SRC += rtos.c
 SRC += sysinfo.c
 SRC += temperature.c
@@ -220,7 +215,12 @@ SRC += K9lx_pressure.c
 SRC += artemis_rtc.c
 SRC += artemis_accel.c
 SRC += datalogger.c
-
+#files removed from the compilation process
+##SRC += LED.c
+##SRC += bsp_uart.c
+##SRC += artemis_max14830.c
+##SRC += isbd_at_cmd.c
+##SRC += dataframe.c
 
 CSRC = $(filter %.c,$(SRC))
 OBJS = $(CSRC:%.c=$(CONFIG)/%.o)
@@ -240,7 +240,7 @@ LIBS+= $(SDKPATH)/mcu/apollo3/hal/gcc/bin/libam_hal.a
 CFLAGS = -mthumb -mcpu=$(CPU) -mfpu=$(FPU) -mfloat-abi=$(FABI)
 CFLAGS+= -ffunction-sections -fdata-sections
 ##CFLAGS+= -MMD -MP -std=gnu99 -Wall -g
-CFLAGS+= -MMD -MP -std=c99 -Wall -g
+CFLAGS+= -MMD -MP -std=gnu99 -Wall -g
 CFLAGS+= -Wall -Wno-unused-function
 CFLAGS+= -O3
 CFLAGS+= $(DEFINES)
@@ -282,7 +282,7 @@ directories:
 	@mkdir -p $(BIN)
 
 $(CONFIG)/%.o: %.c $(CONFIG)/%.d
-	@echo " Compiling $(COMPILERNAME) $<" ;\
+	@echo " Compiling $(CC) $<" ;\
 	$(CC) -c $(CFLAGS) $< -o $@
 
 $(BIN)/$(TARGET).axf: $(OBJS) $(LIBS)
