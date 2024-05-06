@@ -34,6 +34,23 @@ bool TEMP_initialize(TemperatureSensor_t sensor){
     return true;
 }
 
+void TEMP_initialize_RTOS(void)
+{
+    TEMP_Power_ON();
+    MAX14830_port_enable((eMAX18430_ComPort_t) sParam.port);
+    MAX14830_Set_baudrate((eMAX18430_ComPort_t) sParam.port, sParam.baudrate);
+
+    /* stop the auto - default sampling */
+    _module_s9_stop_sampling_RTOS();
+    //_module_s9_stop_sampling();
+}
+
+void TEMP_uninitialize_RTOS(void)
+{
+    MAX14830_port_disable((eMAX18430_ComPort_t) sParam.port);
+    TEMP_Power_OFF();
+}
+
 void TEMP_Power_ON(void)
 {
     S9T_enable();
@@ -53,4 +70,3 @@ void TEMP_Read(Temperature_Measurement_t *data)
     data->temperature = temperature;
     data->resistance = resistance;
 }
-

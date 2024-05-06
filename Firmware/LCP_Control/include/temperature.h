@@ -68,5 +68,7 @@ void TEMP_Power_OFF(void);
  * @param data Pointer to data struct
  */
 void TEMP_Read(Temperature_Measurement_t *data);
+void TEMP_initialize_RTOS(void);
+void TEMP_uninitialize_RTOS(void);
 
 #endif // TEMPERATURE_H
