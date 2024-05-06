@@ -5,8 +5,10 @@
  * @version 0.1
  * @date 2021-08-11
  * 
- * 
+ * @co-author Basharat Martin (basharat.martin@noaa.gov)
+ *
  */
+
 #include "MAX14830.h"
 
 //*****************************************************************************
@@ -45,9 +47,10 @@
 //
 //*****************************************************************************
 #include "FreeRTOS.h"
-#include "task.h"
+#include "FreeRTOSConfig.h"
 #include "event_groups.h"
 #include "semphr.h"
+#include "task.h"
 
 //*****************************************************************************
 //
@@ -62,9 +65,10 @@
 //  Register Defines
 //
 //*****************************************************************************
+
 /** FIFO Data Registers */
-#define MAX14830_RHR   ( 0x00 )
-#define MAX14830_THR  ( 0x00 )
+#define MAX14830_RHR                ( 0x00 )
+#define MAX14830_THR                ( 0x00 )
 
 /** Interrupt Registers */
 #define MAX14830_REG_IRQEN          ( 0x01 )
@@ -125,54 +129,54 @@
 #define MAX14830_REG_REVID          ( 0x25 )
 
 /** IRQEn Register Bits */
-#define MAX14830_IRQ_CTSIEN       ( 1u << 7 )
-#define MAX14830_IRQ_RFIFOEMTY    ( 1u << 6 )
-#define MAX14830_IRQ_TFIFOEMTY    ( 1u << 5 )
-#define MAX14830_IRQ_TFIFOTRG     ( 1u << 4 )
-#define MAX14830_IRQ_RFIFOTRG     ( 1u << 3 )
-#define MAX14830_IRQ_STS          ( 1u << 2 )
-#define MAX14830_IRQ_SPCLCHR      ( 1u << 1 )
-#define MAX14830_IRQ_LSRERR       ( 1u )
+#define MAX14830_IRQ_CTSIEN         ( 1u << 7 )
+#define MAX14830_IRQ_RFIFOEMTY      ( 1u << 6 )
+#define MAX14830_IRQ_TFIFOEMTY      ( 1u << 5 )
+#define MAX14830_IRQ_TFIFOTRG       ( 1u << 4 )
+#define MAX14830_IRQ_RFIFOTRG       ( 1u << 3 )
+#define MAX14830_IRQ_STS            ( 1u << 2 )
+#define MAX14830_IRQ_SPCLCHR        ( 1u << 1 )
+#define MAX14830_IRQ_LSRERR         ( 1u )
 
 /** LSRIntEn Register Bits */
-#define MAX14830_LSR_INT_NOISEINT     ( 1u << 5 )
-#define MAX14830_LSR_INT_RBREAKI      ( 1u << 4 )
-#define MAX14830_LSR_INT_FRAMEERR     ( 1u << 3 )
-#define MAX14830_LSR_INT_PARITY       ( 1u << 2 )
-#define MAX14830_LSR_INT_ROVERR       ( 1u << 1 )
-#define MAX14830_LSR_INT_RTIMEOUT     ( 1u )
+#define MAX14830_LSR_INT_NOISEINT   ( 1u << 5 )
+#define MAX14830_LSR_INT_RBREAKI    ( 1u << 4 )
+#define MAX14830_LSR_INT_FRAMEERR   ( 1u << 3 )
+#define MAX14830_LSR_INT_PARITY     ( 1u << 2 )
+#define MAX14830_LSR_INT_ROVERR     ( 1u << 1 )
+#define MAX14830_LSR_INT_RTIMEOUT   ( 1u )
 
 /** LSR Register Bits */
-#define MAX14830_LSR_CTS              ( 1u << 7 )
-#define MAX14830_LSR_RXNOISE          ( 1u << 5 )
-#define MAX14830_LSR_RXBREAK          ( 1u << 4 )
-#define MAX14830_LSR_FRAMEERR         ( 1u << 3 )
-#define MAX14830_LSR_RXPARITY         ( 1u << 2 )
-#define MAX14830_LSR_RXOVERRUN        ( 1u << 1 )
-#define MAX14830_LSR_RTIMEOUT         ( 1u )
+#define MAX14830_LSR_CTS            ( 1u << 7 )
+#define MAX14830_LSR_RXNOISE        ( 1u << 5 )
+#define MAX14830_LSR_RXBREAK        ( 1u << 4 )
+#define MAX14830_LSR_FRAMEERR       ( 1u << 3 )
+#define MAX14830_LSR_RXPARITY       ( 1u << 2 )
+#define MAX14830_LSR_RXOVERRUN      ( 1u << 1 )
+#define MAX14830_LSR_RTIMEOUT       ( 1u )
 
 /** SpclChrIntEn Register Bits */
-#define MAX14830_SCI_MLTDRP          ( 1u << 5 )
-#define MAX14830_SCI_BREAK           ( 1u << 4 )
-#define MAX14830_SCI_XOFF2           ( 1u << 3 )
-#define MAX14830_SCI_XOFF1           ( 1u << 2 )
-#define MAX14830_SCI_XON2            ( 1u << 1 )
-#define MAX14830_SCE_XON1            ( 1u )
+#define MAX14830_SCI_MLTDRP         ( 1u << 5 )
+#define MAX14830_SCI_BREAK          ( 1u << 4 )
+#define MAX14830_SCI_XOFF2          ( 1u << 3 )
+#define MAX14830_SCI_XOFF1          ( 1u << 2 )
+#define MAX14830_SCI_XON2           ( 1u << 1 )
+#define MAX14830_SCE_XON1           ( 1u )
 
 /** STS Register Bits */
-#define MAX14830_STS_CLKRDY          ( 1u << 5 )
-#define MAX14830_STS_GPI3             ( 1u << 3 )
-#define MAX14830_STS_GPI2             ( 1u << 2 )
-#define MAX14830_STS_GPI1             ( 1u << 1 )
-#define MAX14830_REG_GPI0             ( 1u )
+#define MAX14830_STS_CLKRDY         ( 1u << 5 )
+#define MAX14830_STS_GPI3           ( 1u << 3 )
+#define MAX14830_STS_GPI2           ( 1u << 2 )
+#define MAX14830_STS_GPI1           ( 1u << 1 )
+#define MAX14830_REG_GPI0           ( 1u )
 
 /** MODE1 Register Bits */
-#define MAX14830_MODE1_IRQ_SEL         ( 1u << 7 )
-#define MAX14830_MODE1_TRNSCV_CTRL     ( 1u << 4 )
-#define MAX14830_MODE1_RTS_HIZ          ( 1u << 3 )
-#define MAX14830_MODE1_TX_HIZ           ( 1u << 2 )
-#define MAX14830_MODE1_TX_DISABL        ( 1u << 1 )
-#define MAX14830_MODE1_RX_DISABL        ( 1u )
+#define MAX14830_MODE1_IRQ_SEL      ( 1u << 7 )
+#define MAX14830_MODE1_TRNSCV_CTRL  ( 1u << 4 )
+#define MAX14830_MODE1_RTS_HIZ      ( 1u << 3 )
+#define MAX14830_MODE1_TX_HIZ       ( 1u << 2 )
+#define MAX14830_MODE1_TX_DISABL    ( 1u << 1 )
+#define MAX14830_MODE1_RX_DISABL    ( 1u )
 
 /** MODE2 Register Bits */
 #define MAX14830_MODE2_ECHO_SUPRS       ( 1u << 7 )
@@ -199,7 +203,7 @@
 
 /** HDplxDelay Register Bits */
 #define MAX14830_HDD_SETUP_MASK         ( 0x0F << 4 )
-#define MAX14830_HDD_HOLD_MASK           ( 0x0F )
+#define MAX14830_HDD_HOLD_MASK          ( 0x0F )
 
 /** IrDA Register Bits */
 #define MAX14830_IRDA_TX_INV            ( 1u << 5 )
@@ -228,16 +232,16 @@
 #define MAX14830_FC_AUTO_RTS            ( 1u )
 
 /* Flow control trigger level register masks */
-#define MAX14830_FLOWLVL_HALT_MASK       (0x000f) /* Flow control halt level */
-#define MAX14830_FLOWLVL_RES_MASK        (0x00f0) /* Flow control resume level */
-#define MAX14830_FLOWLVL_HALT(words)     ((words / 8) & 0x0f)
-#define MAX14830_FLOWLVL_RES(words)      (((words / 8) & 0x0f) << 4)
+#define MAX14830_FLOWLVL_HALT_MASK      (0x000f) /* Flow control halt level */
+#define MAX14830_FLOWLVL_RES_MASK       (0x00f0) /* Flow control resume level */
+#define MAX14830_FLOWLVL_HALT(words)    ((words / 8) & 0x0f)
+#define MAX14830_FLOWLVL_RES(words)     (((words / 8) & 0x0f) << 4)
 
 /* FIFO interrupt trigger level register masks */
-#define MAX14830_FIFOTRIGLVL_TX_MASK     (0x0f) /* TX FIFO trigger level */
-#define MAX14830_FIFOTRIGLVL_RX_MASK     (0xf0) /* RX FIFO trigger level */
-#define MAX14830_FIFOTRIGLVL_TX(words)   ((words / 8) & 0x0f)
-#define MAX14830_FIFOTRIGLVL_RX(words)   (((words / 8) & 0x0f) << 4)
+#define MAX14830_FIFOTRIGLVL_TX_MASK    (0x0f) /* TX FIFO trigger level */
+#define MAX14830_FIFOTRIGLVL_RX_MASK    (0xf0) /* RX FIFO trigger level */
+#define MAX14830_FIFOTRIGLVL_TX(words)  ((words / 8) & 0x0f)
+#define MAX14830_FIFOTRIGLVL_RX(words)  (((words / 8) & 0x0f) << 4)
 
 /** PLLConfig Register Bits */
 #define MAX14830_PLL_PREDIV(x)          ( x & 0x1F )
@@ -256,16 +260,12 @@
 #define MAX14830_BRG_4X_MODE            ( 1u << 5 )
 #define MAX14830_BRG_2X_MODE            ( 1u << 4 )
 
-
 /** Write Bit */
 #define MAX14830_SPI_WRITE_BIT          ( 1u << 7)
 #define MAX14830_SPI_READ_BIT           ( 0x7F )
 
-
 /** System Settings */
 #define MAX14830_XTAL_FREQ              ( 4000000u )
-
-//
 
 #define MAX14830_NUM_SERIAL_PORTS       ( 4 )
 #define MAX14830_WRITE_TASK_PRIORITY    ( 5 )
@@ -279,6 +279,7 @@
 //*****************************************************************************
 static SemaphoreHandle_t xSpiMutex = NULL;
 static volatile bool rx_bytes = false;
+static EventGroupHandle_t gEventHandle = NULL;
 
 //*****************************************************************************
 //
@@ -355,10 +356,9 @@ void module_MAX14830_RTOS_ISR(uint8_t irq);
  * @brief Initialize the MAX14830 IC
  * 
  */
-bool MAX14830_init(void)
+bool MAX14830_initialize(void)
 {
     IomConfig.eInterfaceMode       = AM_HAL_IOM_SPI_MODE;
-    //IomConfig.ui32ClockFreq        = AM_HAL_IOM_500KHZ;
     IomConfig.ui32ClockFreq        = AM_HAL_IOM_100KHZ;
     IomConfig.eSpiMode             = AM_HAL_IOM_SPI_MODE_0;
     IomConfig.pNBTxnBuf            = NULL;
@@ -389,17 +389,19 @@ bool MAX14830_init(void)
     NVIC_EnableIRQ(GPIO_IRQn);
     am_hal_interrupt_master_enable();
 
-    /* Turn off */
-    module_MAX14830_Power_Off();
     /* Turn on */
     module_MAX14830_Power_On();
-
     /* MAX14830 register configuration */
     module_MAX14830_conf();
 
-    /* Enable global interrupt */
-    /* putting in a low-power mode, do we have ? */
     return true;
+}
+
+void MAX14830_uninitialize(void)
+{
+    ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_disable(pIomHandle));
+    ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_DEEPSLEEP, false));
+    ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_uninitialize(pIomHandle));
 }
 
 static void module_MAX14830_conf(void)
@@ -493,8 +495,74 @@ static void module_MAX14830_conf(void)
     //module_MAX14830_Read(MAX14830_COM_PORT0, MAX14830_REG_CLKSOURCE, 1, &regVal);
     //ARTEMIS_DEBUG_PRINTF("MAX14830: REG = 0x%02X\n", regVal);
 
+
+    /* disable all the UART clocks initially */
+    for(uint8_t i=0; i<4; i++)
+    {
+        module_MAX14830_Read((eMAX18430_ComPort_t)i, MAX14830_REG_BRGCONFIG, 1, &regVal);
+        regVal |= MAX14830_BRG_CLK_DISABLE;
+        module_MAX14830_Write((eMAX18430_ComPort_t)i, MAX14830_REG_BRGCONFIG, &regVal, 1);
+    }
+}
+
+void MAX14830_disable_direct(void)
+{
     /* Turn off */
-    //module_MAX14830_Power_Off();
+    module_MAX14830_Power_Off();
+    am_hal_iom_disable(pIomHandle);
+}
+
+void MAX14830_enable_direct(void)
+{
+    /* turn on */
+    am_hal_iom_enable(pIomHandle);
+    module_MAX14830_Power_On();
+    /* MAX14830 register configuration */
+    module_MAX14830_conf();
+}
+
+void MAX14830_disable(void)
+{
+    /* Turn off and disable the iom */
+    module_MAX14830_Power_Off();
+    am_hal_iom_disable(pIomHandle);
+}
+
+void MAX14830_enable(void)
+{
+    /* turn on */
+    am_hal_iom_enable(pIomHandle);
+    module_MAX14830_Power_On();
+    /* MAX14830 register configuration */
+    module_MAX14830_conf();
+
+    /* create global event handler for eventGroup */
+    if (gEventHandle != NULL)
+    {
+        ARTEMIS_DEBUG_PRINTF("MAX14830:: gEventHandle: alive\n");
+    }
+    else
+    {
+        gEventHandle = xEventGroupCreate();
+        if( gEventHandle != NULL )
+        {
+            ARTEMIS_DEBUG_PRINTF("MAX14830:: gEventHandle: created\n");
+        }
+    }
+
+    /* create SpiMutex semaphore for tasks */
+    if (xSpiMutex != NULL)
+    {
+        ARTEMIS_DEBUG_PRINTF("MAX14830:: xSpiMutex: alive\n");
+    }
+    else
+    {
+        xSpiMutex = xSemaphoreCreateMutex();
+        if( xSpiMutex != NULL )
+        {
+            ARTEMIS_DEBUG_PRINTF("MAX14830:: xSpiMutex: created\n");
+        }
+    }
 }
 
 static void module_MAX14830_RegUpdate(eMAX18430_ComPort_t port,
@@ -505,12 +573,12 @@ static void module_MAX14830_RegUpdate(eMAX18430_ComPort_t port,
     uint8_t update = curVal&bit;
     if ( update == val )
     {
-        /* no need to change*/
+        /* no need to change */
         return;
     }
     else
     {
-        /* toggle the bit, and write*/
+        /* toggle the bit, and write */
         curVal ^= bit;
 	    module_MAX14830_Write(port, reg, &curVal, 1);
     }
@@ -518,21 +586,12 @@ static void module_MAX14830_RegUpdate(eMAX18430_ComPort_t port,
 
 void am_gpio_isr(void)
 {
-    //uint64_t ui64Status;
-    //am_hal_gpio_interrupt_status_get(false, &ui64Status);
-    //am_hal_gpio_interrupt_clear(ui64Status);
-    //am_hal_gpio_interrupt_service(ui64Status);
     AM_HAL_GPIO_MASKCREATE(GpioIntMask);
     am_hal_gpio_interrupt_clear(AM_HAL_GPIO_MASKBIT(pGpioIntMask, AM_BSP_GPIO_S2U_NIRQ));
-
     //uint8_t irq = module_MAX14830_FastRead();
-    //uint8_t irq = 0x00;
     //module_MAX14830_Read(MAX14830_COM_PORT0, MAX14830_REG_GLOBALRQ, 1, &irq);
     //ARTEMIS_DEBUG_PRINTF("\nGPIO_IRQ FAST IRQ=0x%02X\n", irq);
-
     //ARTEMIS_DEBUG_PRINTF("\nInterrupt\n");
-    //module_MAX14830_Handle_IRQ();
-
     module_MAX14830_Handle_IRQ();
 }
 
@@ -559,14 +618,14 @@ void MAX14830_port_enable(eMAX18430_ComPort_t port)
 
     if(state == 1)
     {
-        module_MAX14830_Power_On();
-        am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_WAKE, false);
+        MAX14830_enable();
+        ARTEMIS_DEBUG_PRINTF("MAX14830:: Power ON\n");
     }
 
     /** Enable the Port Clock */
     uint8_t reg = 0;
     module_MAX14830_Read(port, MAX14830_REG_BRGCONFIG, 1, &reg);
-    reg &= MAX14830_BRG_CLK_DISABLE;
+    reg &= ~MAX14830_BRG_CLK_DISABLE;
     module_MAX14830_Write(port, MAX14830_REG_BRGCONFIG, &reg, 1);
 
     ///** Restart the Read Task if currently suspended */
@@ -595,23 +654,18 @@ void MAX14830_port_enable_direct(eMAX18430_ComPort_t port)
     am_hal_gpio_state_read(AM_BSP_GPIO_S2U_ON, AM_HAL_GPIO_OUTPUT_READ, &state);
     if(state == 1)
     {
-        module_MAX14830_Power_On();
-        am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_WAKE, false);
+        MAX14830_enable_direct();
+        ARTEMIS_DEBUG_PRINTF("MAX14830:: Direct Power ON\n");
     }
 
     /** Enable the Port Clock */
     uint8_t reg = 0;
     module_MAX14830_Read(port, MAX14830_REG_BRGCONFIG, 1, &reg);
-    reg &= MAX14830_BRG_CLK_DISABLE;
+    reg &= ~MAX14830_BRG_CLK_DISABLE;
     module_MAX14830_Write(port, MAX14830_REG_BRGCONFIG, &reg, 1);
 }
 
-/**
- * @brief Disable selected MAX14830 Port
- * 
- * @param port Port to disable
- */
-void MAX14830_port_disable(eMAX18430_ComPort_t port)
+void MAX14830_port_disable_direct(eMAX18430_ComPort_t port)
 {
     /** Disable the Port Clock */
     uint8_t reg = 0;
@@ -632,11 +686,54 @@ void MAX14830_port_disable(eMAX18430_ComPort_t port)
     }
 
     /** If all the ports are deactivated, shut down the power for lower power ops */
-    if(cnt ==  MAX14830_NUM_SERIAL_PORTS)
+    if(cnt == MAX14830_NUM_SERIAL_PORTS)
     {
-        am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_DEEPSLEEP, false);
-        //am_hal_gpio_output_set(AM_BSP_GPIO_S2U_ON); //, AM_HAL_SYSCTRL_DEEPSLEEP, false);
-        module_MAX14830_Power_Off();
+        MAX14830_disable_direct();
+        ARTEMIS_DEBUG_PRINTF("MAX14830:: Direct Power OFF\n");
+    }
+}
+
+/**
+ * @brief Disable selected MAX14830 Port
+ * 
+ * @param port Port to disable
+ */
+void MAX14830_port_disable(eMAX18430_ComPort_t port)
+{
+    /** Disable the Port Clock */
+    uint8_t reg = 0;
+    module_MAX14830_Read(port, MAX14830_REG_BRGCONFIG, 1, &reg);
+    reg |= MAX14830_BRG_CLK_DISABLE;
+    module_MAX14830_Write(port, MAX14830_REG_BRGCONFIG, &reg, 1);
+
+    char discard;
+    sCircularBufferC_t *pBuf = &rxBuf[(uint8_t)port];
+
+    /* read MAX14830 remaining bytes before turning it off */
+    while( (BufferC_Get_Size(pBuf) > 0) )
+    {
+        BufferC_getc(pBuf, &discard);
+        //ARTEMIS_DEBUG_PRINTF("%c", discard);
+    }
+    //ARTEMIS_DEBUG_PRINTF("\n\n");
+
+    /** Check to see if all ports are inactive */
+    uint8_t cnt = 0;
+    for(uint8_t i=0; i<4; i++)
+    {
+        reg = 0;
+        module_MAX14830_Read((eMAX18430_ComPort_t)i, MAX14830_REG_BRGCONFIG, 1, &reg);
+        if( (reg & MAX14830_BRG_CLK_DISABLE) > 0)
+        {
+            cnt++;
+        }
+    }
+
+    /** If all the ports are deactivated, shut down the power for lower power ops */
+    if(cnt == MAX14830_NUM_SERIAL_PORTS)
+    {
+        MAX14830_disable();
+        ARTEMIS_DEBUG_PRINTF("MAX14830:: Power OFF\n");
     }
 }
 
@@ -661,14 +758,13 @@ void module_MAX14830_Handle_IRQ()
     {
         if ( (~irq&0x0F) & (1u << i))
         {
-            //ARTEMIS_DEBUG_PRINTF("\nPORT = %u\n", i);
             port = i;
         }
     }
 
-    if (port <0 && port > 3)
+    if (port<0 && port>3)
     {
-        ARTEMIS_DEBUG_PRINTF("\nPORT ERROR:: port=%i\n", port);
+        ARTEMIS_DEBUG_PRINTF("MAX14830:: PORT ERROR: port=%i\n", port);
         return;
     }
 
@@ -678,11 +774,22 @@ void module_MAX14830_Handle_IRQ()
     {
         module_MAX14830_Read((eMAX18430_ComPort_t)port, MAX14830_REG_ISR, 1, &isr_status);
         module_MAX14830_Read((eMAX18430_ComPort_t)port, MAX14830_REG_RXFIFOLVL, 1, &rxlen);
+        //ARTEMIS_DEBUG_PRINTF("\nrxlen = %u\n", rxlen);
 
         if (!isr_status && !rxlen)
         {
-            //ARTEMIS_DEBUG_PRINTF("\nbreaking ..\n");
+            //ARTEMIS_DEBUG_PRINTF("\nbreaking .. rxlen = %u\n", rxlen);
             rx_bytes = true;
+            if ( gEventHandle != NULL )
+            {
+                BaseType_t xHigherPriorityTaskWoken, xResult;
+                xHigherPriorityTaskWoken = pdFALSE;
+                xResult = xEventGroupSetBitsFromISR(gEventHandle, (uint8_t)port + 0x01, &xHigherPriorityTaskWoken);
+                if (xResult != pdFAIL)
+                {
+                    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+                }
+            }
             break;
         }
 
@@ -697,7 +804,7 @@ void module_MAX14830_Handle_IRQ()
                 /* if overrun, then collect all the bytes at once */
                 if (lsr_status & MAX14830_LSR_RXOVERRUN)
                 {
-                    ARTEMIS_DEBUG_PRINTF("\nOVERFlow happened\n");
+                    ARTEMIS_DEBUG_PRINTF("MAX14830:: OVERFlow happened\n");
                     module_MAX14830_Read((eMAX18430_ComPort_t)port, MAX14830_REG_RXFIFOLVL, 1, &rxlen);
                     module_MAX14830_Read((eMAX18430_ComPort_t)port, MAX14830_RHR, rxlen, rxData);
                     while (rxlen > 0)
@@ -718,7 +825,7 @@ void module_MAX14830_Handle_IRQ()
                                     MAX14830_LSR_FRAMEERR   |
                                     MAX14830_LSR_RTIMEOUT   ))
                 {
-                    ARTEMIS_DEBUG_PRINTF("\nBYTE ERROR:: lsr_status = 0x%02X\n", lsr_status);
+                    ARTEMIS_DEBUG_PRINTF("MAX14830:: BYTE ERROR: lsr_status = 0x%02X\n", lsr_status);
                     break;
                 }
 
@@ -728,7 +835,7 @@ void module_MAX14830_Handle_IRQ()
                 rxlen--;
             }
         }
-    }while(1);
+    } while(1);
 }
 
 /**
@@ -742,29 +849,15 @@ void module_MAX14830_Write_Task(void  *pvParameters)
     sCircularBufferC_t *pBuf = &txBuf[(uint8_t)port];
 
     /* write spi burst*/
-    uint8_t data = 0;
     uint8_t txlen = 0;
     uint8_t sData[32] = {0};
 
-    while( xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS( 100UL )) != pdPASS);
-    txlen = BufferC_gets(pBuf, sData, 32);
+    while( xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS( 200UL )) != pdPASS);
+    txlen = BufferC_gets(pBuf, (char*)sData, 32);
     module_MAX14830_Write(port, MAX14830_THR, sData, txlen);
     xSemaphoreGive(xSpiMutex);
-    //ARTEMIS_DEBUG_PRINTF("\nWRITE TASK is deleted\n");
+    //ARTEMIS_DEBUG_PRINTF("\nWRITE TASK is deleted port (%u)\n", (uint8_t) port);
     vTaskDelete(NULL);
-
-    /* write spi single byte */
-    //uint8_t data = 0;
-    //while( xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS( 500UL )) != pdPASS);
-    //while(BufferC_Get_Size(pBuf))
-    //{
-    //    BufferC_getc(pBuf, (char*)&data);
-    //    module_MAX14830_Write(port, MAX14830_THR, &data, 1);
-    //}
-    //xSemaphoreGive(xSpiMutex);
-    //ARTEMIS_DEBUG_PRINTF("\nWRITE TASK is deleted\n");
-    //vTaskDelete(NULL);
-
 }
 
 /**
@@ -777,9 +870,6 @@ void module_MAX14830_Write_Task(void  *pvParameters)
  */
 uint32_t MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate )
 {
-    //uint32_t status = AM_HAL_STATUS_FAIL;
-    //module_MAX14830_FastRead();
-
     float D = MAX14830_XTAL_FREQ / (16 * (float)baudrate );
     uint32_t DIV = (uint32_t)trunc(D) ;
     uint32_t FRACT = (uint32_t) round(16 * (D - DIV));
@@ -812,9 +902,6 @@ void MAX14830_UART_Write(eMAX18430_ComPort_t port, uint8_t *data, uint16_t len)
         BufferC_putc(&txBuf[(uint8_t) port], *data++);
     }
 
-    xSpiMutex = xSemaphoreCreateMutex();
-    //xSpiMutex = xSemaphoreCreateBinary();
-    //xSemaphoreGive(xSpiMutex);
     /** Ensure the port is enabled */
     //MAX14830_port_enable(port);
 
@@ -825,6 +912,8 @@ void MAX14830_UART_Write(eMAX18430_ComPort_t port, uint8_t *data, uint16_t len)
                 (void*) port,
                 tskIDLE_PRIORITY + MAX14830_WRITE_TASK_PRIORITY,
                 NULL);
+
+    //ARTEMIS_DEBUG_PRINTF("MAX14830 task created = port (%u)\n", (uint8_t) port);
 }
 
 /**
@@ -853,19 +942,6 @@ void MAX14830_UART_Write_direct(eMAX18430_ComPort_t port, uint8_t *data, uint16_
         xLen = BufferC_gets(pBuf, (char*)xfer_data, XFER_DATA_SIZE);
         module_MAX14830_Write(port, MAX14830_THR, xfer_data, xLen);
     }
-
-    //uint8_t txlen;
-    //do {
-    //    module_MAX14830_Read(port,MAX14830_REG_TXFIFOLVL, 1, &txlen);
-    //} while (txlen);
-
-    /** Transfer bytes , byte by byte*/
-    //uint8_t cData;
-    //while(BufferC_Get_Size(pBuf))
-    //{
-    //    BufferC_getc(pBuf, &cData);
-    //    module_MAX14830_Write(port, MAX14830_THR, &cData, 1);
-    //}
 }
 
 /**
@@ -880,18 +956,25 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData)
     uint32_t len=0;
     sCircularBufferC_t *pBuf = &rxBuf[(uint8_t)port];
 
-    /** wait for an interrupt and wait for 10ms max,
-        based on 48MHz cpu clock */
-    uint32_t cnt = 0;
-    while(!rx_bytes && cnt++ < 500000);
-
-    while( (BufferC_Get_Size(pBuf) > 0) )
+    while (1)
     {
-        BufferC_getc(pBuf, pData);
-        pData++;
-        len++;
+        uint8_t Port = xEventGroupWaitBits(gEventHandle, 0x07, pdTRUE, pdFALSE, xDelay2000ms);
+        Port = (Port-1);
+        //ARTEMIS_DEBUG_PRINTF("Port (%u)\n", Port);
+        if (Port == (uint8_t)port)
+        {
+            vTaskDelay(pdMS_TO_TICKS(10UL));
+            //while( xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS( 500UL )) != pdPASS);
+            while( (BufferC_Get_Size(pBuf) > 0) )
+            {
+                BufferC_getc(pBuf, (char*)pData);
+                pData++;
+                len++;
+            }
+            //xSemaphoreGive(xSpiMutex);
+            break;
+        }
     }
-    rx_bytes = false;
     return len;
 }
 
@@ -915,7 +998,7 @@ uint16_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, uint8_t *pData)
 
     while( (BufferC_Get_Size(pBuf) > 0) )
     {
-        BufferC_getc(pBuf, pData);
+        BufferC_getc(pBuf, (char*)pData);
         pData++;
         len++;
     }
@@ -972,8 +1055,6 @@ static uint8_t module_MAX14830_FastRead(void)
 {
     uint32_t write_byte = 0x00;
     uint32_t read_byte = 0x00;
-    uint32_t status;
-
     am_hal_iom_transfer_t xfer;
 
     xfer.uPeerInfo.ui32SpiChipSelect = 0;
@@ -991,7 +1072,7 @@ static uint8_t module_MAX14830_FastRead(void)
 
     /** Chip Select */
     module_MAX14830_chip_enable();
-    status = am_hal_iom_spi_blocking_fullduplex(pIomHandle, &xfer);
+    am_hal_iom_spi_blocking_fullduplex(pIomHandle, &xfer);
     /** Chip Deselect */
     module_MAX14830_chip_disable();
 
@@ -1016,7 +1097,6 @@ static uint32_t module_MAX14830_Read(
 {
     /** Chip select */
     module_MAX14830_chip_enable();
-    //MAX14830_CS_Set();
 
     //ARTEMIS_DEBUG_PRINTF("\nREAD port=%d\n", port);
     /** Prep read cmd byte */
@@ -1041,13 +1121,10 @@ static uint32_t module_MAX14830_Read(
         .ui8Priority            = 1,
     };
 
-    //// Execute the transction over IOM.
+    /** Execute the transction over IOM */
     am_hal_iom_blocking_transfer(pIomHandle, &transfer);
     /** Chip Deselect */
-    //MAX14830_CS_Clear();
     module_MAX14830_chip_disable();
-    /** Chip Deselect */
-    //MAX14830_CS_Clear();
 
     return 0;
 }
@@ -1067,9 +1144,8 @@ static void module_MAX14830_Write(
                                 uint16_t len)
 {
     assert(reg <= 0x1F);
-    /** Enable */
-    //module_MAX14830_Power_On();
-    //am_hal_iom_enable(&pIomHandle);
+    /** Chip Select */
+    module_MAX14830_chip_enable();
 
     /** Prep Write Byte */
     uint8_t cmd = MAX14830_SPI_WRITE_BIT | (port << 5);
@@ -1092,13 +1168,7 @@ static void module_MAX14830_Write(
         .ui8Priority            = 1,
     };
 
-    /** Chip Select */
-    module_MAX14830_chip_enable();
     am_hal_iom_blocking_transfer(pIomHandle, &transfer);
     /** After transfer, turn Chip Select off */
-    //MAX14830_CS_Clear();
     module_MAX14830_chip_disable();
-    /** Disable */
-    //module_MAX14830_Power_Off();
-    //am_hal_iom_disable(&pIomHandle);
 }

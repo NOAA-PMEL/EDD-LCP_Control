@@ -71,7 +71,6 @@ typedef enum
 
 #define MAX14830_GPIO_PIN_TO_BIT(x)     ( 1u << (x % 4))
 
-
 /**********************************************************************************
 * Function Prototypes
 *********************************************************************************/
@@ -79,7 +78,8 @@ typedef enum
 extern "C"{
 #endif
 
-bool MAX14830_init(void);
+bool MAX14830_initialize(void);
+void MAX14830_uninitialize(void);
 void MAX14830_port_enable(eMAX18430_ComPort_t port);
 void MAX14830_port_enable_direct(eMAX18430_ComPort_t port);
 void MAX14830_port_disable(eMAX18430_ComPort_t port);
@@ -89,6 +89,10 @@ void MAX14830_UART_Write_direct(eMAX18430_ComPort_t port, uint8_t *data, uint16_
 uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData);
 uint32_t MAX14830_UART_Read_bytes_waiting(eMAX18430_ComPort_t port);
 uint16_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, uint8_t *pData);
+void MAX14830_disable(void);
+void MAX14830_enable(void);
+void MAX14830_disable_direct(void);
+void MAX14830_enable_direct(void);
 
 #ifdef __cplusplus
 } // extern "C"
