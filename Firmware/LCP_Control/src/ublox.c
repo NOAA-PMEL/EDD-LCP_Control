@@ -66,7 +66,7 @@ bool module_ublox_read_ubx(
 void module_ublox_create_msg_from_packet(ubx_packet_t *packet, uint8_t *msg);
 bool module_ublox_wait_for_ack_or_nak(  uint8_t expectedClass,
                                         uint8_t expectedId,
-                                        uint8_t initial_delay_ms, 
+                                        uint16_t initial_delay_ms,
                                         uint8_t attempts  );
 
 
@@ -115,6 +115,15 @@ bool UBLOX_initialize(  UBLOX_PortType_t port,
 }
 
 /**
+ * @brief UBLOX Module unInitialize
+ *
+ */
+void UBLOX_uninitialize(void)
+{
+    artemis_ublox_i2c_uninitialize();
+}
+
+/**
  * @brief Read NAV Data
  * 
  * Read the most recent data from the UBLOX GPS
@@ -126,7 +135,7 @@ bool UBLOX_initialize(  UBLOX_PortType_t port,
 bool UBLOX_read_nav(UBLOX_Nav_t *data)
 {
     bool retVal = false;
-    bool ubloxFix = false;
+    //bool ubloxFix = false;
 
     ubx_nav_pvt_t nav = {0};
 
@@ -139,7 +148,6 @@ bool UBLOX_read_nav(UBLOX_Nav_t *data)
         if(nav.fixType > 2)
         {
             retVal = true;
-            
             data->fix = true;
             
             data->position.lat = nav.lat * 1e-7;
@@ -180,10 +188,11 @@ bool UBLOX_read_config(ubx_cfg_prt_t *prt)
     /** Read UBX */
     retVal = module_ublox_read_ubx(UBX_CFG_CLASS, prt->portID, payload, 20, 0, &packet);
 
-    if(retVal)
-    {
-        retVal = UBLOX_parse_cfg_prt_packet(&packet, prt);
-    }
+    //if(retVal)
+    //{
+    //    retVal = UBLOX_parse_cfg_prt_packet(&packet, prt);
+    //}
+
     return retVal;
 }
 
@@ -271,7 +280,7 @@ bool module_ublox_cfg_port_for_i2c(uint16_t inConfig, uint16_t outConfig)
 {
     bool retVal = false;
     ubx_packet_t txPacket = {0};
-    ubx_packet_t rxPacket = {0};
+    //ubx_packet_t rxPacket = {0};
     uint8_t payload[20] = {0};
     
     /** Set up the payload */
@@ -308,7 +317,7 @@ bool module_cfg_port_msg(uint8_t cls, uint8_t id, uint8_t rate)
 {
     bool retVal = false;
     ubx_packet_t txPacket = {0};
-    ubx_packet_t rxPacket = {0};
+    //ubx_packet_t rxPacket = {0};
     uint8_t payload[3] = {cls, id, rate};
 
     /** Create the UBX Packet */
@@ -320,7 +329,7 @@ bool module_cfg_port_msg(uint8_t cls, uint8_t id, uint8_t rate)
     /** Query for ACK-ACK or ACK-NAK */
     if(retVal)
     {
-        retVal = module_ublox_wait_for_ack_or_nak( UBX_CFG_CLASS, UBX_CFG_PRT, 500, 50);      
+        retVal = module_ublox_wait_for_ack_or_nak(UBX_CFG_CLASS, UBX_CFG_PRT, 500, 50);
     }
 
 //    /** Read buffer & parse for UBX packet */
@@ -377,38 +386,31 @@ bool module_ublox_read(eUBX_Class_t cls, uint8_t id, void *parsed)
                 // UBX_parse_ack_or_nak_msg(&packet, )
             //break;
             case UBX_AID_CLASS:
-
-            break;
+                break;
             case UBX_CFG_CLASS:
                 UBX_parse_cfg((UBX_CFG_ID_t) id, &packet, parsed);
-            break;
+                break;
             case UBX_ESF_CLASS:
-        
-            break;
+                break;
             case UBX_HNR_CLASS:
-        
-            break;
+                break;
             case UBX_INF_CLASS:
-        
-            break;
+                break;
             case UBX_LOG_CLASS:
-        
-            break;
+                break;
             case UBX_MGA_CLASS:
-        
-            break;
+                break;
             case UBX_MON_CLASS:
-        
-            break;
+                break;
             case UBX_NAV_CLASS:
                 UBX_parse_nav((UBX_NAV_ID_t) id, &packet, parsed);
-            break;
+                break;
             case UBX_RXM_CLASS:
-        
-            break;
+                break;
             case UBX_UPD_CLASS:
-        
-            break;
+                break;
+            default:
+                break;
         }
     }
     return retVal;
@@ -457,10 +459,11 @@ bool module_read_cfg_rate(ubx_cfg_rate_t *rate)
     bool retVal = false;
 
     retVal = module_ublox_read_ubx(UBX_CFG_CLASS, UBX_CFG_RATE, payload, 20, 0, &packet);
-    if(retVal)
-    {
-        retVal = UBLOX_parse_cfg_rate_packet(&packet, rate);
-    }
+
+    //if(retVal)
+    //{
+    //    retVal = UBLOX_parse_cfg_rate_packet(&packet, rate);
+    //}
 
     return retVal;
 }
@@ -541,7 +544,7 @@ bool module_ublox_read_ubx(
 
 bool module_ublox_wait_for_ack_or_nak(  uint8_t expectedClass,
                                         uint8_t expectedId,
-                                        uint8_t initial_delay_ms, 
+                                        uint16_t initial_delay_ms,
                                         uint8_t attempts  )
 {
     bool retVal = false;

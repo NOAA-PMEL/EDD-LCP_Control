@@ -87,8 +87,8 @@ bool UBLOX_initialize(  UBLOX_PortType_t port,
                         UBLOX_MsgType_t outMsg,
                         uint16_t rateHz);
 
+void UBLOX_uninitialize(void);
 bool UBLOX_cfg_prt_for_i2c(uint16_t inConfig, uint16_t outConfig);
-
 bool UBLOX_cfg_port_msg(uint8_t class, uint8_t id, uint8_t rate);
 
 //bool UBLOX_read_ubx(
