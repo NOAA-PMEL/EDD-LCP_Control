@@ -55,6 +55,7 @@ extern "C"
 #include "am_mcu_apollo.h"
 #include "am_bsp.h"
 #include "am_util.h"
+#include "projdefs.h"
 
 #define configUSE_PREEMPTION                    1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION 0
@@ -67,7 +68,7 @@ extern "C"
 #define configTICK_RATE_HZ                      1000
 #define configMAX_PRIORITIES                    8
 #define configMINIMAL_STACK_SIZE                (256)
-#define configTOTAL_HEAP_SIZE                   (64 * 1024)
+#define configTOTAL_HEAP_SIZE                   (96 * 1024)
 #define configMAX_TASK_NAME_LEN                 32
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
@@ -125,7 +126,7 @@ extern "C"
 #define INCLUDE_vTaskDelay                      1
 #define INCLUDE_xTaskGetSchedulerState          1
 #define INCLUDE_xTaskGetCurrentTaskHandle       1
-#define INCLUDE_uxTaskGetStackHighWaterMark     0
+#define INCLUDE_uxTaskGetStackHighWaterMark     1
 #define INCLUDE_xTaskGetIdleTaskHandle          1
 #define INCLUDE_xTimerGetTimerDaemonTaskHandle  0
 #define INCLUDE_pcTaskGetTaskName               1
@@ -138,7 +139,22 @@ extern "C"
 // added
 #define configUSE_TASK_NOTIFICATIONS            1
 #define INCLUDE_vTaskEndScheduler               1
+#define INCLUDE_xSemaphoreGetMutexHolder        1
+#define INCLUDE_xTaskAbortDelay                 1
 
+/*******************************************
+* FREERTOS Delay constants
+********************************************/
+#define xDelay1ms                               pdMS_TO_TICKS(1UL)
+#define xDelay5ms                               pdMS_TO_TICKS(5UL)
+#define xDelay10ms                              pdMS_TO_TICKS(10UL)
+#define xDelay50ms                              pdMS_TO_TICKS(50UL)
+#define xDelay100ms                             pdMS_TO_TICKS(100UL)
+#define xDelay250ms                             pdMS_TO_TICKS(250UL)
+#define xDelay500ms                             pdMS_TO_TICKS(500UL)
+#define xDelay1000ms                            pdMS_TO_TICKS(1000UL)
+#define xDelay2000ms                            pdMS_TO_TICKS(2000UL)
+#define xDelay5000ms                            pdMS_TO_TICKS(5000UL)
 
 #define vPortSVCHandler                         SVC_Handler
 #define xPortPendSVHandler                      PendSV_Handler
