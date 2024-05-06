@@ -28,7 +28,7 @@ static int16_t module_convert_temperature_to_int16_t(float temp);
 STATIC int32_t module_convert_latitude_to_int32_t(float latitude);
 STATIC int32_t module_convert_longitude_to_int32_t(float longitude);
 
-static uint8_t header[27];
+//static uint8_t header[27];
 
 //*****************************************************************************
 //
