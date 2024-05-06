@@ -53,6 +53,7 @@ typedef enum e_status_dl
 } status_dl;
 
 bool datalogger_init(uint8_t iomNo);    // iomNo. 1 or 4
+void datalogger_deinit(uint8_t iomNo);  // iomNo. 1 or 4
 bool datalogger_device_info(void);
 void datalogger_log_init(void);
 void datalogger_power_on(void);

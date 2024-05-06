@@ -106,6 +106,13 @@ bool datalogger_init(uint8_t iomNo)
     return success;
 }
 
+void datalogger_deinit(uint8_t iomNo)
+{
+    artemis_i2c_t *i2c = &module.i2c;
+    i2c->iom.module = iomNo;
+    artemis_iom_uninitialize(&i2c->iom);
+}
+
 /* for Reading test pressure profile */
 void datalogger_pressure(float *pressure)
 {
@@ -126,17 +133,26 @@ void datalogger_read_test_profile(bool reset)
 {
     if (reset)
     {
-        ARTEMIS_DEBUG_PRINTF("Resetting test profile pressure ...\n");
+        ARTEMIS_DEBUG_PRINTF("Resetting test profile pressure\n");
         test_buffer = &test_buf[0];
     }
     else
     {
-        ARTEMIS_DEBUG_PRINTF("Reading test profile pressure wait please ...\n");
+        ARTEMIS_DEBUG_PRINTF("Reading test profile pressure wait please\n");
         uint16_t size = 0;
-        //char *filename = "test_profile.txt";
-        char *filename = "test_profile2.txt";
+        char *filename;
+
+#if defined(__TEST_PROFILE_1__)
+        filename = "test_profile.txt";
         /* read file*/
         size = datalogger_filesize(filename);
+#elif defined(__TEST_PROFILE_2__)
+        filename = "test_profile2.txt";
+        /* read file*/
+        size = datalogger_filesize(filename);
+#else
+    #warning "WARNING:: No Test_Profile text file was selected"
+#endif
         if (size == 0)
         {
             ARTEMIS_DEBUG_PRINTF("ERROR :: file size = %u\n", size);
@@ -154,19 +170,19 @@ bool datalogger_device_info(void)
 
     ARTEMIS_DEBUG_PRINTF("\nDatalogger Qwiic Device Info\n");
     ARTEMIS_DEBUG_PRINTF("*******************************\n");
-    ARTEMIS_DEBUG_PRINTF("Device Unique ID\t: ");
 
     uint8_t id = datalogger_get_id();
+    ARTEMIS_DEBUG_PRINTF("Device Unique ID\t: ");
     ARTEMIS_DEBUG_PRINTF("0x%02X", id);
     ARTEMIS_DEBUG_PRINTF("\n");
 
-    ARTEMIS_DEBUG_PRINTF("Device FW Version\t: ");
     uint16_t fw = datalogger_fw_version();
+    ARTEMIS_DEBUG_PRINTF("Device FW Version\t: ");
     ARTEMIS_DEBUG_PRINTF("%u.%u", fw>>8&0xff, fw&0xff);
     ARTEMIS_DEBUG_PRINTF("\n");
 
-    ARTEMIS_DEBUG_PRINTF("Device Status Info\t: ");
     uint8_t status = datalogger_status();
+    ARTEMIS_DEBUG_PRINTF("Device Status Info\t: ");
     if (status & 0x01)
     {
         ARTEMIS_DEBUG_PRINTF("SD init Good");
