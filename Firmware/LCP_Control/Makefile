@@ -239,7 +239,6 @@ LIBS+= $(SDKPATH)/mcu/apollo3/hal/gcc/bin/libam_hal.a
 
 CFLAGS = -mthumb -mcpu=$(CPU) -mfpu=$(FPU) -mfloat-abi=$(FABI)
 CFLAGS+= -ffunction-sections -fdata-sections
-##CFLAGS+= -MMD -MP -std=gnu99 -Wall -g
 CFLAGS+= -MMD -MP -std=gnu99 -Wall -g
 CFLAGS+= -Wall -Wno-unused-function
 CFLAGS+= -O3
