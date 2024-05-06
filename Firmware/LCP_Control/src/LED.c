@@ -31,13 +31,13 @@ TaskHandle_t blue_led_task_handle;
 SemaphoreHandle_t xLedMutex = NULL;
 StaticSemaphore_t xLedSemaphoreBuffer;
 
-const TickType_t xDelay1ms = pdMS_TO_TICKS( 1UL );
-const TickType_t xDelay5ms = pdMS_TO_TICKS( 5UL );
-const TickType_t xDelay10ms = pdMS_TO_TICKS( 10UL );
-const TickType_t xDelay50ms = pdMS_TO_TICKS( 50UL );
-const TickType_t xDelay100ms = pdMS_TO_TICKS( 100UL );
-const TickType_t xDelay250ms = pdMS_TO_TICKS( 250UL );
-const TickType_t xDelay500ms = pdMS_TO_TICKS( 500UL );
+//const TickType_t xDelay1ms = pdMS_TO_TICKS( 1UL );
+//const TickType_t xDelay5ms = pdMS_TO_TICKS( 5UL );
+//const TickType_t xDelay10ms = pdMS_TO_TICKS( 10UL );
+//const TickType_t xDelay50ms = pdMS_TO_TICKS( 50UL );
+//const TickType_t xDelay100ms = pdMS_TO_TICKS( 100UL );
+//const TickType_t xDelay250ms = pdMS_TO_TICKS( 250UL );
+//const TickType_t xDelay500ms = pdMS_TO_TICKS( 500UL );
 
 SemaphoreHandle_t xSemaphore = NULL;
 
