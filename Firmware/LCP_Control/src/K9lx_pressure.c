@@ -147,6 +147,11 @@
 #define K9LX_UART_9K                (0x0)   //  9600
 #define K9LX_UART_115K              (0x1)   //  115200
 
+#define K9LX_FILTER_ORG             0x0201  //  Read-Only, Factory settings for filter
+#define K9LX_CNT_TCOMP_LP_FILT      0x0208  //  R/W : Low Pass Filter for P1 and P2 [B7 - B4]
+                                            //        CNT_TCOMP [B3 - B0]
+#define K9LX_FILT_CTRL              0x020A  //  R/W : Filter Setting for one conversion
+
 #define K9LX_CFG_P                  0x0204  //  R : Active Pressure channel Bit 1:P1, Bit 2:P2
 #define K9LX_CFG_P_P1               (1<<1)  //  P1 : bit1
 #define K9LX_CFG_P_P2               (1<<2)  //  P2 : bit2
@@ -170,6 +175,7 @@
 //
 //*****************************************************************************
 
+#define FREERTOS
 
 //*****************************************************************************
 //
@@ -189,6 +195,7 @@ static void module_k9lx_read_sensor_pt(K9lx_data_pt *data);
 static void module_k9lx_device_info(uint8_t port);
 static uint16_t module_k9lx_crc16 (uint8_t *crc_h, uint8_t *crc_l, uint8_t *pData, uint8_t len);
 static int8_t module_k9lx_read_reg(uint8_t port, uint16_t reg_add, uint8_t reg_num, uint8_t *pData);
+static int8_t module_k9lx_read_reg_RTOS(uint8_t port, uint16_t reg_add, uint8_t reg_num, uint8_t *pData);
 static int8_t module_k9lx_data_integrity (uint8_t *Data, uint8_t len);
 
 /* Not Defined yet or not being used for the moment */
@@ -252,7 +259,7 @@ static uint16_t module_k9lx_crc16 (uint8_t *crc_h, uint8_t *crc_l, uint8_t *pDat
     m = len;
     x = 0;
 
-    // loop over all bits
+    /** loop over all bits */
     while(m>0){
         crc16 ^= pData[x];
         for(n=0; n<8; n++)
@@ -270,7 +277,7 @@ static uint16_t module_k9lx_crc16 (uint8_t *crc_h, uint8_t *crc_l, uint8_t *pDat
         x++;
     }
 
-    // result
+    /** result */
     *crc_h = (crc16 >>8 ) & 0xFF;
     *crc_l = crc16 & 0xFF;
 
@@ -303,7 +310,12 @@ static void module_k9lx_read_sensor_p(float *pressure)
     uint8_t p[4] = {0};
     u32_to_float_t pressure_bar;
 
+#ifdef FREERTOS
+    ret = module_k9lx_read_reg_RTOS(pK9lx->device.uart.port, K9LX_FL1_P1, 2, p);
+#else
     ret = module_k9lx_read_reg(pK9lx->device.uart.port, K9LX_FL1_P1, 2, p);
+#endif
+
     if (ret == 0)
     {
         for (uint8_t i=0; i<4; i++){
@@ -371,41 +383,6 @@ static float module_k9lx_convert_temperature(float temperature_c)
     return temperature_f;
 }
 
-//static bool module_k9lx_read_status(void)
-//{
-//    artemis_stream_t rxstream = {0};
-//    artemis_stream_setbuffer(&rxstream, module.rxbuffer, K9LX_BUFFER_LENGTH);
-//
-//    artemis_i2c_t *i2c = &module.i2c;
-//    artemis_i2c_receive(i2c, true, &rxstream, 1);
-//
-//    uint8_t data;
-//    artemis_stream_get(&rxstream, &data);
-//    data = data & K9LX_STATUS_BIT;
-//    return data;
-//}
-
-//static int32_t module_k9lx_read_with_status(artemis_i2c_t *i2c, artemis_stream_t *rxstream, uint32_t numBytes, uint32_t attempts)
-//{
-//    int32_t result = -1;
-//    uint8_t temp;
-//
-//    do{
-//        artemis_stream_reset(rxstream);
-//        artemis_i2c_receive(i2c, true, rxstream, numBytes);
-//        artemis_stream_get(rxstream, &temp);
-//
-//    }while((temp & K9LX_STATUS_BIT) && (--attempts > 0));
-//
-//    //printf("%u, %ul\n", temp & K9LX_STATUS_BIT, attempts);
-//
-//    if( !(temp & K9LX_STATUS_BIT))
-//    {
-//        result = 0;
-//    }
-//    return result;
-//}
-
 static int8_t module_k9lx_data_integrity (uint8_t *Data, uint8_t len)
 {
     /*	check received data's Function's code
@@ -415,7 +392,7 @@ static int8_t module_k9lx_data_integrity (uint8_t *Data, uint8_t len)
      *
      */
 
-    // copy the Data into the local buffer
+    /** copy the Data into the local buffer */
     uint8_t lBuf[K9LX_BUFFER_LENGTH] = {0};
     uint8_t crc_h, crc_l = 0;
 
@@ -423,29 +400,72 @@ static int8_t module_k9lx_data_integrity (uint8_t *Data, uint8_t len)
         lBuf[i] = Data[i];
     }
 
-    // check the function code error bit (7th bit)
+    /** check the function code error bit (7th bit) */
     if (K9LX_RECV_ERROR & lBuf[1])
     {
-        // TODO : error has been occured, handle it further with the error code on third-byte
+        /** TODO : error has been occured, handle it further with the error code on third-byte */
         return -1;
     }
     else
     {
-        // check the CRC16, send only the useful bytes, last two bytes are CRC-bytes
+        /** check the CRC16, send only the useful bytes, last two bytes are CRC-bytes */
         module_k9lx_crc16 (&crc_h, &crc_l, lBuf, len-2);
         if (crc_l == lBuf[len-2] && crc_h == lBuf[len-1])
         {
-            // received data is correct
+            /** received data is correct */
             return 0;
         }
         else
         {
-            // TODO: handle the error code
+            /** TODO: handle the error code */
             return -1;
         }
     }
-    // unknown error
+    /** unknown error */
     return -2;
+}
+
+static int8_t module_k9lx_read_reg_RTOS(uint8_t port, uint16_t reg_add, uint8_t reg_num, uint8_t *pData)
+{
+    /** Prep for MAX SPI messages */
+    uint8_t cmd[CMD_LENGTH] = {0};
+    uint8_t rxlen = 0;
+    uint8_t rData[16] = {0};
+    uint8_t crc_h, crc_l = 0;
+
+    cmd[0] = K9LX_ADDR;
+    cmd[1] = K9LX_READ_REG_CMD;
+    cmd[2] = (reg_add >> 8) & 0xFF;
+    cmd[3] = reg_add & 0xFF;
+    cmd[4] = 0x00;
+    cmd[5] = reg_num ; // read number of registers
+
+    /** calculate CRC16 */
+    module_k9lx_crc16 (&crc_h, &crc_l, cmd, 6);
+
+    /** MODBUS */
+    cmd[6] = crc_l;
+    cmd[7] = crc_h;
+
+    /** FREERTOS functions */
+    MAX14830_UART_Write(port, cmd, CMD_LENGTH);
+    rxlen = MAX14830_UART_Read(port, rData);
+
+    int8_t ret = module_k9lx_data_integrity (rData, rxlen);
+    if (ret == 0 && rxlen > 0)
+    {
+        for(uint8_t i=0; i<rxlen-5; i++)
+        {
+            pData[i] = rData[i+3];
+            //ARTEMIS_DEBUG_PRINTF("%d ", pData[i]);
+        }
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("K9lX:: Received: ERROR (%d) at keller \n", ret);
+    }
+
+    return ret;
 }
 
 static int8_t module_k9lx_read_reg(uint8_t port, uint16_t reg_add, uint8_t reg_num, uint8_t *pData)
@@ -463,18 +483,14 @@ static int8_t module_k9lx_read_reg(uint8_t port, uint16_t reg_add, uint8_t reg_n
     cmd[4] = 0x00;
     cmd[5] = reg_num ; // read number of registers
 
-    /* calculate CRC16 */
+    /** calculate CRC16 */
     module_k9lx_crc16 (&crc_h, &crc_l, cmd, 6);
 
-    /* MODBUS */
+    /** MODBUS */
     cmd[6] = crc_l;
     cmd[7] = crc_h;
 
-
-    /*RTOS function, right now it's not functional :(*/
-    //MAX14830_UART_Write(port, cmd, CMD_LENGTH);
-
-    /* NON-RTOS*/
+    /** NON-RTOS*/
     MAX14830_UART_Write_direct(port, cmd, CMD_LENGTH);
 
     uint8_t len = 0;
@@ -523,7 +539,7 @@ static int8_t module_k9lx_read_reg(uint8_t port, uint16_t reg_add, uint8_t reg_n
     }
     else
     {
-        ARTEMIS_DEBUG_PRINTF("\nReceived ERROR (%d) at keller \n", ret);
+        ARTEMIS_DEBUG_PRINTF("K9lX:: Received: ERROR (%d) at keller\n", ret);
     }
     return ret;
 }
@@ -533,7 +549,6 @@ static void module_k9lx_device_info(uint8_t port)
     uint8_t firmware[4] = {0};
     uint8_t serial[4] = {0};
     uint32_t serial_nr = 0;
-
     uint8_t pr[4] = {0};
     //uint8_t tp[4] = {0};
     uint8_t pt[8] = {0};
@@ -550,7 +565,7 @@ static void module_k9lx_device_info(uint8_t port)
     ARTEMIS_DEBUG_PRINTF("\nK9LX Pressure Sensor\n");
     ARTEMIS_DEBUG_PRINTF("**************************************\n");
 
-    //Get the Firmware version : 5.20.12.28
+    /* Get the Firmware version : 5.20.12.28 */
     ARTEMIS_DEBUG_PRINTF("\tFirmware Ver\t: ");
     ret = module_k9lx_read_reg(port, K9LX_FIRM_VER0, 2, firmware);
     if (ret == 0)
@@ -561,7 +576,7 @@ static void module_k9lx_device_info(uint8_t port)
         }
     }
 
-    // Get the Serial number : ?
+    /* Get the Serial number : ? */
     ARTEMIS_DEBUG_PRINTF("\n\tSerial Number\t: ");
     ret = module_k9lx_read_reg(port, K9LX_SER_NUM_H, 2, serial);
     if (ret == 0)
