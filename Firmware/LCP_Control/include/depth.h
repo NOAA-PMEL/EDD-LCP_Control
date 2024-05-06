@@ -139,6 +139,10 @@ void DEPTH_Power_OFF(void);
  */
 void DEPTH_Read(sDepth_Measurement_t *data);
 
+/* FreeRTOS depth init and un-init*/
+void DEPTH_initialize_RTOS(void);
+void DEPTH_uninitialize_RTOS(void);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

@@ -33,8 +33,6 @@
 /* datalogger read pressure profile */
 #include "datalogger.h"
 
-#define PROF_TEST
-
 //*****************************************************************************
 //
 // Static Variables
@@ -123,6 +121,18 @@ bool DEPTH_initialize(eDEPTH_Sensor_t sensor)
     return true;
 }
 
+void DEPTH_initialize_RTOS(void)
+{
+    MAX14830_port_enable((eMAX18430_ComPort_t) kParam.port);
+    MAX14830_Set_baudrate((eMAX18430_ComPort_t) kParam.port, kParam.baudrate);
+}
+
+void DEPTH_uninitialize_RTOS(void)
+{
+    DEPTH_Power_OFF();
+    MAX14830_port_disable((eMAX18430_ComPort_t) kParam.port);
+}
+
 /**
  * @brief Turn Depth Sensor Power ON
  * 
@@ -160,7 +170,7 @@ void DEPTH_Read(sDepth_Measurement_t *data)
     float pressure;
     //artemis_pa9ld_read(&pressure, &temperature);
 
-#ifdef PROF_TEST
+#if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
 
     /* read pressure test profile */
     datalogger_pressure(&pressure);
@@ -170,6 +180,7 @@ void DEPTH_Read(sDepth_Measurement_t *data)
 #else
 
     K9lx_read_P(&pressure);
+    //ARTEMIS_DEBUG_PRINTF("Pressure = %f\n", pressure);
     data->Pressure = pressure;
     data->Depth = module_DEPTH_Convert_Pressure_to_Depth(pressure);
 
