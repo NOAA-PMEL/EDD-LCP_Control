@@ -123,7 +123,9 @@ void artemis_rtc_initialize(void)
     /* Enable the timer */
     am_hal_ctimer_start(0, AM_HAL_CTIMER_TIMERA);
 
-    ARTEMIS_DEBUG_PRINTF("\nRTC Timer started on %s at %s.\n\n", __DATE__, __TIME__);
+    ARTEMIS_DEBUG_PRINTF("\nRTC Timer\n");
+    ARTEMIS_DEBUG_PRINTF("***************************************\n");
+    ARTEMIS_DEBUG_PRINTF("Clock started on %s at %s.\n\n",__DATE__,__TIME__);
 }
 
 uint8_t artemis_rtc_get_time(rtc_time *time)
