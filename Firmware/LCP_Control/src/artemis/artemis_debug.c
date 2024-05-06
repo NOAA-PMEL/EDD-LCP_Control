@@ -6,21 +6,40 @@
 
 void artemis_debug_initialize(void)
 {
-    // enable Single Wire Output (SWO) using Instrumentation Trace Macrocell (ITM)
+
+#ifdef ARTEMIS_DEBUG
     // am_bsp_itm_printf_enable();
     am_bsp_uart_printf_enable();
+    ARTEMIS_DEBUG_PRINTF("UART ENABLED\n");
+#else
+    //am_bsp_debug_printf_disable();
+#endif
 
     bool success = false;
     success = datalogger_init(4);
-
     if (success)
     {
         datalogger_power_on();
         am_util_delay_ms(500);
 
+#if defined(__TEST_PROFILE_1__)
         /* reading from the file first time and fill up the buffer */
+        ARTEMIS_DEBUG_PRINTF("\n\n<<< TEST_PROFILE_1 Profile selected >>>\n\n");
         datalogger_read_test_profile(false);
-        ARTEMIS_DEBUG_PRINTF("UART ENABLED\n");
+#elif defined(__TEST_PROFILE_2__)
+        /* reading from the file first time and fill up the buffer */
+        ARTEMIS_DEBUG_PRINTF("\n\n<<< TEST_PROFILE_2 Profile selected >>>\n\n");
+        datalogger_read_test_profile(false);
+#elif defined(__TEST_TANK__)
+        ARTEMIS_DEBUG_PRINTF("\n\n<<< TEST_TANK Profile selected >>>\n\n");
+#elif defined(__TEST_LAKE__)
+        ARTEMIS_DEBUG_PRINTF("\n\n<<< TEST_LAKE Profile selected >>>\n\n");
+#elif defined(__TEST_OCEAN__)
+        ARTEMIS_DEBUG_PRINTF("\n\n<<< TEST_OCEAN Profile selected >>>\n\n");
+#else
+    #error "ERROR:: No test profile was selected"
+#endif
+
     }
     else
     {

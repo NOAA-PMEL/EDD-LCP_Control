@@ -8,8 +8,6 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
-
 #include "am_util_stdio.h"
 #include "am_hal_status.h"
 #include "datalogger.h"
@@ -18,23 +16,20 @@
 extern "C" {
 #endif
 
-#define DATALOG_DEBUG true
-//#define NDEBUG
+/** put false OR true to log every DEBUG_PRINTF into the SD-Card */
+#define DATALOG_DEBUG false
 
-#ifdef NDEBUG
-    #define ARTEMIS_DEBUG_ASSERT(expr) ((void)0)
-    #define ARTEMIS_DEBUG_PRINTF(...)           \
-    do {                                        \
-        ((void)0);                              \
-        if (DATALOG_DEBUG == true)              \
-        {                                       \
-            datalogger_log_debug(__VA_ARGS__);  \
-        }                                       \
-    } while(0)
+/** comment to disable the DEBUG_PRINTF */
+#define ARTEMIS_DEBUG
 
-    #define ARTEMIS_DEBUG_HALSTATUS(hfunc) (hfunc)
+/** defined test profiles, tank, lake etc, uncomment one at a time */
+//#define __TEST_PROFILE_1__
+#define __TEST_PROFILE_2__
+//#define __TEST_TANK__
+//#define __TEST_LAKE__
+//#define __TEST_OCEAN__
 
-#else
+#ifdef ARTEMIS_DEBUG
     #define ARTEMIS_DEBUG_ASSERT(expr) (!!(expr) || (artemis_debug_assert(#expr, __FUNCTION__, __FILE__, __LINE__), 0))
     #define ARTEMIS_DEBUG_PRINTF(...)           \
     do {                                        \
@@ -52,7 +47,18 @@ extern "C" {
             artemis_debug_halerror(#hfunc, artemis_debug_halstatus, __FUNCTION__, __FILE__, __LINE__); \
         } \
     } while(0)
+#else
+    #define ARTEMIS_DEBUG_ASSERT(expr) ((void)0)
+    #define ARTEMIS_DEBUG_PRINTF(...)           \
+    do {                                        \
+        ((void)0);                              \
+        if (DATALOG_DEBUG == true)              \
+        {                                       \
+            datalogger_log_debug(__VA_ARGS__);  \
+        }                                       \
+    } while(0)
 
+    #define ARTEMIS_DEBUG_HALSTATUS(hfunc) (hfunc)
 #endif
 
 void artemis_debug_initialize(void);
