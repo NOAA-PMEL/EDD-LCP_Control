@@ -64,6 +64,7 @@
 #include "am_bsp_pins.h"
 #include "buffer_c.h"
 #include "isbd_at_cmd.h"
+#include "config.h"
 
 #endif // TEST
 //*****************************************************************************

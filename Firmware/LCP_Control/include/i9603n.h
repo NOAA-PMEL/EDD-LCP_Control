@@ -56,9 +56,6 @@
 *							MACROS
 ************************************************************************/
 
-#define IRIDIUM_TRIES       03  /* try XX number of times to transmit */
-#define SATELLITE_TIMER     15  /* try XX seconds for checking satellite visibility */
-
 /************************************************************************
 *							ENUM & STRUCTS
 ************************************************************************/
