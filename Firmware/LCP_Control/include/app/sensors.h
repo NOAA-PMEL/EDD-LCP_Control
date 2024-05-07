@@ -13,8 +13,6 @@
 #include "rtos.h"
 #include "timers.h"
 
-#define GPS_TIMER    5.0f   /* 10 mins xGPS timer */
-
 typedef struct sSensorType_t{
     int16_t value;
     bool data_valid;
@@ -63,9 +61,6 @@ typedef struct sSensorData_t
     SensorGps_t gps;
 }SensorData_t;
 
-
-
-
 /**********************************************************************************
 * Function Prototypes
 *********************************************************************************/
@@ -100,12 +95,13 @@ void SENS_task_profile_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp);
 void SENS_task_park_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp);
 void SENS_task_sample_depth_continuous(TaskHandle_t *xDepth);
 void SENS_task_gps(TaskHandle_t *xGPS);
+void SENS_task_delete(TaskHandle_t xHandle);
 
 void SENS_set_depth_rate(float rate);
 void SENS_set_temperature_rate(float rate);
 void SENS_set_gps_rate(uint16_t rate);
 
 bool SENS_initialize(void);
-
+void SENS_uninitialize(void);
 
 #endif // SENSORS_H
