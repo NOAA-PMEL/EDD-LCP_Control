@@ -28,7 +28,7 @@
 #define DATA_PROFILE_DEPTH_MAX                  ( 220 )     /**< Maximum depth (m) */
 #define DATA_PROFILE_OVERAGE_MAX                ( 5 )       /**< Percent extra in buffer */
 //#define DATA_PROFILE_SAMPLES_MAX              ( ( (DATA_PROFILE_DEPTH_MAX / DATA_PROFILE_VELOCITY_MIN) / DATA_PROFILE_SAMPLE_FREQ ) * (100 + DATA_PROFILE_OVERAGE_MAX) / 100)
-#define DATA_PROFILE_SAMPLES_MAX                ( 2310 )
+#define DATA_PROFILE_SAMPLES_MAX                ( 3000 ) //( 2310 )
 #define DATA_PROFILE_MAX_LEN                    ( 25000 )
 
 #define DATA_PARK_SAMPLE_FREQ                   ( 1.0 / 60.0 )  /**< Sample every Minute */
@@ -36,16 +36,15 @@
 #define DATA_NUM_SEC_IN_HOUR                    ( 60 * 60 )
 #define DATA_NUM_SEC_IN_DAY                     ( DATA_NUM_SEC_IN_HOUR * DATA_PARK_PARK_MAX_DURATION_HOURS )
 #define DATA_NUM_SAMPLES_IN_DAY                 ( DATA_PARK_SAMPLE_FREQ * DATA_NUM_SEC_IN_DAY)
-#define DATA_PARK_SAMPLES_MAX                   ( 1440 )
+#define DATA_PARK_SAMPLES_MAX                   ( 2000 ) //( 1440 )
 //#define DATA_PARK_SAMPLES_MAX                   ( ((uint32_t)( 3600 ) * DATA_PARK_SAMPLE_FREQ) * DATA_PARK_PARK_MAX_DURATION_HOURS )
-
-
 
 
 /**********************************************************************************
  * Typdefs
  *********************************************************************************/
-typedef enum eSystemState_t{
+typedef enum eSystemState_t
+{
     SYSST_Predeployment_mode,
     SYSST_AutoBallast_mode,
     SYSST_SimpleProfiler_mode,
