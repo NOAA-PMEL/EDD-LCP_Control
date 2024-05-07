@@ -119,6 +119,13 @@ void artemis_piston_i2c_initialize(uint8_t i2c_addr)
     artemis_piston_i2c_power_on();
 }
 
+void artemis_piston_i2c_uninitialize(void)
+{
+    artemis_i2c_t *i2c = &module.i2c;
+    i2c->iom.module = 2;
+    artemis_iom_uninitialize(&i2c->iom);
+}
+
 void artemis_piston_i2c_power_on(void)
 {
     am_hal_gpio_output_set(module.power.pin);
@@ -253,7 +260,7 @@ void artemis_piston_i2c_read(uint8_t addr, uint8_t *data, uint16_t len)
     //artemis_stream_put(&txstream, 0x00);
     artemis_i2c_send(i2c, true, &txstream);
 
-    am_hal_systick_delay_us(5000);
+    am_hal_systick_delay_us(50000);
 
     artemis_i2c_receive(i2c, true, &rxstream, len);
     artemis_stream_read(&rxstream, data, len);
