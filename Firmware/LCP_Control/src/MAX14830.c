@@ -539,28 +539,28 @@ void MAX14830_enable(void)
     /* create global event handler for eventGroup */
     if (gEventHandle != NULL)
     {
-        ARTEMIS_DEBUG_PRINTF("MAX14830:: gEventHandle: alive\n");
+        ARTEMIS_DEBUG_PRINTF("MAX14830 :: gEventHandle, alive\n");
     }
     else
     {
         gEventHandle = xEventGroupCreate();
         if( gEventHandle != NULL )
         {
-            ARTEMIS_DEBUG_PRINTF("MAX14830:: gEventHandle: created\n");
+            ARTEMIS_DEBUG_PRINTF("MAX14830 :: gEventHandle, created\n");
         }
     }
 
     /* create SpiMutex semaphore for tasks */
     if (xSpiMutex != NULL)
     {
-        ARTEMIS_DEBUG_PRINTF("MAX14830:: xSpiMutex: alive\n");
+        ARTEMIS_DEBUG_PRINTF("MAX14830 :: xSpiMutex, alive\n");
     }
     else
     {
         xSpiMutex = xSemaphoreCreateMutex();
         if( xSpiMutex != NULL )
         {
-            ARTEMIS_DEBUG_PRINTF("MAX14830:: xSpiMutex: created\n");
+            ARTEMIS_DEBUG_PRINTF("MAX14830 :: xSpiMutex, created\n");
         }
     }
 }
@@ -619,7 +619,7 @@ void MAX14830_port_enable(eMAX18430_ComPort_t port)
     if(state == 1)
     {
         MAX14830_enable();
-        ARTEMIS_DEBUG_PRINTF("MAX14830:: Power ON\n");
+        ARTEMIS_DEBUG_PRINTF("MAX14830 :: Power ON\n");
     }
 
     /** Enable the Port Clock */
@@ -655,7 +655,7 @@ void MAX14830_port_enable_direct(eMAX18430_ComPort_t port)
     if(state == 1)
     {
         MAX14830_enable_direct();
-        ARTEMIS_DEBUG_PRINTF("MAX14830:: Direct Power ON\n");
+        ARTEMIS_DEBUG_PRINTF("MAX14830 :: Direct Power ON\n");
     }
 
     /** Enable the Port Clock */
@@ -689,7 +689,7 @@ void MAX14830_port_disable_direct(eMAX18430_ComPort_t port)
     if(cnt == MAX14830_NUM_SERIAL_PORTS)
     {
         MAX14830_disable_direct();
-        ARTEMIS_DEBUG_PRINTF("MAX14830:: Direct Power OFF\n");
+        ARTEMIS_DEBUG_PRINTF("MAX14830 :: Direct Power OFF\n");
     }
 }
 
@@ -733,7 +733,7 @@ void MAX14830_port_disable(eMAX18430_ComPort_t port)
     if(cnt == MAX14830_NUM_SERIAL_PORTS)
     {
         MAX14830_disable();
-        ARTEMIS_DEBUG_PRINTF("MAX14830:: Power OFF\n");
+        ARTEMIS_DEBUG_PRINTF("MAX14830 :: Power OFF\n");
     }
 }
 
@@ -764,7 +764,7 @@ void module_MAX14830_Handle_IRQ()
 
     if (port<0 && port>3)
     {
-        ARTEMIS_DEBUG_PRINTF("MAX14830:: PORT ERROR: port=%i\n", port);
+        ARTEMIS_DEBUG_PRINTF("MAX14830 :: PORT ERROR, port=%i\n", port);
         return;
     }
 
@@ -804,7 +804,7 @@ void module_MAX14830_Handle_IRQ()
                 /* if overrun, then collect all the bytes at once */
                 if (lsr_status & MAX14830_LSR_RXOVERRUN)
                 {
-                    ARTEMIS_DEBUG_PRINTF("MAX14830:: OVERFlow happened\n");
+                    ARTEMIS_DEBUG_PRINTF("MAX14830 :: OVERFlow happened\n");
                     module_MAX14830_Read((eMAX18430_ComPort_t)port, MAX14830_REG_RXFIFOLVL, 1, &rxlen);
                     module_MAX14830_Read((eMAX18430_ComPort_t)port, MAX14830_RHR, rxlen, rxData);
                     while (rxlen > 0)
@@ -825,7 +825,7 @@ void module_MAX14830_Handle_IRQ()
                                     MAX14830_LSR_FRAMEERR   |
                                     MAX14830_LSR_RTIMEOUT   ))
                 {
-                    ARTEMIS_DEBUG_PRINTF("MAX14830:: BYTE ERROR: lsr_status = 0x%02X\n", lsr_status);
+                    ARTEMIS_DEBUG_PRINTF("MAX14830 :: BYTE ERROR, lsr_status = 0x%02X\n", lsr_status);
                     break;
                 }
 
