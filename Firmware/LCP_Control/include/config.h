@@ -53,12 +53,12 @@
 
 #define SYSTEM_NEUTRAL_BUOYANCY             ( 1025.0f )
 #define SYSTEM_DENSITY_SEAWATER             ( 1000.0f ) //1033.0f )
-#define SYSTEM_RISE_RATE_MAX                ( 0.075f )
 #define SYSTEM_RISE_RATE_SETPOINT           ( 0.100f )
+#define SYSTEM_RISE_RATE_MAX                ( 0.075f )
 #define SYSTEM_RISE_RATE_MIN                ( 0.075f )  //0.125f )
+#define SYSTEM_FALL_RATE_SETPOINT           ( 0.100f )
 #define SYSTEM_FALL_RATE_MAX                ( 0.125f )
 #define SYSTEM_FALL_RATE_MIN                ( 0.075f )
-#define SYSTEM_FALL_RATE_SETPOINT           ( 0.100f )
 
 #define SYSTEM_PROFILER_PARK_DEPTH          ( 180.0f )      /* in meters */
 #define SYSTEM_PROFILER_PARK_DEPTH_ERR      ( 2.0f )
