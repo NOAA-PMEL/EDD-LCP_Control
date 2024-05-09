@@ -23,6 +23,7 @@
 #include "task.h"
 #include "semphr.h"
 #include "rtos.h"
+
 /**********************************************************************************
  * Configuration Constants
  *********************************************************************************/
@@ -68,8 +69,8 @@
 
 
 /*VOLUME AND LENGTH MAXIMUM DIFFERENCE ACCEPTABLE*/
-#define PISTON_VOLUME_DIFF_MAX      ( 0.03f )
-#define PISTON_LENGTH_DIFF_MAX      ( 0.008f )
+#define PISTON_VOLUME_DIFF_MAX      ( 0.04f )
+#define PISTON_LENGTH_DIFF_MAX      ( 0.01f )
 
 /**********************************************************************************
  * Typdefs
@@ -97,6 +98,7 @@ extern "C"{
 #endif
 
 bool PIS_initialize(void);
+void PIS_uninitialize(void);
 bool PIS_set_volume(float volume);
 bool PIS_set_length(float length);
 void PIS_move_to_zero(void);
@@ -127,6 +129,7 @@ void task_move_piston_to_full(void);
 void task_move_piston_to_volume(void);
 void task_move_piston_to_length(void);
 void PIS_set_piston_rate(uint8_t rate);
+void PIS_task_delete(TaskHandle_t xHandle);
 
 /**********************************************************************************
  * Unit Test Variables & Static Prototpyes
