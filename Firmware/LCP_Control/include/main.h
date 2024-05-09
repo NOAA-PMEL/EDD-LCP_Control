@@ -66,7 +66,9 @@
 #include "am_hal_status.h"
 #include "am_bsp.h"
 #include "am_util.h"
+#include "artemis_mcu.h"
 #include "artemis_time.h"
+#include "artemis_debug.h"
 
 //*****************************************************************************
 //
@@ -74,6 +76,8 @@
 //
 //*****************************************************************************
 #include "FreeRTOS.h"
+#include "FreeRTOSConfig.h"
+#include "rtos.h"
 #include "task.h"
 #include "event_groups.h"
 #include "semphr.h"
