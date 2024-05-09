@@ -134,7 +134,7 @@ static ProfilerSettings_t settings = {
 // Static Variables
 //
 //*****************************************************************************
-static Profiler_t profiler;
+//static Profiler_t profiler;
 
 
 //*****************************************************************************
@@ -190,7 +190,7 @@ float CTRL_calculate_piston_position(float pressure, float temp)
     float volume_min = settings.volume.min;
     volume_min *= ((1-settings.compress_coefficient*pressure)+(settings.thermal_coefficient*(25.0 - temp)));
 
-    ARTEMIS_DEBUG_PRINTF("LCP Piston minimum volume=%0.4f\n", volume_min);
+    ARTEMIS_DEBUG_PRINTF("LCP Piston minimum volume = %0.4f kg/m³\n", volume_min);
 
     /* convert to cubic inches for pistonboard, 1m³ = 61023.7in³ */
 
@@ -201,8 +201,8 @@ float CTRL_calculate_piston_position(float pressure, float temp)
 
     float position_change = volume_change / (PI * SMALL_PISTON_RADIUS_SQR );
 
-    ARTEMIS_DEBUG_PRINTF("LCP Piston volume change = %0.4f\n", volume_change);
-    ARTEMIS_DEBUG_PRINTF("LCP Piston position change = %0.4f\n", position_change);
+    ARTEMIS_DEBUG_PRINTF("LCP Piston volume change = %0.4f kg/m³\n", volume_change);
+    ARTEMIS_DEBUG_PRINTF("LCP Piston position change = %0.4f in\n", position_change);
 
     return position_change;
 }
@@ -242,8 +242,10 @@ float CTRL_calculate_length_from_volume(float volume)
     }
     else if ( (volume>0.0) && (volume<=SYSTEM_MAX_VOLUME) )
     {
+        ARTEMIS_DEBUG_PRINTF("LCP Volume = %0.4f, Housing volume = %.4f\n", volume, HOUSING_VOLUME);
         volume -= HOUSING_VOLUME;
-        length = volume/((PI*LARGE_PISTON_RADIUS_SQR)+SMALL_PISTON_MAX_LENGTH) ;
+        ARTEMIS_DEBUG_PRINTF("LCP Volume = %0.4f, Housing volume = %.4f\n", volume, HOUSING_VOLUME);
+        length = (volume/(PI*LARGE_PISTON_RADIUS_SQR))+SMALL_PISTON_MAX_LENGTH ;
     }
     /* convert into inches */
     //length *= 39.3701;
