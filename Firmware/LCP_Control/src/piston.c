@@ -117,7 +117,7 @@ void PIS_task_move_length(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_length,
                                 "Piston_Task_move_length", 256, NULL,
-                                tskIDLE_PRIORITY + 4UL,
+                                tskIDLE_PRIORITY + 5UL,
                                 xPiston) == pdPASS );
 }
 
@@ -125,7 +125,7 @@ void PIS_task_move_volume(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_volume,
                                 "Piston_Task_move_volume", 256, NULL,
-                                tskIDLE_PRIORITY + 3UL,
+                                tskIDLE_PRIORITY + 5UL,
                                 xPiston) == pdPASS );
 }
 
@@ -133,7 +133,7 @@ void PIS_task_move_full(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_full,
                                 "Piston_Task_move_full", 256, NULL,
-                                tskIDLE_PRIORITY + 3UL,
+                                tskIDLE_PRIORITY + 5UL,
                                 xPiston) == pdPASS );
 }
 
@@ -141,7 +141,7 @@ void PIS_task_move_zero(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_zero,
                                 "Piston_Task_move_zero", 256, NULL,
-                                tskIDLE_PRIORITY + 3UL,
+                                tskIDLE_PRIORITY + 5UL,
                                 xPiston) == pdPASS );
 }
 
