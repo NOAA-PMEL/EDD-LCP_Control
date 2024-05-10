@@ -54,8 +54,8 @@
 #define SYSTEM_NEUTRAL_BUOYANCY             ( 1025.0f )
 #define SYSTEM_DENSITY_SEAWATER             ( 1000.0f ) //1033.0f )
 #define SYSTEM_RISE_RATE_SETPOINT           ( 0.100f )
-#define SYSTEM_RISE_RATE_MAX                ( 0.075f )
-#define SYSTEM_RISE_RATE_MIN                ( 0.075f )  //0.125f )
+#define SYSTEM_RISE_RATE_MAX                ( 0.15f )
+#define SYSTEM_RISE_RATE_MIN                ( 0.05f )  //0.125f )
 #define SYSTEM_FALL_RATE_SETPOINT           ( 0.100f )
 #define SYSTEM_FALL_RATE_MAX                ( 0.125f )
 #define SYSTEM_FALL_RATE_MIN                ( 0.075f )
@@ -78,10 +78,12 @@
 #define SYSTEM_CRUSH_LIMIT_DEPTH            ( 220.0f )      /* crash limit depth in meters */
 #define SYSTEM_PROFILE_NUMBER               ( 100 )         /* for testing */
 #define PISTON_POSITION_INCREMENT           ( 0.015f )      /* Piston position increment-decrement in inches */
-#define PISTON_POSITION_INCREMENT2          ( 0.007f )      /* Piston position increment-decrement in inches */
+#define PISTON_POSITION_INCREMENT2          ( 0.008f )      /* Piston position increment-decrement in inches, minimum length is 0.008in */
 #define PISTON_POSITION_MAXIMUM             ( 2.0f ) //11.0f )       /* Piston position maximum in inches */
+#define CRUSH_DEPTH_PISTON_POSITION         ( 5.2f )        /* Piston position maximum in inches */
 #define PISTON_MOVE_TO_SURFACE              ( 2.0f ) //11.0f )       /* Piston position move to surface in inches */
 #define PROFILE_DEPTH_RATE_COUNTER          ( 5.0f )       /* Change piston position after this number of measurements */
+#define PARK_DEPTH_RATE_COUNTER             ( 2.0f )       /* Change piston position after this number of measurements */
 
 
 /*************************************
@@ -98,6 +100,7 @@
 #if defined(__TEST_OCEAN__)
 /** Ocean , set the values accordingly */
 #define BALLAST_DEPTH                       ( 2.0f )
+#define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 2.0f )
 #define PARK_DEPTH                          ( SYSTEM_PROFILER_PARK_DEPTH )
 #define PARK_DEPTH_MAX                      ( SYSTEM_PROFILER_PARK_DEPTH + 10.f)
@@ -117,13 +120,16 @@
 #elif defined(__TEST_PROFILE_1__)
 /** TEST profile1 */
 #define BALLAST_DEPTH                       ( 1.0f )    // pressure reading ( 0.0101f )
+#define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 1.0f )
+#define MOVE_TO_PARK_SAMPLE_RATE            ( 2.0f )
 #define PARK_DEPTH                          ( 180.0f )
 #define PARK_DEPTH_ERR                      ( 10.0f )
 #define PARK_DEPTH_MAX                      ( 190.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
 #define PARK_TIME                           ( 3.0f * 60.0f ) /* 3 mins */
 #define PARK_DENSITY                        ( 1033.0f )
+#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 2.0f )
 #define PROFILE_DEPTH                       ( 200.0f )
 #define PROFILE_DEPTH_ERR                   ( 10.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
@@ -136,13 +142,16 @@
 #elif defined(__TEST_PROFILE_2__)
 /** TEST profile2 */
 #define BALLAST_DEPTH                       ( 1.0f )    // pressure reading ( 0.0101f )
+#define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 1.0f )
+#define MOVE_TO_PARK_SAMPLE_RATE            ( 2.0f )
 #define PARK_DEPTH                          ( 20.0f )
 #define PARK_DEPTH_ERR                      ( 2.0f )
 #define PARK_DEPTH_MAX                      ( 23.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
 #define PARK_TIME                           ( 3.0f * 60.0f ) /* 3 mins */
 #define PARK_DENSITY                        ( 1033.0f )
+#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 2.0f )
 #define PROFILE_DEPTH                       ( 24.0f )
 #define PROFILE_DEPTH_ERR                   ( 1.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
@@ -155,13 +164,16 @@
 #elif defined(__TEST_TANK__)
 /** TANK Testing */
 #define BALLAST_DEPTH                       ( 1.0f )
+#define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 1.0f )
+#define MOVE_TO_PARK_SAMPLE_RATE            ( 2.0f )
 #define PARK_DEPTH                          ( 4.0f )
 #define PARK_DEPTH_ERR                      ( 0.25f )
 #define PARK_DEPTH_MAX                      ( 6.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
 #define PARK_TIME                           ( 3.0 * 60.0f ) /* 3 mins */
 #define PARK_DENSITY                        ( 1010.2f )
+#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 2.0f )
 #define PROFILE_DEPTH                       ( 4.5f )
 #define PROFILE_DEPTH_ERR                   ( 0.1f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
@@ -174,13 +186,16 @@
 #elif defined(__TEST_LAKE__)
 /** LAKE Testing */
 #define BALLAST_DEPTH                       ( )
+#define BALLAST_DEPTH_SAMPLE_RATE           ( )
 #define BALLAST_DEPTH_PROFILE               ( )
+#define MOVE_TO_PARK_SAMPLE_RATE            ( )
 #define PARK_DEPTH                          ( )
 #define PARK_DEPTH_ERR                      ( )
 #define PARK_DEPTH_MAX                      ( )
 #define PARK_RATE                           ( )
 #define PARK_TIME                           ( )
 #define PARK_DENSITY                        ( )
+#define MOVE_TO_PROFILE_SAMPLE_RATE         ( )
 #define PROFILE_DEPTH                       ( )
 #define PROFILE_DEPTH_ERR                   ( )
 #define PROFILE_RATE                        ( )
