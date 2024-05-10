@@ -155,6 +155,7 @@ extern "C"
 #define xDelay1000ms                            pdMS_TO_TICKS(1000UL)
 #define xDelay2000ms                            pdMS_TO_TICKS(2000UL)
 #define xDelay5000ms                            pdMS_TO_TICKS(5000UL)
+#define xDelay30000ms                           pdMS_TO_TICKS(30000UL)
 
 #define vPortSVCHandler                         SVC_Handler
 #define xPortPendSVHandler                      PendSV_Handler
