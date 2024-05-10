@@ -156,7 +156,7 @@ void artemis_uart_receive(artemis_stream_t *rxstream)
     bool run = true;
     while (run)
     {
-        ret = xEventGroupWaitBits(xUartEventHandle, 0x07, pdTRUE, pdFALSE, portMAX_DELAY);
+        ret = xEventGroupWaitBits(xUartEventHandle, 0x07, pdTRUE, pdFALSE, xDelay30000ms);
         if (ret == 0x01)
         {
             memcpy(rxstream->buffer, rxbuffer, rxindex);
