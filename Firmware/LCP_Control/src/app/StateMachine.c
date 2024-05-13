@@ -1274,9 +1274,9 @@ void module_sps_park(void)
                 if (crush_depth)
                 {
                     /* stop here, in case of emergency blow */
-                    SENS_task_delete(xTemp);
                     SENS_task_delete(xDepth);
                     SENS_sensor_depth_off();
+                    SENS_task_delete(xTemp);
                     SENS_sensor_temperature_off();
                     spsEvent = MODE_POPUP;
                     //run = false;
@@ -1321,9 +1321,9 @@ void module_sps_park(void)
                 piston_timer = 0;
             }
 
-            SENS_task_delete(xTemp);
             SENS_task_delete(xDepth);
             SENS_sensor_depth_off();
+            SENS_task_delete(xTemp);
             SENS_sensor_temperature_off();
             wait_time = 0;
             spsEvent = MODE_DONE;
@@ -1349,10 +1349,10 @@ void module_sps_park(void)
                 piston_timer = 0;
             }
 
-            SENS_task_delete(xTemp);
             SENS_task_delete(xDepth);
-            SENS_sensor_temperature_off();
             SENS_sensor_depth_off();
+            SENS_task_delete(xTemp);
+            SENS_sensor_temperature_off();
             spsEvent = MODE_DONE;
             run = false;
             break;
@@ -1952,9 +1952,9 @@ void module_sps_profile(void)
                 if (crush_depth)
                 {
                     /* stop here, in case of emergency blow */
-                    SENS_task_delete(xTemp);
                     SENS_task_delete(xDepth);
                     SENS_sensor_depth_off();
+                    SENS_task_delete(xTemp);
                     SENS_sensor_temperature_off();
                     spsEvent = MODE_POPUP;
                     run = false;
@@ -1999,9 +1999,9 @@ void module_sps_profile(void)
                 piston_timer = 0;
             }
             run = false;
-            SENS_task_delete(xTemp);
             SENS_task_delete(xDepth);
             SENS_sensor_depth_off();
+            SENS_task_delete(xTemp);
             SENS_sensor_temperature_off();
             spsEvent = MODE_DONE;
         }
