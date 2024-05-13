@@ -186,7 +186,6 @@ bool SENS_get_gps(SensorGps_t *gps)
 void SENS_task_delete(TaskHandle_t xHandle)
 {
     uint8_t wait = 0;
-    uint8_t tries = 0;
     bool delete = false;
 
     /* turn off LEDs */
@@ -194,7 +193,7 @@ void SENS_task_delete(TaskHandle_t xHandle)
     am_hal_gpio_output_set(AM_BSP_GPIO_LED_GREEN);
 
     /* check the task state */
-    while (!delete && wait <= 20 && tries<3)
+    while (!delete && wait <= 20)
     {
         eTaskState eState = eTaskGetState(xHandle);
         if ( (eState==eReady) || (eState==eBlocked) )
@@ -202,6 +201,12 @@ void SENS_task_delete(TaskHandle_t xHandle)
             /* suspend the task first immediately */
             ARTEMIS_DEBUG_PRINTF("SENSORS :: Task is being suspended\n");
             vTaskSuspend(xHandle);
+            if(xSemaphoreTake(xTDSemaphore, (TickType_t)0))
+            {
+                xSemaphoreGive(xTDSemaphore);
+                ARTEMIS_DEBUG_PRINTF("SENSORS :: xTDsemaphore is available\n");
+                delete = true;
+            }
         }
         else if (eState==eRunning)
         {
@@ -219,13 +224,10 @@ void SENS_task_delete(TaskHandle_t xHandle)
                 xSemaphoreGive(xTDSemaphore);
                 ARTEMIS_DEBUG_PRINTF("SENSORS :: xTDsemaphore is available\n");
                 delete = true;
-                break;
             }
             else
             {
                 ARTEMIS_DEBUG_PRINTF("SENSORS :: xTDsemaphore is not available\n");
-                wait=0;
-                tries++;
             }
         }
         wait++;
