@@ -68,7 +68,7 @@ extern "C"
 #define configTICK_RATE_HZ                      1000
 #define configMAX_PRIORITIES                    8
 #define configMINIMAL_STACK_SIZE                (256)
-#define configTOTAL_HEAP_SIZE                   (96 * 1024)
+#define configTOTAL_HEAP_SIZE                   (128 * 1024)
 #define configMAX_TASK_NAME_LEN                 32
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
