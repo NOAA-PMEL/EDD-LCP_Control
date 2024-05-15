@@ -226,7 +226,7 @@ void datalogger_predeploy_mode(SensorGps_t *gps, bool check)
     datalogger_cd(dirname);
 
     /* get time-stamp */
-    artemis_rtc_get_time(&time);
+    bool utc = artemis_rtc_get_time(&time);
     char filename[64] = {0};
     sprintf (filename, "pds_%02d.%02d.20%02d.txt", time.month, time.day, time.year);
 
@@ -238,8 +238,9 @@ void datalogger_predeploy_mode(SensorGps_t *gps, bool check)
     datalogger_writefile("LCP System Check information\n");
     datalogger_writefile("******************************\n");
 
-    am_util_stdio_sprintf(data, "Check : %s\nTime : %02d:%02d:%02d\nDate : %02d.%02d.20%02d\nLatitude : %.7f\nLongitude : %.7f\nAltitude : %.7f\n\n\n",
-                                check == true ? "OK" : "Failed", time.hour, time.min, time.sec, time.month, time.day, time.year, gps->latitude, gps->longitude, gps->altitude);
+    am_util_stdio_sprintf(data, "Check : %s\nTime : %02d:%02d:%02d (%s)\nDate : %02d.%02d.20%02d\nLatitude : %.7f\nLongitude : %.7f\nAltitude : %.7f\n\n\n",
+                                check == true ? "OK" : "Failed", time.hour, time.min, time.sec, utc == true ? "UTC" : "local", time.month, time.day, time.year,
+                                gps->latitude, gps->longitude, gps->altitude);
 
     datalogger_writefile(data);
     datalogger_write_sync();
