@@ -173,7 +173,6 @@ void PIS_task_delete(TaskHandle_t xHandle)
         {
             ARTEMIS_DEBUG_PRINTF("PISTON :: Task is Deleted\n");
             delete = true;
-            break;
         }
         wait++;
         /* wait for 100ms */
