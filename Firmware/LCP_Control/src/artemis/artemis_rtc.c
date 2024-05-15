@@ -10,6 +10,7 @@
 #include "artemis_debug.h"
 
 static void artemis_rtc_timer(void);
+static bool utc = false;
 
 //void artemis_rtc_set_time(void);
 //void artemis_rtc_get_time(void);
@@ -123,17 +124,22 @@ void artemis_rtc_initialize(void)
     /* Enable the timer */
     am_hal_ctimer_start(0, AM_HAL_CTIMER_TIMERA);
 
+    rtc_time time;
+    artemis_rtc_get_time(&time);
     ARTEMIS_DEBUG_PRINTF("\nRTC Timer\n");
     ARTEMIS_DEBUG_PRINTF("***************************************\n");
-    ARTEMIS_DEBUG_PRINTF("Clock started on %s at %s.\n\n",__DATE__,__TIME__);
+    //ARTEMIS_DEBUG_PRINTF("Clock started on %s at %s.\n\n",__DATE__,__TIME__);
+    ARTEMIS_DEBUG_PRINTF("Clock started on %02d.%02d.20%02d at %02d:%02d:%02d (local)\n\n",
+                            time.month, time.day, time.year, time.hour, time.min, time.sec);
 }
 
-uint8_t artemis_rtc_get_time(rtc_time *time)
+bool artemis_rtc_get_time(rtc_time *time)
 {
     am_hal_rtc_time_get(&hal_time);
 
     if (hal_time.ui32ReadError){
-        return 1;
+        ARTEMIS_DEBUG_PRINTF("RTC :: ERROR, hal_time\n");
+        return false;
     }
 
     time->year = (uint16_t) hal_time.ui32Year;
@@ -163,7 +169,14 @@ uint8_t artemis_rtc_get_time(rtc_time *time)
     //ARTEMIS_DEBUG_PRINTF("20%02d", hal_time.ui32Year);
     //ARTEMIS_DEBUG_PRINTF("\n");
 
-    return 0;
+    if (utc)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void artemis_rtc_set_time(rtc_time *pTime){
@@ -185,8 +198,7 @@ void artemis_rtc_set_time(rtc_time *pTime){
     am_hal_rtc_osc_enable();
 }
 
-//uint8_t artemis_rtc_gps_calibration(GPS_Data_t *gps_time)
-uint8_t artemis_rtc_gps_calibration(SensorGps_t *gps_time)
+void artemis_rtc_gps_calibration(SensorGps_t *gps_time)
 {
     rtc_time time;
 
@@ -206,8 +218,7 @@ uint8_t artemis_rtc_gps_calibration(SensorGps_t *gps_time)
 
     /* Set the gps time */
     artemis_rtc_set_time(&time);
-    
-    return 0;
+    utc = true;
 }
 
 void artemis_rtc_set12hour(void){

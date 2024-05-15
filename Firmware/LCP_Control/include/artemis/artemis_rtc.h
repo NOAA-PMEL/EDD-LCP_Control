@@ -30,9 +30,8 @@ uint8_t mthToIndex(const char *pcMon);
 
 void artemis_rtc_initialize(void);
 void artemis_rtc_set_time(rtc_time *pTime);
-uint8_t artemis_rtc_get_time(rtc_time *pTime);
-//uint8_t artemis_rtc_gps_calibration(GPS_Data_t *gps_time);
-uint8_t artemis_rtc_gps_calibration(SensorGps_t *gps_time);
+bool artemis_rtc_get_time(rtc_time *pTime);
+void artemis_rtc_gps_calibration(SensorGps_t *gps_time);
 void artemis_rtc_enable(void);
 void artemis_rtc_disable(void);
 
