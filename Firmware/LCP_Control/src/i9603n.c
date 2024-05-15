@@ -301,9 +301,7 @@ void task_Iridium_satellite (void)
 {
     /* 1 seocnds period delay */
     uint32_t period = xDelay1000ms;
-
     ARTEMIS_DEBUG_PRINTF("Iridium :: Satellite delay PERIOD=%dms, %isec\n", period, SATELLITE_TIMER);
-    SemaphoreHandle_t Ssemaphore = xSemaphoreCreateMutex();
 
     /* timer */
     uint16_t timer = 0;
@@ -317,35 +315,33 @@ void task_Iridium_satellite (void)
         check = artemis_i9603n_is_network_available();
         ARTEMIS_DEBUG_PRINTF("Iridium :: Satellite visibility check=%i\n", (uint8_t)check);
 
-        if( xSemaphoreTake(Ssemaphore, period) == pdTRUE )
+        if (check)
         {
-            if (check)
-            {
-                taskENTER_CRITICAL();
-                xVisible = true;
-                taskEXIT_CRITICAL();
+            taskENTER_CRITICAL();
+            xVisible = true;
+            taskEXIT_CRITICAL();
 
-                visibility_count++;
-                if (visibility_count == 3)
-                {
-                    run = false;
-                    visibility_count = 0;
-                }
-            }
-            else
-            {
-                taskENTER_CRITICAL();
-                xVisible = false;
-                taskEXIT_CRITICAL();
-            }
-            xSemaphoreGive(Ssemaphore);
-            timer++;
-            if (timer >= SATELLITE_TIMER)
+            visibility_count++;
+            if (visibility_count == 3)
             {
                 run = false;
-                timer = 0;
+                visibility_count = 0;
             }
         }
+        else
+        {
+            taskENTER_CRITICAL();
+            xVisible = false;
+            taskEXIT_CRITICAL();
+        }
+
+        timer++;
+        if (timer >= SATELLITE_TIMER)
+        {
+            run = false;
+            timer = 0;
+        }
+
         vTaskDelay(period);
     }
     /* delete the task */
@@ -389,9 +385,7 @@ void task_Iridium (void)
 {
     /* default 5 seocnds period delay */
     uint32_t period = xDelay1000ms/iridium_delay_rate;
-
     ARTEMIS_DEBUG_PRINTF("Iridium :: Delay PERIOD=%ums, Max Tries=%u\n", period, IRIDIUM_TRIES);
-    SemaphoreHandle_t Isemaphore = xSemaphoreCreateMutex();
 
     uint8_t len = 0;
     uint16_t buf[10] = {0};
@@ -403,104 +397,105 @@ void task_Iridium (void)
     bool run = true;
     while(run)
     {
-        if( xSemaphoreTake(Isemaphore, portMAX_DELAY) == pdTRUE )
+        len = i9603n_initiate_transfer(buf);
+        if (len > 0)
         {
-            len = i9603n_initiate_transfer(buf);
-            if (len > 0)
+            /* fill up the status to XTStatus buffer */
+            taskENTER_CRITICAL();
+            for (uint8_t i=0; i<len; i++)
             {
-                /* fill up the status to XTStatus buffer */
-                taskENTER_CRITICAL();
-                for (uint8_t i=0; i<len; i++)
-                {
-                    xTStatus[i] = buf[i];
-                }
-                taskEXIT_CRITICAL();
+                xTStatus[i] = buf[i];
+            }
+            taskEXIT_CRITICAL();
 
 
-                ARTEMIS_DEBUG_PRINTF("Iridium :: Transfer status : ");
-                for(uint16_t i=0; i<len; i++)
-                {
-                    ARTEMIS_DEBUG_PRINTF("%u ", buf[i]);
-                }
-                ARTEMIS_DEBUG_PRINTF("\n");
+            ARTEMIS_DEBUG_PRINTF("Iridium :: Transfer status : ");
+            for(uint16_t i=0; i<len; i++)
+            {
+                ARTEMIS_DEBUG_PRINTF("%u ", buf[i]);
+            }
+            ARTEMIS_DEBUG_PRINTF("\n");
 
-                /* check the transfer status */
-                if(buf[0] <= 4)
+            /* check the transfer status */
+            if(buf[0] <= 4)
+            {
+                ARTEMIS_DEBUG_PRINTF("Iridium :: Transfer Successful, clearing buffer\n");
+                // clear originated buffer, wait for 2 seconds
+                vTaskDelay(xDelay2000ms);
+                ARTEMIS_DEBUG_PRINTF("Iridium :: Clearing the Originated buffer:\n");
+                len = i9603n_send_AT_cmd("AT+SBDD0\r", buf_AT);
+                if(len>0)
                 {
-                    ARTEMIS_DEBUG_PRINTF("Iridium :: Transfer Successful, clearing buffer\n");
-                    // clear originated buffer, wait for 2 seconds
-                    vTaskDelay(xDelay2000ms);
-                    ARTEMIS_DEBUG_PRINTF("Iridium :: Clearing the Originated buffer:\n");
-                    len = i9603n_send_AT_cmd("AT+SBDD0\r", buf_AT);
-                    if(len>0)
-                    {
-                        ARTEMIS_DEBUG_PRINTF("Iridium :: Originated buffer is cleared\n");
-                        ///* for Debugging */
-                        //for (uint8_t i=0; i<len; i++)
-                        //{
-                        //    ARTEMIS_DEBUG_PRINTF("%c", buf_AT[i]);
-                        //}
-                        run = false;
-                    }
+                    ARTEMIS_DEBUG_PRINTF("Iridium :: Originated buffer is cleared\n");
+                    ///* for Debugging */
+                    //for (uint8_t i=0; i<len; i++)
+                    //{
+                    //    ARTEMIS_DEBUG_PRINTF("%c", buf_AT[i]);
+                    //}
+                    run = false;
                 }
-                else if (buf[0] == 32)
+            }
+            else if (buf[0] == 32)
+            {
+                ARTEMIS_DEBUG_PRINTF("Iridium :: No Network Service\n");
+            }
+            else
+            {
+                if (buf[0] == 18)
                 {
-                    ARTEMIS_DEBUG_PRINTF("Iridium :: No Network Service\n");
+                    ARTEMIS_DEBUG_PRINTF("Iridium :: Connection Lost (RF drop).\n");
+                }
+                else if (buf[0] == 37)
+                {
+                    ARTEMIS_DEBUG_PRINTF("Iridium :: SBD service is temporarily disabled.\n");
+                }
+                else if (buf[0] == 38)
+                {
+                    ARTEMIS_DEBUG_PRINTF("Iridium :: Try later, Traffic management period.\n");
+                }
+
+                // clear originated buffer, wait for 2 seconds
+                vTaskDelay(xDelay2000ms);
+                ARTEMIS_DEBUG_PRINTF("Iridium :: Clearing the Originated buffer:\n");
+                len = i9603n_send_AT_cmd("AT+SBDD0\r", buf_AT);
+                if(len>0)
+                {
+                    ARTEMIS_DEBUG_PRINTF("Iridium :: Originated buffer is cleared\n");
+                    ///* for Debugging */
+                    //for (uint8_t i=0; i<len; i++)
+                    //{
+                    //    ARTEMIS_DEBUG_PRINTF("%c", buf_AT[i]);
+                    //}
+                    run = false;
+                }
+            }
+        }
+
+        /* continue checking the iridium max tries */
+        timer++;
+        if (timer >= IRIDIUM_TRIES)
+        {
+            if (run)
+            {
+                ARTEMIS_DEBUG_PRINTF("Iridium :: Reached Max Tries\n");
+                // clear originated buffer, wait for 2 seconds
+                vTaskDelay(xDelay2000ms);
+                ARTEMIS_DEBUG_PRINTF("Iridium :: Clearing the Originated buffer:\n");
+                len = i9603n_send_AT_cmd("AT+SBDD0\r", buf_AT);
+                if(len>0)
+                {
+                    ARTEMIS_DEBUG_PRINTF("Iridium :: Originated buffer is cleared\n");
+                    ///* for Debugging */
+                    //for (uint8_t i=0; i<len; i++)
+                    //{
+                    //    ARTEMIS_DEBUG_PRINTF("%c", buf_AT[i]);
+                    //}
+                    run = false;
                 }
                 else
                 {
-                    if (buf[0] == 18)
-                    {
-                        ARTEMIS_DEBUG_PRINTF("Iridium :: Connection Lost (RF drop).\n");
-                    }
-                    else if (buf[0] == 37)
-                    {
-                        ARTEMIS_DEBUG_PRINTF("Iridium :: SBD service is temporarily disabled.\n");
-                    }
-                    else if (buf[0] == 38)
-                    {
-                        ARTEMIS_DEBUG_PRINTF("Iridium :: Try later, Traffic management period.\n");
-                    }
-
-                    // clear originated buffer, wait for 2 seconds
-                    vTaskDelay(xDelay2000ms);
-                    ARTEMIS_DEBUG_PRINTF("Iridium :: Clearing the Originated buffer:\n");
-                    len = i9603n_send_AT_cmd("AT+SBDD0\r", buf_AT);
-                    if(len>0)
-                    {
-                        ARTEMIS_DEBUG_PRINTF("Iridium :: Originated buffer is cleared\n");
-                        ///* for Debugging */
-                        //for (uint8_t i=0; i<len; i++)
-                        //{
-                        //    ARTEMIS_DEBUG_PRINTF("%c", buf_AT[i]);
-                        //}
-                        run = false;
-                    }
-                }
-            }
-            xSemaphoreGive(Isemaphore);
-
-            /* continue checking the iridium max tries */
-            timer++;
-            if (timer >= IRIDIUM_TRIES)
-            {
-                if (run)
-                {
-                    ARTEMIS_DEBUG_PRINTF("Iridium :: Reached Max Tries\n");
-                    // clear originated buffer, wait for 2 seconds
-                    vTaskDelay(xDelay2000ms);
-                    ARTEMIS_DEBUG_PRINTF("Iridium :: Clearing the Originated buffer:\n");
-                    len = i9603n_send_AT_cmd("AT+SBDD0\r", buf_AT);
-                    if(len>0)
-                    {
-                        ARTEMIS_DEBUG_PRINTF("Iridium :: Originated buffer is cleared\n");
-                        ///* for Debugging */
-                        //for (uint8_t i=0; i<len; i++)
-                        //{
-                        //    ARTEMIS_DEBUG_PRINTF("%c", buf_AT[i]);
-                        //}
-                        run = false;
-                    }
+                    ARTEMIS_DEBUG_PRINTF("Iridium :: Originated buffer was not cleared\n");
+                    run = false;
                 }
             }
         }
