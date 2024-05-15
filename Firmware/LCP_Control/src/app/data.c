@@ -110,8 +110,7 @@ uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour,
     year = year + 2000;
     const uint16_t daysInMonth[] = {0, 31, 59, 90, 120, 151, 181, 211, 242, 272, 303, 333 };
     uint32_t epoch =    (year - 1970) * 86400 * 365 + ((year - 1968) / 4) * 86400 +
-                        //daysInMonth[month - 1] * 86400 + (day - 1) * 86400 +
-                        daysInMonth[month - 1] * 86400 + (day * 86400) +
+                        daysInMonth[month - 1] * 86400 + (day - 1) * 86400 +
                         hour * 3600 + min * 60 + sec;
 
     if (!(year % 4) && month <= 2)
