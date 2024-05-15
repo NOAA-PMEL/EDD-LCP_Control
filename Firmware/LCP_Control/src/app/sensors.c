@@ -205,6 +205,7 @@ void SENS_task_delete(TaskHandle_t xHandle)
             {
                 xSemaphoreGive(xTDSemaphore);
                 ARTEMIS_DEBUG_PRINTF("SENSORS :: xTDsemaphore is available\n");
+                vTaskDelete(xHandle);
                 delete = true;
             }
         }
@@ -368,7 +369,6 @@ void task_depth(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SENSORS :: ERROR, xTDSemaphore is NULL \n\n");
             }
-
         }
         vTaskDelayUntil(&xLastWakeTime, period);
     }
