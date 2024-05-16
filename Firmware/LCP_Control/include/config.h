@@ -80,7 +80,8 @@
 #define PISTON_POSITION_INCREMENT           ( 0.015f )      /* Piston position increment-decrement in inches */
 #define PISTON_POSITION_INCREMENT2          ( 0.008f )      /* Piston position increment-decrement in inches, minimum length is 0.008in */
 #define PISTON_POSITION_MAXIMUM             ( 2.0f ) //11.0f )       /* Piston position maximum in inches */
-#define CRUSH_DEPTH_PISTON_POSITION         ( 5.2f )        /* Piston position maximum in inches */
+#define CRUSH_DEPTH_PISTON_POSITION         ( 5.25f )       /* Piston position maximum in inches */
+#define CRITICAL_PISTON_POSITON_DEPTH       ( 50.0f )       /* Critical depth where piston length must not exceed 5.25 inches */
 #define PISTON_MOVE_TO_SURFACE              ( 2.0f ) //11.0f )       /* Piston position move to surface in inches */
 #define PROFILE_DEPTH_RATE_COUNTER          ( 5.0f )       /* Change piston position after this number of measurements */
 #define PARK_DEPTH_RATE_COUNTER             ( 2.0f )       /* Change piston position after this number of measurements */
