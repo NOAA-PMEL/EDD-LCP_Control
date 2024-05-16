@@ -289,15 +289,171 @@ void module_pus_surface_float(void)
 {
     uint32_t piston_period = xDelay1000ms;
     uint32_t piston_timer = 0;
-    bool piston_move = true;
+    bool piston_move = false;
     float Volume = 0.0;
     float Length = 0.0;
     float Density = 0.0;
+    float length_update = 0.0;
+
+    /* get piston current length */
+    PIS_Get_Length(&Length);
+    length_update = Length;
+    Volume = CTRL_calculate_volume_from_length(Length);
+    Density = CTRL_calculate_lcp_density(Volume);
+    ARTEMIS_DEBUG_PRINTF("SPS :: surface_float, Density=%.3fkg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
+    ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston time-out, task->finished\n");
 
     TaskHandle_t xPiston;
     eTaskState eStatus;
     PIS_set_piston_rate(1);
+
+    /* Monitor the Depth if it is less than 50m */
+    uint32_t period = xDelay1000ms;
+    SENS_set_depth_rate(1);
+    SENS_sensor_depth_on();
+    TaskHandle_t xDepth;
+    SENS_task_sample_depth_continuous(&xDepth);
+    bool run = true;
+    float Depth = 0, Rate = 0;
+    float Pressure = 0;
+    rtc_time time;
+
+    /** check for the depth rate up to XX measurements */
+    uint8_t rate_count = 0;
+    float rate_avg = 0;
+
+    while (run)
+    {
+        SENS_get_depth(&Depth, &Pressure, &Rate);
+        ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Pressure = %0.4f bar\n", Pressure);
+        ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Depth    = %0.4f m, rate = %0.4f\n", Depth, Rate);
+        artemis_rtc_get_time(&time);
+        uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
+        ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Epoch    = %ld\n", epoch);
+        if ( Depth <= CRITICAL_PISTON_POSITON_DEPTH )
+        {
+            ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Pressure reached = %0.4f bar\n", Pressure);
+            ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Depth reached    = %0.4f m\n", Depth);
+            run = false;
+            piston_move = false;
+            SENS_task_delete(xDepth);
+            SENS_sensor_depth_off();
+        }
+        else
+        {
+            /* check the Depth rate */
+
+            /* collect up to XX measurements
+             * rate_count is the number of depth rate average */
+            rate_avg += Rate;
+            rate_count++;
+            if (rate_count >= 5)
+            {
+                float averaged_rate = (float) (rate_avg / 5);
+                /* check if rate is positive, negative or stable */
+                if (averaged_rate < 0.0)
+                {
+                    /* do nothing for now, */
+                    ARTEMIS_DEBUG_PRINTF("SPS :: surface_float, Depth Rate is negative, do nothing\n");
+                }
+                else if (averaged_rate > 0.0 && !piston_move)
+                {
+                    /* decrease piston position by PARK_POSITION_INCREMENT inches */
+                    ARTEMIS_DEBUG_PRINTF("SPS :: surface_float, Depth Rate is positive, increase %fin\n", PARK_POSITION_INCREMENT);
+                    length_update += PARK_POSITION_INCREMENT;
+
+                    /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
+                    if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
+                    {
+                        if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
+                        {
+                            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: surface_float, Depth = %.4f is @critial piston position >>\n", Depth);
+                            length_update = CRUSH_DEPTH_PISTON_POSITION;
+                        }
+                    }
+
+                    PIS_set_length(length_update);
+                    PIS_task_move_length(&xPiston);
+                    piston_move = true;
+                }
+                else if (averaged_rate == 0.0 && !piston_move)
+                {
+                    /* decrease piston position by PARK_POSITION_INCREMENT inches */
+                    ARTEMIS_DEBUG_PRINTF("SPS :: surface_float, Depth Rate is stable, increase %fin\n", PARK_POSITION_INCREMENT2);
+                    length_update += PARK_POSITION_INCREMENT;
+
+                    /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
+                    if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
+                    {
+                        if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
+                        {
+                            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: surface_float, Depth=%.4f is @critial piston position >>\n", Depth);
+                            length_update = CRUSH_DEPTH_PISTON_POSITION;
+                        }
+                    }
+
+                    PIS_set_length(length_update);
+                    PIS_task_move_length(&xPiston);
+                    piston_move = true;
+                }
+                /* reset the rate counter and rate_avg*/
+                rate_count = 0;
+                rate_avg = 0.0;
+            }
+
+        }
+
+        while (piston_move)
+        {
+            eStatus = eTaskGetState( xPiston );
+            if ( (eStatus==eRunning) ||
+                 (eStatus==eReady)   ||
+                 (eStatus==eBlocked)  )
+            {
+                ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->active\n");
+
+                /* piston time for up to 120 seconds */
+                piston_timer += piston_period;
+                if (piston_timer >= 120000)
+                {
+                    PIS_Get_Length(&Length);
+                    Volume = CTRL_calculate_volume_from_length(Length);
+                    Density = CTRL_calculate_lcp_density(Volume);
+                    ARTEMIS_DEBUG_PRINTF("SPS :: surface_float, Density=%.3fkg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
+                    ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston time-out, task->finished\n");
+                    PIS_task_delete(xPiston);
+                    vTaskDelay(piston_period);
+                    PIS_Reset();
+                    piston_move = false;
+                    piston_timer = 0;
+                }
+            }
+            else if (eStatus==eSuspended)
+            {
+                ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->suspended\n");
+                vTaskDelete ( xPiston );
+                piston_move = false;
+                piston_timer = 0;
+            }
+            else if (eStatus==eDeleted)
+            {
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Density=%.3fkg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
+                ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->finished\n");
+                piston_move = false;
+                piston_timer = 0;
+            }
+        }
+
+        vTaskDelay(period);
+    }
+
+    /* it is safe to fully extend the piston if need be */
+    vTaskDelay(piston_period);
     PIS_task_move_full(&xPiston);
+    piston_move = true;
     vTaskDelay(piston_period);
 
     Event_e pusEvent;
@@ -340,7 +496,7 @@ void module_pus_surface_float(void)
             PIS_Get_Length(&Length);
             Volume = CTRL_calculate_volume_from_length(Length);
             Density = CTRL_calculate_lcp_density(Volume);
-            ARTEMIS_DEBUG_PRINTF("SPS :: surface_float, Density=%.3fkg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
+            ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Density=%.3fkg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
             ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->finished\n");
             piston_move = false;
             piston_timer = 0;
@@ -348,6 +504,7 @@ void module_pus_surface_float(void)
         }
         vTaskDelay(piston_period);
     }
+
     SendEvent(pusEventQueue, &pusEvent);
     vTaskDelete(NULL);
 }
@@ -492,6 +649,7 @@ void module_pds_idle(void)
         }
         vTaskDelayUntil(&xLastWakeTime, period);
     }
+
     SendEvent(pdsEventQueue, &pdsEvent);
     vTaskDelete(NULL);
 }
@@ -544,11 +702,7 @@ void module_pds_systemcheck(void)
                         /* Calibrate the GPS UTC time into RTC */
                         ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, RTC : <GPS Time Set>\n");
                         artemis_rtc_gps_calibration(&gps);
-                        am_hal_gpio_output_clear(AM_BSP_GPIO_LED_GREEN);
                         fix = 0;
-                        //rtc_time time;
-                        //artemis_rtc_get_time(&time);
-                        //ARTEMIS_DEBUG_PRINTF("RTC : TimeStampe, %u.%u.%u, %u:%u:%u\n", time.month, time.day, time.year, time.hour, time.min, time.sec);
                     }
                 }
                 else
@@ -570,7 +724,7 @@ void module_pds_systemcheck(void)
                     Lat = gps.latitude;
                     Lon = gps.longitude;
                     /* Calibrate the GPS UTC time into RTC */
-                    ARTEMIS_DEBUG_PRINTF("SPS :: systemcheck, RTC : <GPS Time Set>\n");
+                    ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, RTC : <GPS Time Set>\n");
                     artemis_rtc_gps_calibration(&gps);
                     fix = 0;
                 }
@@ -593,6 +747,20 @@ void module_pds_systemcheck(void)
         /* put a forever delay */
         vTaskDelay(portMAX_DELAY);
     }
+
+    rtc_time time;
+    bool utc = artemis_rtc_get_time(&time);
+    if (utc)
+    {
+        ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, RTC : TimeStamp, %02d.%02d.20%02d, %02d:%02d:%02d (UTC)\n",
+                        time.month, time.day, time.year, time.hour, time.min, time.sec);
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, RTC : TimeStamp, %02d.%02d.20%02d, %02d:%02d:%02d (local)\n",
+                        time.month, time.day, time.year, time.hour, time.min, time.sec);
+    }
+
     /* task done, move to Idle state of the PreDeploy_mode */
     SendEvent(pdsEventQueue, &pdsEvent);
     vTaskDelete(NULL);
@@ -685,22 +853,23 @@ void STATE_Profiler(void)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: Transitionng to next state\n");
             system.profiler.state++;
-            vTaskDelay(xDelay1000ms);
+            vTaskDelay(xDelay2000ms);
         }
         else if (spsEvent == MODE_IDLE)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: Profiling done, going to Idle\n");
             system.profiler.state = SPS_Idle;
-            vTaskDelay(xDelay1000ms);
+            vTaskDelay(xDelay2000ms);
         }
         else if (spsEvent == MODE_POPUP)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: Switching to Popup Mode\n");
-            vTaskDelay(xDelay1000ms);
+            vTaskDelay(xDelay2000ms);
 
             gEvent = spsEvent;
             SendEvent(gEventQueue, &gEvent);
             vQueueDelete(spsEventQueue);
+            vTaskDelay(xDelay500ms);
             vTaskDelete(NULL);
         }
     }
@@ -729,6 +898,7 @@ void module_sps_idle(void)
 
     ARTEMIS_DEBUG_PRINTF("SPS :: Idle, Task->finished\n");
     ARTEMIS_DEBUG_PRINTF("\n\n<<< Starting Profile %u >>>\n\n", prof_number+1);
+
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
 }
@@ -863,7 +1033,7 @@ void module_sps_move_to_park(void)
     /* do nothing */
 #else
 
-        /* collect up to XX measurements 
+        /* collect up to XX measurements
          * rate_count is the number of depth rate average */
         rate_avg += Rate;
 	    rate_count++;
@@ -881,6 +1051,17 @@ void module_sps_move_to_park(void)
                 /* decrease piston position by PARK_POSITION_INCREMENT inches */
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Rate is negative, decrease %fin\n", PARK_POSITION_INCREMENT);
                 length_update -= PARK_POSITION_INCREMENT;
+
+                /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
+                if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
+                {
+                    if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Depth = %.4f is @critial piston position >>\n", Depth);
+                        length_update = CRUSH_DEPTH_PISTON_POSITION;
+                    }
+                }
+
                 park_piston_length = length_update;
                 PIS_set_length(length_update);
                 PIS_task_move_length(&xPiston);
@@ -896,6 +1077,17 @@ void module_sps_move_to_park(void)
                 /* decrease piston position by PARK_POSITION_INCREMENT inches */
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Rate is stable, decrease %fin\n", PARK_POSITION_INCREMENT);
                 length_update -= PARK_POSITION_INCREMENT;
+
+                /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
+                if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
+                {
+                    if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Depth=%.4f is @critial piston position >>\n", Depth);
+                        length_update = CRUSH_DEPTH_PISTON_POSITION;
+                    }
+                }
+
                 park_piston_length = length_update;
                 PIS_set_length(length_update);
                 PIS_task_move_length(&xPiston);
@@ -1192,6 +1384,17 @@ void module_sps_park(void)
                     /* increase piston position by PARK_POSITION_INCREMENT inches */
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth Rate is positive, averaged_rate = %f, increase %fin\n", averaged_rate, PARK_POSITION_INCREMENT);
                     length_update += PARK_POSITION_INCREMENT;
+
+                    /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
+                    if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
+                    {
+                        if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
+                        {
+                            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: park, Depth=%.4f is @critial piston position >>\n", Depth);
+                            length_update = CRUSH_DEPTH_PISTON_POSITION;
+                        }
+                    }
+
                     park_piston_length = length_update;
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
@@ -1202,6 +1405,17 @@ void module_sps_park(void)
                     /* decrease piston position by PARK_POSITION_INCREMENT inches */
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth Rate is negative, averaged_rate = %f, decrease %fin\n", averaged_rate, PARK_POSITION_INCREMENT);
                     length_update -= PARK_POSITION_INCREMENT;
+
+                    /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
+                    if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
+                    {
+                        if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
+                        {
+                            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: park, Depth=%.4f is @critial piston position >>\n", Depth);
+                            length_update = CRUSH_DEPTH_PISTON_POSITION;
+                        }
+                    }
+
                     park_piston_length = length_update;
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
@@ -1279,7 +1493,7 @@ void module_sps_park(void)
                     SENS_task_delete(xTemp);
                     SENS_sensor_temperature_off();
                     spsEvent = MODE_POPUP;
-                    //run = false;
+                    run = false;
                     break;
                 }
             }
@@ -1509,6 +1723,17 @@ void module_sps_move_to_profile(void)
                 /* decrease piston position by PARK_POSITION_INCREMENT inches */
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth averaged_rate = %f, decrease %fin\n", averaged_rate, PARK_POSITION_INCREMENT);
                 length_update -= PARK_POSITION_INCREMENT;
+
+                /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
+                if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
+                {
+                    if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Depth=%.4f is @critial piston position >>\n", Depth);
+                        length_update = CRUSH_DEPTH_PISTON_POSITION;
+                    }
+                }
+
                 to_prof_piston_length = length_update;
                 PIS_set_length(length_update);
                 PIS_task_move_length(&xPiston);
@@ -1520,6 +1745,17 @@ void module_sps_move_to_profile(void)
                 /* decrease piston position by PARK_POSITION_INCREMENT inches */
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth averaged_rate = %f, decrease %fin\n", averaged_rate, PARK_POSITION_INCREMENT);
                 length_update -= PARK_POSITION_INCREMENT;
+
+                /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
+                if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
+                {
+                    if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Depth=%.4f is @critial piston position >>\n", Depth);
+                        length_update = CRUSH_DEPTH_PISTON_POSITION;
+                    }
+                }
+
                 to_prof_piston_length = length_update;
                 PIS_set_length(length_update);
                 PIS_task_move_length(&xPiston);
@@ -1872,6 +2108,17 @@ void module_sps_profile(void)
                 /* increase piston position by PARK_POSITION_INCREMENT inches */
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Depth Rate = %.4f, increase %fin\n", averaged_rate, PARK_POSITION_INCREMENT);
                 length_update += PARK_POSITION_INCREMENT;
+
+                /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
+                if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
+                {
+                    if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Depth=%.4f is @critial piston position >>\n", Depth);
+                        length_update = CRUSH_DEPTH_PISTON_POSITION;
+                    }
+                }
+
                 prof_piston_length = length_update;
                 PIS_set_length(length_update);
                 PIS_task_move_length(&xPiston);
@@ -1882,6 +2129,17 @@ void module_sps_profile(void)
                 /* decrease piston position by PARK_POSITION_INCREMENT inches */
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Depth Rate = %.4f, decrease %fin\n", averaged_rate, PARK_POSITION_INCREMENT2);
                 length_update -= PARK_POSITION_INCREMENT2;
+
+                /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
+                if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
+                {
+                    if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Depth=%.4f is @critial piston position >>\n", Depth);
+                        length_update = CRUSH_DEPTH_PISTON_POSITION;
+                    }
+                }
+
                 prof_piston_length = length_update;
                 PIS_set_length(length_update);
                 PIS_task_move_length(&xPiston);
@@ -2161,9 +2419,23 @@ void module_sps_move_to_surface(void)
         vTaskDelayUntil(&xLastWakeTime, period);
     }
 #endif
-    /* wait for 2 seconds here */
+    /* wait for 1 seconds here */
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, task->finished\n");
-    vTaskDelay(xDelay2000ms);
+    vTaskDelay(xDelay1000ms);
+
+    rtc_time time;
+    bool utc = artemis_rtc_get_time(&time);
+    if (utc)
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, RTC : TimeStamp, %02d.%02d.20%02d, %02d:%02d:%02d (UTC)\n",
+                        time.month, time.day, time.year, time.hour, time.min, time.sec);
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, RTC : TimeStamp, %02d.%02d.20%02d, %02d:%02d:%02d (local)\n",
+                        time.month, time.day, time.year, time.hour, time.min, time.sec);
+    }
+
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
 }
@@ -2684,7 +2956,6 @@ void module_sps_tx(void)
             }
             else
             {
-
 #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
                 /* reset test profile */
                 datalogger_read_test_profile(true);
