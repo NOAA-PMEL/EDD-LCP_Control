@@ -29,6 +29,8 @@ static void datalogger_i2c_read(uint8_t offset, uint8_t offsetlen,
                                 uint8_t *pBuf, uint16_t size);
 static void datalogger_i2c_write(uint8_t offset, uint8_t offsetlen,
                                 uint8_t *pBuf, uint16_t size);
+static void datalogger_i2c_write_sbd(uint8_t offset, uint8_t offsetlen,
+                                 uint8_t *pBuf, uint16_t size);
 static void datalogger_write_sync(void);
 
 typedef uint8_t module_buffer_t[LOGGER_BUFFER_SIZE];
@@ -53,6 +55,9 @@ static char *lcp_file = "LCP_LOG.txt";
 /* for testing profile pressure */
 static char test_buf[40000];
 static char *test_buffer = test_buf;
+
+/* sbd messages transfer test */
+uint16_t message_nr = 0;
 
 bool datalogger_init(uint8_t iomNo)
 {
@@ -205,7 +210,7 @@ void datalogger_log_debug(const char *fmt, ...)
     va_start(args, fmt);
     datalogger_cd("..");
     datalogger_openfile(lcp_file);
-    am_util_stdio_vsprintf (lcp_log, fmt, args);
+    am_util_stdio_vsprintf(lcp_log, fmt, args);
     datalogger_writefile(lcp_log);
     datalogger_write_sync();
     va_end(args);
@@ -372,6 +377,77 @@ void datalogger_park_mode(char *filename, float pressure, float temp, rtc_time *
 
 }
 
+void datalogger_test_sbd_messages_init(void)
+{
+    char *dirname = "sbd_messages";
+    message_nr=0;
+    datalogger_cd("..");
+    datalogger_rmdir(dirname);
+    datalogger_mkdir(dirname);
+    datalogger_write_sync();
+}
+
+void datalogger_test_sbd_messages(char *filename, uint8_t *tData, uint16_t length)
+{
+    char *dirname = "sbd_messages";
+    datalogger_cd("..");
+    datalogger_cd(dirname);
+
+    char number[7] = {0};
+    char Filename[16];
+    char fileName[5] = {0};
+    for (uint8_t i=0; i<4; i++)
+    {
+        fileName[i] = filename[11+i];
+    }
+
+    strcpy(Filename, fileName);
+    strcat(Filename, "_");
+    sprintf(number, "%06d", message_nr);
+    strcat(Filename, number);
+    strcat(Filename, ".BIN");
+    ARTEMIS_DEBUG_PRINTF("\nDATA :: SBD : writing (%s) file\n\n", Filename);
+
+    datalogger_createfile(Filename);
+    datalogger_openfile(Filename);
+
+    //for (uint16_t i=0; i<length; i++)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("DATA :: SBD : writing bytes tData[%u]=0x%02X \n", i, tData[i]);
+    //}
+    //ARTEMIS_DEBUG_PRINTF("\n\n");
+
+    //char lBuf[length];
+    //am_util_stdio_sprintf(lBuf, "%s", (char *)tData);
+
+    //ARTEMIS_DEBUG_PRINTF("DATA :: SBD : Reading \n");
+    //for (uint32_t i=0; i<length; i++)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("%c", (char)lBuf[i]);
+    //}
+    //ARTEMIS_DEBUG_PRINTF("\n");
+
+    message_nr++;
+    datalogger_writefile_length(tData, length);
+    datalogger_write_sync();
+
+    ///* put some delay */
+    //am_hal_systick_delay_us(1000000);
+
+    //uint16_t size = 0;
+    //size = datalogger_filesize(Filename);
+    //ARTEMIS_DEBUG_PRINTF("\nDATA :: SBD : FILE_SIZE, (%s) file size = %u\n\n", Filename, size);
+
+    //uint8_t buf[340];
+    //datalogger_readfile(Filename, buf, length);
+
+    //for (uint32_t i=0; i<length; i++)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("DATA :: SBD : Reading 0x%02X, %c \n", buf[i], (char)buf[i]);
+    //}
+    //ARTEMIS_DEBUG_PRINTF("\n");
+}
+
 void datalogger_surface_mode(float temp, float depth);
 
 void datalogger_log_init(void)
@@ -423,6 +499,50 @@ uint32_t datalogger_filesize(char *filename)
     datalogger_i2c_read(0, 0, bytes, 4);
     size |= bytes[0]<<24 | bytes [1]<<16 | bytes[2]<<8 | bytes[3] ;
     return size;
+}
+
+void datalogger_writefile_length(uint8_t *contents, uint16_t length)
+{
+    uint8_t cmd = LOGGER_WRITE_FILE;
+    uint32_t len = (uint32_t)length;
+
+    ARTEMIS_DEBUG_PRINTF("DATA :: WRITE_FILE : len = %u\n", len);
+
+    uint32_t i = 0;
+    uint32_t j = 0;
+
+    if (len > 31)
+    {
+        while (len >0)
+        {
+            for (i=0; i<LOGGER_BUFFER_SIZE-1; i++)
+            {
+                module.txbuffer[i] = contents[i+j];
+                //ARTEMIS_DEBUG_PRINTF("DATA :: Writing :  0x%02X\n", module.txbuffer[i]);
+                len--;
+                if (len == 0)
+                {
+                    i++;
+                    break;
+                }
+            }
+            // send 31 bytes to the SD-card
+            ARTEMIS_DEBUG_PRINTF("DATA :: Writing : %u bytes\n", i);
+            datalogger_i2c_write_sbd(cmd, 1, module.txbuffer, i);
+            //datalogger_write_sync();
+            j += i;
+        }
+    }
+    else if (len < 32 && len > 0)
+    {
+        ARTEMIS_DEBUG_PRINTF("DATA :: Writing : %u bytes (len < 32 && len > 0)\n", len);
+        datalogger_i2c_write_sbd(cmd, 1, contents, len);
+        //datalogger_write_sync();
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("ERROR:: writing file content is 0\n");
+    }
 }
 
 void datalogger_writefile(char *contents)
@@ -629,6 +749,32 @@ static void datalogger_i2c_write(uint8_t offset, uint8_t offsetlen,
     transfer.ui32Instr       = offset;
     transfer.eDirection      = AM_HAL_IOM_TX;
     transfer.ui32NumBytes    = size;
+    transfer.pui32TxBuffer   = (uint32_t*)pBuf;
+    transfer.bContinue       = false;
+    transfer.ui8RepeatCount  = 0;
+    transfer.ui32PauseCondition = 0;
+    transfer.ui32StatusSetClr = 0;
+
+    //ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer));
+    am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
+    //status = am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
+    //if (status != AM_HAL_STATUS_SUCCESS)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("DATALOGGER:: WRITE I2C ERROR\n");
+    //}
+}
+
+static void datalogger_i2c_write_sbd(uint8_t offset, uint8_t offsetlen,
+                                 uint8_t *pBuf, uint16_t size)
+{
+    //am_hal_status_e status = AM_HAL_STATUS_SUCCESS;
+    am_hal_iom_transfer_t transfer;
+
+    transfer.uPeerInfo.ui32I2CDevAddr = LOGGER_I2C_ADDRESS;
+    transfer.ui32InstrLen    = offsetlen;
+    transfer.ui32Instr       = offset;
+    transfer.eDirection      = AM_HAL_IOM_TX;
+    transfer.ui32NumBytes    = (uint32_t)size;
     transfer.pui32TxBuffer   = (uint32_t*)pBuf;
     transfer.bContinue       = false;
     transfer.ui8RepeatCount  = 0;

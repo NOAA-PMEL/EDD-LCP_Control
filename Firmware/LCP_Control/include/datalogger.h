@@ -66,6 +66,7 @@ uint8_t datalogger_get_id(void);
 void datalogger_createfile(char *filename);
 void datalogger_openfile(char *filename);
 void datalogger_writefile(char *contents);
+void datalogger_writefile_length(uint8_t *contents, uint16_t length);
 void datalogger_readfile(char *filename, char *contents, uint32_t size);
 
 void datalogger_mkdir(char *dirname);
@@ -83,6 +84,9 @@ void datalogger_predeploy_mode(SensorGps_t *gps, bool check);
 char *datalogger_park_create_file(uint16_t park_nr);
 void datalogger_park_mode(char *filename, float pressure,
                             float temp, rtc_time *time);
+
+void datalogger_test_sbd_messages_init(void);
+void datalogger_test_sbd_messages(char *filename, uint8_t *tData, uint16_t length);
 
 char *datalogger_profile_create_file(uint16_t sps_nr);
 void datalogger_profile_mode(char *filename, float pressure,

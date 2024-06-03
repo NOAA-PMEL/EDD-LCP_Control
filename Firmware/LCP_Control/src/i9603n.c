@@ -111,6 +111,16 @@ static bool xVisible = false;
 static uint8_t xTStatus[6];
 static float iridium_delay_rate = 0.333f;
 
+//#define TEST_SBD_MSG
+
+#ifdef TEST_SBD_MSG
+static uint8_t imei_filename[15];
+static uint8_t imei_length;
+static uint8_t sbd_transfer = 0;
+static uint8_t Sbd_transfer = 0;
+#endif
+
+
 //*****************************************************************************
 //
 // Static Function Prototypes
@@ -151,6 +161,23 @@ void i9603n_initialize(void)
 
     /** Initialize the power circuitry */
     artemis_sc_initialize();
+
+#ifdef TEST_SBD_MSG
+
+    i9603n_on();
+    vTaskDelay(xDelay500ms);
+    imei_length = i9603n_read_imei(imei_filename);
+    if (imei_length > 0)
+    {
+        ARTEMIS_DEBUG_PRINTF("Iridium :: IMEI Number = ");
+        for (uint8_t i=0; i<imei_length; i++)
+        {
+            ARTEMIS_DEBUG_PRINTF("%c", imei_filename[i]);
+        }
+        ARTEMIS_DEBUG_PRINTF("\n\n");
+    }
+#endif
+
 }
 
 void i9603n_uninitialize(void)
@@ -790,6 +817,24 @@ uint16_t i9603n_read_data(uint8_t *rxData)
 
 bool i9603n_send_data(uint8_t *txData, uint16_t txlen)
 {
+
+#ifdef TEST_SBD_MSG
+    //datalogger_test_sbd_messages((char*)imei_filename, txData, txlen);
+    ARTEMIS_DEBUG_PRINTF("Iridium :: \n\n");
+    for (uint16_t i=0; i<txlen; i++)
+    {
+        ARTEMIS_DEBUG_PRINTF("0x%02x ", txData[i]);
+        if ( (i%322) == 0)
+        {
+            ARTEMIS_DEBUG_PRINTF("\n");
+        }
+    }
+    ARTEMIS_DEBUG_PRINTF("\n\n");
+    ARTEMIS_DEBUG_PRINTF("Iridium :: put into the output buffer (%u) bytes\n", txlen);
+    return true;
+
+#else
+
     i9603n_result_t result = I9603N_RESULT_FAIL;
     //uint16_t txLen = strlen(txData);
     uint16_t txLen = txlen;
@@ -870,6 +915,9 @@ bool i9603n_send_data(uint8_t *txData, uint16_t txlen)
     module_i9603n_flush(irid_buf_rx);
     module_i9603n_flush(irid_buf_tx);
     return ret;
+
+#endif
+
 }
 
 uint8_t i9603n_traffic_mgmt_time(uint16_t *rxData)
@@ -912,6 +960,38 @@ uint8_t i9603n_signal_quality(uint8_t *rxData)
 
 uint8_t i9603n_initiate_transfer(uint16_t *rxData)
 {
+
+#ifdef TEST_SBD_MSG
+
+    if (sbd_transfer == 2)
+    {
+        uint8_t i=0;
+        for (i=0; i<6; i++)
+        {
+            rxData[i] = 0;
+        }
+        Sbd_transfer++;
+
+        if (Sbd_transfer == 5)
+        {
+            sbd_transfer = 0;
+            Sbd_transfer = 0;
+        }
+        return i;
+    }
+    else
+    {
+        uint8_t i=0;
+        for (i=0; i<6; i++)
+        {
+            rxData[i] = 32;
+        }
+        sbd_transfer++;
+        return i;
+    }
+
+#else
+
     char *cmd = "AT+SBDIX\r";
     i9603n_result_t result = I9603N_RESULT_FAIL;
     uint16_t rxLen =0;
@@ -927,6 +1007,9 @@ uint8_t i9603n_initiate_transfer(uint16_t *rxData)
     }
     module_i9603n_flush(irid_buf_rx);
     return rxLen;
+
+#endif
+
 }
 
 uint8_t i9603n_status(uint8_t *rxData)
