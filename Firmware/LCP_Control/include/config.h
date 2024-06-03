@@ -91,11 +91,11 @@
 ** Settable Variables
 *************************************/
 #define GPS_TIMER                           ( 1.0f )        /* XX mins xGPS timer */
-#define PARK_TRANSMIT_TRIES                 ( 01 )          /* Park mode measurements transmission nr. of tries */
-#define PROF_TRANSMIT_TRIES                 ( 01 )          /* Profile mode measurements transmission nr. of tries */
-#define SATELLITE_VISIBILITY_TRIES          ( 01 )          /* Look for satellite visitbility (nr. of times ) */
-#define IRIDIUM_TRIES                       ( 01 )          /* Try XX number of times to transmit */
-#define SATELLITE_TIMER                     ( 05 )          /* Try XX seconds for checking satellite visibility */
+#define PARK_TRANSMIT_TRIES                 ( 02 )          /* Park mode measurements transmission nr. of tries */
+#define PROF_TRANSMIT_TRIES                 ( 02 )          /* Profile mode measurements transmission nr. of tries */
+#define SATELLITE_VISIBILITY_TRIES          ( 02 )          /* Look for satellite visitbility (nr. of times ) */
+#define IRIDIUM_TRIES                       ( 03 )          /* Try XX number of times to transmit */
+#define SATELLITE_TIMER                     ( 15 )          /* Try XX seconds for checking satellite visibility */
 
 /** Test Profiles */
 #if defined(__TEST_OCEAN__)
