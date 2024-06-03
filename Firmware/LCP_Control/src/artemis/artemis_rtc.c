@@ -124,7 +124,7 @@ void artemis_rtc_initialize(void)
     /* Enable the timer */
     am_hal_ctimer_start(0, AM_HAL_CTIMER_TIMERA);
 
-    rtc_time time;
+    rtc_time time = {0};
     artemis_rtc_get_time(&time);
     ARTEMIS_DEBUG_PRINTF("\nRTC Timer\n");
     ARTEMIS_DEBUG_PRINTF("***************************************\n");
@@ -200,7 +200,7 @@ void artemis_rtc_set_time(rtc_time *pTime){
 
 void artemis_rtc_gps_calibration(SensorGps_t *gps_time)
 {
-    rtc_time time;
+    rtc_time time = {0};
 
     time.year = (uint16_t) gps_time->year;
     time.month = (uint8_t) gps_time->month;
@@ -208,13 +208,6 @@ void artemis_rtc_gps_calibration(SensorGps_t *gps_time)
     time.hour = (uint8_t) gps_time->hour;
     time.min = (uint8_t) gps_time->min;
     time.sec = (uint8_t) gps_time->sec;
-
-    //time.year = (uint16_t) gps_time->time.year;
-    //time.month = (uint8_t) gps_time->time.month;
-    //time.day = (uint8_t) gps_time->time.day;
-    //time.hour = (uint8_t) gps_time->time.hour;
-    //time.min = (uint8_t) gps_time->time.min;
-    //time.sec = (uint8_t) gps_time->time.sec;
 
     /* Set the gps time */
     artemis_rtc_set_time(&time);

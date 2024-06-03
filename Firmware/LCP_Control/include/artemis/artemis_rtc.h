@@ -12,8 +12,8 @@
 extern "C" {
 #endif
 
-typedef struct {
-
+typedef struct
+{
     uint16_t year;
     uint8_t month;
     uint8_t day;
@@ -21,7 +21,6 @@ typedef struct {
     uint8_t min;
     uint8_t sec;
     uint16_t msec;
-    bool hourType;
 
 } rtc_time;
 
