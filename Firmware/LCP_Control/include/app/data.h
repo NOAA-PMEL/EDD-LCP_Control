@@ -45,9 +45,19 @@
  *********************************************************************************/
 #define IRID_DATA_OUT           ( 340 )
 #define IRID_DATA_IN            ( 270 )
+#define IRID_HEADER_LENGTH      ( 28 )
+#define IRID_HEADER_LENGTH_EXT  ( 19 )
 
-#define LCP_PARK_MODE           ( 1 )
-#define LCP_PROFILE_MODE        ( 2 )
+#define LCP_PARK_MODE           ( 0x00 )
+#define LCP_PROFILE_MODE        ( 0x01 )
+
+/* SENSORS DATA bits */
+#define TEMPERATURE_BITS        ( 12 )
+#define PRESSURE_BITS           ( 8 )
+/* add more bits for future sensor inclusion*/
+
+#define MEASUREMENT_BITS        ( TEMPERATURE_BITS + PRESSURE_BITS )
+#define MEASUREMENT_MAX         ( ((IRID_DATA_OUT - IRID_HEADER_LENGTH) * 8) / MEASUREMENT_BITS )
 
 /**********************************************************************************
  * MACROS
@@ -60,20 +70,70 @@
 // {   
     
 // }ProfileData_t;
-typedef struct sData_t
+
+typedef struct __attribute__((packed))
 {
-    struct{
-        size_t length;
-        size_t written;
-        size_t read;
-    }cbuf;
-    struct{
-        uint32_t start_time;
-        uint32_t *pTimeOffset;
-        float *pPressure;
-        float *pTemperature;
-    }data;
-}Data_t;
+    uint8_t modeType;
+    uint8_t profNumber;
+    uint8_t mLength;
+    uint8_t pageNumber;
+} sData;
+
+typedef struct __attribute__((packed))
+{
+    uint32_t pStart;
+    uint32_t pStop;
+    float pLatitude;
+    float pLongitude;
+    uint8_t pLength;
+    uint16_t pIndex;
+} pData;
+
+typedef struct __attribute__((packed))
+{
+    struct
+    {
+        uint32_t length;
+        uint32_t written;
+        uint32_t read;
+    } cbuf;
+
+    /* measurements struct */
+    struct
+    {
+        float *pressure;
+        float *temperature;
+        /* add more measurement variables */
+    } data;
+
+    /* local length and profile numbers manipulation */
+    uint8_t pNumber;
+    uint8_t wLength;
+    uint8_t rLength;
+
+    /* this holds the nr. of profiles data */
+    pData *p;
+
+} Data_t;
+
+//typedef struct sData_t
+//{
+//    struct
+//    {
+//        size_t length;
+//        size_t written;
+//        size_t read;
+//    } cbuf;
+//    struct
+//    {
+//        uint32_t *pStartTime;
+//        //uint32_t *pTimeOffset;
+//        uint32_t *pStopTime;
+//        float *pPressure;
+//        float *pTemperature;
+//        uint16_t pNumber;
+//    } data;
+//}Data_t;
 
 typedef struct cData_t
 {
@@ -81,13 +141,6 @@ typedef struct cData_t
     int16_t temp;
 } cData;
 
-typedef struct gData_t
-{
-    uint32_t start;
-    uint32_t stop;
-    float lat;
-    float lon;
-} gData;
 
 /**********************************************************************************
  * Function Prototypes
@@ -96,23 +149,31 @@ typedef struct gData_t
 extern "C"{
 #endif
 
-void DATA_setbuffer(Data_t *p, uint32_t *pTime, 
-                            float *pPressure, float*pTemp,
-                            size_t length);
+//size_t DATA_add(Data_t *buf, uint32_t time, float pressure, float temp);
+//void DATA_setbuffer(Data_t *p, uint32_t *pTime, float *pPressure, float*pTemp, size_t length);
+
 void DATA_reset(Data_t *p);
-size_t DATA_add(Data_t *buf, uint32_t time, float pressure, float temp);
-size_t DATA_get_original(Data_t *p, uint32_t *time, float *pressure, float *temp);
-size_t DATA_get_converted(Data_t *p, uint32_t *start, uint32_t *offset, uint8_t *pressure, int16_t *temp);
+void DATA_setbuffer(Data_t *buf, pData *P, float *pressure, float *temperature, uint32_t length);
+void DATA_add(Data_t *buf, uint32_t time, float pressure, float temperature, uint8_t pNumber);
+void DATA_add_gps(Data_t *buf, float latitude, float longitude, uint8_t pNumber);
+//void DATA_get_original(Data_t *buf, pData *P, float *pressure, float *temperature, uint8_t pNumber);
+
+//size_t DATA_get_original(Data_t *p, uint32_t *time, float *pressure, float *temp);
+//size_t DATA_get_converted(Data_t *p, uint32_t *start, uint32_t *offset, uint8_t *pressure, int16_t *temp);
+
+void DATA_get_original(Data_t *buf, pData *P, float *pressure, float *temperature, uint8_t pNumber);
+void DATA_get_converted(Data_t *buf, pData *P, uint8_t *pressure, uint16_t *temperature, uint8_t pNumber);
 
 uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec);
-
 void create_header(uint8_t *df, uint32_t start, uint32_t stop, float lat, float lon, uint8_t mode_type, uint8_t page);
+
+void create_header_irid(uint8_t *df, pData *P, sData *S);
+void create_header_irid_ext(uint8_t *df, pData *P, sData *S);
+uint16_t pack_measurements_irid(Data_t *buf, pData *P, sData *S, uint8_t *rBuf);
+uint16_t pack_measurements_irid_ext(Data_t *buf, pData *P, sData *S, uint8_t *rBuf);
 
 float std_div(float *value, uint16_t len, float *var, float *avg);
 float average(float *value, uint16_t len);
-
-void DATA_get_iridium_park(uint8_t *pData);
-void DATA_get_iridium_profile(uint8_t *pData);
 
 /**********************************************************************************
  * Unit Test Variables & Static Prototpyes
