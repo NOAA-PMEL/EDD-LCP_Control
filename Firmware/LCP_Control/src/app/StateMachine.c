@@ -48,15 +48,22 @@
 //
 //*****************************************************************************
 
-static uint32_t park_time[DATA_PARK_SAMPLES_MAX];
+/* park numbers and measurements */
+static pData pPark[SYSTEM_PROFILE_NUMBER];
 static float park_temp[DATA_PARK_SAMPLES_MAX];
-static float park_depth[DATA_PARK_SAMPLES_MAX];
-static uint32_t prof_time[DATA_PROFILE_SAMPLES_MAX];
+static float park_pressure[DATA_PARK_SAMPLES_MAX];
+/* profile numbers and measurements */
+static pData pProf[SYSTEM_PROFILE_NUMBER];
 static float prof_temp[DATA_PROFILE_SAMPLES_MAX];
-static float prof_depth[DATA_PROFILE_SAMPLES_MAX];
+static float prof_pressure[DATA_PROFILE_SAMPLES_MAX];
 
-static Data_t park;     /**< Park mode Data */
-static Data_t prof;     /**< Profile mode data */
+static Data_t park;         /**< Park mode Data */
+static Data_t prof;         /**< Profile mode data */
+
+static sData sPark;         /**< Park mode measurement - StateMachine */
+static sData sProf;         /**< Profile mode measurement - StateMachine */
+//static sData sPark_ext;     /**< Park mode measurement extended - StateMachine */
+//static sData sProf_ext;     /**< Profile mode measurement extended - StateMachine */
 
 static System_t system =
 {
@@ -115,25 +122,38 @@ void module_pus_surface_float(void);
 //
 //*****************************************************************************
 
-static uint8_t irid_prof[IRID_DATA_OUT];    /* max 340 bytes */
 static uint8_t irid_park[IRID_DATA_OUT];    /* max 340 bytes */
+static uint8_t irid_prof[IRID_DATA_OUT];    /* max 340 bytes */
 
-static uint8_t temp_park[312];              /* needed for creating a page */
-static uint8_t temp_prof[312];              /* needed for creating a page */
+//static uint8_t temp_park[312];              /* needed for creating a page */
+//static uint8_t temp_prof[312];              /* needed for creating a page */
 
 /* linearize profile and park measurements for iridium */
-static uint16_t create_park_page(uint8_t *pPark, uint16_t *readlength);
-static uint16_t create_profile_page(uint8_t *pProf, uint16_t *readlength);
+static uint16_t create_park_page(uint8_t *pPark, uint8_t *readlength);
+static uint16_t create_profile_page(uint8_t *pProf, uint8_t *readlength);
 
 /* global variables */
 static bool sensors_check = false;
 static bool iridium_init = false;
-static uint16_t prof_number = 0;
-static uint16_t park_number = 0;
-static uint16_t parkPage = 0;
-static uint16_t profPage = 0;
-static float Lat = 0.0;
-static float Lon = 0.0;
+
+static uint8_t prof_number = 0;
+static uint8_t park_number = 0;
+static uint8_t m_prof_number = 0;
+static uint8_t m_prof_length = 0;
+static uint8_t m_park_number = 0;
+static uint8_t m_park_length = 0;
+
+///* for extended measurements */
+//static uint8_t m_prof_number_ext = 0;
+//static uint8_t m_prof_length_ext = 0;
+//static uint8_t m_park_number_ext = 0;
+//static uint8_t m_park_length_ext = 0;
+
+//static uint16_t parkPage = 0;
+//static uint16_t profPage = 0;
+static float systemcheck_Lat = 0.0;
+static float systemcheck_Lon = 0.0;
+
 static float park_piston_length = 0.0;
 static float to_prof_piston_length = 0.0;
 static float prof_piston_length = 0.0;
@@ -162,8 +182,8 @@ void STATE_initialize(SystemMode_t mode)
             break;
 
         case SYSST_SimpleProfiler_mode:
-            DATA_setbuffer(&park, park_time, park_depth, park_temp, DATA_PARK_SAMPLES_MAX);
-            DATA_setbuffer(&prof, prof_time, prof_depth, prof_temp, DATA_PROFILE_SAMPLES_MAX);
+            DATA_setbuffer(&park, pPark, park_pressure, park_temp, DATA_PARK_SAMPLES_MAX);
+            DATA_setbuffer(&prof, pProf, prof_pressure, prof_temp, DATA_PROFILE_SAMPLES_MAX);
             break;
 
         case SYSST_Moored_mode:
@@ -697,8 +717,8 @@ void module_pds_systemcheck(void)
                     if (fix > 9)
                     {
                         /* update latitude and longitude globally */
-                        Lat = gps.latitude;
-                        Lon = gps.longitude;
+                        systemcheck_Lat = gps.latitude;
+                        systemcheck_Lon = gps.longitude;
                         /* Calibrate the GPS UTC time into RTC */
                         ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, RTC : <GPS Time Set>\n");
                         artemis_rtc_gps_calibration(&gps);
@@ -721,8 +741,8 @@ void module_pds_systemcheck(void)
                 if (fix > 2)
                 {
                     /* update latitude and longitude globally */
-                    Lat = gps.latitude;
-                    Lon = gps.longitude;
+                    systemcheck_Lat = gps.latitude;
+                    systemcheck_Lon = gps.longitude;
                     /* Calibrate the GPS UTC time into RTC */
                     ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, RTC : <GPS Time Set>\n");
                     artemis_rtc_gps_calibration(&gps);
@@ -1302,6 +1322,7 @@ void module_sps_park(void)
     while (run)
     {
         SENS_get_depth(&Depth, &Pressure, &Rate);
+
 #ifndef TEST
         SENS_get_temperature(&Temperature);
 #endif
@@ -1315,7 +1336,7 @@ void module_sps_park(void)
         /* store first sample with start time */
         if (start_time)
         {
-            DATA_add(&park, epoch, Pressure, Temperature);
+            DATA_add(&park, epoch, Pressure, Temperature, park_number);
             datalogger_park_mode(filename, Pressure, Temperature, &time);
             start_time = false;
 #ifdef TEST
@@ -1341,7 +1362,7 @@ void module_sps_park(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: park, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
 
             /* store averages data locally */
-            DATA_add(&park, epoch, avg_p, avg_t);
+            DATA_add(&park, epoch, avg_p, avg_t, park_number);
             samples = 0;
 
 #ifdef TEST
@@ -1355,7 +1376,7 @@ void module_sps_park(void)
 
 #ifdef TEST
         /* delete this in real test */
-        if (read > 50)
+        if (read >= 50)
         {
             run = false;
             SENS_task_delete(xDepth);
@@ -1576,6 +1597,7 @@ void module_sps_park(void)
     }
 
     park_number++;
+
     SendEvent(spsEventQueue, &spsEvent);
     ARTEMIS_DEBUG_PRINTF("SPS :: park, Task->finished\n");
     vTaskDelete(NULL);
@@ -2049,7 +2071,7 @@ void module_sps_profile(void)
         /* store first sample with start time */
         if (start_time == true)
         {
-            DATA_add(&prof, epoch, Pressure, Temperature);
+            DATA_add(&prof, epoch, Pressure, Temperature, prof_number);
             datalogger_profile_mode(filename, Pressure, Temperature, &time);
             start_time = false;
 #ifdef TEST
@@ -2074,7 +2096,7 @@ void module_sps_profile(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
 
             /* store average data locally */
-            DATA_add(&prof, epoch, avg_p, avg_t);
+            DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
             samples = 0;
 
 #ifdef TEST
@@ -2087,7 +2109,7 @@ void module_sps_profile(void)
 
 #ifdef TEST
         /* delete this */
-        if (read > 50)
+        if (read >= 50)
         {
             run = false;
             SENS_task_delete(xDepth);
@@ -2268,6 +2290,7 @@ void module_sps_profile(void)
     }
 
     prof_number++;
+
     SendEvent(spsEventQueue, &spsEvent);
     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Task->finished\n");
     vTaskDelete(NULL);
@@ -2376,9 +2399,9 @@ void module_sps_move_to_surface(void)
                 fix++;
                 if (fix > 9)
                 {
-                    /* update latitude and longitude globally */
-                    Lat = gps.latitude;
-                    Lon = gps.longitude;
+                    /* update latitude and longitude for park and profile modes */
+                    DATA_add_gps(&park, gps.latitude, gps.longitude, park_number-1);
+                    DATA_add_gps(&prof, gps.latitude, gps.longitude, prof_number-1);
 
                     /* Calibrate the GPS UTC time into RTC */
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, RTC : <GPS Time Set>\n");
@@ -2400,9 +2423,10 @@ void module_sps_move_to_surface(void)
             /* check, if it got at least two to three fixes */
             if (fix > 2)
             {
-                /* update latitude and longitude globally */
-                Lat = gps.latitude;
-                Lon = gps.longitude;
+                /* update latitude and longitude for park and profile modes */
+                DATA_add_gps(&park, gps.latitude, gps.longitude, park_number-1);
+                DATA_add_gps(&prof, gps.latitude, gps.longitude, prof_number-1);
+
                 /* Calibrate the GPS UTC time into RTC */
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, RTC : <GPS Time Set>\n");
                 artemis_rtc_gps_calibration(&gps);
@@ -2449,6 +2473,9 @@ void module_sps_tx(void)
         i9603n_initialize();
         iridium_init = true;
         vTaskDelay(xDelay1000ms);
+#ifdef TEST
+        datalogger_test_sbd_messages_init();
+#endif
     }
 
     /* turn on the iridium module and wait for it be charged */
@@ -2567,22 +2594,19 @@ void module_sps_tx(void)
                 vTaskDelay(xDelay1000ms);
             }
 
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, written=%u, read=%u\n", park.cbuf.written, park.cbuf.read);
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, Measurements written=%u, read=%u\n\n", park.cbuf.written, park.cbuf.read);
             uint8_t *ptrPark = &irid_park[0];
-            uint16_t nr_park = 0;
+            uint8_t nr_park = 0;
             uint16_t txpark = create_park_page(ptrPark, &nr_park);
 
             if ( txpark > 0 )
             {
-                /* Debug */
-                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park page %u, bytes=%u\n", parkPage, txpark);
-
                 /* we do have a page to send */
                 /* send the bytes to the originated buffer */
                 bool ret = i9603n_send_data(irid_park, txpark);
                 if (ret)
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park measurements are being transmitted\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park measurements=%u, bytes=%u are being transmitted\n", nr_park, txpark);
                 }
                 vTaskDelay(xDelay1000ms);
 
@@ -2622,6 +2646,25 @@ void module_sps_tx(void)
                             {
                                 ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, Park transmit <Successful>\n\n");
                                 park_run = false;
+                                /* reset m_park_length and m_park_number */
+                                if (m_park_length == 0)
+                                {
+                                    m_park_number++;
+                                    sPark.pageNumber = 0;
+                                    sPark.mLength = 0;
+
+                                    ///* TODO: check extended measurements */
+                                    //if (m_park_length_ext == 0)
+                                    //{
+                                    //    m_park_number_ext = 0;
+                                    //    sPark_ext.pageNumber = 0;
+                                    //    sPark_ext.mLength = 0;
+                                    //}
+                                }
+                                else
+                                {
+                                    sPark.pageNumber++;
+                                }
                             }
                             else if (recv[0] == 38)
                             {
@@ -2686,12 +2729,10 @@ void module_sps_tx(void)
                                 vTaskDelay(xDelay1000ms);
 
                                 /* reset the read length */
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park read=%u, measurements=%u\n", park.cbuf.read, nr_park);
-                                parkPage--;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park resetting to page %u\n", parkPage);
                                 park.cbuf.read = park.cbuf.read - nr_park;
+                                m_park_length += nr_park;
                                 park_run = false;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park after reset read=%u\n", park.cbuf.read);
+                                ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, Park after reset read=%u, m_park_length=%u, nr_park=%u\n\n", park.cbuf.read, m_park_length, nr_park);
 
                                 if (park_tries >= PARK_TRANSMIT_TRIES)
                                 {
@@ -2784,22 +2825,19 @@ void module_sps_tx(void)
                 vTaskDelay(xDelay1000ms);
             }
 
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, written=%u, read=%u\n", prof.cbuf.written, prof.cbuf.read);
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, Measurements written=%u, read=%u\n", park.cbuf.written, park.cbuf.read);
             uint8_t *ptrProf = &irid_prof[0];
-            uint16_t nr_prof = 0;
+            uint8_t nr_prof = 0;
             uint16_t txprof = create_profile_page(ptrProf, &nr_prof);
 
             if ( txprof > 0 )
             {
-                /* Debug */
-                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile page %u, bytes=%u\n", profPage, txprof);
-
                 /* we do have a page to send */
                 /* send the bytes to the originated buffer */
                 bool ret = i9603n_send_data(irid_prof, txprof);
                 if (ret)
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile measurements are being transmitted\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile measurements=%u, bytes=%u are being transmitted\n", nr_prof, txprof);
                 }
                 vTaskDelay(xDelay1000ms);
 
@@ -2903,13 +2941,10 @@ void module_sps_tx(void)
                                 i9603n_wakeup();
 
                                 /* reset the read length */
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile measurements=%u, read=%u\n", nr_prof, prof.cbuf.read);
-                                profPage--;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile resetting to page %u\n", profPage);
                                 prof.cbuf.read = prof.cbuf.read - nr_prof;
+                                m_prof_length += nr_prof;
                                 prof_run = false;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile after reset read=%u\n", prof.cbuf.read);
-
+                                ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, Profile after reset read=%u, m_prof_length=%u, nr_prof=%u\n\n", park.cbuf.read, m_prof_length, nr_prof);
                                 if (prof_tries >= PROF_TRANSMIT_TRIES)
                                 {
                                     ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, Profile transmit <NOT Successful>\n\n");
@@ -2956,6 +2991,7 @@ void module_sps_tx(void)
             }
             else
             {
+
 #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
                 /* reset test profile */
                 datalogger_read_test_profile(true);
@@ -2977,173 +3013,213 @@ void module_sps_tx(void)
     vTaskDelete(NULL);
 }
 
-static uint16_t create_park_page(uint8_t *pPark, uint16_t *readlength)
+static uint16_t create_park_page(uint8_t *ptrPark, uint8_t *readlength)
 {
-    /** Collect Park measurements
-     *  maximum 340 bytes can be transmit at a time,
-     *  27 bytes are reserved for the header for every message
-     *  340 - 27 = 313 bytes are left for the measurements, actually 312
-     *  312 / 3 = 104 measurements can fit into one iridium message
-     *  one bytes for pressure sensor, two bytes are for temperature
-     */
-    uint8_t size = 0;
-    uint8_t pressure = 0;
-    int16_t temp = 0;
-    uint32_t start = 0;
-    uint32_t offset = 0;
-    uint16_t len = 0;
-    uint16_t nrBytes = 0;
-
-    /* set pointer to the temp park buffer */
-    uint8_t *ptPark = &temp_park[0];
-    do
+    /* check if we have read and transmitted all the measurements*/
+    if (m_park_number >= park_number)
     {
-        size = DATA_get_converted(&park, &start, &offset, &pressure, &temp);
-        /* check, if we have no data available */
-        if (size == 0)
-        {
-            if (len > 0 && len <= 103)
-            {
-                parkPage++;
-                ARTEMIS_DEBUG_PRINTF("collected measurements=%u\n", len);
-                ARTEMIS_DEBUG_PRINTF("\n<< no more measurements after page %u >>\n\n", parkPage);
-            }
-            else
-            {
-                ARTEMIS_DEBUG_PRINTF("all measurements are read\n");
-            }
-            break;
-        }
-        len++;
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, No more measurements available m_park_number=%u, park_number=%u\n", m_park_number, park_number);
+        *readlength = 0;
+        return 0;
+    }
 
-        /* check on the length, must be < 313 */
-        if (len > 103)
-        {
-            /* we are done here, increase the page number */
-            *ptPark++ = (uint8_t) (pressure&0xFF);
-            *ptPark++ = (uint8_t) (temp>>8);
-            *ptPark++ = (uint8_t) (temp&0xFF);
-            parkPage++;
-
-            ARTEMIS_DEBUG_PRINTF("collected measurements=%u\n", len);
-            ARTEMIS_DEBUG_PRINTF("\n< more measurements are available >\n\n");
-            break;
-        }
-
-        /* start collecting data into the temp park buffer */
-        *ptPark++ = (uint8_t) (pressure&0xFF);
-        *ptPark++ = (uint8_t) (temp>>8);
-        *ptPark++ = (uint8_t) (temp&0xFF);
-
-    } while (1);
-
-    /* check if we have any collected bytes */
-    if (len == 0)
+    /* set modeType */
+    sPark.modeType = LCP_PARK_MODE;
+    /* check if we are sending the first page of any profile number */
+    if (m_park_length == 0)
     {
-        nrBytes = len;
+        m_park_length = pPark[m_park_number].pLength;
+        sPark.profNumber = m_park_number;
+        sPark.pageNumber = 0;
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, profile_number=%u, pageNumber=%u, measurement_length=%u\n", m_park_number, sPark.pageNumber, m_park_length);
+
+        /* check the length of measurements must not exceed 312 bytes > 312*8/(12+8) = 124 */
+        if (m_park_length > MEASUREMENT_MAX)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, WARNING : Park, profile_number=%u exceeding (%u) length of measurements, creating pages!\n", sPark.profNumber, MEASUREMENT_MAX);
+            sPark.mLength = MEASUREMENT_MAX;
+            m_park_length = pPark[m_park_number].pLength - sPark.mLength;
+        }
+        else
+        {
+            sPark.mLength = m_park_length;
+            m_park_length = 0;
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, profile_number=%u length of measurements=%u fitting in one page!\n", sPark.profNumber, sPark.mLength);
+        }
     }
     else
     {
-        /* create a header for the park measurements */
-        create_header(pPark, start, offset, Lat, Lon, LCP_PARK_MODE, parkPage);
-        /* set the start measurements position 28, 27th in the array */
-        pPark = &irid_park[27];
-        nrBytes = 27;
-        /* collect measurements from temp buffer to irid_park buffer */
-        /* set first position of temp_park to its pointer */
-        ptPark = &temp_park[0];
-        for (uint16_t i=0; i<len*3; i++)
+        if (m_park_length > MEASUREMENT_MAX)
         {
-            *pPark++ = *ptPark++;
-            nrBytes++;
+            sPark.mLength = MEASUREMENT_MAX;
+            m_park_length = m_park_length - sPark.mLength;
+        }
+        else
+        {
+            sPark.mLength = m_park_length;
+            m_park_length = 0;
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, profile_number=%u measurement_length=%u\n", sPark.profNumber, sPark.mLength);
         }
     }
-    *readlength = len;
+
+    uint16_t nrBytes = pack_measurements_irid(&park, pPark, &sPark, ptrPark);
+    *readlength = sPark.mLength;
+    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park : profile_number=%u, pageNumber=%u, m_park_number=%u, total_bytes=%u\n", sPark.profNumber, sPark.pageNumber, m_park_number, nrBytes);
+
+    /* TODO: for extended measurements, in the future */
+    ///* add extension header and payload for the next profiles */
+    //if (park_number > m_park_number)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("DATA :: Park : Extended, park_number(%u) > m_park_number(%u)\n", park_number, m_park_number);
+
+    //    /* check if nrBytes are less than (HEADER_extension plus at least 5 measurements) */
+    //    uint16_t nrBytes_ext = IRID_HEADER_LENGTH_EXT + ((5*MEASUREMENT_BITS + 7)/8);
+    //    ARTEMIS_DEBUG_PRINTF("DATA :: Park : Extended, for 5 measurements nrBytes_ext (%u)\n", nrBytes_ext);
+    //    if (nrBytes_ext <= (IRID_DATA_OUT - nrBytes))
+    //    {
+    //        /* set modeType to the extended measurements */
+    //        sPark_ext.modeType = LCP_PARK_MODE;
+    //        /* check how many bytes we have */
+    //        uint16_t remaining_bytes = IRID_DATA_OUT - nrBytes;
+    //        /* subtract the header_ext length from remaining_bytes */
+    //        remaining_bytes -= IRID_HEADER_LENGTH_EXT;
+
+    //        /* calculate the length of measurement for remaining bytes */
+    //        uint8_t remaining_length = remaining_bytes * 8 / MEASUREMENT_BITS ;
+    //        ARTEMIS_DEBUG_PRINTF("DATA :: Park : Extended, remaining_bytes(%u), remaining_length(%u)\n", remaining_bytes, remaining_length);
+
+    //        /* increase the measurement park_number_extension */
+    //        m_park_number_ext++;
+    //        /* proceed, check the length of next profiles */
+    //        uint8_t mlength  = pPark[m_park_number+m_park_number_ext].pLength;
+
+    //        if (mlength == 0)
+    //        {
+    //            /* decrease it here and break */
+    //            ARTEMIS_DEBUG_PRINTF("DATA :: Park : Extended, BREAK, profile(%u) mlength(%u), measurements are not available\n", m_park_number_ext, mlength);
+    //            m_park_number_ext--;
+    //            m_park_length_ext = 0;
+    //            break;
+    //        }
+    //        else
+    //        {
+    //            if (mlength > remaining_length)
+    //            {
+    //                ARTEMIS_DEBUG_PRINTF("DATA :: WARNING : Park : Extended, ProfNumber(%u), creating pages !\n", m_park_number+m_park_number_ext);
+    //                /* create extended measurements */
+    //                sPark_ext.mLength = remaining_length;
+    //                m_park_length_ext = mlength - sPark_ext.mLength;
+    //                sPark_ext.profNumber = m_park_number + m_park_number_ext;
+    //                sPark_ext.pageNumber = 0;
+    //                ARTEMIS_DEBUG_PRINTF("DATA :: Park : Extended, profNumber(%u), pageNumber(%u), mlength(%u)\n", m_park_number_ext, sPark_ext.pageNumber, m_park_length_ext);
+    //
+    //                uint8_t ptrPark_ext [remaining_bytes];
+    //                nrBytes_ext = pack_measurements_irid_ext(&park, pPark, &sPark_ext, ptrPark_ext);
+
+    //                /* update the measurement pointer ptrPark */
+    //                for (uint16_t i=0; i<nrBytes_ext; i++)
+    //                {
+    //                    ptrPark[nrBytes+i] = ptrPark_ext[i];
+    //                }
+
+    //                ARTEMIS_DEBUG_PRINTF("DATA :: Park : Extended, nrBytes_ext(%u)\n", nrBytes_ext);
+    //                /* update the actual number of bytes here (nrBytes) */
+    //                nrBytes += nrBytes_ext;
+    //                /* update the readlength */
+    //                *readlength += sPark_ext.mLength;
+    //                ARTEMIS_DEBUG_PRINTF("DATA :: Park : Extended, Total nrBytes(%u), readlength(%u)\n", nrBytes, *readlength);
+    //                /* increase the page for next sbd message for the same profile number */
+    //                sPark_ext.pageNumber++;
+    //            }
+    //            else
+    //            {
+    //                sPark_ext.profNumber = m_park_number + m_park_number_ext;
+    //                sPark_ext.pageNumber = 0;
+    //                sPark_ext.mLength = mlength;
+    //                m_park_length_ext = 0;
+    //                ARTEMIS_DEBUG_PRINTF("DATA :: Park : Extended, profNumber(%u), pageNumber(%u), mlength(%u)\n", m_park_number_ext, sPark_ext.pageNumber, m_park_length_ext);
+
+    //                uint8_t ptrPark_ext [remaining_bytes];
+    //                nrBytes_ext = pack_measurements_irid_ext(&park, pPark, &sPark_ext, ptrPark_ext);
+
+    //                /* update the measurement pointer ptrPark */
+    //                for (uint16_t i=0; i<nrBytes_ext; i++)
+    //                {
+    //                    ptrPark[nrBytes+i] = ptrPark_ext[i];
+    //                }
+
+    //                /* update the actual number of bytes here (nrBytes) */
+    //                ARTEMIS_DEBUG_PRINTF("DATA :: Park : Extended, nrBytes_ext(%u)\n", nrBytes_ext);
+    //                nrBytes += nrBytes_ext;
+    //                /* update the readlength */
+    //                *readlength += sPark_ext.mLength;
+    //                ARTEMIS_DEBUG_PRINTF("DATA :: Park : Extended, Total nrBytes(%u), readlength(%u)\n", nrBytes, *readlength);
+    //            }
+    //        }
+    //    }
+    //    else
+    //    {
+    //        ARTEMIS_DEBUG_PRINTF("DATA :: Park : Extended, BREAK, IRID_DATA_OUT (%u), nrBytes(%u), nrBytes_ext(%u)\n", IRID_DATA_OUT, nrBytes, nrBytes_ext);
+    //        break;
+    //    }
+    //}
+
     return nrBytes;
 }
 
-static uint16_t create_profile_page(uint8_t *pProf, uint16_t *readlength)
+static uint16_t create_profile_page(uint8_t *ptrProf, uint8_t *readlength)
 {
-    /** Collect Profile measurements
-     *  maximum 340 bytes can be transmit at a time,
-     *  27 bytes are reserved for the header for every message
-     *  340 - 27 = 313 bytes are left for the measurements, actually 312
-     *  312 / 3 = 104 measurements can fit into one iridium message
-     *  one bytes for pressure sensor, two bytes are for temperature
-     */
-    uint8_t size = 0;
-    uint8_t pressure = 0;
-    int16_t temp = 0;
-    uint32_t start = 0;
-    uint32_t offset = 0;
-    uint16_t len = 0;
-    uint16_t nrBytes = 0;
-
-    /* set pointer to the temp park buffer */
-    uint8_t *ptProf = &temp_prof[0];
-    do
+    /* check if we have read and transmitted all the measurements*/
+    if (m_prof_number >= prof_number)
     {
-        size = DATA_get_converted(&prof, &start, &offset, &pressure, &temp);
-        /* check, if we have no data available */
-        if (size == 0)
-        {
-            if (len > 0 && len <= 103)
-            {
-                profPage++;
-                ARTEMIS_DEBUG_PRINTF("collected measurements=%u\n", len);
-                ARTEMIS_DEBUG_PRINTF("\n<< no more measurements after page %u >>\n\n", profPage);
-            }
-            else
-            {
-                ARTEMIS_DEBUG_PRINTF("all measurements are read\n");
-            }
-            break;
-        }
-        len++;
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, No more measurements available m_prof_number=%u, prof_number=%u\n", m_prof_number, prof_number);
+        *readlength = 0;
+        return 0;
+    }
 
-        /* check on the length, must be < 313 */
-        if (len > 103)
-        {
-            /* we are done here, increase the page number */
-            *ptProf++ = (uint8_t) (pressure&0xFF);
-            *ptProf++ = (uint8_t) (temp>>8);
-            *ptProf++ = (uint8_t) (temp&0xFF);
-            profPage++;
-
-            ARTEMIS_DEBUG_PRINTF("collected measurements=%u\n", len);
-            ARTEMIS_DEBUG_PRINTF("\n< more measurements are available >\n\n");
-            break;
-        }
-        /* start collecting data into the temp park buffer */
-        *ptProf++ = (uint8_t) (pressure&0xFF);
-        *ptProf++ = (uint8_t) (temp>>8);
-        *ptProf++ = (uint8_t) (temp&0xFF);
-
-    } while (1);
-
-    /* check if we have any collected bytes */
-    if (len == 0)
+    /* set modeType */
+    sProf.modeType = LCP_PROFILE_MODE;
+    /* check if we are sending the first page of any profile number */
+    if (m_prof_length == 0)
     {
-        nrBytes = len;
+        m_prof_length = pProf[m_prof_number].pLength;
+        sProf.profNumber = m_prof_number;
+        sProf.pageNumber = 0;
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, profile_number=%u, pageNumber=%u, measurement_length=%u\n", m_prof_number, sProf.pageNumber, m_prof_length);
+
+        /* check the length of measurements must not exceed 312 bytes > 312*8/(12+8) = 124 */
+        if (m_prof_length > MEASUREMENT_MAX)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, WARNING : Profile, profile_number=%u exceeding (%u) length of measurements, creating pages!\n", sProf.profNumber, MEASUREMENT_MAX);
+            sProf.mLength = MEASUREMENT_MAX;
+            m_prof_length = pProf[m_prof_number].pLength - sProf.mLength;
+        }
+        else
+        {
+            sProf.mLength = m_prof_length;
+            m_prof_length = 0;
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, profile_number=%u length of measurements=%u fitting in one page!\n", sProf.profNumber, sProf.mLength);
+        }
     }
     else
     {
-        /* create a header for the profile measurements */
-        create_header(pProf, start, offset, Lat, Lon, LCP_PROFILE_MODE, profPage);
-        /* set the start measurements position 28, 27th in the array */
-        pProf = &irid_prof[27];
-        nrBytes = 27;
-        /* collect measurements from temp buffer to irid_prof buffer */
-        /* set first position of temp_prof to its pointer */
-        ptProf = &temp_prof[0];
-        for (uint16_t i=0; i<len*3; i++)
+        if (m_prof_length > MEASUREMENT_MAX)
         {
-            *pProf++ = *ptProf++;
-            nrBytes++;
+            sProf.mLength = MEASUREMENT_MAX;
+            m_prof_length = m_prof_length - sProf.mLength;
+        }
+        else
+        {
+            sProf.mLength = m_prof_length;
+            m_prof_length = 0;
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, profile_number=%u measurement_length=%u\n", sProf.profNumber, sProf.mLength);
         }
     }
 
-    *readlength = len;
+    uint16_t nrBytes = pack_measurements_irid(&prof, pProf, &sProf, ptrProf);
+    *readlength = sProf.mLength;
+    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile : profile_number=%u, pageNumber=%u, m_prof_number=%u, total_bytes=%u\n", sProf.profNumber, sProf.pageNumber, m_prof_number, nrBytes);
+
     return nrBytes;
 }
 
@@ -3217,4 +3293,3 @@ void STATE_Moored(void)
             break;
     }
 }
-
