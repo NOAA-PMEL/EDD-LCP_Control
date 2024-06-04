@@ -2878,6 +2878,18 @@ void module_sps_tx(void)
                             {
                                 ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, Profile transmit <Successful>\n\n");
                                 prof_run = false;
+
+                                /* reset m_park_length and m_park_number */
+                                if (m_prof_length == 0)
+                                {
+                                    m_prof_number++;
+                                    sProf.pageNumber = 0;
+                                    sProf.mLength = 0;
+                                }
+                                else
+                                {
+                                    sProf.pageNumber++;
+                                }
                             }
                             else if (recv[0] == 38)
                             {
