@@ -19,6 +19,7 @@
 //
 //*****************************************************************************
 static Piston_t piston;
+static volatile bool pistonRun = false;
 
 //*****************************************************************************
 //
@@ -156,9 +157,10 @@ void PIS_task_delete(TaskHandle_t xHandle)
         eTaskState eState = eTaskGetState(xHandle);
         if ( (eState==eReady) || (eState==eBlocked) )
         {
-            /* suspend the task first immediately */
-            ARTEMIS_DEBUG_PRINTF("PISTON :: Task is being suspended\n");
-            vTaskSuspend(xHandle);
+            if (pistonRun)
+            {
+                pistonRun = false;
+            }
         }
         else if (eState==eRunning)
         {
@@ -196,6 +198,7 @@ void task_move_piston_to_zero(void)
     vTaskDelay(period);
 
     /** Start the task of reading until we hit the end stop */
+    pistonRun = true;
     bool fullFlag = false;
     uint8_t count_reset = 0;
 
@@ -203,7 +206,7 @@ void task_move_piston_to_zero(void)
     //TickType_t xLastWakeTime;
     //xLastWakeTime = xTaskGetTickCount();
 
-    while(!fullFlag)
+    while(pistonRun)
     {
         /** Read the piston memory to see if we're done */
         //if(xSemaphoreTake(piston.rtos.semaphore, period) == pdTRUE)
@@ -212,6 +215,10 @@ void task_move_piston_to_zero(void)
             {
                 vTaskDelay(xDelay250ms);
                 fullFlag = module_pis_read_if_zero();
+                if (fullFlag)
+                {
+                    pistonRun = false;
+                }
                 count_reset++;
                 if (count_reset > 4)
                 {
@@ -263,6 +270,7 @@ void task_move_piston_to_full(void)
     vTaskDelay(period);
 
     /** Start the task of reading until we hit the end stop */
+    pistonRun = true;
     bool fullFlag = false;
     uint8_t count_reset = 0;
 
@@ -270,7 +278,7 @@ void task_move_piston_to_full(void)
     //TickType_t xLastWakeTime;
     //xLastWakeTime = xTaskGetTickCount();
 
-    while(!fullFlag)
+    while(pistonRun)
     {
         /** Read the piston memory to see if we're done */
         //if(xSemaphoreTake(piston.rtos.semaphore, period) == pdTRUE)
@@ -280,7 +288,10 @@ void task_move_piston_to_full(void)
                 count_reset++;
                 vTaskDelay(xDelay250ms);
                 fullFlag = module_pis_read_if_full();
-
+                if (fullFlag)
+                {
+                    pistonRun = false;
+                }
                 if (count_reset > 4)
                 {
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
@@ -336,10 +347,10 @@ void task_move_piston_to_length(void)
     //xLastWakeTime = xTaskGetTickCount();
 
     /** Start reading until we hit the volume */
-    bool fullFlag = false;
+    pistonRun = true;
     uint8_t count_reset = 0;
 
-    while(!fullFlag)
+    while(pistonRun)
     {
         /** Read the piston memory to see if we're done moving and at volume */
         //if(xSemaphoreTake(piston.rtos.semaphore, period) == pdTRUE)
@@ -357,7 +368,7 @@ void task_move_piston_to_length(void)
                     piston.length <=(piston.setpoint_l + PISTON_LENGTH_DIFF_MAX))
                 {
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Length reached\n");
-                    fullFlag = true;
+                    pistonRun = false;
                     count_reset = 0;
                 }
                 else
@@ -388,11 +399,10 @@ void task_move_piston_to_length(void)
             //xSemaphoreGive(piston.rtos.semaphore);
         //}
 
-        if (!fullFlag)
+        if (pistonRun)
         {
             vTaskDelay(period);
         }
-        //vTaskDelay(period);
         //vTaskDelayUntil(&xLastWakeTime, period);
     }
 
@@ -421,24 +431,20 @@ void task_move_piston_to_length(void)
 bool PIS_Get_Volume(float *volume)
 {
     bool retVal = false;
-
     taskENTER_CRITICAL();
     *volume = piston.volume;
     retVal = true;
     taskEXIT_CRITICAL();
-
     return retVal;
 }
 
 bool PIS_Get_Length(float *length)
 {
     bool retVal = false;
-
     taskENTER_CRITICAL();
     *length = piston.length;
     retVal = true;
     taskEXIT_CRITICAL();
-
     return retVal;
 }
 
@@ -465,10 +471,10 @@ void task_move_piston_to_volume(void)
     //xLastWakeTime = xTaskGetTickCount();
 
     /** Start reading until we hit the volume */
-    bool fullFlag = false;
+    pistonRun = true;
     uint8_t count_reset = 0;
 
-    while(!fullFlag)
+    while(pistonRun)
     {
         /** Read the piston memory to see if we're done moving and at volume */
         //if(xSemaphoreTake(piston.rtos.semaphore, period) == pdTRUE)
@@ -487,7 +493,7 @@ void task_move_piston_to_volume(void)
                     piston.volume <=(piston.setpoint_v + PISTON_VOLUME_DIFF_MAX))
                 {
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Volume reached\n");
-                    fullFlag = true;
+                    pistonRun = false;
                     count_reset = 0;
                 }
                 else
@@ -518,11 +524,10 @@ void task_move_piston_to_volume(void)
             //xSemaphoreGive(piston.rtos.semaphore);
         //}
 
-        if (!fullFlag)
+        if (pistonRun)
         {
             vTaskDelay(period);
         }
-        //vTaskDelay(period);
         //vTaskDelayUntil(&xLastWakeTime, period);
     }
 
@@ -532,7 +537,6 @@ void task_move_piston_to_volume(void)
     taskENTER_CRITICAL();
     piston.volume = volume;
     taskEXIT_CRITICAL();
-
 
     /** Check to see if volume is valid , and update the last volume*/
     if( fabs(volume - piston.setpoint_v) >= PISTON_VOLUME_DIFF_MAX)
@@ -545,7 +549,7 @@ void task_move_piston_to_volume(void)
         ARTEMIS_DEBUG_PRINTF("PISTON :: SUCCESS. Volume = %0.3f, diff = %0.3f, max_diff = %0.3f\n",
                                     volume, (volume - piston.setpoint_v), PISTON_VOLUME_DIFF_MAX);
     }
-    vTaskDelay(xDelay5ms);
+    vTaskDelay(xDelay10ms);
     vTaskDelete(NULL);
 }
 
