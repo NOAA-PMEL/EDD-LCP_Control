@@ -60,11 +60,14 @@
 #define SYSTEM_FALL_RATE_MAX                ( 0.125f )
 #define SYSTEM_FALL_RATE_MIN                ( 0.075f )
 
+#define SYSTEM_PARK_RATE_MIN                ( 0.01f )
+
 #define SYSTEM_PROFILER_PARK_DEPTH          ( 180.0f )      /* in meters */
 #define SYSTEM_PROFILER_PARK_DEPTH_ERR      ( 2.0f )
 #define SYSTEM_PROFILER_PARK_DURATION_MIN   ( 5.0f )        /* in minutes */
 #define SYSTEM_PROFILER_PARK_DURATION_SEC   ( SYSTEM_PROFILER_PARK_DURATION_MIN * 60.0f )
-#define SYSTEM_PROFILER_PARK_RATE           ( 1.0f / 1.0f ) //60.0f )
+#define SYSTEM_PROFILER_PARK_RATE           ( 1.0f / 2.0f ) //60.0f )
+#define SYSTEM_PROFILER_PARK_RATE_FAST      ( 1.0f / 1.0f ) //60.0f )
 
 #define VOLUME_COMPRESSIBILITY_COEFF        ( 0.0f )        /* gamma, coefficient of volume compressiblity, related to pressure */
 #define VOLUME_THERMAL_EXPANSION_COEFF      ( 0.0f )        /* alpha, coeffciient of linear expansion of material, related to temperature */
@@ -78,13 +81,13 @@
 #define SYSTEM_CRUSH_LIMIT_DEPTH            ( 220.0f )      /* crash limit depth in meters */
 #define SYSTEM_PROFILE_NUMBER               ( 100 )         /* for testing */
 #define PISTON_POSITION_INCREMENT           ( 0.015f )      /* Piston position increment-decrement in inches */
-#define PISTON_POSITION_INCREMENT2          ( 0.008f )      /* Piston position increment-decrement in inches, minimum length is 0.008in */
+#define PISTON_POSITION_INCREMENT2          ( 0.010f )      /* Piston position increment-decrement in inches, minimum length is 0.008in */
 #define PISTON_POSITION_MAXIMUM             ( 2.0f ) //11.0f )       /* Piston position maximum in inches */
 #define CRUSH_DEPTH_PISTON_POSITION         ( 5.25f )       /* Piston position maximum in inches */
 #define CRITICAL_PISTON_POSITON_DEPTH       ( 50.0f )       /* Critical depth where piston length must not exceed 5.25 inches */
-#define PISTON_MOVE_TO_SURFACE              ( 2.0f ) //11.0f )       /* Piston position move to surface in inches */
+#define PISTON_MOVE_TO_SURFACE              ( 10.0f ) //11.0f )       /* Piston position move to surface in inches */
 #define PROFILE_DEPTH_RATE_COUNTER          ( 5.0f )       /* Change piston position after this number of measurements */
-#define PARK_DEPTH_RATE_COUNTER             ( 2.0f )       /* Change piston position after this number of measurements */
+#define PARK_DEPTH_RATE_COUNTER             ( 5.0f )       /* Change piston position after this number of measurements */
 
 
 /*************************************
@@ -107,6 +110,7 @@
 #define PARK_DEPTH_MAX                      ( SYSTEM_PROFILER_PARK_DEPTH + 10.f)
 #define PARK_DEPTH_ERR                      ( SYSTEM_PROFILER_PARK_DEPTH_ERR )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
+#define PARK_RATE_FAST                      ( SYSTEM_PROFILER_PARK_RATE_FAST )
 #define PARK_TIME                           ( SYSTEM_PROFILER_PARK_DURATION_SEC )
 #define PARK_DENSITY                        ( SYSTEM_DENSITY_SEAWATER )
 #define PROFILE_DEPTH                       ( SYSTEM_PROFILER_PROFILE_DEPTH )
@@ -128,6 +132,7 @@
 #define PARK_DEPTH_ERR                      ( 10.0f )
 #define PARK_DEPTH_MAX                      ( 190.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
+#define PARK_RATE_FAST                      ( SYSTEM_PROFILER_PARK_RATE_FAST )
 #define PARK_TIME                           ( 3.0f * 60.0f ) /* 3 mins */
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 2.0f )
@@ -149,7 +154,8 @@
 #define PARK_DEPTH                          ( 20.0f )
 #define PARK_DEPTH_ERR                      ( 2.0f )
 #define PARK_DEPTH_MAX                      ( 23.0f )
-#define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
+#define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE_FAST )
+#define PARK_RATE_FAST                      ( SYSTEM_PROFILER_PARK_RATE_FAST )
 #define PARK_TIME                           ( 3.0f * 60.0f ) /* 3 mins */
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 2.0f )
@@ -168,14 +174,15 @@
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 1.0f )
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 2.0f )
-#define PARK_DEPTH                          ( 4.0f )
+#define PARK_DEPTH                          ( 3.5f ) //( 4.0f )
 #define PARK_DEPTH_ERR                      ( 0.25f )
 #define PARK_DEPTH_MAX                      ( 6.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
+#define PARK_RATE_FAST                      ( SYSTEM_PROFILER_PARK_RATE_FAST )
 #define PARK_TIME                           ( 3.0 * 60.0f ) /* 3 mins */
 #define PARK_DENSITY                        ( 1010.2f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 2.0f )
-#define PROFILE_DEPTH                       ( 4.5f )
+#define PROFILE_DEPTH                       ( 4.0f ) //( 4.5f )
 #define PROFILE_DEPTH_ERR                   ( 0.1f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
 #define TO_PROFILE_DENSITY                  ( 1012.5f )
