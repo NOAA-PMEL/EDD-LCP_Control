@@ -158,7 +158,7 @@ void artemis_i9603n_initialize(void)
 
 	/** Initialize UART Port */
 	artemis_uart_initialize(uart, baudrate);
-    artemis_uart_flush(uart);
+    //artemis_uart_flush(uart);
 }
 
 void artemis_i9603n_uninitialize(void)
