@@ -90,6 +90,8 @@ void DATA_add_gps(Data_t *buf, float latitude, float longitude, uint8_t pNumber)
 {
     buf->p[pNumber].pLatitude = latitude;
     buf->p[pNumber].pLongitude = longitude;
+    ARTEMIS_DEBUG_PRINTF("DATA :: GPS fixed, ProfileNr=%u, Latitude=%.7f, Longitude=%.7f\n",
+                            pNumber, buf->p[pNumber].pLatitude, buf->p[pNumber].pLongitude);
 }
 
 //size_t DATA_add(Data_t *buf, uint32_t time, float pressure, float temp, uint16_t prof_nr, bool finish)
