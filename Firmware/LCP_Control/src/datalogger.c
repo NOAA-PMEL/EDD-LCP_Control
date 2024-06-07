@@ -50,7 +50,7 @@ static module_d module;
 static uint16_t sps_count = 0;
 static uint16_t park_count = 0;
 static char lcp_log[256];
-static char *lcp_file = "LCP_LOG.txt";
+static char lcp_file[17];
 
 /* for testing profile pressure */
 static char test_buf[40000];
@@ -88,7 +88,7 @@ bool datalogger_init(uint8_t iomNo)
     }
     else
     {
-        ARTEMIS_DEBUG_PRINTF("ERROR:: Datalogger init -> Select the iom number (1, 4)\n");
+        am_util_stdio_printf("DATALOGGER :: ERROR : init -> Select the iom number (1, 4)\n");
         success = false;
     }
 
@@ -104,7 +104,7 @@ bool datalogger_init(uint8_t iomNo)
         delay++;
     } while ( ! (ret&0x01) && delay < 20);
 
-    // print device information
+    /* print device information */
     success = datalogger_device_info();
     datalogger_power_off();
 
@@ -173,35 +173,71 @@ bool datalogger_device_info(void)
 {
     bool success = false;
 
-    ARTEMIS_DEBUG_PRINTF("\nDatalogger Qwiic Device Info\n");
-    ARTEMIS_DEBUG_PRINTF("*******************************\n");
+    am_util_stdio_printf("\nDatalogger Qwiic Device Info\n");
+    am_util_stdio_printf("*******************************\n");
 
     uint8_t id = datalogger_get_id();
-    ARTEMIS_DEBUG_PRINTF("Device Unique ID\t: ");
-    ARTEMIS_DEBUG_PRINTF("0x%02X", id);
-    ARTEMIS_DEBUG_PRINTF("\n");
+    am_util_stdio_printf("Device Unique ID\t: ");
+    am_util_stdio_printf("0x%02X", id);
+    am_util_stdio_printf("\n");
 
     uint16_t fw = datalogger_fw_version();
-    ARTEMIS_DEBUG_PRINTF("Device FW Version\t: ");
-    ARTEMIS_DEBUG_PRINTF("%u.%u", fw>>8&0xff, fw&0xff);
-    ARTEMIS_DEBUG_PRINTF("\n");
+    am_util_stdio_printf("Device FW Version\t: ");
+    am_util_stdio_printf("%u.%u", fw>>8&0xff, fw&0xff);
+    am_util_stdio_printf("\n");
 
     uint8_t status = datalogger_status();
-    ARTEMIS_DEBUG_PRINTF("Device Status Info\t: ");
+    am_util_stdio_printf("Device Status Info\t: ");
     if (status & 0x01)
     {
-        ARTEMIS_DEBUG_PRINTF("SD init Good");
-        ARTEMIS_DEBUG_PRINTF("\n");
+        am_util_stdio_printf("SD init Good");
+        am_util_stdio_printf("\n");
         success = true;
     }
     else
     {
-        ARTEMIS_DEBUG_PRINTF("SD init Not Good");
-        ARTEMIS_DEBUG_PRINTF("\n");
+        am_util_stdio_printf("SD init Not Good");
+        am_util_stdio_printf("\n");
         success = false;
     }
 
     return success;
+}
+
+void datalogger_log_debug_init(void)
+{
+    datalogger_cd("..");
+    char lFile[17];
+    char ext[5] = ".txt";
+    uint16_t fileNr = 0;
+    int32_t size = 0;
+
+    /* read file*/
+    do
+    {
+        am_util_stdio_sprintf(lFile,"%s%04d", "LCP_LOG_", fileNr);
+        strcat(lFile, ext);
+        size = datalogger_filesize(lFile);
+
+        if (size < 0)
+        {
+            for (uint8_t i=0; i<17; i++)
+            {
+                lcp_file[i] = lFile[i];
+            }
+            am_util_stdio_printf("\n<< LCP Log file %s being created >>\n", lcp_file);
+
+            /* create a new log file */
+            datalogger_createfile(lcp_file);
+            datalogger_write_sync();
+            break;
+        }
+        else
+        {
+            fileNr++;
+        }
+
+    } while (size >= 0);
 }
 
 void datalogger_log_debug(const char *fmt, ...)
@@ -209,6 +245,7 @@ void datalogger_log_debug(const char *fmt, ...)
     va_list args;
     va_start(args, fmt);
     datalogger_cd("..");
+
     datalogger_openfile(lcp_file);
     am_util_stdio_vsprintf(lcp_log, fmt, args);
     datalogger_writefile(lcp_log);
@@ -457,7 +494,6 @@ void datalogger_log_init(void)
     datalogger_i2c_write(cmd, 1, &initlog, 1);
 }
 
-
 void datalogger_mkdir(char *dirname)
 {
     uint8_t cmd = LOGGER_MKDIR;
@@ -486,9 +522,9 @@ void datalogger_openfile(char *filename)
     datalogger_i2c_write(cmd, 1, (uint8_t *)filename, len);
 }
 
-uint32_t datalogger_filesize(char *filename)
+int32_t datalogger_filesize(char *filename)
 {
-    uint32_t size = 0;
+    int32_t size = 0;
     uint8_t bytes[4] = {0};
 
     uint8_t cmd = LOGGER_FILE_SIZE;

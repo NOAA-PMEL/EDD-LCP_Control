@@ -74,8 +74,9 @@ void datalogger_cd(char *dirname);
 
 uint32_t datalogger_rmfile(char *filename, bool recursive);
 uint32_t datalogger_rmdir(char *dirname);
-uint32_t datalogger_filesize(char *filename);
+int32_t datalogger_filesize(char *filename);
 
+void datalogger_log_debug_init(void);
 void datalogger_log_debug(const char *fmt, ...);
 
 /* data logging functions */

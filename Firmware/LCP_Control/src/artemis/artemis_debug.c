@@ -10,9 +10,16 @@ void artemis_debug_initialize(void)
 #ifdef ARTEMIS_DEBUG
     // am_bsp_itm_printf_enable();
     am_bsp_uart_printf_enable();
-    ARTEMIS_DEBUG_PRINTF("UART ENABLED\n");
+    am_util_stdio_printf("UART ENABLED\n");
 #else
     //am_bsp_debug_printf_disable();
+#endif
+
+#if defined (DATALOG_DEBUG) && DATALOG_DEBUG
+    am_util_stdio_printf("DATALOG_DEBUG is enabled\n");
+#else
+    am_util_stdio_printf("\n<<< !!! DATALOG_DEBUG is disbled !!! >>>\n");
+    am_util_stdio_printf("<<< Please Note : it's not going to log to LCP_LOG_XXXX.txt files >>>\n");
 #endif
 
     bool success = false;
@@ -21,29 +28,32 @@ void artemis_debug_initialize(void)
     {
         datalogger_power_on();
         am_util_delay_ms(500);
+        datalogger_log_debug_init();
 
 #if defined(__TEST_PROFILE_1__)
         /* reading from the file first time and fill up the buffer */
-        ARTEMIS_DEBUG_PRINTF("\n\n<<< TEST_PROFILE_1 Profile selected >>>\n\n");
+        ARTEMIS_DEBUG_PRINTF("\n<<< TEST_PROFILE_1 Profile selected >>>\n\n");
         datalogger_read_test_profile(false);
 #elif defined(__TEST_PROFILE_2__)
         /* reading from the file first time and fill up the buffer */
-        ARTEMIS_DEBUG_PRINTF("\n\n<<< TEST_PROFILE_2 Profile selected >>>\n\n");
+        ARTEMIS_DEBUG_PRINTF("\n<<< TEST_PROFILE_2 Profile selected >>>\n\n");
         datalogger_read_test_profile(false);
 #elif defined(__TEST_TANK__)
-        ARTEMIS_DEBUG_PRINTF("\n\n<<< TEST_TANK Profile selected >>>\n\n");
+        ARTEMIS_DEBUG_PRINTF("\n<<< TEST_TANK Profile selected >>>\n\n");
 #elif defined(__TEST_LAKE__)
-        ARTEMIS_DEBUG_PRINTF("\n\n<<< TEST_LAKE Profile selected >>>\n\n");
+        ARTEMIS_DEBUG_PRINTF("\n<<< TEST_LAKE Profile selected >>>\n\n");
 #elif defined(__TEST_OCEAN__)
-        ARTEMIS_DEBUG_PRINTF("\n\n<<< TEST_OCEAN Profile selected >>>\n\n");
+        ARTEMIS_DEBUG_PRINTF("\n<<< TEST_OCEAN Profile selected >>>\n\n");
 #else
-    #error "ERROR:: No test profile was selected"
+        ARTEMIS_DEBUG_PRINTF("\n<<< ERROR:: No Profile was selected >>>\n\n");
+        #error "ERROR:: No test profile was selected"
 #endif
 
     }
     else
     {
-        ARTEMIS_DEBUG_PRINTF("\n\nERROR :: SD Card is missing\n\n");
+        am_util_stdio_printf("\nDATALOGGER :: ERROR : << SD Card is missing >>");
+        am_util_stdio_printf("\nDATALOGGER :: ERROR : << LCP Log File was not created >>\n\n");
     }
 }
 

@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 /** put false OR true to log every DEBUG_PRINTF into the SD-Card */
-#define DATALOG_DEBUG false
+#define DATALOG_DEBUG true
 
 /** comment to disable the DEBUG_PRINTF */
 #define ARTEMIS_DEBUG
