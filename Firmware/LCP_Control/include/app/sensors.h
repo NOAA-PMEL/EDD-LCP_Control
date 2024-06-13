@@ -67,6 +67,7 @@ typedef struct sSensorData_t
 
 void task_depth(void);
 void task_temperature(void);
+void task_temperature_on(void);
 void task_gps(void);
 
 void SENS_sensor_depth_off(void);
@@ -96,6 +97,8 @@ void SENS_task_park_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp);
 void SENS_task_sample_depth_continuous(TaskHandle_t *xDepth);
 void SENS_task_gps(TaskHandle_t *xGPS);
 void SENS_task_delete(TaskHandle_t xHandle);
+
+void SENS_task_temperature_on(TaskHandle_t *xTemp);
 
 void SENS_set_depth_rate(float rate);
 void SENS_set_temperature_rate(float rate);
