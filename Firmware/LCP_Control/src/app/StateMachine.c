@@ -2569,7 +2569,7 @@ void module_sps_profile(void)
     prof_number++;
 
     /* check Heap size */
-    size = xPortGetFreeHeapSize();
+    uint32_t size = xPortGetFreeHeapSize();
     ARTEMIS_DEBUG_PRINTF("\nSPS :: profile, FreeRTOS HEAP SIZE = %u Bytes\n\n", size);
 
     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Task->finished\n");
