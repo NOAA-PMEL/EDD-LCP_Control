@@ -68,7 +68,7 @@ extern "C"
 #define configTICK_RATE_HZ                      1000
 #define configMAX_PRIORITIES                    8
 #define configMINIMAL_STACK_SIZE                (256)
-#define configTOTAL_HEAP_SIZE                   (64 * 1024)
+#define configTOTAL_HEAP_SIZE                   (32 * 1024)
 #define configMAX_TASK_NAME_LEN                 32
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
@@ -155,6 +155,7 @@ extern "C"
 #define xDelay1000ms                            pdMS_TO_TICKS(1000UL)
 #define xDelay2000ms                            pdMS_TO_TICKS(2000UL)
 #define xDelay5000ms                            pdMS_TO_TICKS(5000UL)
+#define xDelay10000ms                           pdMS_TO_TICKS(10000UL)
 #define xDelay30000ms                           pdMS_TO_TICKS(30000UL)
 
 #define vPortSVCHandler                         SVC_Handler
