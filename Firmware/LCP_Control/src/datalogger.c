@@ -138,12 +138,12 @@ void datalogger_read_test_profile(bool reset)
 {
     if (reset)
     {
-        ARTEMIS_DEBUG_PRINTF("Resetting test profile pressure\n");
+        ARTEMIS_DEBUG_PRINTF("DATALOGGER :: Resetting test profile pressure\n");
         test_buffer = &test_buf[0];
     }
     else
     {
-        ARTEMIS_DEBUG_PRINTF("Reading test profile pressure wait please\n");
+        ARTEMIS_DEBUG_PRINTF("DATALOGGER :: Reading test profile pressure wait please\n");
         uint16_t size = 0;
         char *filename;
 
@@ -156,16 +156,16 @@ void datalogger_read_test_profile(bool reset)
         /* read file*/
         size = datalogger_filesize(filename);
 #else
-    #warning "WARNING:: No Test_Profile text file was selected"
+    #warning "WARNING:: DATALOGGER : No Test_Profile text file was selected"
 #endif
-        if (size == 0)
+        if (size <= 0)
         {
-            ARTEMIS_DEBUG_PRINTF("ERROR :: file size = %u\n", size);
+            ARTEMIS_DEBUG_PRINTF("DATALOGGER :: ERROR : file size = %u\n", size);
             return;
         }
-        ARTEMIS_DEBUG_PRINTF("file size = %u\n", size);
+        ARTEMIS_DEBUG_PRINTF("DATALOGGER :: file size = %u\n", size);
         datalogger_readfile(filename, test_buf , size);
-        ARTEMIS_DEBUG_PRINTF("Reading test profile pressure DONE\n");
+        ARTEMIS_DEBUG_PRINTF("DATALOGGER :: Reading test profile pressure DONE\n");
     }
 }
 
