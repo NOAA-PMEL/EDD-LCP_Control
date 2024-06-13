@@ -28,7 +28,9 @@ void artemis_debug_initialize(void)
     {
         datalogger_power_on();
         am_util_delay_ms(500);
+#if defined (DATALOG_DEBUG) && DATALOG_DEBUG
         datalogger_log_debug_init();
+#endif
 
 #if defined(__TEST_PROFILE_1__)
         /* reading from the file first time and fill up the buffer */
