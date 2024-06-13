@@ -66,7 +66,7 @@
 #define SYSTEM_PROFILER_PARK_DEPTH_ERR      ( 2.0f )
 #define SYSTEM_PROFILER_PARK_DURATION_MIN   ( 5.0f )        /* in minutes */
 #define SYSTEM_PROFILER_PARK_DURATION_SEC   ( SYSTEM_PROFILER_PARK_DURATION_MIN * 60.0f )
-#define SYSTEM_PROFILER_PARK_RATE           ( 1.0f / 2.0f ) //60.0f )
+#define SYSTEM_PROFILER_PARK_RATE           ( 1.0f / 1.0f ) //60.0f )
 #define SYSTEM_PROFILER_PARK_RATE_FAST      ( 1.0f / 1.0f ) //60.0f )
 
 #define VOLUME_COMPRESSIBILITY_COEFF        ( 0.0f )        /* gamma, coefficient of volume compressiblity, related to pressure */
@@ -82,13 +82,16 @@
 #define SYSTEM_PROFILE_NUMBER               ( 100 )         /* for testing */
 #define PISTON_POSITION_INCREMENT           ( 0.015f )      /* Piston position increment-decrement in inches */
 #define PISTON_POSITION_INCREMENT2          ( 0.010f )      /* Piston position increment-decrement in inches, minimum length is 0.008in */
-#define PISTON_POSITION_MAXIMUM             ( 2.0f ) //11.0f )       /* Piston position maximum in inches */
+#define PISTON_POSITION_MAXIMUM             ( 11.50f )      /* Piston position maximum in inches */
+#define PISTON_POSITION_MINIMUM             ( 0.2f )        /* Piston position minimum in inches */
 #define CRUSH_DEPTH_PISTON_POSITION         ( 5.25f )       /* Piston position maximum in inches */
 #define CRITICAL_PISTON_POSITON_DEPTH       ( 50.0f )       /* Critical depth where piston length must not exceed 5.25 inches */
 #define PISTON_MOVE_TO_SURFACE              ( 10.0f ) //11.0f )       /* Piston position move to surface in inches */
 #define PROFILE_DEPTH_RATE_COUNTER          ( 5.0f )       /* Change piston position after this number of measurements */
 #define PARK_DEPTH_RATE_COUNTER             ( 5.0f )       /* Change piston position after this number of measurements */
-
+#define SYSTEM_CDPP_TIMER                   ( 5.0f * 60.0f )    /* Timer for getting stuck in critical depth piston position */
+#define TO_PROFILE_STATE_TIMER              ( 20.0f * 60.0f )   /* Timer for getting stuck in move_to_profile state */
+#define TO_PARK_STATE_TIMER                 ( 20.0f * 60.0f )   /* Timer for getting stuck in move_to_park state */
 
 /*************************************
 ** Settable Variables
@@ -97,7 +100,7 @@
 #define PARK_TRANSMIT_TRIES                 ( 02 )          /* Park mode measurements transmission nr. of tries */
 #define PROF_TRANSMIT_TRIES                 ( 02 )          /* Profile mode measurements transmission nr. of tries */
 #define SATELLITE_VISIBILITY_TRIES          ( 02 )          /* Look for satellite visitbility (nr. of times ) */
-#define IRIDIUM_TRIES                       ( 03 )          /* Try XX number of times to transmit */
+#define IRIDIUM_TRIES                       ( 02 )          /* Try XX number of times to transmit */
 #define SATELLITE_TIMER                     ( 15 )          /* Try XX seconds for checking satellite visibility */
 
 /** Test Profiles */
@@ -124,9 +127,9 @@
 
 #elif defined(__TEST_PROFILE_1__)
 /** TEST profile1 */
-#define BALLAST_DEPTH                       ( 1.0f )    // pressure reading ( 0.0101f )
+#define BALLAST_DEPTH                       ( 10.0f )    // pressure reading ( 0.0101f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
-#define BALLAST_DEPTH_PROFILE               ( 1.0f )
+#define BALLAST_DEPTH_PROFILE               ( 10.0f )
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 2.0f )
 #define PARK_DEPTH                          ( 180.0f )
 #define PARK_DEPTH_ERR                      ( 10.0f )
@@ -154,7 +157,7 @@
 #define PARK_DEPTH                          ( 20.0f )
 #define PARK_DEPTH_ERR                      ( 2.0f )
 #define PARK_DEPTH_MAX                      ( 23.0f )
-#define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE_FAST )
+#define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
 #define PARK_RATE_FAST                      ( SYSTEM_PROFILER_PARK_RATE_FAST )
 #define PARK_TIME                           ( 3.0f * 60.0f ) /* 3 mins */
 #define PARK_DENSITY                        ( 1033.0f )
