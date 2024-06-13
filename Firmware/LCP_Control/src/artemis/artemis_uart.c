@@ -169,6 +169,7 @@ void artemis_uart_receive(artemis_stream_t *rxstream)
         else
         {
             run = false;
+            rxstream->written = 0;
             NVIC_EnableIRQ((IRQn_Type)(UART1_IRQn));
         }
     }
