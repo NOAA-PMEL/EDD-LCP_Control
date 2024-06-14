@@ -54,11 +54,11 @@
 #define SYSTEM_NEUTRAL_BUOYANCY             ( 1025.0f )
 #define SYSTEM_DENSITY_SEAWATER             ( 1000.0f ) //1033.0f )
 #define SYSTEM_RISE_RATE_SETPOINT           ( 0.100f )
-#define SYSTEM_RISE_RATE_MAX                ( 0.15f )
-#define SYSTEM_RISE_RATE_MIN                ( 0.05f )  //0.125f )
+#define SYSTEM_RISE_RATE_MAX                ( 0.30f )
+#define SYSTEM_RISE_RATE_MIN                ( 0.017f )  //0.125f )
 #define SYSTEM_FALL_RATE_SETPOINT           ( 0.100f )
 #define SYSTEM_FALL_RATE_MAX                ( 0.125f )
-#define SYSTEM_FALL_RATE_MIN                ( 0.075f )
+#define SYSTEM_FALL_RATE_MIN                ( 0.005f )  /* need to think about it*/
 
 #define SYSTEM_PARK_RATE_MIN                ( 0.01f )
 
@@ -136,7 +136,8 @@
 #define PARK_DEPTH_MAX                      ( 190.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
 #define PARK_RATE_FAST                      ( SYSTEM_PROFILER_PARK_RATE_FAST )
-#define PARK_TIME                           ( 3.0f * 60.0f ) /* 3 mins */
+#define PARK_TIME_FIRST                     ( 3.0f * 60.0f )    /* 3 mins */
+#define PARK_TIME                           ( 10.0f * 60.0f )   /* 10 mins */
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 2.0f )
 #define PROFILE_DEPTH                       ( 200.0f )
@@ -147,6 +148,7 @@
 #define CRUSH_DEPTH                         ( 220.0f )
 #define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 #define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
+#define PISTON_MOVEMENT_ON_BOTTOM           ( 1.0f )    /* 1 inch piston length if we hit the bottom */
 
 #elif defined(__TEST_PROFILE_2__)
 /** TEST profile2 */
@@ -159,7 +161,8 @@
 #define PARK_DEPTH_MAX                      ( 23.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
 #define PARK_RATE_FAST                      ( SYSTEM_PROFILER_PARK_RATE_FAST )
-#define PARK_TIME                           ( 3.0f * 60.0f ) /* 3 mins */
+#define PARK_TIME_FIRST                     ( 1.0f * 60.0f )    /* 1 min */
+#define PARK_TIME                           ( 3.0f * 60.0f )    /* 3 mins */
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 2.0f )
 #define PROFILE_DEPTH                       ( 24.0f )
@@ -170,6 +173,7 @@
 #define CRUSH_DEPTH                         ( 30.0f )
 #define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 #define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
+#define PISTON_MOVEMENT_ON_BOTTOM           ( 1.0f )    /* 1 inch piston length if we hit the bottom */
 
 #elif defined(__TEST_TANK__)
 /** TANK Testing */
@@ -182,7 +186,8 @@
 #define PARK_DEPTH_MAX                      ( 6.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
 #define PARK_RATE_FAST                      ( SYSTEM_PROFILER_PARK_RATE_FAST )
-#define PARK_TIME                           ( 3.0 * 60.0f ) /* 3 mins */
+#define PARK_TIME_FIRST                     ( 1.0f * 60.0f )    /* 1 min */
+#define PARK_TIME                           ( 3.0f * 60.0f )    /* 3 mins */
 #define PARK_DENSITY                        ( 1010.2f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 2.0f )
 #define PROFILE_DEPTH                       ( 4.0f ) //( 4.5f )
@@ -193,6 +198,7 @@
 #define CRUSH_DEPTH                         ( 10.0f )
 #define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 #define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
+#define PISTON_MOVEMENT_ON_BOTTOM           ( 1.0f )    /* 1 inch piston length if we hit the bottom */
 
 #elif defined(__TEST_LAKE__)
 /** LAKE Testing */
@@ -204,6 +210,7 @@
 #define PARK_DEPTH_ERR                      ( )
 #define PARK_DEPTH_MAX                      ( )
 #define PARK_RATE                           ( )
+#define PARK_TIME_FIRST                     ( )
 #define PARK_TIME                           ( )
 #define PARK_DENSITY                        ( )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( )
