@@ -187,6 +187,10 @@ void sensors_task_delete(void *pvParameters)
 {
     TaskHandle_t xHandle = (TaskHandle_t) pvParameters;
     char *task_name = pcTaskGetName(xHandle);
+    TaskStatus_t xTaskDetails;
+
+    /* check if the Handle is not NULL */
+    configASSERT(xHandle);
 
     /* turn off LEDs */
     am_hal_gpio_output_set(AM_BSP_GPIO_LED_BLUE);
@@ -194,7 +198,10 @@ void sensors_task_delete(void *pvParameters)
     /* check the task state */
     while (1)
     {
-        eTaskState eState = eTaskGetState(xHandle);
+        //eTaskState eState = eTaskGetState(xHandle);
+        vTaskGetInfo(xHandle, &xTaskDetails, pdTRUE, eInvalid);
+        eTaskState eState = xTaskDetails.eCurrentState;
+
         if ( (eState==eBlocked) || (eState==eSuspended) )
         {
             if(xSemaphoreTake(xTDSemaphore, xDelay1000ms) == pdTRUE)
@@ -211,7 +218,8 @@ void sensors_task_delete(void *pvParameters)
         }
         else if (eState==eReady)
         {
-            ARTEMIS_DEBUG_PRINTF("SENSORS :: %s in eReady state, wait\n", task_name);
+            ARTEMIS_DEBUG_PRINTF("SENSORS :: %s in eReady state, suspend it\n", task_name);
+            vTaskSuspend(xHandle);
         }
         else if (eState==eRunning)
         {
@@ -227,7 +235,7 @@ void sensors_task_delete(void *pvParameters)
             ARTEMIS_DEBUG_PRINTF("SENSORS :: %s is in unknown state\n", task_name);
             break;
         }
-        vTaskDelay(xDelay50ms);
+        vTaskDelay(xDelay10ms);
     }
     /* delete this task */
     vTaskDelete(NULL);
@@ -237,7 +245,7 @@ void SENS_task_delete(TaskHandle_t xHandle)
 {
     configASSERT(xTaskCreate((TaskFunction_t) sensors_task_delete,
                                 "SENS_Task_Delete", 256, (void *)xHandle,
-                                tskIDLE_PRIORITY + 3UL,
+                                tskIDLE_PRIORITY + 6UL,
                                 NULL) == pdPASS );
 }
 
