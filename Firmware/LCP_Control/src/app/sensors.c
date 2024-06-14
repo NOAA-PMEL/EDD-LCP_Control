@@ -195,40 +195,36 @@ void sensors_task_delete(void *pvParameters)
     while (1)
     {
         eTaskState eState = eTaskGetState(xHandle);
-        if ( (eState==eReady) || (eState==eBlocked) )
+        if ( (eState==eBlocked) || (eState==eSuspended) )
         {
-            if(xSemaphoreTake(xTDSemaphore, xDelay100ms) == pdTRUE)
+            if(xSemaphoreTake(xTDSemaphore, xDelay1000ms) == pdTRUE)
             {
                 vTaskDelete(xHandle);
                 xSemaphoreGive(xTDSemaphore);
                 ARTEMIS_DEBUG_PRINTF("SENSORS :: %s, xTDsemaphore->available\n", task_name);
+                break;
             }
             else
             {
-                ARTEMIS_DEBUG_PRINTF("SENSORS :: xTDsemaphore->not available\n");
+                ARTEMIS_DEBUG_PRINTF("SENSORS :: %s, xTDsemaphore->not available\n", task_name);
             }
+        }
+        else if (eState==eReady)
+        {
+            ARTEMIS_DEBUG_PRINTF("SENSORS :: %s in eReady state, wait\n", task_name);
         }
         else if (eState==eRunning)
         {
             ARTEMIS_DEBUG_PRINTF("SENSORS :: %s in eRunning state, wait\n", task_name);
         }
-        else if (eState==eSuspended)
-        {
-            ARTEMIS_DEBUG_PRINTF("SENSORS :: %s is Suspended\n", task_name);
-            if(xSemaphoreTake(xTDSemaphore, xDelay100ms) == pdTRUE)
-            {
-                vTaskDelete(xHandle);
-                xSemaphoreGive(xTDSemaphore);
-                ARTEMIS_DEBUG_PRINTF("SENSORS :: %s, xTDsemaphore->available\n", task_name);
-            }
-            else
-            {
-                ARTEMIS_DEBUG_PRINTF("SENSORS :: xTDsemaphore->not available\n");
-            }
-        }
         else if (eState==eDeleted)
         {
             ARTEMIS_DEBUG_PRINTF("SENSORS :: %s->Deleted\n", task_name);
+            break;
+        }
+        else
+        {
+            ARTEMIS_DEBUG_PRINTF("SENSORS :: %s is in unknown state\n", task_name);
             break;
         }
         vTaskDelay(xDelay50ms);
@@ -241,7 +237,7 @@ void SENS_task_delete(TaskHandle_t xHandle)
 {
     configASSERT(xTaskCreate((TaskFunction_t) sensors_task_delete,
                                 "SENS_Task_Delete", 256, (void *)xHandle,
-                                tskIDLE_PRIORITY + 5UL,
+                                tskIDLE_PRIORITY + 3UL,
                                 NULL) == pdPASS );
 }
 
