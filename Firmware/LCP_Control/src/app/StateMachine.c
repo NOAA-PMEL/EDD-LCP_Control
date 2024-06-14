@@ -1104,6 +1104,9 @@ void module_sps_move_to_park(void)
                 /* do nothing for now, */
                 //ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Rate is positive and >= %.4fm/%.1fs\n", SYSTEM_FALL_RATE_MIN, (float)(1/s_rate));
                 //ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Rate is positive\n");
+
+                /* keep updating the piston_on_bottom_length to length_update */
+                piston_on_bottom_length = length_update;
             }
             else if (averaged_rate < SYSTEM_FALL_RATE_MIN && !piston_move && !crush_depth)
             {
@@ -1941,6 +1944,9 @@ void module_sps_move_to_profile(void)
                 /* do nothing for now, */
                 //ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Rate is positive and >= %.4fm/%.1fs\n", SYSTEM_FALL_RATE_MIN, (float)(1/s_rate));
                 //ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Rate is positive\n");
+
+                /* keep updating the piston_on_bottom_length to length_update */
+                piston_on_bottom_length = length_update;
             }
             else if (averaged_rate < SYSTEM_FALL_RATE_MIN && !piston_move && !crush_depth)
             {
