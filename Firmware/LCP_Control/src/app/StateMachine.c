@@ -334,7 +334,8 @@ void module_pus_surface_float(void)
     PIS_set_piston_rate(1);
 
     /* Monitor the Depth if it is less than 50m */
-    uint32_t period = xDelay1000ms;
+    float s_rate = 1.0;
+    uint32_t period = xDelay1000ms/s_rate;
     SENS_set_depth_rate(1);
     SENS_sensor_depth_on();
     TaskHandle_t xDepth = NULL;
@@ -352,7 +353,7 @@ void module_pus_surface_float(void)
     {
         SENS_get_depth(&Depth, &Pressure, &Rate);
         ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Pressure = %0.4f bar\n", Pressure);
-        ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Depth    = %0.4f m, rate = %0.4f\n", Depth, Rate);
+        ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Depth    = %0.4f m, rate = %0.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
         artemis_rtc_get_time(&time);
         uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
         ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Epoch    = %ld\n", epoch);
@@ -668,7 +669,7 @@ void module_pds_idle(void)
     {
         SENS_get_depth(&Depth, &Pressure, &Rate);
         ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Pressure = %0.4f bar\n", Pressure);
-        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Depth    = %0.4f m, rate = %0.4f\n", Depth, Rate);
+        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Depth    = %0.4f m, rate = %0.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
         artemis_rtc_get_time(&time);
         uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
         ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Epoch    = %ld\n", epoch);
@@ -1075,12 +1076,16 @@ void module_sps_move_to_park(void)
     float Pressure = 0.0;
     uint32_t to_park_state_time = 0;
 
+    /* variables for checking if the LCP hit the bottom for PISTON_MOVEMENT_ON_BOTTOM (inches) movement */
+    ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_park, << Setting Length %.4fin to piston_on_bottom_length variable >>\n\n", Length);
+    float piston_on_bottom_length = Length;
+
     while (run)
     {
         /* check on depth sensor */
         SENS_get_depth(&Depth, &Pressure, &Rate);
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure  = %.4f bar\n", Pressure);
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth     = %.4f m, rate = %.4f\n", Depth, Rate);
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth     = %.4f m, rate = %.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
 
 #ifdef TEST
     /* do nothing */
@@ -1097,13 +1102,35 @@ void module_sps_move_to_park(void)
             if (averaged_rate >= SYSTEM_FALL_RATE_MIN && !crush_depth)
             {
                 /* do nothing for now, */
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Rate is positive\n");
+                //ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Rate is positive and >= %.4fm/%.1fs\n", SYSTEM_FALL_RATE_MIN, (float)(1/s_rate));
+                //ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Rate is positive\n");
             }
             else if (averaged_rate < SYSTEM_FALL_RATE_MIN && !piston_move && !crush_depth)
             {
                 /* decrease piston position by PARK_POSITION_INCREMENT inches */
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Rate is negative, decrease %fin\n", PARK_POSITION_INCREMENT);
                 length_update -= PARK_POSITION_INCREMENT;
+
+                /* check if LCP hits the bottom already */
+                if ( (piston_on_bottom_length - length_update) <= PISTON_MOVEMENT_ON_BOTTOM)
+                {
+                    ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_park, LCP is not hitting the bottom\n\n");
+                }
+                else if ( (piston_on_bottom_length - length_update) > PISTON_MOVEMENT_ON_BOTTOM)
+                {
+                    ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, LCP presumably hitting the bottom >>\n\n");
+
+                    /* move to the next state */
+                    to_park_state_time = 0;
+                    /* stop here, and delete the task and turn off pressure sensor, move to next state */
+                    SENS_task_delete(xDepth);
+                    vTaskDelay(xDelay500ms);
+                    SENS_sensor_depth_off();
+                    spsEvent = MODE_DONE;
+                    run = false;
+                    /* I guess break the loop*/
+                    break;
+                }
 
                 /* piston minimum position check */
                 if (length_update <= PISTON_POSITION_MINIMUM)
@@ -1172,7 +1199,7 @@ void module_sps_move_to_park(void)
         if (Depth >= PARK_DEPTH && !crush_depth)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure Reached = %0.4f bar\n", Pressure);
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Reached    = %0.4f m, rate = %0.4f\n", Depth, Rate);
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Reached    = %0.4f m, rate = %0.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Reach PARK Depth\n");
 
             /* check if piston is still moving then reset it and stop */
@@ -1304,33 +1331,36 @@ void module_sps_park(void)
     /* set crush depth to false */
     bool crush_depth = false;
 
-    /** Start 1/60Hz sampling of sensors for PARK_TIME seconds */
-    /** Save data in Park Data strucutre */
-    uint32_t park_time = (xDelay1000ms * PARK_TIME);
-    ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %f mins >\n\n", (float)(PARK_TIME/60));
-    uint32_t wait_time = 0;
-
 #ifdef TEST
     /** Sample at 9Hz */
     float s_rate = 9.0;
 #else
-    /** Sample at 1/60th Hz */
+
     float s_rate = 0;
+    uint32_t park_time = 0;
 
     if (park_number == 0)
     {
+        /** Start s_rate sampling of sensors for PARK_TIME_FIRST minutes */
         s_rate = PARK_RATE_FAST;
-        //s_rate = PARK_RATE;
+        park_time = (xDelay1000ms * PARK_TIME_FIRST);
+        ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME_FIRST = %.2f mins >\n\n", (float)(PARK_TIME_FIRST/60));
     }
     else
     {
+        /** Start s_rate sampling of sensors for PARK_TIME_FIRST minutes */
         s_rate = PARK_RATE;
+        park_time = (xDelay1000ms * PARK_TIME);
+        ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %.2f mins >\n\n", (float)(PARK_TIME/60));
     }
 
     SENS_set_depth_rate(s_rate);
     SENS_set_temperature_rate(s_rate);
 
 #endif
+
+    /* local variable to calculate the waiting time */
+    uint32_t wait_time = 0;
 
     uint32_t park_period = xDelay1000ms/s_rate;
     TaskHandle_t xDepth = NULL;
@@ -1426,7 +1456,7 @@ void module_sps_park(void)
         }
 
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure    = %0.4f bar\n", Pressure);
-        ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth       = %0.4f m, rate = %0.4f\n", Depth, Rate);
+        ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth       = %0.4f m, rate = %0.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Temperature = %0.4f °C\n", Temperature);
         artemis_rtc_get_time(&time);
         uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
@@ -1716,7 +1746,7 @@ void module_sps_park(void)
             vTaskDelay(xDelay500ms);
             SENS_sensor_depth_off();
             SENS_task_delete(xTemp);
-            vTaskDelay(xDelay500ms);
+            vTaskDelay(xDelay1000ms);
             SENS_sensor_temperature_off();
             wait_time = 0;
             spsEvent = MODE_DONE;
@@ -1753,7 +1783,7 @@ void module_sps_park(void)
                 vTaskDelay(xDelay500ms);
                 SENS_sensor_depth_off();
                 SENS_task_delete(xTemp);
-                vTaskDelay(xDelay500ms);
+                vTaskDelay(xDelay1000ms);
                 SENS_sensor_temperature_off();
             }
             spsEvent = MODE_DONE;
@@ -1887,12 +1917,16 @@ void module_sps_move_to_profile(void)
     /* time for critical piston minimum position */
     uint32_t to_profile_state_time = 0;
 
+    /* variables for checking if the LCP hit the bottom for PISTON_MOVEMENT_ON_BOTTOM (inches) movement */
+    ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_profile, << Setting Length %.4fin to piston_on_bottom_length variable >>\n\n", Length);
+    float piston_on_bottom_length = Length;
+
     bool run = true;
     while (run)
     {
         SENS_get_depth(&Depth, &Pressure, &Rate);
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure = %0.4f bar\n", Pressure);
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth    = %0.4f m, rate = %0.4f\n", Depth, Rate);
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth    = %0.4f m, rate = %0.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
 
         /* collect up to XX measurements */
         rate_avg += Rate;
@@ -1905,13 +1939,35 @@ void module_sps_move_to_profile(void)
             if (averaged_rate >= SYSTEM_FALL_RATE_MIN)
             {
                 /* do nothing for now, */
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Rate is positive\n");
+                //ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Rate is positive and >= %.4fm/%.1fs\n", SYSTEM_FALL_RATE_MIN, (float)(1/s_rate));
+                //ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Rate is positive\n");
             }
             else if (averaged_rate < SYSTEM_FALL_RATE_MIN && !piston_move && !crush_depth)
             {
                 /* decrease piston position by PARK_POSITION_INCREMENT inches */
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth averaged_rate = %f, decrease %fin\n", averaged_rate, PARK_POSITION_INCREMENT);
                 length_update -= PARK_POSITION_INCREMENT;
+
+                /* check if LCP hits the bottom already */
+                if ( (piston_on_bottom_length-length_update) <= PISTON_MOVEMENT_ON_BOTTOM)
+                {
+                    ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_profile, LCP is not hitting the bottom\n\n");
+                }
+                else if ( (piston_on_bottom_length-length_update) > PISTON_MOVEMENT_ON_BOTTOM)
+                {
+                    ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, LCP presumably hitting the bottom >>\n\n");
+
+                    /* move to the next state */
+                    to_profile_state_time = 0;
+                    /* stop here, and delete the task and turn off pressure sensor, move to next state */
+                    SENS_task_delete(xDepth);
+                    vTaskDelay(xDelay500ms);
+                    SENS_sensor_depth_off();
+                    spsEvent = MODE_DONE;
+                    run = false;
+                    /* I guess break the loop*/
+                    break;
+                }
 
                 if (length_update <= PISTON_POSITION_MINIMUM)
                 {
@@ -1938,7 +1994,7 @@ void module_sps_move_to_profile(void)
                 {
                     if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
                     {
-                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Depth=%.4f is @critial piston position >>\n", Depth);
+                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Depth=%.4f m is @critial piston position >>\n", Depth);
                         length_update = CRUSH_DEPTH_PISTON_POSITION;
                     }
                 }
@@ -1979,7 +2035,7 @@ void module_sps_move_to_profile(void)
         if (Depth >= PROFILE_DEPTH-PROFILE_DEPTH_ERR && !crush_depth)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Reached = %0.4f bar\n", Pressure);
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Reached    = %0.4f m, rate = %0.4f\n", Depth, Rate);
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Reached    = %0.4f m, rate = %0.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Reach Porfile Depth\n");
 
             /* check if piston is still moving then reset it and stop */
@@ -2253,7 +2309,7 @@ void module_sps_profile(void)
         SENS_get_temperature(&Temperature);
 #endif
         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure    = %0.4f bar\n", Pressure);
-        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Depth       = %0.4f m, rate = %0.4f\n", Depth, Rate);
+        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Depth       = %0.4f m, rate = %0.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature = %0.4f °C\n", Temperature);
 
         artemis_rtc_get_time(&time);
