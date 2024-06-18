@@ -107,4 +107,7 @@ void SENS_set_gps_rate(uint16_t rate);
 bool SENS_initialize(void);
 void SENS_uninitialize(void);
 
+/* for testing the sensors with semaphore */
+void SENS_Test(void);
+
 #endif // SENSORS_H
