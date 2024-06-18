@@ -118,7 +118,7 @@ void PIS_task_move_length(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_length,
                                 "Piston_Task_move_length", 256, NULL,
-                                tskIDLE_PRIORITY + 5UL,
+                                tskIDLE_PRIORITY + 6UL,
                                 xPiston) == pdPASS );
 }
 
@@ -126,7 +126,7 @@ void PIS_task_move_volume(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_volume,
                                 "Piston_Task_move_volume", 256, NULL,
-                                tskIDLE_PRIORITY + 5UL,
+                                tskIDLE_PRIORITY + 4UL,
                                 xPiston) == pdPASS );
 }
 
@@ -134,7 +134,7 @@ void PIS_task_move_full(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_full,
                                 "Piston_Task_move_full", 256, NULL,
-                                tskIDLE_PRIORITY + 5UL,
+                                tskIDLE_PRIORITY + 4UL,
                                 xPiston) == pdPASS );
 }
 
@@ -142,7 +142,7 @@ void PIS_task_move_zero(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_zero,
                                 "Piston_Task_move_zero", 256, NULL,
-                                tskIDLE_PRIORITY + 5UL,
+                                tskIDLE_PRIORITY + 4UL,
                                 xPiston) == pdPASS );
 }
 
@@ -424,7 +424,6 @@ void task_move_piston_to_length(void)
         ARTEMIS_DEBUG_PRINTF("PISTON :: SUCCESS, Length = %0.5f, diff = %0.5f, max_diff = %0.5f\n",
                                     length, (length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
     }
-    vTaskDelay(xDelay5ms);
     vTaskDelete(NULL);
 }
 
