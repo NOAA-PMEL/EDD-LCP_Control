@@ -22,6 +22,7 @@
 #include "StateMachine.h"
 
 #define LCP_FREE_RTOS
+//#define SENSORS_Test
 
 int main(void)
 {
@@ -73,6 +74,12 @@ int main(void)
     vTaskStartScheduler();
     ARTEMIS_DEBUG_PRINTF("Do not get here\n");
 
+#endif
+
+#ifdef SENSORS_Test
+    /** initialize sensors */
+    STATE_initialize(SYSST_SimpleProfiler_mode);
+    configASSERT(xTaskCreate( (TaskFunction_t) SENS_Test, "Sensor_Test_Task", 256, NULL, tskIDLE_PRIORITY + 3UL, NULL) == pdPASS);
 #endif
 
     ARTEMIS_DEBUG_PRINTF("\n*****************************\n");
