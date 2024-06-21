@@ -203,8 +203,8 @@ void SENS_task_delete(TaskHandle_t xHandle)
     TaskStatus_t xTaskDetails;
     Event_e xtdEvent = IDLE;
     /* turn off LEDs */
-    am_hal_gpio_output_set(AM_BSP_GPIO_LED_BLUE);
-    am_hal_gpio_output_set(AM_BSP_GPIO_LED_GREEN);
+    //am_hal_gpio_output_set(AM_BSP_GPIO_LED_BLUE);
+    //am_hal_gpio_output_set(AM_BSP_GPIO_LED_GREEN);
     /* check the task state */
     while (1)
     {
@@ -393,7 +393,7 @@ void task_depth(void)
         
         if(xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
         {
-            am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_GREEN);
+            //am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_GREEN);
             DEPTH_Read(&depth);
             //ARTEMIS_DEBUG_PRINTF("Depth = %.4f\n", depth.Depth);
             DEPTH_Power_OFF();
@@ -495,8 +495,7 @@ void task_temperature(void)
 
         if(xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
         {
-            am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_BLUE);
-
+            //am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_BLUE);
             TEMP_Read(&temperature);
 
             //ARTEMIS_DEBUG_PRINTF("Temperature = %.3f °C\n", temperature.temperature);
