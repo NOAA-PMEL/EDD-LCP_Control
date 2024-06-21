@@ -118,7 +118,7 @@ void PIS_task_move_length(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_length,
                                 "Piston_Task_move_length", 256, NULL,
-                                tskIDLE_PRIORITY + 6UL,
+                                tskIDLE_PRIORITY + 3UL,
                                 xPiston) == pdPASS );
 }
 
