@@ -623,7 +623,7 @@ static void module_k9lx_device_info(uint8_t port)
         {
             temperature_c.u[7-i] = pt[i];
         }
-        ARTEMIS_DEBUG_PRINTF("%0.3f °C, %0.3f °F", temperature_c.f, temperature_c.f * (9/5) + 32);
+        ARTEMIS_DEBUG_PRINTF("%0.3f °C, %0.3f °F", temperature_c.f, ((9.0/5.0) * temperature_c.f) + 32.0);
     }
 
     ARTEMIS_DEBUG_PRINTF("\n\tPressure\t: ");
