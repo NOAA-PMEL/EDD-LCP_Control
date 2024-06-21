@@ -1118,6 +1118,10 @@ void module_sps_move_to_park(void)
 
                     /* move to the next state */
                     to_park_state_time = 0;
+                    /* reset the rate counter and rate_avg*/
+                    rate_count = 0;
+                    rate_avg = 0.0;
+
                     /* stop here, and delete the task and turn off pressure sensor, move to next state */
                     SENS_task_delete(xDepth);
                     SENS_sensor_depth_off();
@@ -1520,7 +1524,7 @@ void module_sps_park(void)
             rate_count++;
             if (rate_count >= PARK_DEPTH_RATE_COUNTER)
             {
-                float averaged_rate = (float) (rate_avg / PARK_DEPTH_RATE_COUNTER);
+                float averaged_rate = (float) (rate_avg / rate_count);
                 /* check if rate is positive, negative or stable */
 
                 if (Depth >= PARK_DEPTH+PARK_DEPTH_ERR)
@@ -1948,6 +1952,10 @@ void module_sps_move_to_profile(void)
 
                     /* move to the next state */
                     to_profile_state_time = 0;
+                    /* reset the rate counter and rate_avg*/
+                    rate_count = 0;
+                    rate_avg = 0.0;
+
                     /* stop here, and delete the task and turn off pressure sensor, move to next state */
                     SENS_task_delete(xDepth);
                     SENS_sensor_depth_off();
