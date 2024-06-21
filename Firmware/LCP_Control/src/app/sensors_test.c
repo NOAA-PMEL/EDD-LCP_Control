@@ -259,11 +259,8 @@ void module_sensors_slow(void)
 
     while (run)
     {
-
         /* turn on the sensors */
-        //SENS_task_temperature_on(&xTemp);
         SENS_sensor_temperature_on();
-        vTaskDelay(xDelay1000ms);
         SENS_sensor_depth_on();
         vTaskDelay(xDelay10ms);
 
@@ -273,6 +270,7 @@ void module_sensors_slow(void)
         SENS_get_temperature(&Temperature);
 
         /* turn off the sensors */
+        vTaskDelay(xDelay100ms);
         SENS_sensor_temperature_off();
         SENS_sensor_depth_off();
 
