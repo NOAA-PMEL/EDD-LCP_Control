@@ -46,6 +46,8 @@ void artemis_debug_initialize(void)
         ARTEMIS_DEBUG_PRINTF("\n<<< TEST_LAKE Profile selected >>>\n\n");
 #elif defined(__TEST_OCEAN__)
         ARTEMIS_DEBUG_PRINTF("\n<<< TEST_OCEAN Profile selected >>>\n\n");
+#elif defined(__TEST_PS__)
+        ARTEMIS_DEBUG_PRINTF("\n<<< TEST_PS Profile selected >>>\n\n");
 #else
         ARTEMIS_DEBUG_PRINTF("\n<<< ERROR:: No Profile was selected >>>\n\n");
         #error "ERROR:: No test profile was selected"
