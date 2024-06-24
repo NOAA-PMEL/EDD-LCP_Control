@@ -400,7 +400,8 @@ void task_depth(void)
 
             sensor_data.depth.previous = sensor_data.depth.current;
             sensor_data.depth.current = depth.Depth;
-            sensor_data.depth.ascent_rate = (sensor_data.depth.current - sensor_data.depth.previous) / sensor_data.depth.rate;
+            //sensor_data.depth.ascent_rate = (sensor_data.depth.current - sensor_data.depth.previous) / sensor_data.depth.rate;
+            sensor_data.depth.ascent_rate = (sensor_data.depth.current - sensor_data.depth.previous);
 
             /* get pressure as well */
             sensor_data.pressure.previous = sensor_data.pressure.current;
