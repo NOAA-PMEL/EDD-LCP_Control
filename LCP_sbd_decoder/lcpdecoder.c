@@ -259,7 +259,7 @@ void decode_sbd_message(char *sbdfile, char *txtfile)
     float t[mlength];
     float p[mlength];
 
-    for (uint8_t i=0; i<bytes; i++)
+    for (uint16_t i=0; i<bytes; i++)
     {
         lbuf[i] = buf[28+i];
         //printf("lbuf[%u]=0x%02X, buf[%u]=0x%02X \n", i, lbuf[i], 28+i, buf[28+i]);
