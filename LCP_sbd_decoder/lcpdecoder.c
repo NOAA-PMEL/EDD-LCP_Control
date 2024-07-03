@@ -99,7 +99,7 @@ void decode_sbd_message(char *sbdfile, char *txtfile)
 {
     uint8_t buf[512];
     uint16_t readbytes;
-    uint16_t i = 0;
+    uint16_t total_bytes = 0;
 
     printf("LCP :: sbdfile = %s\n", sbdfile);
     printf("LCP :: txtfile = %s\n", txtfile);
@@ -117,9 +117,9 @@ void decode_sbd_message(char *sbdfile, char *txtfile)
     /* read and copy sbd message bytes into the local buffer (buf) */
     while ((readbytes = fread(buf, 1, sizeof(buf), sourcefile)) > 0)
     {
-        for (i = 0; i < readbytes; i++)
+        for (total_bytes = 0; total_bytes < readbytes; total_bytes++)
         {
-            //printf("0x%02X ", (uint8_t)buf[i]);
+            //printf("0x%02X , total_bytes=%u\n", (uint8_t)buf[total_bytes], total_bytes);
         }
     }
 
@@ -252,9 +252,14 @@ void decode_sbd_message(char *sbdfile, char *txtfile)
     fprintf(destfile, "Sr.No.\tPressure(bar)\tTemperature(°C)\n");
     fprintf(destfile, "=======================================\n");
 
+    if (mlength > 124)
+    {
+        mlength = 124;
+    }
 
     /* copy buf from 28th position to local buffer up to mlength from */
-    uint16_t bytes = (mlength*(12+8) +7) / 8;
+    //uint16_t bytes = (mlength*(12+8) +7) / 8;
+    uint16_t bytes = total_bytes - 28;
     uint8_t lbuf[bytes];
     float t[mlength];
     float p[mlength];
