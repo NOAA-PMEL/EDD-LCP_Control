@@ -7,4 +7,7 @@
 ************************************************
 
 # gcc lcpdecoder.c -o lcpdecoder
-# ./lcpdecoder sbd_message_file.sbd > sbd_message_file.txt 
+
+* copy the lcpdecoder (binary file) to the path where sbd messages are
+
+# ./lcpdecoder ./
