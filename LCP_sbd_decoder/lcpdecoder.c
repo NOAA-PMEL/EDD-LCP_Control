@@ -252,17 +252,18 @@ void decode_sbd_message(char *sbdfile, char *txtfile)
     fprintf(destfile, "Sr.No.\tPressure(bar)\tTemperature(°C)\n");
     fprintf(destfile, "=======================================\n");
 
-    if (mlength > 124)
-    {
-        mlength = 124;
-    }
+    //if (mlength > 124)
+    //{
+    //    mlength = 124;
+    //}
 
     /* copy buf from 28th position to local buffer up to mlength from */
     //uint16_t bytes = (mlength*(12+8) +7) / 8;
     uint16_t bytes = total_bytes - 28;
     uint8_t lbuf[bytes];
-    float t[mlength];
-    float p[mlength];
+    uint16_t len = (bytes*8)/(12+8);
+    float t[len];
+    float p[len];
 
     for (uint16_t i=0; i<bytes; i++)
     {
@@ -270,16 +271,16 @@ void decode_sbd_message(char *sbdfile, char *txtfile)
         //printf("lbuf[%u]=0x%02X, buf[%u]=0x%02X \n", i, lbuf[i], 28+i, buf[28+i]);
     }
 
-    unpack_measurements(p, t, lbuf, mlength);
+    unpack_measurements(p, t, lbuf, len);
 
-    for (uint16_t j=0; j<mlength; j++)
+    for (uint16_t j=0; j<len; j++)
     {
         fprintf(destfile, "%u\t", j+1);
         fprintf(destfile, "%.3f\t\t", p[j]);
         fprintf(destfile, "%.3f", t[j]);
         fprintf(destfile, "\n");
     }
-    fprintf(destfile, "\ntotal measurements=%u\n\n", mlength);
+    fprintf(destfile, "\ntotal measurements=%u\n\n", len);
 
     //uint16_t m = 0;
     //for (uint16_t j=0+28; j<i; j=j+3)
