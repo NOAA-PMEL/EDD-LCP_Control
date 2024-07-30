@@ -1,0 +1,37 @@
+Drill report for LCP_Controller.kicad_pcb
+Created on 7/22/2024 3:52:10 PM
+
+Copper Layer Stackup:
+    =============================================================
+    L1 :  TOP                       front
+    L2 :  GND                       in1
+    L3 :  PWR                       in2
+    L4 :  BOTTOM                    back
+
+
+Drill file 'LCP_Controller-PTH.drl' contains
+    plated through holes:
+    =============================================================
+    T1  0.200mm  0.0079"  (18 holes)
+    T2  0.250mm  0.0098"  (370 holes)
+    T3  0.254mm  0.0100"  (129 holes)
+    T4  0.350mm  0.0138"  (4 holes)
+    T5  0.400mm  0.0157"  (48 holes)
+    T6  0.800mm  0.0315"  (4 holes)
+    T7  1.000mm  0.0394"  (68 holes)
+    T8  1.020mm  0.0402"  (28 holes)
+    T9  1.500mm  0.0591"  (1 hole)
+    T10  1.700mm  0.0669"  (4 holes)
+    T11  2.500mm  0.0984"  (8 holes)
+
+    Total plated holes count 682
+
+
+Drill file 'LCP_Controller-NPTH.drl' contains
+    unplated through holes:
+    =============================================================
+    T1  0.991mm  0.0390"  (3 holes)
+    T2  1.020mm  0.0402"  (14 holes)
+    T3  3.730mm  0.1469"  (2 holes)
+
+    Total unplated holes count 19
