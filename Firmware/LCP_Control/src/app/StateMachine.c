@@ -140,9 +140,9 @@ static volatile bool iridium_init = false;
 static volatile uint8_t prof_number = 0;
 static volatile uint8_t park_number = 0;
 static volatile uint8_t m_prof_number = 0;
-static volatile uint8_t m_prof_length = 0;
+static volatile uint16_t m_prof_length = 0;
 static volatile uint8_t m_park_number = 0;
-static volatile uint8_t m_park_length = 0;
+static volatile uint16_t m_park_length = 0;
 
 ///* for extended measurements */
 //static uint8_t m_prof_number_ext = 0;
@@ -983,6 +983,13 @@ void module_sps_move_to_park(void)
         /* assigned to local_length, assumed that length was set previously */
         length_update = park_piston_length;
         ARTEMIS_DEBUG_PRINTF("\n<<SPS :: move_to_park, Setting -> adjusted park_piston_length=%.4fin >>\n", park_piston_length);
+    }
+
+    /* check the length_update if it is greater than CRUSH_DEPTH_PISTON_POSITION (5.25in) */
+    if (length_update > CRUSH_DEPTH_PISTON_POSITION && PARK_DEPTH >= CRITICAL_PISTON_POSITON_DEPTH)
+    {
+        length_update = CRUSH_DEPTH_PISTON_POSITION;
+        ARTEMIS_DEBUG_PRINTF("\n<<SPS :: move_to_park, Hit critical depth piston length, Setting -> adjusted park_piston_length=%.4fin >>\n", CRUSH_DEPTH_PISTON_POSITION);
     }
 
     Volume = CTRL_calculate_volume_from_length(length_update);
@@ -1912,6 +1919,13 @@ void module_sps_move_to_profile(void)
     }
     else
     {
+        /* check if to_prof_piston_length is greater than park_piston_length */
+        if (to_prof_piston_length > park_piston_length)
+        {
+            to_prof_piston_length = park_piston_length;
+            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Setting -> park_piston_length (%.4fin) to to_prof_piston_length >>\n", park_piston_length);
+        }
+
         /* assigned to local_length, assumed that length was set previously */
         length_update = to_prof_piston_length;
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Setting -> adjusted to_prof_piston_length=%.4fin >>\n", to_prof_piston_length);
@@ -2384,6 +2398,13 @@ void module_sps_profile(void)
     eTaskState eStatus;
     TaskHandle_t xPiston = NULL;
     PIS_set_piston_rate(1);
+
+    /* check the length_update if it is greater than CRUSH_DEPTH_PISTON_POSITION (5.25in) */
+    if (length_update > CRUSH_DEPTH_PISTON_POSITION && (PROFILE_DEPTH-PROFILE_DEPTH_ERR) >= CRITICAL_PISTON_POSITON_DEPTH)
+    {
+        length_update = CRUSH_DEPTH_PISTON_POSITION;
+    }
+
     PIS_set_length(length_update);
     PIS_task_move_length(&xPiston);
     vTaskDelay(piston_period);
@@ -2445,11 +2466,17 @@ void module_sps_profile(void)
     vTaskDelay(xDelay100ms);
 
     /* average 10 pressure, temperature values and store */
-    float samples_p[10] = {0};
-    float samples_t[10] = {0};
-    uint8_t samples = 0;
+    float samples_p = 0.0;
+    float samples_t = 0.0;
+    uint16_t samples = 0;
+
+    ///* average 10 pressure, temperature values and store */
+    //float samples_p[10] = {0};
+    //float samples_t[10] = {0};
+    //uint8_t samples = 0;
     bool start_time = true;
     bool run = true;
+    bool start_fall = true;
 
     /** check for the depth rate up to ~1min - 60 measurements */
     uint8_t rate_count = 0;
@@ -2458,6 +2485,9 @@ void module_sps_profile(void)
     /* time for critical depth piston position */
     uint32_t crit_depth_piston_pos_time = 0;
     float length_update_last_adjusted = length_update;
+
+    /* variable to align the measurements for 1m bin */
+    float bin_pressure = 0.0;
 
     while (run)
     {
@@ -2484,38 +2514,164 @@ void module_sps_profile(void)
             DATA_add(&prof, epoch, Pressure, Temperature, prof_number);
             datalogger_profile_mode(filename, Pressure, Temperature, &time);
             start_time = false;
+            bin_pressure = ceil(Pressure * 10) / 10;
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, profile start bin = %0.4f bar\n", bin_pressure);
 #ifdef TEST
             read++;
 #endif
         }
+
         /* Average Data, and store samples */
-        samples_p[samples] = Pressure;
-        samples_t[samples] = Temperature;
+        //samples_p[samples] = Pressure;
+        //samples_t[samples] = Temperature;
+        samples_p += Pressure;
+        samples_t += Temperature;
         samples++;
 
 #ifdef TEST
         if (samples > 1)
-#else
-        if (samples > 9)
-#endif
         {
-            float var, avg_p, avg_t;
-            float std = std_div(samples_p, samples, &var, &avg_p);
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
-            std = std_div(samples_t, samples, &var, &avg_t);
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
+            /* update the bin_pressure variable */
+            bin_pressure = bin_pressure - 0.1;
 
-            /* store average data locally */
+            float avg_p = (float) samples_p / samples;
+            float avg_t = (float) samples_t / samples;
+
+            /* Note : commented out the buffer for temperature and pressure , used for calculating the variance and the std_div */
+
+            //float var, avg_p, avg_t;
+            //float std = std_div(samples_p, samples, &var, &avg_p);
+            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
+            //std = std_div(samples_t, samples, &var, &avg_t);
+            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
+
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
+
+            /* store averaged data locally */
             DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
             samples = 0;
-
-#ifdef TEST
+            samples_p = 0;
+            samples_t = 0;
             read++;
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, sending measurements = %u\n", read);
-#else
-            datalogger_profile_mode(filename, avg_p, avg_t, &time);
-#endif
         }
+#else
+        //if (samples > 9)
+        /* Note : This routine bins the data into 1m averages that can move up and down if the LCP sinks durring the profile.  WARNING MAY RESULT IN > 230 SBD MEASUREMENTS */
+        if (Pressure <= (bin_pressure - 0.1))
+        {
+            /* update the bin_pressure variable */
+            bin_pressure = bin_pressure - 0.1;
+
+            float avg_p = (float) samples_p / samples;
+            float avg_t = (float) samples_t / samples;
+
+            /* Note : commented out the buffer for temperature and pressure , used for calculating the variance and the std_div */
+
+            //float var, avg_p, avg_t;
+            //float std = std_div(samples_p, samples, &var, &avg_p);
+            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
+            //std = std_div(samples_t, samples, &var, &avg_t);
+            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
+
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
+
+            /* store averaged data locally */
+            DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
+            samples = 0;
+            samples_p = 0;
+            samples_t = 0;
+
+            datalogger_profile_mode(filename, avg_p, avg_t, &time);
+        }
+        if (Pressure >= bin_pressure)
+        {
+            /* update the bin_pressure variable */
+            bin_pressure = bin_pressure + 0.1;
+
+            float avg_p = (float) samples_p / samples;
+            float avg_t = (float) samples_t / samples;
+
+            /* Note : commented out the buffer for temperature and pressure , used for calculating the variance and the std_div */
+
+            //float var, avg_p, avg_t;
+            //float std = std_div(samples_p, samples, &var, &avg_p);
+            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
+            //std = std_div(samples_t, samples, &var, &avg_t);
+            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
+
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
+
+            /* store averaged data locally */
+            DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
+            samples = 0;
+            samples_p = 0;
+            samples_t = 0;
+
+            datalogger_profile_mode(filename, avg_p, avg_t, &time);
+        }
+/*
+
+       //Note : This routine bins the data into 1m averages that can only move up, if the LCP sinks during the profile the data is ignored.
+        if (Pressure <= (bin_pressure - 0.1))
+        {
+            // update the bin_pressure variable
+            bin_pressure = bin_pressure - 0.1;
+
+            float avg_p = (float) samples_p / samples;
+            float avg_t = (float) samples_t / samples;
+
+            // Note : commented out the buffer for temperature and pressure , used for calculating the variance and the std_div
+
+            //float var, avg_p, avg_t;
+            //float std = std_div(samples_p, samples, &var, &avg_p);
+            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
+            //std = std_div(samples_t, samples, &var, &avg_t);
+            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
+
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
+
+            // store averaged data locally
+            DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
+            samples = 0;
+            samples_p = 0;
+            samples_t = 0;
+            start_fall = true;
+
+            datalogger_profile_mode(filename, avg_p, avg_t, &time);
+        }
+        if (Pressure >= bin_pressure && start_fall == true)
+        {
+            float avg_p = (float) samples_p / samples;
+            float avg_t = (float) samples_t / samples;
+
+            // Note : commented out the buffer for temperature and pressure , used for calculating the variance and the std_div
+
+            //float var, avg_p, avg_t;
+            //float std = std_div(samples_p, samples, &var, &avg_p);
+            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
+            //std = std_div(samples_t, samples, &var, &avg_t);
+            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
+
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
+
+            //store averaged data locally
+            DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
+            samples = 0;
+            samples_p = 0;
+            samples_t = 0;
+            start_fall = false;
+
+            datalogger_profile_mode(filename, avg_p, avg_t, &time);
+        }
+        if (Pressure >= bin_pressure && start_fall == false)
+        {
+            samples = 0;
+            samples_p = 0;
+            samples_t = 0;
+        }
+*/
+#endif
 
 #ifdef TEST
         /* delete this */
