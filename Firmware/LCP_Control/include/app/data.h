@@ -45,7 +45,7 @@
  *********************************************************************************/
 #define IRID_DATA_OUT           ( 340 )
 #define IRID_DATA_IN            ( 270 )
-#define IRID_HEADER_LENGTH      ( 28 )
+#define IRID_HEADER_LENGTH      ( 29 )
 #define IRID_HEADER_LENGTH_EXT  ( 19 )
 
 #define LCP_PARK_MODE           ( 0x00 )
@@ -57,7 +57,7 @@
 /* add more bits for future sensor inclusion*/
 
 #define MEASUREMENT_BITS        ( TEMPERATURE_BITS + PRESSURE_BITS )
-#define MEASUREMENT_MAX         ( ((IRID_DATA_OUT - IRID_HEADER_LENGTH) * 8) / MEASUREMENT_BITS )
+#define MEASUREMENT_MAX         ( (((IRID_DATA_OUT - IRID_HEADER_LENGTH) * 8) / MEASUREMENT_BITS ) - 1 )
 
 /**********************************************************************************
  * MACROS
@@ -75,7 +75,7 @@ typedef struct __attribute__((packed))
 {
     uint8_t modeType;
     uint8_t profNumber;
-    uint8_t mLength;
+    uint16_t mLength;
     uint8_t pageNumber;
 } sData;
 
@@ -85,7 +85,7 @@ typedef struct __attribute__((packed))
     uint32_t pStop;
     float pLatitude;
     float pLongitude;
-    uint8_t pLength;
+    uint16_t pLength;
     uint16_t pIndex;
 } pData;
 
@@ -108,8 +108,8 @@ typedef struct __attribute__((packed))
 
     /* local length and profile numbers manipulation */
     uint8_t pNumber;
-    uint8_t wLength;
-    uint8_t rLength;
+    uint16_t wLength;
+    uint16_t rLength;
 
     /* this holds the nr. of profiles data */
     pData *p;

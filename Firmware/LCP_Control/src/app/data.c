@@ -297,6 +297,7 @@ static float module_convert_uint16_t_to_temperature(uint16_t temp)
  */
 STATIC uint8_t module_convert_pressure_to_uint8_t(float pressure)
 {
+    pressure = round(pressure *10) / 10;
     return (uint8_t) (pressure * 10.0f);
 }
 
@@ -317,6 +318,7 @@ STATIC float module_convert_uint8_t_to_pressure(uint8_t pressure)
  */
 STATIC uint16_t module_convert_temperature_to_uint16_t(float temp)
 {
+    temp = round(temp * 100) / 100;
     temp *= 100;
     temp += 500;
     return (uint16_t) (temp);
@@ -330,7 +332,7 @@ void create_header_irid(uint8_t *df, pData *P, sData *S)
     uint8_t pageNumber = S->pageNumber;
     uint8_t modeType = S->modeType;
 
-    /** collect IRID_HEADER_LENGTH=28 bytes for the header and rest will be
+    /** collect IRID_HEADER_LENGTH=29 bytes for the header and rest will be
         attached as a payload measurement data **/
 
     /*  1. System ID */
@@ -371,25 +373,26 @@ void create_header_irid(uint8_t *df, pData *P, sData *S)
     buf[17] = profNumber;
 
     /* 9. Length of measurements in one profile */
-    buf[18] = P[profNumber].pLength;
+    buf[18] = P[profNumber].pLength >> 8 & 0xFF;
+    buf[19] = P[profNumber].pLength & 0xFF;
 
     /* 10. Mode - higher 4bites, Type of measurements -> (Profile_mode=0x01, Park_mode=0x00) */
     /* 11. Page Number - lower 4bits ,(in case of multiple measurements exceede the 340 bytes */
-    buf[19] = (modeType<<4&0xF0) | (pageNumber&0xF);
+    buf[20] = (modeType<<4&0xF0) | (pageNumber&0xF);
 
     /* 12. Start time for one profile */
     uint32_t start = P[profNumber].pStart;
-    buf[20] = start>>24;
-    buf[21] = start>>16;
-    buf[22] = start>>8;
-    buf[23] = start&0xFF;
+    buf[21] = start>>24;
+    buf[22] = start>>16;
+    buf[23] = start>>8;
+    buf[24] = start&0xFF;
 
     /* 13. Stop time for one profile */
     uint32_t stop = P[profNumber].pStop;
-    buf[24] = stop>>24;
-    buf[25] = stop>>16;
-    buf[26] = stop>>8;
-    buf[27] = stop&0xFF;
+    buf[25] = stop>>24;
+    buf[26] = stop>>16;
+    buf[27] = stop>>8;
+    buf[28] = stop&0xFF;
 
     /* Copy buf (header) to *df pointer */
     for (uint8_t i=0; i<IRID_HEADER_LENGTH; i++)
@@ -462,7 +465,7 @@ uint16_t pack_measurements_irid(Data_t *buf, pData *P, sData *S, uint8_t *rBuf)
     /* local buffer IRID_DATA_OUT=340 to hold the measurements */
     uint8_t df[IRID_DATA_OUT] = {0};
 
-    /* create a park header_irid 28 bytes */
+    /* create a park header_irid 29 bytes */
     create_header_irid(df, P, S);
 
     /* calculate the number of bytes (uint8_t) required for the length
@@ -475,7 +478,7 @@ uint16_t pack_measurements_irid(Data_t *buf, pData *P, sData *S, uint8_t *rBuf)
     /* start collecting measurements into 312 bytes or less */
     uint16_t Temp = 0;
     uint8_t Pressure = 0;
-    /* start at the 28th position */
+    /* start at the 29th position */
     uint16_t bytes = IRID_HEADER_LENGTH;
     uint32_t bit_pos = 0;
 
@@ -526,7 +529,7 @@ uint16_t pack_measurements_irid(Data_t *buf, pData *P, sData *S, uint8_t *rBuf)
         //ARTEMIS_DEBUG_PRINTF("DATA :: GET, rBuf[%u] = 0x%02X \n", i, rBuf[i]);
     }
     ARTEMIS_DEBUG_PRINTF("DATA :: RETURN Irid: total bytes = (%u)\n", bytes_length + IRID_HEADER_LENGTH);
-    /* return number of bytes being transmitted header + payload (28 + bytes_length) */
+    /* return number of bytes being transmitted header + payload (29 + bytes_length) */
     return ( IRID_HEADER_LENGTH + bytes_length);
 }
 
