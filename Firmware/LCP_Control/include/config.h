@@ -55,7 +55,7 @@
 #define SYSTEM_DENSITY_SEAWATER             ( 1022.0f ) //1033.0f )
 #define SYSTEM_RISE_RATE_SETPOINT           ( 0.100f )
 #define SYSTEM_RISE_RATE_MAX                ( 0.333f )
-#define SYSTEM_RISE_RATE_MIN                ( 0.015f )  //0.125f )
+#define SYSTEM_RISE_RATE_MIN                ( 0.070f )  //0.015f )
 #define SYSTEM_FALL_RATE_SETPOINT           ( 0.100f )
 #define SYSTEM_FALL_RATE_MAX                ( 0.5f )
 #define SYSTEM_FALL_RATE_MIN                ( 0.005f )  /* need to think about it*/
@@ -80,27 +80,28 @@
 
 #define SYSTEM_CRUSH_LIMIT_DEPTH            ( 220.0f )      /* crash limit depth in meters */
 #define SYSTEM_PROFILE_NUMBER               ( 100 )         /* for testing */
-#define PISTON_POSITION_INCREMENT           ( 0.015f )      /* Piston position increment-decrement in inches */
+#define PISTON_POSITION_INCREMENT           ( 0.030f )      /* Piston position increment-decrement in inches 0.015*/
 #define PISTON_POSITION_INCREMENT2          ( 0.010f )      /* Piston position increment-decrement in inches, minimum length is 0.008in */
-#define PISTON_POSITION_MAXIMUM             ( 11.0f )      /* Piston position maximum in inches */
-#define PISTON_POSITION_MINIMUM             ( 0.2f )        /* Piston position minimum in inches */
+#define PISTON_POSITION_MAXIMUM             ( 11.5f )      /* Piston position maximum in inches */
+#define PISTON_POSITION_MINIMUM             ( 0.1f )        /* Piston position minimum in inches */
+#define PISTON_ZEROCAL_COUNTER              ( 10 )          /*Number of profiles between zeroing the piston encoder*/
 #define CRUSH_DEPTH_PISTON_POSITION         ( 5.25f )       /* Piston position maximum in inches */
 #define CRITICAL_PISTON_POSITON_DEPTH       ( 45.0f )       /* Critical depth where piston length must not exceed 5.25 inches */
 #define PISTON_MOVE_TO_SURFACE              ( 10.5f ) //11.0f )       /* Piston position move to surface in inches */
 #define PROFILE_DEPTH_RATE_COUNTER          ( 60.0f )       /* Change piston position after this number of measurements */
 #define PARK_DEPTH_RATE_COUNTER             ( 3.0f )       /* Change piston position after this number of measurements */
-#define SYSTEM_CDPP_TIMER                   ( 5.0f * 60.0f )    /* Timer for getting stuck in critical depth piston position */
+#define SYSTEM_CDPP_TIMER                   ( 4.0f * 60.0f )    /* Timer for getting stuck in critical depth piston position 300s*/
 #define TO_PROFILE_STATE_TIMER              ( 5.0f * 60.0f )    /* Timer for getting stuck in move_to_profile state */
 #define TO_PARK_STATE_TIMER                 ( 5.0f * 60.0f )    /* Timer for getting stuck in move_to_park state */
 
 /*************************************
 ** Settable Variables
 *************************************/
-#define GPS_TIMER                           ( 1.0f )        /* XX mins xGPS timer */
+#define GPS_TIMER                           ( 3.0f )        /* XX mins xGPS timer */
 #define PARK_TRANSMIT_TRIES                 ( 02 )          /* Park mode measurements transmission nr. of tries */
-#define PROF_TRANSMIT_TRIES                 ( 02 )          /* Profile mode measurements transmission nr. of tries */
+#define PROF_TRANSMIT_TRIES                 ( 04 )          /* Profile mode measurements transmission nr. of tries */
 #define SATELLITE_VISIBILITY_TRIES          ( 02 )          /* Look for satellite visitbility (nr. of times ) */
-#define IRIDIUM_TRIES                       ( 02 )          /* Try XX number of times to transmit */
+#define IRIDIUM_TRIES                       ( 05 )          /* Try XX number of times to transmit */
 #define SATELLITE_TIMER                     ( 15 )          /* Try XX seconds for checking satellite visibility */
 
 /** Test Profiles */
@@ -202,24 +203,24 @@
 
 #elif defined(__TEST_PS__)
 /** Puget Sound Testing */
-#define BALLAST_DEPTH                       ( 1.0f )
+#define BALLAST_DEPTH                       ( 1.5f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 1.0f )
-#define MOVE_TO_PARK_SAMPLE_RATE            ( 0.10f )
-#define PARK_DEPTH                          ( 150.0f ) //( 4.0f )
+#define MOVE_TO_PARK_SAMPLE_RATE            ( 0.05f )
+#define PARK_DEPTH                          ( 160.0f ) //( 4.0f )
 #define PARK_DEPTH_ERR                      ( 15.0f )
 #define PARK_DEPTH_MAX                      ( 200.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
-#define PARK_RATE_FAST                      ( SYSTEM_PROFILER_PARK_RATE_FAST )
+#define PARK_RATE_FAST                      ( 1.0f / 60.0f  )
 #define PARK_TIME_FIRST                     ( 60.0f * 60.0f )    /* 1 hr */
 #define PARK_TIME                           ( 180.0f * 60.0f )    /* 3 hrs */
-#define PARK_DENSITY                        ( 1023.8f )
+#define PARK_DENSITY                        ( 1024.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 0.10f )
 #define PROFILE_DEPTH                       ( 165.0f ) //( 4.5f )
 #define PROFILE_DEPTH_ERR                   ( 1.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
-#define TO_PROFILE_DENSITY                  ( 1023.9f )
-#define PROFILE_DENSITY                     ( 1022.0f )
+#define TO_PROFILE_DENSITY                  ( 1024.1f )
+#define PROFILE_DENSITY                     ( 1015.0f )
 #define CRUSH_DEPTH                         ( 210.0f )
 #define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 #define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )

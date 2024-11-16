@@ -143,7 +143,7 @@ static volatile uint8_t m_prof_number = 0;
 static volatile uint16_t m_prof_length = 0;
 static volatile uint8_t m_park_number = 0;
 static volatile uint16_t m_park_length = 0;
-
+static volatile uint8_t pistoncal_number = 0;
 ///* for extended measurements */
 //static uint8_t m_prof_number_ext = 0;
 //static uint8_t m_prof_length_ext = 0;
@@ -969,14 +969,74 @@ void module_sps_move_to_park(void)
     /* do nothing */
 #else
 
-    /** Set park_piston_length */
+    /*Check if it is time to zero the piston encoder counts, if yes, then zero cal the piston*/
+    if( pistoncal_number >= PISTON_ZEROCAL_COUNTER )
+    {
+        uint32_t piston_period = xDelay1000ms;
+        uint32_t piston_timer = 0;
+        bool piston_move = true;
+
+        eTaskState eStatus;
+        TaskHandle_t xPiston = NULL;
+        PIS_set_piston_rate(1);
+        PIS_task_move_zero(&xPiston); /*This is the piston zero reset command*/
+        vTaskDelay(piston_period);
+    
+        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Setting -> Piston encoder value to zero, %u profiles reached since last cal >>\n\n", pistoncal_number);
+        pistoncal_number = 0;
+
+            /* check on piston movement */
+        while (piston_move)
+        {
+            eStatus = eTaskGetState( xPiston );
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
+            {   
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->active\n");
+                /* piston time for up to 180 seconds */
+                piston_timer += piston_period;
+                if (piston_timer >= 180000)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero time-out, task->finished\n");
+                    PIS_task_delete(xPiston);
+                    vTaskDelay(piston_period);
+                    PIS_Reset();
+                    piston_timer = 0;
+                }
+            }
+            else if (eStatus==eSuspended)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->suspended\n");
+                PIS_task_delete(xPiston);
+                piston_timer = 0;
+            }
+            else if (eStatus==eDeleted)
+            {
+                PIS_Get_Length(&Length);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Length=%.4fin\n", Length);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Task->Finished\n");
+                piston_move = false;
+                piston_timer = 0;
+            }
+            vTaskDelay(piston_period);
+        }
+    }
+    
+     /** Set park_piston_length */
     /* for now , pressure and temperature variables are zeros for compressibility and thermal expansion */
+    
     if (park_piston_length == 0.0)
     {
         CTRL_set_lcp_density(PARK_DENSITY);
         park_piston_length = CTRL_calculate_piston_position(0.0, 0.0);
         length_update = park_piston_length;
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Setting -> first time park_piston_length=%.4fin >>\n", park_piston_length);
+
+        /*check if length update will result in a piston position less than zero, set length to PISTON_POSITION_MINIMUM*/
+        if (length_update <= PISTON_POSITION_MINIMUM)
+        {
+        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, length_update=%.4fin < piston position minimum >>\n", length_update);
+        length_update = PISTON_POSITION_MINIMUM;
+        }
     }
     else
     {
@@ -1014,9 +1074,9 @@ void module_sps_move_to_park(void)
         if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->active\n");
-            /* piston time for up to 120 seconds */
+            /* piston time for up to 180 seconds */
             piston_timer += piston_period;
-            if (piston_timer >= 120000)
+            if (piston_timer >= 180000)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston time-out, task->finished\n");
                 PIS_task_delete(xPiston);
@@ -1088,8 +1148,10 @@ void module_sps_move_to_park(void)
     uint32_t to_park_state_time = 0;
 
     /* variables for checking if the LCP hit the bottom for PISTON_MOVEMENT_ON_BOTTOM (inches) movement */
-    ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_park, << Setting Length %.4fin to piston_on_bottom_length variable >>\n\n", Length);
-    float piston_on_bottom_length = Length;
+    //PIS_Get_Length(&Length);
+    //vTaskDelay(piston_period);
+    ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_park, << Setting Length %.4fin to piston_on_bottom_length variable >>\n\n", length_update);
+    float piston_on_bottom_length = length_update;
     float length_update_last_adjusted = length_update;
 
     while (run)
@@ -1217,7 +1279,10 @@ void module_sps_move_to_park(void)
                 }
 
                 /* check if it needs to move the piston or not */
-                if (length_update <= PISTON_POSITION_MINIMUM)
+                PIS_Get_Length(&Length);
+                vTaskDelay(piston_period);
+
+                if (length_update <= PISTON_POSITION_MINIMUM && Length <= PISTON_POSITION_MINIMUM)
                 {
                     /* do not even send a piston command, do nothing  */
                 }
@@ -1660,7 +1725,7 @@ void module_sps_park(void)
                     {
                         /* decrease piston position by PARK_POSITION_INCREMENT inches */
                         length_update -= PARK_POSITION_INCREMENT;
-                        ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth Rate Negative, averaged_rate=%f, increase %fin, length_update=%.4fin\n", averaged_rate, PARK_POSITION_INCREMENT, length_update);
+                        ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth Rate Negative, averaged_rate=%f, decrease %fin, length_update=%.4fin\n", averaged_rate, PARK_POSITION_INCREMENT, length_update);
 
                         /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
                         if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
@@ -1672,10 +1737,28 @@ void module_sps_park(void)
                             }
                         }
 
+                        /*check if length update will result in a piston position less than zero, set length to PISTON_POSITION_MINIMUM*/
+                        if (length_update <= PISTON_POSITION_MINIMUM)
+                        {
+                            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: park, length_update=%.4fin < piston position minimum >>\n", length_update);
+                            length_update = PISTON_POSITION_MINIMUM;
+                        }
+
+                        /* check if it needs to move the piston or not */
+                        PIS_Get_Length(&Length);
+                        vTaskDelay(piston_period);
+
+                        if (length_update <= PISTON_POSITION_MINIMUM && Length <= PISTON_POSITION_MINIMUM)
+                        {
+                        /* do not even send a piston command, do nothing  */
+                        }
+                        else
+                        {
                         park_piston_length = length_update;
                         PIS_set_length(length_update);
                         PIS_task_move_length(&xPiston);
                         piston_move = true;
+                        }
                     }
                     else if (averaged_rate > 0.0 && !piston_move && !crush_depth)
                     {
@@ -1693,10 +1776,28 @@ void module_sps_park(void)
                             }
                         }
 
+                        /*check if length update will result in a piston position less than zero, set length to PISTON_POSITION_MINIMUM*/
+                        if (length_update <= PISTON_POSITION_MINIMUM)
+                        {
+                            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: park, length_update=%.4fin < piston position minimum >>\n", length_update);
+                            length_update = PISTON_POSITION_MINIMUM;
+                        }
+
+                        /* check if it needs to move the piston or not */
+                        PIS_Get_Length(&Length);
+                        vTaskDelay(piston_period);
+
+                        if (length_update <= PISTON_POSITION_MINIMUM && Length <= PISTON_POSITION_MINIMUM)
+                        {
+                        /* do not even send a piston command, do nothing  */
+                        }
+                        else
+                        {
                         park_piston_length = length_update;
                         PIS_set_length(length_update);
                         PIS_task_move_length(&xPiston);
                         piston_move = true;
+                        }
                     }
                 }
                 /* reset the rate counter and rate_avg variables */
@@ -1916,6 +2017,13 @@ void module_sps_move_to_profile(void)
         to_prof_piston_length = CTRL_calculate_piston_position(0.0, 0.0);
         length_update = to_prof_piston_length;
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Setting -> first time to_prof_piston_length=%.4fin >>\n", to_prof_piston_length);
+
+        /*check if length update will result in a piston position less than zero, set length to PISTON_POSITION_MINIMUM*/
+        if (length_update <= PISTON_POSITION_MINIMUM)
+        {
+        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, length_update=%.4fin < piston position minimum >>\n", length_update);
+        length_update = PISTON_POSITION_MINIMUM;
+        }
     }
     else
     {
@@ -2025,8 +2133,10 @@ void module_sps_move_to_profile(void)
     uint32_t to_profile_state_time = 0;
 
     /* variables for checking if the LCP hit the bottom for PISTON_MOVEMENT_ON_BOTTOM (inches) movement */
-    ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_profile, << Setting Length %.4fin to piston_on_bottom_length variable >>\n\n", Length);
-    float piston_on_bottom_length = Length;
+    //PIS_Get_Length(&Length);
+    //vTaskDelay(piston_period);
+    ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_profile, << Setting Length %.4fin to piston_on_bottom_length variable >>\n\n", length_update);
+    float piston_on_bottom_length = length_update;
     float length_update_last_adjusted = length_update;
 
     bool run = true;
@@ -2114,9 +2224,15 @@ void module_sps_move_to_profile(void)
                 {
                     length_update = PISTON_POSITION_MINIMUM;
 
+                    if (Depth < PARK_DEPTH-PARK_DEPTH_ERR)
+                    {
+                        to_profile_state_time = TO_PROFILE_STATE_TIMER*xDelay1000ms;
+                    }
+
                     /* start the timer for TO_PROFILE_STATE_TIMER (20 mins) */
                     to_profile_state_time += (period * rate_count);
                     ARTEMIS_DEBUG_PRINTF("<< SPS :: move_to_profile, critical piston minimum position time = %.2f seconds >>\n", (float)to_profile_state_time/xDelay1000ms);
+                    
                     if (to_profile_state_time >= TO_PROFILE_STATE_TIMER*xDelay1000ms)
                     {
                         ARTEMIS_DEBUG_PRINTF("<< SPS :: move_to_profile, critical piston minimum position time out = %.2f mins >>\n", (float)to_profile_state_time/(60.0*xDelay1000ms));
@@ -2151,7 +2267,10 @@ void module_sps_move_to_profile(void)
                 }
 
                 /* check if it needs to move the piston or not */
-                if (length_update <= PISTON_POSITION_MINIMUM)
+                PIS_Get_Length(&Length);
+                vTaskDelay(piston_period);
+
+                if (length_update <= PISTON_POSITION_MINIMUM && Length <= PISTON_POSITION_MINIMUM)
                 {
                     /* do not even send a piston command, do nothing  */
                 }
@@ -2380,6 +2499,14 @@ void module_sps_profile(void)
         prof_piston_length = CTRL_calculate_length_from_volume(Volume);
         length_update = prof_piston_length;
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Setting -> first time prof_piston_length=%.4f >>\n", prof_piston_length);
+
+        /*check if length update will result in a piston position less than zero, set length to PISTON_POSITION_MINIMUM*/
+        if (length_update <= PISTON_POSITION_MINIMUM)
+        {
+        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, length_update=%.4fin < piston position minimum >>\n", length_update);
+        length_update = PISTON_POSITION_MINIMUM;
+        }
+
     }
     else
     {
@@ -2703,7 +2830,7 @@ void module_sps_profile(void)
                 {
                     if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
                     {
-                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Depth=%.4f is @critial piston position >>\n", Depth);
+                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Depth=%.4f is @critical piston position >>\n", Depth);
                         length_update = CRUSH_DEPTH_PISTON_POSITION;
 
                         /* set a timer for 5 mins ? , period = xDelay1000ms , it can change in case of TEST */
@@ -2734,7 +2861,7 @@ void module_sps_profile(void)
                     {
                         if (length_update >= PISTON_POSITION_MAXIMUM)
                         {
-                            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Depth=%.4f is @Critical piston position >>\n", Depth);
+                            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Depth=%.4f is @Maximum piston position >>\n", Depth);
                             length_update = PISTON_POSITION_MAXIMUM;
 
                             /* set a timer for 5 mins ? , period = xDelay1000ms , it can change in case of TEST */
@@ -2767,13 +2894,26 @@ void module_sps_profile(void)
                 /* check if it needs to move the piston or not */
                 if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
                 {
+                    PIS_Get_Length(&Length);
+                    vTaskDelay(piston_period);
+
                     if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
                     {
-                        /* do not send the piston command */
+                        if (Length >= (CRUSH_DEPTH_PISTON_POSITION - 0.01))
+                        {
+                            /* do not send the piston command */
+                        }
+                         else
+                        {
+                            prof_piston_length = length_update;
+                            PIS_set_length(length_update);
+                            PIS_task_move_length(&xPiston);
+                            piston_move = true;
+                        }
                     }
                     else if (Depth < CRITICAL_PISTON_POSITON_DEPTH)
                     {
-                        if (length_update >= PISTON_POSITION_MAXIMUM)
+                        if (length_update >= PISTON_POSITION_MAXIMUM && Length >= (PISTON_POSITION_MAXIMUM -.01))
                         {
                             /* do not send the piston command */
                         }
@@ -2835,21 +2975,54 @@ void module_sps_profile(void)
                     }
                 }
 
+                /*check if length update will result in a piston position less than zero, set length to PISTON_POSITION_MINIMUM*/
+                if (length_update <= PISTON_POSITION_MINIMUM)
+                {
+                    ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, length_update=%.4fin < piston position minimum >>\n", length_update);
+                    length_update = PISTON_POSITION_MINIMUM;
+                }
+
                 /* check if it needs to move the piston or not */
                 if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
                 {
-                    /* do not send a piston command as well, but check the depth */
+                    PIS_Get_Length(&Length);
+                    vTaskDelay(piston_period);
+
                     if (Depth >= CRITICAL_PISTON_POSITON_DEPTH)
                     {
-                        /* do not send a piston command */
+                        if (Length >= (CRUSH_DEPTH_PISTON_POSITION - 0.01))
+                        {
+                            /* do not send the piston command */
+                        }
+                         else
+                        {
+                            prof_piston_length = length_update;
+                            PIS_set_length(length_update);
+                            PIS_task_move_length(&xPiston);
+                            piston_move = true;
+                        }
                     }
-                    else
+                    else if (Depth < CRITICAL_PISTON_POSITON_DEPTH)
                     {
-                        prof_piston_length = length_update;
-                        PIS_set_length(length_update);
-                        PIS_task_move_length(&xPiston);
-                        piston_move = true;
+                        if (length_update >= PISTON_POSITION_MAXIMUM && Length >= (PISTON_POSITION_MAXIMUM -.01))
+                        {
+                            /* do not send the piston command */
+                        }
+                        else
+                        {
+                            prof_piston_length = length_update;
+                            PIS_set_length(length_update);
+                            PIS_task_move_length(&xPiston);
+                            piston_move = true;
+                        }
                     }
+                }
+                else
+                {
+                    prof_piston_length = length_update;
+                    PIS_set_length(length_update);
+                    PIS_task_move_length(&xPiston);
+                    piston_move = true;
                 }
             }
             /* reset the rate counter and rate_avg*/
@@ -2972,6 +3145,7 @@ void module_sps_profile(void)
     }
 
     prof_number++;
+    pistoncal_number++;
 
     /* check Heap size */
     uint32_t size = xPortGetFreeHeapSize();
@@ -2997,8 +3171,8 @@ void module_sps_move_to_surface(void)
     PIS_set_piston_rate(1);
 
 #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
-    /* set piston to 2.0in */
-    PIS_set_length(2.0);
+    /* set piston to 10.5in */
+    PIS_set_length(10.5);
 #else
     PIS_set_length(PISTON_MOVE_TO_SURFACE);
 #endif
