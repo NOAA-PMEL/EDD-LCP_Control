@@ -1,15 +1,14 @@
 /**
  * @file piston.h
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-10-14
- * 
- * 
+ *
+ *
  */
 #ifndef PISTON_H
 #define PISTON_H
-
 
 /**********************************************************************************
  * Includes
@@ -27,7 +26,6 @@
 /**********************************************************************************
  * Configuration Constants
  *********************************************************************************/
-
 
 /**********************************************************************************
  * MACROS
@@ -66,7 +64,6 @@
 #define PISTON_I2C_R_FIRMWARE_MAJ   ( 0xFA )
 #define PISTON_I2C_R_FIRMWARE_MIN   ( 0xFB )
 #define PISTON_I2C_R_FIRMWARE_BUILD ( 0xFC )
-
 
 /*VOLUME AND LENGTH MAXIMUM DIFFERENCE ACCEPTABLE*/
 #define PISTON_VOLUME_DIFF_MAX      ( 0.04f )
@@ -137,15 +134,11 @@ void PIS_task_delete(TaskHandle_t xHandle);
 #ifdef TEST
 #ifdef DOXYGEN_IGNORE_THIS
 
-
 #endif // DOXYGEN_IGNORE_THIS
 #endif
 
-
 #ifdef __cplusplus
 } // extern "C"
-#endif 
-
-
+#endif
 
 #endif // PISTON_H

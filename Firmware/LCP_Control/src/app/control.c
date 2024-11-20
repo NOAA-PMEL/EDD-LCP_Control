@@ -33,9 +33,9 @@ typedef struct sProfilerSettings_t
     }volume;
     struct {
         float neutral;              /**< System neutral buoyancy (N) */
-        
+
     }buoyancy;
-    
+
     struct {
         float depth;                /**< Park depth (m) */
         float error;                /**< +/- error allowed (m) */
@@ -135,7 +135,6 @@ static ProfilerSettings_t settings = {
 //
 //*****************************************************************************
 //static Profiler_t profiler;
-
 
 //*****************************************************************************
 //

@@ -226,7 +226,6 @@
 #define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
 #define PISTON_MOVEMENT_ON_BOTTOM           ( 0.70f )    /* 0.70 inch piston length if we hit the bottom */
 
-
 #elif defined(__TEST_LAKE__)
 /** LAKE Testing */
 #define BALLAST_DEPTH                       ( )

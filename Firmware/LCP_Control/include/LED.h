@@ -1,6 +1,7 @@
 #ifndef LED_H
 #include <stdint.h>
 #include <stdbool.h>
+
 typedef enum {
   LED_RED,
   LED_GREEN,
@@ -15,7 +16,5 @@ void LED_Toggle(eLED_t led);
 void LED_Off(eLED_t led);
 void GreenLedTask(void *pvParameters) ;
 void BlueLedTask(void *pvParameters) ;
-
-
 
 #endif

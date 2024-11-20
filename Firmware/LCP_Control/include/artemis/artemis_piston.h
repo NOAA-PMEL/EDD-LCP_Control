@@ -1,21 +1,18 @@
 /**
  * @file artemis_piston.h
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-10-14
- * 
- * 
  */
 #ifndef ARTEMIS_PISTON_H
 #define ARTEMIS_PISTON_H
-
 
 /** Remove STATIC and PERSISTENT values if running TEST */
 /** Add the actual values if running release */
 #ifdef TEST
 #ifndef STATIC
-#define STATIC  
+#define STATIC
 #endif
 #ifndef PERSISTENT
 #define PERSISTENT
@@ -25,7 +22,7 @@
 #define STATIC  static
 #endif
 #ifndef PERSISTENT
-#define PERSISTENT __persistent 
+#define PERSISTENT __persistent
 #endif
 #endif
 
@@ -65,7 +62,6 @@ void artemis_piston_i2c_power_off(void);
 void artemis_piston_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop);
 uint16_t artemis_piston_i2c_read_data(uint8_t *pBuf);
 void artemis_piston_set_write_mode(bool state);
-
 void artemis_piston_i2c_read(uint8_t addr, uint8_t *data, uint16_t len);
 
 #endif // ARTEMIS_PISTON_H

@@ -406,7 +406,7 @@ void artemis_max14830_UART_Write(emax18430_ComPort_t port, uint8_t *sData, uint8
 	//	module_max14830_Write(port, MAX14830_REG_THR, sBuffer, sBufferLen);
 	//}
 	//else {
-	//	// TODO: wait for txfifo to be empty for now 
+	//	// TODO: wait for txfifo to be empty for now
 	//	// do nothing for now
 	//}
 
@@ -416,7 +416,7 @@ void artemis_max14830_UART_Write(emax18430_ComPort_t port, uint8_t *sData, uint8
 //  uint8_t txDatalen = 0;
 //  uint8_t txFifoLen;
 //  module_max14830_Read(port, MAX14830_REG_TXFIFOLVL, &txFifoLen, 1);
-//  
+//
 //  uint8_t txFifoEmptyLen = MAX14830_FIFO_SIZE - txFifoLen;
 ////  if(txFifoEmptyLen > len)
 ////  {
@@ -424,13 +424,13 @@ void artemis_max14830_UART_Write(emax18430_ComPort_t port, uint8_t *sData, uint8
 ////  } else {
 ////    tx
 ////  }
-//  
+//
 //  for(uint32_t i=0; i<len; i++)
 //  {
 //    module_max14830_Write(port, MAX14830_REG_THR, sData++, 1);
 //  }
-//  
-//  
+//
+//
 ////  Max14830RegRead(channel, MAX14830_TXFIFOLVL_REG, &txFifoDataLen);
 ////        txFifoEmptyLen = MAX14830_FIFO_SIZE - txFifoDataLen;
 ////
@@ -444,13 +444,13 @@ void artemis_max14830_UART_Write(emax18430_ComPort_t port, uint8_t *sData, uint8
 ////        }
 ////
 ////        writeCount = transmitTxDatalen;
-////        do  
-////        {   
+////        do
+////        {
 ////            /* transmit character */
 ////            Max14830RegWrite(channel, MAX14830_REG_THR_REG, *buf++);
 ////            transmitTxDatalen--;
 ////        } while(transmitTxDatalen != 0);
-// 
+//
 }
 
 void artemis_max14830_UART_Read(emax18430_ComPort_t port, uint8_t *rxData, uint8_t *rxLen)
@@ -764,7 +764,7 @@ static void module_max14830_init(void)
 
 //  emax18430_ComPort_t channel = max14830_COM_PORT0;
 //  uint8_t data = MAX14830_MODE2_RST;
-//  
+//
 //  for(uint8_t i=0; i<4; i++)
 //  {
 //    channel = (emax18430_ComPort_t)i;
@@ -789,7 +789,7 @@ static void module_max14830_init(void)
 //      data = MAX14830_MODE2_RST;
 ////      module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
 //      module_max14830_Write(channel, MAX14830_REG_MODE2, &data, 1);
-//      
+//
 //      data = 0u;
 ////      module_max14830_Write(max14830_COM_PORT0, MAX14830_REG_MODE2, &data, 1);
 //      module_max14830_Write(channel, MAX14830_REG_MODE2, &data, 1);
@@ -806,13 +806,13 @@ static void module_max14830_init(void)
 //          break;
 //        }
 //      }
-//      
+//
 //      data = 0;
 //      module_max14830_Write(channel, MAX14830_REG_IRQEN, &data, 1);
 //      data = MAX14830_CLK_PLL_BYPASS | MAX14830_CLK_CRYSTAL_EN;
 //      module_max14830_Write(channel, MAX14830_REG_CLKSOURCE, &data, 1);
-//  
-//  
+//
+//
 /////* Disable all interrupts */
 ////        Max14830RegWrite(channel, MAX14830_IRQEN_REG, 0);
 ////
@@ -837,55 +837,55 @@ static void module_max14830_init(void)
 ////            Max14830RegWrite(channel, MAX14830_HDPIXDELAY_REG, 0x11);
 ////        }
 ////
-//  
+//
 //  /* RMW IRQ With interrupt out */
 //  module_max14830_Read(channel, MAX14830_REG_MODE1, 1, &data);
 //  data |= MAX14830_MODE1_IRQ_SEL;
 //  module_max14830_Write(channel, MAX14830_REG_MODE1, &data, 1);
-//  
-//  
+//
+//
 //
 //    /* Reset FIFOs and enable echo suppression */
 //    module_max14830_Read(channel, MAX14830_REG_MODE2, 1, &data);
 //    data |= MAX14830_MODE2_FIFO_RST;
 //    module_max14830_Write(channel, MAX14830_REG_MODE2, &data, 1);
-//  
+//
 ////
 ////        /* configure FIFO trigger level register */
 ////        /* RX FIFO trigger for 16 words, TX FIFO trigger for 64 words */
 ////        regValue = MAX14830_FIFOTRIGLVL_RX(16) | MAX14830_FIFOTRIGLVL_TX(64);
 ////        Max14830RegWrite(channel, MAX14830_FIFOTRIGLVL_REG, regValue);
-//  
+//
 //  data = MAX14830_FIFOTRIGLVL_RX(16) | MAX14830_FIFOTRIGLVL_TX(64);
 //  module_max14830_Write(channel, MAX14830_REG_FIFOTRGLVL, &data, 1);
-//  
+//
 ////
 ////        /* configure flow control levels */
 ////        regValue = MAX14830_FLOWLVL_RES(48) | MAX14830_FLOWLVL_HALT(96);
 ////        Max14830RegWrite(channel, MAX14830_FLOWLVL_REG, regValue);
 //  data = MAX14830_FLOWLVL_RES(48) | MAX14830_FLOWLVL_HALT(96);
 //  module_max14830_Write(channel, MAX14830_REG_FLOWLVL, &data, 1);
-//  
+//
 ////
 ////        /* clear timeout register */
 ////        Max14830RegWrite(channel, MAX14830_RXTO_REG, 0);
 //  data = 0u;
 //  module_max14830_Write(channel, MAX14830_REG_RXTIMEOUT, &data, 0);
-//  
+//
 ////
 ////        /* configure LSR interrupt enable register */
 ////        /* enable RX timeout interrupt */
-////        regValue = MAX14830_LSR_RXTO_BIT | MAX14830_LSR_RXOVR_BIT | MAX14830_LSR_RXPAR_BIT | 
+////        regValue = MAX14830_LSR_RXTO_BIT | MAX14830_LSR_RXOVR_BIT | MAX14830_LSR_RXPAR_BIT |
 ////                   MAX14830_LSR_FRERR_BIT | MAX14830_LSR_RXNOISE_BIT;
 ////        Max14830RegWrite(channel, MAX14830_LSR_IRQEN_REG, regValue);
-//  
+//
 //  data = (MAX14830_LSR_RTIMEOUT |
 //          MAX14830_LSR_RXOVERRUN |
 //          MAX14830_LSR_RXPARITY |
 //          MAX14830_LSR_FRAMEERR |
 //          MAX14830_LSR_RXNOISE );
 //  module_max14830_Write(channel, MAX14830_REG_LSRINTEN, &data, 1);
-//  
+//
 ////
 ////        /* clear FIFO reset */
 ////        Max14830RegRead(channel, MAX14830_MODE2_REG, &regValue);
@@ -894,7 +894,7 @@ static void module_max14830_init(void)
 //  module_max14830_Read(channel, MAX14830_REG_MODE2, 1, &data);
 //  data &= ~MAX14830_MODE2_FIFO_RST;
 //  module_max14830_Write(channel, MAX14830_REG_MODE2, &data, 1);
-//  
+//
 ////
 ////        /* Set Rx FIFO empty INT invert */
 ////        Max14830RegRead(channel, MAX14830_MODE2_REG, &regValue);
@@ -903,27 +903,27 @@ static void module_max14830_init(void)
 //  module_max14830_Read(channel, MAX14830_REG_MODE2, 1, &data);
 //  data |= MAX14830_MODE2_RX_EMTY_INV;
 //  module_max14830_Write(channel, MAX14830_REG_MODE2, &data, 1);
-//  
+//
 ////
 ////        /* get invalid data */
 ////        Max14830RegRead(channel, MAX14830_REG_RHR_REG, &regValue);
 //  module_max14830_Read(channel, MAX14830_REG_RHR, 1, &data);
-//  
+//
 ////
 ////        /* clear IRQ status register by reading it */
 ////        Max14830RegRead(channel, MAX14830_IRQSTS_REG, &regValue);
 //  module_max14830_Read(channel, MAX14830_REG_ISR, 1, &data);
-//  
+//
 ////
 ////        /* disable auto flow control */
 ////        Max14830RegWrite(channel, MAX14830_FLOWCTRL_REG, 0);
 //  data = 0;
 //  module_max14830_Write(channel, MAX14830_REG_FLOWCTRL, &data, 1);
-//  
+//
 ////  /** Invert Tx & RX */
 ////  data = MAX14830_IRDA_TX_INV | MAX14830_IRDA_RX_INV;
 ////  module_max14830_Write(channel, MAX14830_REG_IRDA, &data, 1);
-//  
+//
 ////
 ////        /* enable RX interrupts */
 ////        regValue = MAX14830_IRQ_RXEMPTY_BIT | MAX14830_IRQ_LSR_BIT;
@@ -943,7 +943,7 @@ static void module_max14830_init(void)
 ////        channel->isEnabled = TRUE;
 ////    }
 //  }
-//} 
+//}
 
 static void module_max14830_Power_On(void)
 {
@@ -1050,7 +1050,6 @@ static void module_max14830_Write(emax18430_ComPort_t port, uint8_t reg, uint8_t
     /* CS low */
     module_max14830_chip_disable();
 }
-
 
 uint8_t module_max14830_port_from_pin(uint8_t pin)
 {

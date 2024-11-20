@@ -5,17 +5,17 @@
 * @Origin Date :   1/16/2021
 * @Version     :   1.0.0
 * @Compiler    :   IAR, GCC
-* @Target      :   
+* @Target      :
 * @Notes       :   None
 * @Bugs        :   No known bugs
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights 
+* in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in all
 * copies or substantial portions of the Software.
 *
@@ -31,7 +31,7 @@
 * Build Log
 * Data    | Initials |  Description
 *--------------------------------
-* 6/30/21 |    MJC   | 
+* 6/30/21 |    MJC   |
 *********************************************************************************/
 
 #ifndef DEPTH_H_
@@ -91,7 +91,7 @@ typedef struct {
 
 
 /** @struct Depth Measurement Struct
- * Struct to use for reading data out of sensor into 
+ * Struct to use for reading data out of sensor into
  * other apps.
  */
 typedef struct {
@@ -125,16 +125,16 @@ void DEPTH_Power_ON(void);
 
 /**
  * @brief Turn Depth Sensor OFF
- * 
+ *
  * Disable power to Depth Sensor
  */
 void DEPTH_Power_OFF(void);
 
 /**
  * @brief Read the depth sensor.
- * 
+ *
  * Read the depth sensor and return relevant data
- * 
+ *
  * @param data Pointer to data struct
  */
 void DEPTH_Read(sDepth_Measurement_t *data);

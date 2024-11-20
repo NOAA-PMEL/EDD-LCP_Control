@@ -72,4 +72,3 @@ void run_tasks(void);
 #endif
 
 #endif // RTOS_H
-

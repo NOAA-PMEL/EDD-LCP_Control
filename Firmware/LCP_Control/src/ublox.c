@@ -1,12 +1,10 @@
-
-
 /**
  * @file ublox.c
  * @author Matt Casari (matthew.casari@noaa.gov)
  * @brief UBLOX GPS Commands.
  * @version 0.1
  * @date 2021-09-28
- * 
+ *
  */
 
 //*****************************************************************************
@@ -56,11 +54,11 @@ bool module_ublox_cfg_port_for_i2c(uint16_t inConfig, uint16_t outConfig);
 bool module_cfg_port_msg(uint8_t cls, uint8_t id, uint8_t rate);
 bool module_ublox_read(eUBX_Class_t cls, uint8_t id, void *parsed);
 bool module_ublox_read_ubx(
-                    eUBX_Class_t cls, 
-                    uint8_t id, 
+                    eUBX_Class_t cls,
+                    uint8_t id,
                     uint8_t *payload,
-                    uint16_t length, 
-                    uint16_t delay, 
+                    uint16_t length,
+                    uint16_t delay,
                     ubx_packet_t *packet
                     );
 void module_ublox_create_msg_from_packet(ubx_packet_t *packet, uint8_t *msg);
@@ -77,7 +75,7 @@ bool module_ublox_wait_for_ack_or_nak(  uint8_t expectedClass,
 //*****************************************************************************
 /**
  * @brief UBLOX Module Initialize
- * 
+ *
  * @param port Port type (I2C, SPI, UART, USB)
  * @param inMsg UBX Messages to accept on input
  * @param outMsg UBX Messages to send as output
@@ -85,8 +83,8 @@ bool module_ublox_wait_for_ack_or_nak(  uint8_t expectedClass,
  * @return true Initialization is valid
  * @return false Initialization is invalid
  */
-bool UBLOX_initialize(  UBLOX_PortType_t port, 
-                        UBLOX_MsgType_t inMsg, 
+bool UBLOX_initialize(  UBLOX_PortType_t port,
+                        UBLOX_MsgType_t inMsg,
                         UBLOX_MsgType_t outMsg,
                         uint16_t rateHz)
 {
@@ -125,10 +123,10 @@ void UBLOX_uninitialize(void)
 
 /**
  * @brief Read NAV Data
- * 
+ *
  * Read the most recent data from the UBLOX GPS
- * 
- * @param data Pointer to NAV Data struct 
+ *
+ * @param data Pointer to NAV Data struct
  * @return true Valid Data (GPS Fix)
  * @return false Invalid data (No GPS Fix)
  */
@@ -149,11 +147,11 @@ bool UBLOX_read_nav(UBLOX_Nav_t *data)
         {
             retVal = true;
             data->fix = true;
-            
+
             data->position.lat = nav.lat * 1e-7;
             data->position.lon = nav.lon * 1e-7;
             data->position.alt = nav.hMSL* 1e-3;
-            
+
             data->accuracy.hAcc = nav.hAcc;
             data->accuracy.vAcc = nav.vAcc;
             data->accuracy.pDOP = nav.pDOP * 0.01;
@@ -174,7 +172,7 @@ bool UBLOX_read_nav(UBLOX_Nav_t *data)
 
 /**
  * @brief Read CFG-PRT Data
- * 
+ *
  * @param prt Pointer to CFG-PRT Data struct
  * @return true Valid read
  * @return false Invalid read
@@ -204,8 +202,8 @@ bool UBLOX_read_config(ubx_cfg_prt_t *prt)
 //*****************************************************************************
 /**
  * @brief I2C Initialization
- * 
- * @return true Valid init 
+ *
+ * @return true Valid init
  * @return false Invalid init
  */
 bool module_ublox_i2c_initialize(void)
@@ -217,7 +215,7 @@ bool module_ublox_i2c_initialize(void)
 
 /**
  * @brief Send UBX Packet to GPS over I2C
- * 
+ *
  * @param packet Pointer to UBX Packet
  * @return true Valid send
  * @return false Invalid send
@@ -231,7 +229,7 @@ bool module_ublox_send_packet(ubx_packet_t *packet)
 
 /**
  * @brief Read UBX Packet from GPS over I2C
- * 
+ *
  * @param packet Pointer to UBX Packet
  * @return true Valid Read
  * @return false Invalid Read
@@ -246,13 +244,13 @@ bool module_ublox_read_packet(ubx_packet_t *packet)
 
     /** Find the start of the UBX message */
     int16_t offset = UBX_find_start_of_msg(ubx_msg, msgLen);
-    
+
     if(offset >= 0)
     {
         /** Error */
       retVal = true;
     }
-    
+
     if(retVal)
     {
         /** Parse the message */
@@ -261,7 +259,7 @@ bool module_ublox_read_packet(ubx_packet_t *packet)
         {
           uint8_t *pStart = &ubx_msg[0];
           pStart += offset;
-          
+
             retVal = UBX_parse_ubx_packet(pStart, len, packet);
         }
     }
@@ -269,9 +267,9 @@ bool module_ublox_read_packet(ubx_packet_t *packet)
 }
 
 /**
- * @brief Configure GPS for I2C 
- * 
- * @param inConfig Input message type 
+ * @brief Configure GPS for I2C
+ *
+ * @param inConfig Input message type
  * @param outConfig Output message type
  * @return true GPS configured for I2C
  * @return false GPS NOT configure for I2C
@@ -282,7 +280,7 @@ bool module_ublox_cfg_port_for_i2c(uint16_t inConfig, uint16_t outConfig)
     ubx_packet_t txPacket = {0};
     //ubx_packet_t rxPacket = {0};
     uint8_t payload[20] = {0};
-    
+
     /** Set up the payload */
     payload[4] = UBLOX_I2C_ADDR << 1;
     payload[12] = inConfig;
@@ -290,15 +288,15 @@ bool module_ublox_cfg_port_for_i2c(uint16_t inConfig, uint16_t outConfig)
 
     /** Create the UBX Packet */
     UBX_create_ubx_packet(UBX_CFG_CLASS, UBX_CFG_PRT, payload, 20, &txPacket);
-    
+
     /** Send packet */
     retVal = module_ublox_send_packet(&txPacket);
-    
+
     /** Query for ACK-ACK or ACK-NAK */
     if(retVal)
     {
         retVal = module_ublox_wait_for_ack_or_nak( UBX_CFG_CLASS, UBX_CFG_PRT, 500, 50);
-        
+
     }
 
     return retVal;
@@ -306,7 +304,7 @@ bool module_ublox_cfg_port_for_i2c(uint16_t inConfig, uint16_t outConfig)
 
 /**
  * @brief Configure Port Messages
- * 
+ *
  * @param cls Pointer to UBX Class
  * @param id  Pointer to UBX Class ID
  * @param rate Message rate (ms)
@@ -322,10 +320,10 @@ bool module_cfg_port_msg(uint8_t cls, uint8_t id, uint8_t rate)
 
     /** Create the UBX Packet */
     UBX_create_ubx_packet(UBX_CFG_CLASS, UBX_CFG_MSG, payload, 3, &txPacket);
-    
+
     /** Send packet */
     retVal = module_ublox_send_packet(&txPacket);
-    
+
     /** Query for ACK-ACK or ACK-NAK */
     if(retVal)
     {
@@ -349,13 +347,13 @@ bool module_cfg_port_msg(uint8_t cls, uint8_t id, uint8_t rate)
 
 /**
  * @brief Read UBLOX
- * 
+ *
  * Super function to read UBLOX class and id based on specified.
- * 
+ *
  * Warning: This function requires the correct data struct to be passed
  * in the void *parsed pointer.  There is no type checking to validate the
  * correct struct was passed, which can have irreversible consequences.
- * 
+ *
  * @param cls Class to read
  * @param id Class ID to read
  * @param parsed Poniter to Class ID Data struct
@@ -367,7 +365,7 @@ bool module_ublox_read(eUBX_Class_t cls, uint8_t id, void *parsed)
     bool retVal = false;
     uint16_t delay = 0;
     ubx_packet_t packet = {0};
-    
+
     if(cls == UBX_NAV_CLASS)
     {
       delay = 500;
@@ -418,13 +416,13 @@ bool module_ublox_read(eUBX_Class_t cls, uint8_t id, void *parsed)
 
 /**
  * @brief Read UBX-CFG-MSG
- * 
+ *
  * Read the UBX-CFG-MSG.  Doesn't really do much at the moment.
- * 
- * @param shortMsg 
- * @param id 
- * @return true 
- * @return false 
+ *
+ * @param shortMsg
+ * @param id
+ * @return true
+ * @return false
  */
 bool module_read_cfg_msg(bool shortMsg, uint8_t class, uint8_t id)
 {
@@ -445,12 +443,12 @@ bool module_read_cfg_msg(bool shortMsg, uint8_t class, uint8_t id)
 
 /**
  * @brief Read UBX-CFG-RATE
- * 
+ *
  * Read the UBX-CFG-RATE.  Doesn't really do much at the moment
- * 
- * @param rate 
- * @return true 
- * @return false 
+ *
+ * @param rate
+ * @return true
+ * @return false
  */
 bool module_read_cfg_rate(ubx_cfg_rate_t *rate)
 {
@@ -470,9 +468,9 @@ bool module_read_cfg_rate(ubx_cfg_rate_t *rate)
 
 /**
  * @brief Read the UBLOX UBX Packet over I2C
- * 
+ *
  * Reads the UBX packet from the specified Class & ID
- * 
+ *
  * @param cls UBX Class to read
  * @param id UBX Class ID to read
  * @param payload Pointer to payload to send
@@ -483,18 +481,18 @@ bool module_read_cfg_rate(ubx_cfg_rate_t *rate)
  * @return false Invalid read
  */
 bool module_ublox_read_ubx(
-                    eUBX_Class_t cls, 
-                    uint8_t id, 
+                    eUBX_Class_t cls,
+                    uint8_t id,
                     uint8_t *payload,
-                    uint16_t length, 
-                    uint16_t delay, 
+                    uint16_t length,
+                    uint16_t delay,
                     ubx_packet_t *packet
                     )
 {
     bool retVal = false;
     ubx_packet_t txPacket = {0};
     int16_t offset;
-    
+
     /** Create Packet */
     UBX_create_ubx_packet((uint8_t) cls, id, payload, length, &txPacket);
     UBX_create_msg_from_packet(&txPacket, ubx_msg);
@@ -502,7 +500,7 @@ bool module_ublox_read_ubx(
     /** Send Packet */
 //    artemis_ublox_send_packet(ubx_msg, txPacket.length, false);
     module_ublox_send_packet(&txPacket);
-    
+
     /** Sleep if there is a delay */
     while(delay-- > 0)
     {
@@ -520,7 +518,7 @@ bool module_ublox_read_ubx(
     if(len > 0)
     {
         /** Find start of UBX Packet */
-        
+
         offset = UBX_find_start_of_msg(ubx_msg, len);
         if(offset >= 0)
         {
@@ -530,9 +528,9 @@ bool module_ublox_read_ubx(
           retVal = false;
         }
     }
-    
+
     if(retVal)
-    {   
+    {
       uint8_t *pStart = &ubx_msg[0];
       pStart += offset;
         /** Create return Packet */
@@ -548,18 +546,18 @@ bool module_ublox_wait_for_ack_or_nak(  uint8_t expectedClass,
                                         uint8_t attempts  )
 {
     bool retVal = false;
-    
+
     ubx_packet_t rxPacket = {0};
-    
+
     /** Delay */
     am_hal_systick_delay_us(initial_delay_ms*1000);
-  
+
     /** Read buffer & parse for UBX packet */
     uint8_t cnt = 0;
     bool endFlag = false;
     while(endFlag == false)
     {
-        
+
         retVal = module_ublox_read_packet(&rxPacket);
         if( ((retVal == true) && (rxPacket.length > 0) )|| (++cnt > attempts))
         {

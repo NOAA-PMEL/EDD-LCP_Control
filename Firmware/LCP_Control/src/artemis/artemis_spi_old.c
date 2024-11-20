@@ -41,8 +41,8 @@ void artemis_spi_send(artemis_spi_t *spi, bool stop, artemis_stream_t *txstream)
 ///
 
 //void artemis_spi_receive(artemis_spi_t *spi, bool stop, uint8_t cmd, artemis_stream_t *rxstream, uint32_t rxnumber)
-//{  
-//  
+//{
+//
 //  uint32_t data[64];
 //    am_hal_iom_transfer_t       Transaction;
 //
@@ -59,7 +59,7 @@ void artemis_spi_send(artemis_spi_t *spi, bool stop, artemis_stream_t *txstream)
 //
 //
 //    ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(spi->iom.handle, &Transaction));
-//    
+//
 //    artemis_stream_write(rxstream, (uint8_t*)data, rxnumber);
 //}
 
@@ -84,7 +84,7 @@ void artemis_spi_receive(artemis_spi_t *spi, bool stop, artemis_stream_t *rxstre
 
 void artemis_spi_rx(artemis_spi_t *spi, bool stop, artemis_stream_t *rxstream, uint32_t rxnumber)
 {
-  
+
     am_hal_iom_transfer_t transfer = {0};
 
     transfer.uPeerInfo.ui32SpiChipSelect = spi->chipselect;
@@ -118,12 +118,12 @@ void artemis_spi_rx(artemis_spi_t *spi, bool stop, artemis_stream_t *rxstream, u
 //    transfer.ui32NumBytes = 1;
 //    transfer.eDirection = AM_HAL_IOM_TX;
 //    transfer.ui8Priority = 1;
-//    
+//
 ////    ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(spi->iom.handle, &transfer));
-////    
+////
 //    transfer.ui32NumBytes = txstream->written-1;
 //    transfer.bContinue = !stop;
-//    transfer.eDirection = AM_HAL_IOM_RX;                        
+//    transfer.eDirection = AM_HAL_IOM_RX;
 //    transfer.pui32RxBuffer = (uint32_t *)rxstream->buffer;
 //    ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(spi->iom.handle, &transfer));
 ////    ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_spi_blocking_fullduplex(spi->iom.handle, &transfer));
@@ -171,13 +171,13 @@ void artemis_spi_transfer(artemis_spi_t *spi, bool stop, artemis_stream_t *txstr
     transfer.ui8Priority = 1;
     transfer.ui32Instr = 0;
     transfer.ui32InstrLen = 0;
-    
+
     artemis_stream_get(txstream, (uint8_t*)&transfer.ui32Instr);
     transfer.ui32InstrLen = 1;
-    
+
     ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(spi->iom.handle, &transfer));
-    
-    
+
+
     transfer.ui32Instr = 0;
     transfer.ui32InstrLen = 0;
     transfer.eDirection = AM_HAL_IOM_RX;
@@ -236,7 +236,7 @@ void artemis_spi_bb_transfer(artemis_spi_bb_t *spi, bool stop, artemis_stream_t 
     {
         artemis_stream_get(txstream, &data_byte);
         uint8_t read_byte;
-        
+
         for(uint8_t j=0; j<8; j++)
         {
             bool bit_to_send = (data_byte & (1u < j)) > 0;

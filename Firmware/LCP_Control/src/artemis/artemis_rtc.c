@@ -15,14 +15,14 @@ static bool utc = false;
 //void artemis_rtc_set_time(void);
 //void artemis_rtc_get_time(void);
 
-char *days[] = {"Sunday", "Monday", "Tuesday", "Wednesday", 
+char *days[] = {"Sunday", "Monday", "Tuesday", "Wednesday",
                 "Thursday", "Friday", "Saturday" };
-char *Months[] = {"January","February", "March", "April", 
-                  "May", "June", "July", "August", "September", 
+char *Months[] = {"January","February", "March", "April",
+                  "May", "June", "July", "August", "September",
                   "October", "November", "December"};
 
 
-am_hal_ctimer_config_t g_sTimer0 = {0, 
+am_hal_ctimer_config_t g_sTimer0 = {0,
                                     (AM_HAL_CTIMER_FN_REPEAT |
                                     AM_HAL_CTIMER_INT_ENABLE |
                                     AM_HAL_CTIMER_LFRC_32HZ),

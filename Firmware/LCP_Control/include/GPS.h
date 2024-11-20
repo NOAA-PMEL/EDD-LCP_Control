@@ -16,7 +16,7 @@ typedef struct sGPS_Data_t
         uint16_t year;  /**< Calendar Year UTC */
         uint8_t month;  /**< Calendar Month UTC */
         uint8_t day;    /**< Calendar Day UTC */
-        uint8_t hour;   /**< Hour UTC */    
+        uint8_t hour;   /**< Hour UTC */
         uint8_t min;    /**< Minute UTC */
         uint8_t sec;    /**< Second UTC */
     }time;

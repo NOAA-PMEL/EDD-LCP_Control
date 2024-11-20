@@ -5,7 +5,6 @@
 #include "bsp_uart.h"
 #include "artemis_max14830.h"
 
-
 #define MAX_UART_PACKET_SIZE        ( 256 )
 uint8_t g_pui8UARTTXBuffer[MAX_UART_PACKET_SIZE];
 void *g_pvLOG;
@@ -40,7 +39,6 @@ void bsp_uart_init(void)
 {
     /** Init All MAX1430 COM ports */
     artemis_max14830_init();
-    
 
     /** Init all HAL COM ports */
     am_hal_uart_initialize(0, &g_pvLOG);
@@ -48,8 +46,8 @@ void bsp_uart_init(void)
     am_hal_uart_configure(g_pvLOG, &sUartConfig);
     am_hal_gpio_pinconfig(AM_BSP_GPIO_CONSOLE_UART_TX, g_AM_BSP_GPIO_CONSOLE_UART_TX);
     am_hal_gpio_pinconfig(AM_BSP_GPIO_CONSOLE_UART_RX, g_AM_BSP_GPIO_CONSOLE_UART_RX);
-    
-    
+
+
     /** Init the MAX14830 GPIO Outputs */
     artemis_max14830_gpio_configure_output(1, 0);
     artemis_max14830_gpio_configure_output(2, 0);
@@ -193,8 +191,8 @@ void bsp_uart_putc(e_uart_t port, char c)
             artemis_max14830_UART_Write(MAX14830_COM_PORT3, &c, 1);
             break;
         case BSP_UART_LOG:
-            
-            
+
+
             am_hal_uart_transfer(g_pvLOG, &tx);
             break;
         case BSP_UART_DEBUG:
@@ -229,7 +227,7 @@ void bsp_uart_puts(e_uart_t port, char *pStr, uint32_t len)
             artemis_max14830_UART_Write(MAX14830_COM_PORT3, pStr, len);
             break;
         case BSP_UART_LOG:
-            
+
             am_hal_uart_transfer(g_pvLOG, &tx);
             break;
         case BSP_UART_DEBUG:
@@ -265,7 +263,7 @@ char bsp_uart_getc(e_uart_t port)
             artemis_max14830_UART_Read(MAX14830_COM_PORT3, &c, 1);
             break;
         case BSP_UART_LOG:
-            
+
             am_hal_uart_transfer(g_pvLOG, &tx);
             break;
         case BSP_UART_DEBUG:
@@ -303,7 +301,7 @@ uint32_t bsp_uart_gets(e_uart_t port, char *pStr, uint32_t len)
             artemis_max14830_UART_Read(MAX14830_COM_PORT3, pStr, len);
             break;
         case BSP_UART_LOG:
-            
+
             am_hal_uart_transfer(g_pvLOG, &tx);
             break;
         case BSP_UART_DEBUG:
@@ -315,11 +313,10 @@ uint32_t bsp_uart_gets(e_uart_t port, char *pStr, uint32_t len)
     return c;
 }
 
-
 void BSP_UART_Test(void)
 {
   char data[256];
-  
+
   artemis_max14830_UART_Read(MAX14830_COM_PORT0, data, 256);
-  
+
 }

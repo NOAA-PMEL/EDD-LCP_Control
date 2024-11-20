@@ -10,15 +10,15 @@
  * @copyright Environmental Development Division
  *
  * @note Controls the Keller 9LXe, circuit board (9L140) Pressure sensor over RS-485
- * 
+ *
  *
  * @bug  No known bugs
  *
  **/
 
 /** Simplified COMMS protocol from Keller */
-/** 
-	TODO:  organize this, 
+/**
+	TODO:  organize this,
 	Communication Protocol
 	D-Line OEM-transmitter samples only on request.
 	The idle state is the sleep mode to save power.
@@ -116,8 +116,8 @@
 #define K9LX_INT16_TOB1             0x0014  //  return Temperature of sensor1 in °C (1/100 LSB)
 #define K9LX_INT16_TOB2             0x0015  //  return Tempearture of sensor2 in °C (1/100 LSB)
 
-// 32bit int addresses 
-#define K9LX_INT32_CH0              0x0020  //  return calculated value (customer specific) 1/100000 (LSB) 
+// 32bit int addresses
+#define K9LX_INT32_CH0              0x0020  //  return calculated value (customer specific) 1/100000 (LSB)
 #define K9LX_INT32_P1               0x0022  //  return Pressure of sensor1 in Pa (1/100000 LSB)
 #define K9LX_INT32_P2               0x0024  //  return Pressure of sensor2 in Pa (1/100000 LSB)
 #define K9LX_INT32_T                0x0026  //  return Temperature in °C (1/100 LSB)
@@ -240,7 +240,7 @@ void K9lx_init(K9lx_init_param *p)
     ARTEMIS_DEBUG_PRINTF("K9lx Pressure Sensor is initialized\n\n");
     K9lx_power_off();
 }
-	
+
 void K9lx_power_on(void)
 {
     am_hal_gpio_output_clear(pK9lx->device.power.pin);

@@ -10,12 +10,11 @@
  * @copyright Environmental Development Division
  *
  * @note Controls the Keller 9LXe, circuit board (9L140) Pressure sensor over RS-485
- * 
+ *
  *
  *
  * @bug  No known bugs
  */
-
 #ifndef K9LX_H_PRESSURE
 #define K9LX_H_PRESSURE
 
@@ -104,4 +103,3 @@ void K9lx_read_PT(float *pressure, float *temperature);
 #endif
 
 #endif // K9LX_H_PRESSURE
-

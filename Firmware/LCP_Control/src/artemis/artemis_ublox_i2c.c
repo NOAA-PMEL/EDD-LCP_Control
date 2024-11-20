@@ -1,11 +1,11 @@
 /**
  * @file artemis_ublox_i2c.c
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-09-28
- * 
- * 
+ *
+ *
  */
 
 #include "artemis_ublox_i2c.h"
@@ -97,7 +97,7 @@ typedef struct s_module_t
 //*****************************************************************************
 /**
  * @brief Module Parameters
- * 
+ *
  */
 static module_t module;
 
@@ -116,9 +116,9 @@ static module_t module;
 
 /**
  * @brief Initialize the UBLOX Module
- * 
+ *
  * Initializes Power Pin, EXTINT Pin & IOM Module for I2C.
- * 
+ *
  * @param i2c_addr I2C Address of Module
  */
 void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
@@ -138,7 +138,7 @@ void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
     #endif
 
     i2c->address = i2c_addr;
-    
+
     #ifdef TEST_ON_IOM4
     i2c->iom.module = 4;
     #else
@@ -147,11 +147,11 @@ void artemis_ublox_i2c_initialize(uint8_t i2c_addr)
     i2c->iom.config.eInterfaceMode = AM_HAL_IOM_I2C_MODE;
     i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_100KHZ;
     artemis_iom_initialize(&i2c->iom);
-    
+
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.extint.pin, *module.extint.pinConfig));
     artemis_ublox_i2c_power_on();
-    
+
     #ifdef TEST_ON_IOM4
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM4_SCL, g_AM_BSP_GPIO_IOM4_SCL));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM4_SDA, g_AM_BSP_GPIO_IOM4_SDA));
@@ -201,7 +201,7 @@ void artemis_ublox_i2c_power_off(void)
  * @brief Send I2C message
  *
  * Send a message over I2C.
- * 
+ *
  * @param msg Pointer to message buffer
  * @param len Length of message to send
  * @param stop Send stop after transfer
@@ -232,12 +232,12 @@ void artemis_ublox_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop)
 
 /**
  * @brief Read the I2C data buffer @addr 0xFF
- * 
+ *
  * Check the length of the message @addr 0xFE/0xFD
  * if length > 0, read the message @addr 0xFF
- * 
+ *
  * Requires a data buffer >= 2048 bytes
- * 
+ *
  * @param pBuf pointer to transfer data buffer (size >= 2048 Bytes)
  * @return uint16_t length of message
  */

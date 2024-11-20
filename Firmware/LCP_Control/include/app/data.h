@@ -1,11 +1,11 @@
 /**
  * @file data.h
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-10-15
- * 
- * 
+ *
+ *
  */
 #ifndef DATA_H
 #define DATA_H
@@ -14,7 +14,7 @@
 /** Add the actual values if running release */
 #ifdef TEST
 #ifndef STATIC
-#define STATIC  
+#define STATIC
 #endif
 #ifndef PERSISTENT
 #define PERSISTENT
@@ -25,7 +25,7 @@
 #endif
 #ifndef PERSISTENT
 #if defined(__IAR_SYSTEMS_ICC__)
-#define PERSISTENT __persistent 
+#define PERSISTENT __persistent
 #elif defined(__GNUC__)
 #define PERSISTENT __attribute__((section (".persistent")))
 #endif
@@ -67,8 +67,8 @@
  * Typdefs
  *********************************************************************************/
 // typedef struct sProfileData_t
-// {   
-    
+// {
+
 // }ProfileData_t;
 
 typedef struct __attribute__((packed))
@@ -185,9 +185,8 @@ float average(float *value, uint16_t len);
 #endif // DOXYGEN_IGNORE_THIS
 #endif
 
-
 #ifdef __cplusplus
 } // extern "C"
-#endif 
+#endif
 
 #endif // DATA_H

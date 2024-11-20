@@ -4,19 +4,17 @@
  * @brief LCP Dataframe for Transmitting Data back via Iridium SBD
  * @version 0.1
  * @date 2021-10-12
- * 
- * 
+ *
+ *
  */
 #ifndef DATAFRAME_H
 #define DATAFRAME_H
-
 
 /************************************************************************
 *						STANDARD LIBRARIES
 ************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
-
 
 /************************************************************************
 *							MACROS
@@ -26,7 +24,7 @@
 /** Add the actual values if running release */
 #ifdef TEST
 #ifndef STATIC
-#define STATIC  
+#define STATIC
 #endif
 #ifndef PERSISTENT
 #define PERSISTENT
@@ -36,7 +34,7 @@
 #define STATIC  static
 #endif
 #ifndef PERSISTENT
-#define PERSISTENT __persistent 
+#define PERSISTENT __persistent
 #endif
 #endif
 
@@ -45,9 +43,6 @@
 
 #define LCP_MODE_PARK               ( 1 )
 #define LCP_MODE_PROFILE            ( 2 )
-
-
-
 
 /************************************************************************
 *					GLOBAL FUNCTION PROTOTYPES

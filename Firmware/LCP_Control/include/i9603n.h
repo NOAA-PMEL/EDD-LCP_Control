@@ -1,12 +1,12 @@
 /**
  * @file i9603n.h
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-09-30
  *
  * @co-author Basharat Martin (basharat.martin@noaa.gov)
- * 
+ *
  */
 #ifndef I9603N_H
 #define I9603N_H
@@ -15,7 +15,7 @@
 /** Add the actual values if running release */
 #ifdef TEST
 #ifndef STATIC
-#define STATIC  
+#define STATIC
 #endif
 #ifndef PERSISTENT
 #define PERSISTENT
@@ -25,7 +25,7 @@
 #define STATIC  static
 #endif
 #ifndef PERSISTENT
-#define PERSISTENT __persistent 
+#define PERSISTENT __persistent
 #endif
 #endif
 
@@ -59,14 +59,12 @@
 /************************************************************************
 *							ENUM & STRUCTS
 ************************************************************************/
-
 typedef enum ei9603n_conn_state_t
 {
     I9603N_CONN_NOT_AVAILABLE,
     I9603N_CONN_LOW_SIGNAL,
     I9603N_CONN_READY
 }i9603n_conn_state_t;
-
 
 typedef enum ei9603n_result_t
 {
@@ -79,11 +77,9 @@ typedef enum ei9603n_result_t
 
 } i9603n_result_t;
 
-
 /************************************************************************
 *					GLOBAL FUNCTION PROTOTYPES
 ************************************************************************/
-
 void i9603n_initialize(void);
 void i9603n_uninitialize(void);
 bool i9603n_on(void);
@@ -121,6 +117,7 @@ bool GET_Iridium_satellite (void);
 void SET_Iridium_delay_rate(float rate);
 
 //#ifndef TEST
+
 ////*****************************************************************************
 ////
 //// Static Function Prototypes

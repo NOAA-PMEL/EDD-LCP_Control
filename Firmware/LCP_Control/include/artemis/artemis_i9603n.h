@@ -1,14 +1,13 @@
 /**
  * @file artemis_i9603n.h
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-09-30
- * 
+ *
  */
 #ifndef ARTEMIS_I9603N_H
 #define ARTEMIS_I9603N_H
-
 
 /************************************************************************
 *							HEADER FILES
@@ -37,7 +36,6 @@
 /************************************************************************
 *					GLOBAL FUNCTION PROTOTYPES
 ************************************************************************/
-
 void artemis_i9603n_initialize(void);
 void artemis_i9603n_uninitialize(void);
 void artemis_i9603n_power_on(void);
@@ -46,6 +44,5 @@ bool artemis_i9603n_is_network_available(void);
 bool artemis_i9603n_is_ringing(void);
 void artemis_i9603n_send(char *msg, uint16_t len);
 uint16_t artemis_i9603n_receive(char *msg);
-
 
 #endif // ARTEMIS_I9603N_H

@@ -1,14 +1,13 @@
 /**
  * @file MAX14830.c
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-08-11
- * 
+ *
  * @co-author Basharat Martin (basharat.martin@noaa.gov)
  *
  */
-
 #include "MAX14830.h"
 
 //*****************************************************************************
@@ -354,7 +353,7 @@ void module_MAX14830_RTOS_ISR(uint8_t irq);
 //*****************************************************************************
 /**
  * @brief Initialize the MAX14830 IC
- * 
+ *
  */
 bool MAX14830_initialize(void)
 {
@@ -607,7 +606,7 @@ static void module_MAX14830_chip_disable(void)
 
 /**
  * @brief Enable the MAX14830 Port
- * 
+ *
  * @param port Port to enable
  */
 void MAX14830_port_enable(eMAX18430_ComPort_t port)
@@ -695,7 +694,7 @@ void MAX14830_port_disable_direct(eMAX18430_ComPort_t port)
 
 /**
  * @brief Disable selected MAX14830 Port
- * 
+ *
  * @param port Port to disable
  */
 void MAX14830_port_disable(eMAX18430_ComPort_t port)
@@ -739,7 +738,7 @@ void MAX14830_port_disable(eMAX18430_ComPort_t port)
 
 /**
  * @brief Handle IRQ of Max14830
- * 
+ *
  * @param no
  */
 
@@ -840,8 +839,8 @@ void module_MAX14830_Handle_IRQ()
 
 /**
  * @brief RTOS Write Task
- * 
- * @param pvParameters 
+ *
+ * @param pvParameters
  */
 void module_MAX14830_Write_Task(void  *pvParameters)
 {
@@ -865,8 +864,8 @@ void module_MAX14830_Write_Task(void  *pvParameters)
  * DIV = TRUNC(D)
  * FRACT, is a 4-bit nibble, which is programmed into BRGConfig[3:0]
  * FRACT = ROUND(16 x (D-DIV)).
- * 
- * 
+ *
+ *
  */
 uint32_t MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate )
 {
@@ -886,7 +885,7 @@ uint32_t MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t ba
 
 /**
  * @brief Write UART RTOS
- * 
+ *
  * @param port Port to write to
  * @param data Pointer to data array to write
  * @param len Length of data array
@@ -918,7 +917,7 @@ void MAX14830_UART_Write(eMAX18430_ComPort_t port, uint8_t *data, uint16_t len)
 
 /**
  * @brief UART Write (non-RTOS)
- * 
+ *
  * @param port Port to write to
  * @param data Pointer to data array
  * @param len Length of the data array
@@ -946,7 +945,7 @@ void MAX14830_UART_Write_direct(eMAX18430_ComPort_t port, uint8_t *data, uint16_
 
 /**
  * @brief UART Read - RTOS
- * 
+ *
  * @param port Port to read from
  * @param pData Pointer to data array
  * @return uint32_t Number of characters read
@@ -980,7 +979,7 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData)
 
 /**
  * @brief UART Read (non-RTOS)
- * 
+ *
  * @param port Port to read from
  * @param pData Pointer to data array
  * @return len, length of the data
@@ -1009,7 +1008,7 @@ uint16_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, uint8_t *pData)
 
 /**
  * @brief Find the number of bytes in waiting
- * 
+ *
  * @param port Port to check
  * @return uint32_t Number of bytes in waiting
  */
@@ -1026,7 +1025,7 @@ uint32_t MAX14830_UART_Read_bytes_waiting(eMAX18430_ComPort_t port)
 //*****************************************************************************
 /**
  * @brief Power the MAX14830 ON
- * 
+ *
  */
 static void module_MAX14830_Power_On(void)
 {
@@ -1037,7 +1036,7 @@ static void module_MAX14830_Power_On(void)
 
 /**
  * @brief Power the MAX14830 OFF
- * 
+ *
  */
 static void module_MAX14830_Power_Off(void)
 {
@@ -1048,7 +1047,7 @@ static void module_MAX14830_Power_Off(void)
 
 /**
  * @brief Fast read
- * 
+ *
  * @return uint8_t
  */
 static uint8_t module_MAX14830_FastRead(void)
@@ -1082,9 +1081,9 @@ static uint8_t module_MAX14830_FastRead(void)
 
 /**
  * @brief MAX14830 Read
- * 
+ *
  * @param port  Port to read from
- * @param ui32Instr Instruction 
+ * @param ui32Instr Instruction
  * @param ui32NumBytes Number of Bytes
  * @param pData Pointer to data array
  * @return uint32_t Number of bytes read
@@ -1131,7 +1130,7 @@ static uint32_t module_MAX14830_Read(
 
 /**
  * @brief Write to port
- * 
+ *
  * @param port Port to write to
  * @param reg Register to write
  * @param data Pointer to data array

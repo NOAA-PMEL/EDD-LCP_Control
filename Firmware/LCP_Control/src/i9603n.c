@@ -2,10 +2,10 @@
 /**
  * @file i9603n.c
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-09-30
- * 
+ *
  */
 
 #include "artemis_i9603n.h"
@@ -93,7 +93,7 @@
 //*****************************************************************************
 /**
  * @brief Module Parameters
- * 
+ *
  */
 //static module_t module;
 static char irid_buf_tx[I9603N_TX_BUFFER_SIZE];
@@ -1205,7 +1205,7 @@ static bool module_i9603_attempt_network_connection(uint8_t attempts, uint16_t a
     /** Ensure there is network connection via pin*/
     //uint8_t connection_attempts = attempts;
 
-    while( (attempts-- > 0) &&  
+    while( (attempts-- > 0) &&
             !module_i9603_check_net_available())
     {
         #ifndef TEST
@@ -1271,10 +1271,10 @@ static uint16_t module_i9603n_send_packet(
             break;
         case ISBD_AT_CMD_NONE:
         default:
-            break;  
+            break;
     }
     return 0;
-}   
+}
 
 static uint16_t module_i603n_receive(uint8_t *rxData)
 {

@@ -1,11 +1,11 @@
 /**
  * @file piston.c
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-10-14
- * 
- * 
+ *
+ *
  */
 #include "piston.h"
 #include "artemis_piston.h"
@@ -761,7 +761,7 @@ static bool module_pis_read_if_full(void)
 
     /** Send the message to read TRV_FULL address */
     artemis_piston_i2c_read(addr, &data, 1);
-    
+
     return (bool) data;
 }
 
@@ -772,7 +772,7 @@ static bool module_pis_read_if_zero(void)
 
     /** Send the message to read TRV_FULL address */
     artemis_piston_i2c_read(addr, &data, 1);
-    
+
     return (bool) data;
 }
 

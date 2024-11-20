@@ -20,8 +20,8 @@ const am_devices_led_t LED[3] = {
   {
     .ui32GPIONumber   = AM_BSP_GPIO_LED_BLUE,
     .ui32Polarity     = AM_DEVICES_LED_ON_LOW
-  }   
-  
+  }
+
 };
 const am_devices_led_t *psLED = &LED[0];
 
@@ -44,26 +44,26 @@ SemaphoreHandle_t xSemaphore = NULL;
 
 void LED_Init(void)
 {
-  
+
     /** Create the Mutex */
     xLedMutex = xSemaphoreCreateMutex( );
     configASSERT(xLedMutex);
-    
+
     /** Initialize the LED Array */
     am_devices_led_array_init((am_devices_led_t*)psLED, 3);
-    
+
     /** Enable the interrupts */
     am_hal_interrupt_master_enable();
-    
-    
+
+
     /** Toggle the LEDs ON for the heck of it*/
     LED_Toggle(LED_GREEN);
     LED_Toggle(LED_BLUE);
-    
+
     /** Mutex is ready */
     xSemaphoreGive(xLedMutex);
-    
-}   
+
+}
 
 
 void LED_Toggle(eLED_t led)
@@ -83,10 +83,10 @@ void LED_Toggle(eLED_t led)
     break;
   default:
     break;
-  }  
+  }
 
   am_devices_led_toggle((am_devices_led_t*)psLED, led_num);
-  
+
 }
 
 void LED_Off(eLED_t led)
@@ -105,7 +105,7 @@ void LED_Off(eLED_t led)
     break;
   default:
     break;
-  }  
+  }
 
   am_devices_led_off((am_devices_led_t*)psLED, led_num);
 }
@@ -124,16 +124,16 @@ void GreenLedTask(void *pvParameters)
         LED_Toggle(LED_GREEN);
         xSemaphoreGive(xLedMutex);
       } else {
-        
+
       }
-      
-    }  
+
+    }
 }
 
 
 void BlueLedTask(void *pvParameters)
 {
-  
+
     uint32_t time_ms = (uint32_t) pvParameters;
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
@@ -145,8 +145,8 @@ void BlueLedTask(void *pvParameters)
         LED_Toggle(LED_BLUE);
         xSemaphoreGive(xLedMutex);
       } else {
-        
+
       }
-      
-    }  
+
+    }
 }

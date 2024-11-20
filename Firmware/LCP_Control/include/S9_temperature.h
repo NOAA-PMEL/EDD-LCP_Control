@@ -1,4 +1,3 @@
-
 /**! @file S9_temp.h
  * @brief Sound Nine OEM Temperature Sensor
  *
@@ -22,18 +21,18 @@
 /** Add the actual values if running release */
 #ifdef TEST
 #ifndef STATIC
-#define STATIC  
+#define STATIC
 #endif
 #ifndef PERSISTENT
 #define PERSISTENT
 #endif
-#define __delay_cycles(x) 
+#define __delay_cycles(x)
 #else
 #ifndef STATIC
 #define STATIC  static
 #endif
 #ifndef PERSISTENT
-#define PERSISTENT __persistent 
+#define PERSISTENT __persistent
 #endif
 #endif
 
@@ -60,8 +59,8 @@
 *							Structs & Enums
 ************************************************************************/
 //typedef struct {
-//  
-//  
+//
+//
 //}sS9Uart_t;
 typedef struct
 {
@@ -116,7 +115,6 @@ typedef struct
     uint32_t pin_number;
 } S9_init_param;
 
-
 /************************************************************************
 *					               Extern Variables
 ************************************************************************/
@@ -125,19 +123,19 @@ typedef struct
 *					   Functions Prototypes
 ************************************************************************/
 /** @brief S9 Temp Sensor Initialize
- * 
+ *
  * Initialize the S9 Temperature Sensor
- * 
+ *
  * @return None
- * 
+ *
  */
 void S9T_init(S9_init_param *p);
-/** @brief S9 Temp ON 
- * 
+/** @brief S9 Temp ON
+ *
  * Turn the S9 Temperature Sensor ON
- * 
+ *
  * @return None
- * 
+ *
  */
 
 void S9T_dev_info(void);
@@ -146,39 +144,39 @@ void S9T_disable(void);
 void S9T_ON(void);
 
 /** @brief S9 Temp OFF
- * 
+ *
  * Turn the S9 Temperature Sensor OFF
- * 
+ *
  * @return None
- * 
+ *
  */
 void S9T_OFF(void);
 
 /** @brief Read S9 Temperature
- * 
+ *
  * Read the S9 Temperature Sensor
- * 
+ *
  * @return Temperature (degC)
  */
 float S9T_Read_T(void);
 
 /** @brief Read S9 Resistance
- * 
+ *
  * Read the S9 Temperature Sensor Resistance
- * 
+ *
  * @return Resistance (ohms);
  */
 float S9T_Read_R(void);
 
-/** @brief Read S9 Temperature Sensor 
- * 
+/** @brief Read S9 Temperature Sensor
+ *
  * Read all parameters of the S9 Temp sensor
  * Temperature in degC
  * Resistance in Ohms
- * 
+ *
  * @param *t Pointer to temperature
  * @param *r Pointer to resistance
- * 
+ *
  * @return None
  */
 float S9T_Read(float *t, float *r);

@@ -10,7 +10,7 @@
  * @copyright Environmental Development Division
  *
  * @note Controls the STM LIS2DW12 Acceleration sensor over SPI
- * 
+ *
  *
  * @bug  No known bugs
  *
@@ -32,5 +32,3 @@ void artemis_accel_init(void);
 #endif
 
 #endif // ARTEMIS_ACCEL_H
-
-

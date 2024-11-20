@@ -43,10 +43,10 @@ uint8_t BufferU32_Get_Size(sCircularBufferU32_t *buf)
 
 eBufferU32Status_t BufferU32_put(sCircularBufferU32_t *buf, uint32_t val){
 	eBufferU32Status_t result = BUFFER_C_ERROR;
-	
+
 	/** Determine the index to write to */
 	uint16_t NextWrite = BufferU32_NextIndex(buf->write);
-	
+
 	/** If the next index is equal to the read index, the buffer is full */
 	if(NextWrite == buf->read){
 		result = BUFFER_C_FULL;
@@ -62,7 +62,7 @@ eBufferU32Status_t BufferU32_put(sCircularBufferU32_t *buf, uint32_t val){
 	}
         if(val == '\n')
         {
-         buf->EndlineFlag = true; 
+         buf->EndlineFlag = true;
         }
 	return result;
 }
@@ -96,7 +96,7 @@ eBufferU32Status_t BufferU32_get(sCircularBufferU32_t *buf, uint32_t *value){
 
 
 /*******************************************************************************
-*					STATIC FUNCTIONS 
+*					STATIC FUNCTIONS
 *******************************************************************************/
 /** @brief Scan buffer for value
  *
@@ -119,13 +119,13 @@ STATIC uint16_t BufferU32_Scan(sCircularBufferU32_t *buf,uint32_t val){
 			break;
 		}
 		ReadIdx = BufferU32_NextIndex(ReadIdx);
-		
+
 	}
 
 	if(ReadIdx == WriteIdx){
 		CountIdx = 0;
 	}
-	
+
 	return CountIdx;
 
  }
@@ -149,18 +149,18 @@ STATIC void BufferU32_Size(sCircularBufferU32_t *buf){
 	  buf->size = BUFFER_C_SIZE - buf->read + buf->write + 1;
 	}
   }
-  
+
 
 /** @brief Compute the next index
  *
- * Computes the next index value for the buffer 
+ * Computes the next index value for the buffer
  *
  * @param idx Index to increment
  *
  * @return Compensated Index
  */
 STATIC uint16_t BufferU32_NextIndex(uint16_t idx){
-	
+
 	if(++idx == ACTUAL_BUFFER_C_SIZE){
 		idx= 0;
 	}
@@ -169,7 +169,7 @@ STATIC uint16_t BufferU32_NextIndex(uint16_t idx){
 
 /** @brief Compute the previous index
  *
- * Computes the previous index value for the buffer 
+ * Computes the previous index value for the buffer
  *
  * @param idx Index to decrement
  *

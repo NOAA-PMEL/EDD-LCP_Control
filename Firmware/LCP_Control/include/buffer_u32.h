@@ -13,9 +13,6 @@
  *
  *  @bug  No known bugs
  */
-
-
-
 #ifndef _BUFFER_C_H_
 #define _BUFFER_C_H_
 
@@ -23,7 +20,7 @@
 /** Add the actual values if running release */
 #ifdef TEST
 #ifndef STATIC
-#define STATIC  
+#define STATIC
 #endif
 #ifndef PERSISTENT
 #define PERSISTENT
@@ -33,15 +30,17 @@
 #define STATIC  static
 #endif
 #ifndef PERSISTENT
-#define PERSISTENT __persistent 
+#define PERSISTENT __persistent
 #endif
 #endif
+
 /************************************************************************
 *							HEADER FILES
 ************************************************************************/
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
+
 /************************************************************************
 *						STANDARD LIBRARIES
 ************************************************************************/
@@ -49,11 +48,8 @@
 /************************************************************************
 *							MACROS
 ************************************************************************/
-
 #define BUFFER_C_SIZE				(256)
 #define ACTUAL_BUFFER_C_SIZE		(BUFFER_C_SIZE + 1)
-
-
 
 typedef enum {
     BUFFER_C_OK 		= 0x00u,	/**< Buffer is OK */
@@ -73,7 +69,6 @@ typedef struct _CircularBufferU32_t
     uint16_t write;
     bool EndlineFlag;
 }sCircularBufferU32_t;
-
 
 /************************************************************************
 *					GLOBAL FUNCTION PROTOTYPES
@@ -111,10 +106,6 @@ uint8_t BufferU32_Get_Size(sCircularBufferU32_t *buf);
  *  @return result
  */
  eBufferU32Status_t BufferU32_get(sCircularBufferU32_t *buf, uint32_t *value);
-
-
-
-
 
 #ifdef TEST
 extern uint16_t BufferU32_Scan(sCircularBufferU32_t *buf,char val);

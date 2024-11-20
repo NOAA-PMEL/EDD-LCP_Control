@@ -1,4 +1,3 @@
-  
 ///
 /// @file artemis_i2c.h
 ///

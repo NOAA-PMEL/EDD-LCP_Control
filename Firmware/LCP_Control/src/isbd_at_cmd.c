@@ -1,13 +1,12 @@
 /**
  * @file isbd_at_cmd.c
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-09-30
- * 
+ *
  */
 #include "isbd_at_cmd.h"
-
 
 //*****************************************************************************
 //
@@ -31,7 +30,6 @@
 static uint16_t module_isbd_at_calculate_crc(isbd_at_packet_t *packet);
 static bool module_isbd_validate_crc(isbd_at_packet_t *packet);
 
-
 //*****************************************************************************
 //
 // Global Functions
@@ -39,11 +37,11 @@ static bool module_isbd_validate_crc(isbd_at_packet_t *packet);
 //*****************************************************************************
 /**
  * @brief Create a SBD Packet
- * 
+ *
  * @param cmd SBD Packet Type
  * @param len Length of data
  * @param data Pointer to data
- * @param packet AT Packet 
+ * @param packet AT Packet
  * @return true Valid message
  * @return false Invalid message
  */
@@ -56,7 +54,7 @@ bool ISBD_AT_create_packet( isbd_at_cmd_t cmd,
     bool retVal = false;
 
     if(len <= ISBD_AT_MSG_MAX_LENGTH )
-    {   
+    {
         retVal = true;
     }
 
@@ -97,7 +95,7 @@ bool ISBD_AT_create_packet( isbd_at_cmd_t cmd,
             default:
                 strcpy((char*)packet->cmd.msg, "");
                 packet->cmd.expected_cr = 0;
-                break;  
+                break;
         }
         if(len > 0)
         {
@@ -121,7 +119,7 @@ bool ISBD_AT_send_packet( isbd_at_packet_t *packet)
 
 /**
  * @brief Calculate the CRC for the SBD packet
- * 
+ *
  * @param packet Packet to send
  * @return uint16_t CRC value
  */
@@ -144,7 +142,7 @@ static uint16_t module_isbd_at_calculate_crc(isbd_at_packet_t *packet)
 
 /**
  * @brief Validate CRC sent
- * 
+ *
  * @param packet SBD Packet
  * @return true CRC is Valid
  * @return false CRC is invalid

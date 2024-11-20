@@ -1,21 +1,18 @@
 /**
  * @file depth.c
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-10-15
- * 
- * 
+ *
+ *
  */
-
 
 //*****************************************************************************
 //
 // Required built-ins.
 //
 //*****************************************************************************
-
-
 
 //*****************************************************************************
 //
@@ -76,12 +73,12 @@ static float module_DEPTH_Convert_Pressure_to_Depth(float pressure);
 
 /******************************************************************************
 * Function : DEPTH_initialize()
-*//** 
+*//**
 * \b Description:
 *
 * This function is used to initialize the Depth sensor based on the configuration table
 *  defined in the system configuration and the am_bsp_pins files
-*  
+*
 * PRE-CONDITION: Configuration table needs to populated (sizeof > 0) <br>
 * PRE-CONDITION: am_bsp_pins.c/.h must be configured correctly
 * PRE-CONDITION: The MCU clocks must be configured and enabled.
@@ -135,10 +132,10 @@ void DEPTH_uninitialize_RTOS(void)
 
 /**
  * @brief Turn Depth Sensor Power ON
- * 
+ *
  */
 void DEPTH_Power_ON(void)
-{   
+{
     //switch(module.sensor)
     //{
     //    default:
@@ -162,7 +159,7 @@ void DEPTH_Power_OFF(void)
 
 /**
  * @brief Read Depth Sensor
- * 
+ *
  * @param data Pointer to depth sensor data struct
  */
 void DEPTH_Read(sDepth_Measurement_t *data)
@@ -196,9 +193,9 @@ void DEPTH_Read(sDepth_Measurement_t *data)
 
 /**
  * @brief Set Density of Water
- * 
+ *
  * Sets the water density for best depth converstion accuracy
- * 
+ *
  * @param density Water density value
  */
 void DEPTH_Set_Density(float density)
@@ -215,7 +212,7 @@ void DEPTH_Set_Density(float density)
 
 /**
  * @brief Convert Pressure to Depth value
- * 
+ *
  * @param pressure Pressure value
  * @return float Converted depth value
  */

@@ -14,8 +14,6 @@
  *  @bug  No known bugs
  */
 
-
-
 #ifndef _BUFFER_C_H_
 #define _BUFFER_C_H_
 
@@ -23,7 +21,7 @@
 /** Add the actual values if running release */
 #ifdef TEST
 #ifndef STATIC
-#define STATIC  
+#define STATIC
 #endif
 #ifndef PERSISTENT
 #define PERSISTENT
@@ -33,7 +31,7 @@
 #define STATIC  static
 #endif
 #ifndef PERSISTENT
-#define PERSISTENT __persistent 
+#define PERSISTENT __persistent
 #endif
 #endif
 /************************************************************************
@@ -53,8 +51,6 @@
 #define BUFFER_C_SIZE				(256)
 #define ACTUAL_BUFFER_C_SIZE		(BUFFER_C_SIZE + 1)
 
-
-
 typedef enum {
     BUFFER_C_OK 		= 0x00u,	/**< Buffer is OK */
     BUFFER_C_ERROR 		= 0x01u,	/**< Buffer Failed */
@@ -73,7 +69,6 @@ typedef struct _CircularBufferC_t
     uint16_t write;
     bool EndlineFlag;
 }sCircularBufferC_t;
-
 
 /************************************************************************
 *					GLOBAL FUNCTION PROTOTYPES
@@ -139,7 +134,7 @@ eBufferCStatus_t BufferC_puts(sCircularBufferC_t *buf, char *val,uint16_t len);
 /** @brief Read Line (Get String)
  *
  *  Reads a line from the Buffer (terminated with \n).  String is NULL terminated
- *  Maximum 
+ *  Maximum
  *
  * @param *buf pointer to the char buffer
  * @param *str string to return
@@ -148,13 +143,11 @@ eBufferCStatus_t BufferC_puts(sCircularBufferC_t *buf, char *val,uint16_t len);
  *
  * @return result
  */
-uint16_t BufferC_gets(sCircularBufferC_t *buf, 
-                              char *str, 
+uint16_t BufferC_gets(sCircularBufferC_t *buf,
+                              char *str,
                               uint16_t maxLen);
 
-
 void BufferC_remove_leading_whitespace( sCircularBufferC_t *buf);
-
 
 #ifdef TEST
 extern uint16_t BufferC_Scan(sCircularBufferC_t *buf,char val);
@@ -164,4 +157,3 @@ extern uint16_t BufferC_PrevIndex(uint16_t idx);
 #endif
 
 #endif
-

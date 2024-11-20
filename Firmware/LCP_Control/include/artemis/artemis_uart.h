@@ -1,7 +1,6 @@
 ///
 /// @file artemis_uart.h
 ///
-
 #ifndef ARTEMIS_UART_H
 #define ARTEMIS_UART_H
 

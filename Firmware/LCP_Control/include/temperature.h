@@ -5,14 +5,13 @@
 #include <stdbool.h>
 //#include "artemis_pa9ld.h"
 
-
 typedef enum eTemperatureSensor_t{
     TEMP_Undefined,
     TEMP_SoundNine_OEM,
 }TemperatureSensor_t;
 
 typedef struct sTemperature_t
-{   
+{
     TemperatureSensor_t sensor;
      struct {
         uint8_t uart;          /**< UART Port */
@@ -32,11 +31,9 @@ typedef struct sTemperature_Measurement_t
     float resistance;
 }Temperature_Measurement_t;
 
-
 /**********************************************************************************
 * Function Prototypes
 *********************************************************************************/
-
 /** @brief Temperature Sensor Init
  *
  *	Initializes the Temperature Sensors
@@ -55,16 +52,16 @@ void TEMP_Power_ON(void);
 
 /**
  * @brief Turn Temperature Sensor OFF
- * 
+ *
  * Disable power to Temperature Sensor
  */
 void TEMP_Power_OFF(void);
 
 /**
  * @brief Read the depth sensor.
- * 
+ *
  * Read the depth sensor and return relevant data
- * 
+ *
  * @param data Pointer to data struct
  */
 void TEMP_Read(Temperature_Measurement_t *data);

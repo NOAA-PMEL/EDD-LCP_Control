@@ -21,7 +21,7 @@
 
 #define max14830_GPIO_PIN_TO_BIT(x)     ( 1u << (x % 4))
 
-typedef enum 
+typedef enum
 {
 	max14830_GPIO_PushPull = 0,
 	max14830_GPIO_OpenDrain = 1

@@ -1,10 +1,6 @@
 #ifndef STATEMACHINE_H
 #define STATEMACHINE_H
 
-
-
-
-
 /**********************************************************************************
  * Includes
  *********************************************************************************/
@@ -15,11 +11,9 @@
 #include "data.h"
 #include "config.h"
 
-
 /**********************************************************************************
  * Configuration Constants
  *********************************************************************************/
-
 
 /**********************************************************************************
  * MACROS
@@ -42,7 +36,6 @@
 //#define DATA_PROFILE_MAX_LEN                    ( 40000 )
 #define DATA_PROFILE_MAX_LEN                    ( (DATA_PROFILE_SAMPLES_MAX * SYSTEM_PROFILE_NUMBER) + \
                                                     (DATA_PARK_SAMPLES_MAX * SYSTEM_PROFILE_NUMBER) )
-
 
 /**********************************************************************************
  * Typdefs
@@ -70,7 +63,7 @@ typedef enum eAutoBallastState_t
     ABS_Validate
 }AutoBallastState_t;
 
-typedef enum eMooredState_t 
+typedef enum eMooredState_t
 {
     MOOR_Idle,
     MOOR_MoveToParkDepth_mode,
@@ -119,12 +112,12 @@ typedef struct eSystem_t
     }airdeploy;
     struct {
         SimpleProfilerState_t state;
-        
+
     }profiler;
     struct {
         AutoBallastState_t state;
     }ballast;
-    
+
     struct {
         MooredState_t state;
     }moored;
@@ -133,16 +126,12 @@ typedef struct eSystem_t
     }popup;
 }System_t;
 
-
-
-
 /**********************************************************************************
  * Function Prototypes
  *********************************************************************************/
 #ifdef __cplusplus
 extern "C"{
 #endif
-
 
 void STATE_initialize(SystemMode_t mode);
 void STATE_MainState(SystemMode_t mode);
@@ -152,22 +141,16 @@ void STATE_Moored(void);
 void STATE_Profiler(void);
 void STATE_Popup(void);
 
-
-
-
-
 /**********************************************************************************
  * Unit Test Variables & Static Prototpyes
  *********************************************************************************/
 #ifdef TEST
 #ifdef DOXYGEN_IGNORE_THIS
 
-
 #endif // DOXYGEN_IGNORE_THIS
 #endif
 
-
 #ifdef __cplusplus
 } // extern "C"
-#endif 
+#endif
 #endif // STATEMACHINE_H

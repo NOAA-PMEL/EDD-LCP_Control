@@ -1,12 +1,12 @@
 /**
  * @file artemis_supercap.c
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-09-30
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 
@@ -58,7 +58,7 @@
 // Structs, Enums & Typedefs
 //
 //*****************************************************************************
-typedef struct s_module_t 
+typedef struct s_module_t
 {
     struct {
         uint32_t pin;

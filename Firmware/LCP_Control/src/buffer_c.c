@@ -43,10 +43,10 @@ uint8_t BufferC_Get_Size(sCircularBufferC_t *buf)
 
 eBufferCStatus_t BufferC_putc(sCircularBufferC_t *buf, char val){
 	eBufferCStatus_t result = BUFFER_C_ERROR;
-	
+
 	/** Determine the index to write to */
 	uint16_t NextWrite = BufferC_NextIndex(buf->write);
-	
+
 	/** If the next index is equal to the read index, the buffer is full */
 	if(NextWrite == buf->read){
 		result = BUFFER_C_FULL;
@@ -62,7 +62,7 @@ eBufferCStatus_t BufferC_putc(sCircularBufferC_t *buf, char val){
 	}
         if(val == '\n')
         {
-         buf->EndlineFlag = true; 
+         buf->EndlineFlag = true;
         }
 	return result;
 }
@@ -117,7 +117,7 @@ eBufferCStatus_t BufferC_puts(sCircularBufferC_t *buf, char *str, uint16_t len){
 	if(len >= (BUFFER_C_SIZE - buf->size)) {
 		result = BUFFER_C_STRING_TOO_LONG;
 	} else {
-		
+
 		for(i=0;i<len;i++){
 			result = BufferC_putc(buf,str[i]);
 		}
@@ -125,14 +125,14 @@ eBufferCStatus_t BufferC_puts(sCircularBufferC_t *buf, char *str, uint16_t len){
 	return result;
 }
 
-uint16_t BufferC_gets(sCircularBufferC_t *buf, 
-                              char *str, 
+uint16_t BufferC_gets(sCircularBufferC_t *buf,
+                              char *str,
                               uint16_t maxLen){
 //	eBufferCStatus_t result = BUFFER_C_ERROR;
 	uint16_t len = BufferC_Get_Size(buf);
 	uint16_t i;
-	
-    
+
+
     if(len > 0)
     {
       if(len > maxLen)
@@ -171,7 +171,7 @@ void BufferC_remove_leading_whitespace( sCircularBufferC_t *buf)
     }
     r_len = BufferC_Scan(buf, '\r');
     n_len = BufferC_Scan(buf, '\n');
-    
+
     if(r_len != 1 && n_len != 1)
     {
       break;
@@ -179,12 +179,12 @@ void BufferC_remove_leading_whitespace( sCircularBufferC_t *buf)
     else
     {
       BufferC_getc(buf, &temp);
-    }  
+    }
   }
 }
 
 /*******************************************************************************
-*					STATIC FUNCTIONS 
+*					STATIC FUNCTIONS
 *******************************************************************************/
 /** @brief Scan buffer for value
  *
@@ -207,13 +207,13 @@ STATIC uint16_t BufferC_Scan(sCircularBufferC_t *buf,char val){
 			break;
 		}
 		ReadIdx = BufferC_NextIndex(ReadIdx);
-		
+
 	}
 
 	if(ReadIdx == WriteIdx){
 		CountIdx = 0;
 	}
-	
+
 	return CountIdx;
 
  }
@@ -237,18 +237,18 @@ STATIC void BufferC_Size(sCircularBufferC_t *buf){
 	  buf->size = BUFFER_C_SIZE - buf->read + buf->write + 1;
 	}
   }
-  
+
 
 /** @brief Compute the next index
  *
- * Computes the next index value for the buffer 
+ * Computes the next index value for the buffer
  *
  * @param idx Index to increment
  *
  * @return Compensated Index
  */
 STATIC uint16_t BufferC_NextIndex(uint16_t idx){
-	
+
 	if(++idx == ACTUAL_BUFFER_C_SIZE){
 		idx= 0;
 	}
@@ -257,7 +257,7 @@ STATIC uint16_t BufferC_NextIndex(uint16_t idx){
 
 /** @brief Compute the previous index
  *
- * Computes the previous index value for the buffer 
+ * Computes the previous index value for the buffer
  *
  * @param idx Index to decrement
  *

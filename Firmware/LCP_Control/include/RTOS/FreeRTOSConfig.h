@@ -72,7 +72,7 @@ extern "C"
 #define configMAX_TASK_NAME_LEN                 32
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
-  
+
 //#define configSUPPORT_STATIC_ALLOCATION         1
 
 #define configUSE_MUTEXES                       1
@@ -195,4 +195,3 @@ extern void am_freertos_wakeup(uint32_t);
 #endif
 
 #endif // FREERTOS_CONFIG_H
-

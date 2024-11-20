@@ -390,7 +390,7 @@ void task_depth(void)
 
         /** Power Off */
         //DEPTH_Power_OFF();
-        
+
         if(xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
         {
             //am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_GREEN);

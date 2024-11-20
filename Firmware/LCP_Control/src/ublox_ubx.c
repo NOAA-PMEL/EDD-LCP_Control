@@ -4,7 +4,7 @@
  * @brief UBLOX UBX Command Set.  Used to prep and convert UBX messages.
  * @version 0.1
  * @date 2021-09-28
- * 
+ *
  */
 
 //*****************************************************************************
@@ -64,17 +64,17 @@ typedef union u_u16_to_i16_t
 // Static Function Prototypes
 //
 //*****************************************************************************
-static ubx_ack_t module_ubx_parse_ack_or_nak_msg(ubx_packet_t *packet, 
+static ubx_ack_t module_ubx_parse_ack_or_nak_msg(ubx_packet_t *packet,
                                                 uint8_t expectedCls,
                                                 uint8_t expectedId);
 
-static void module_ubx_parse_nav_pvt_packet(ubx_packet_t *packet, 
+static void module_ubx_parse_nav_pvt_packet(ubx_packet_t *packet,
                                             ubx_nav_pvt_t *nav);
 
-static void module_ubx_parse_cfg_prt_packet(ubx_packet_t *packet, 
+static void module_ubx_parse_cfg_prt_packet(ubx_packet_t *packet,
                                             ubx_cfg_prt_t *prt);
 
-static void module_ubx_parse_cfg_rate_packet(ubx_packet_t *packet, 
+static void module_ubx_parse_cfg_rate_packet(ubx_packet_t *packet,
                                             ubx_cfg_rate_t *rate);
 
 static void UBX_checksum_increment(ubx_packet_t *packet, uint8_t value);
@@ -92,17 +92,17 @@ static void rmemcpy(uint8_t *dst, void *src, size_t n);
 //*****************************************************************************
 /**
  * @brief Creates a UBX Formatted packet
- * 
+ *
  * @param ubx_class UBX Class Type
  * @param ubx_id    UBX Class ID Type
  * @param payload   UBX Payload for specific UBX class + id
  * @param len       length of payload
  * @param packet    Pointer to data packet (return)
  */
-void UBX_create_ubx_packet( 
-                                uint8_t ubx_class, 
-                                uint8_t ubx_id, 
-                                uint8_t *payload, 
+void UBX_create_ubx_packet(
+                                uint8_t ubx_class,
+                                uint8_t ubx_id,
+                                uint8_t *payload,
                                 uint16_t len,
                                 ubx_packet_t *packet
                                 )
@@ -117,7 +117,7 @@ void UBX_create_ubx_packet(
 
 /**
  * @brief Parse UBX Packet into standard message (char array)
- * 
+ *
  * @param msg Pointer to formatted message
  * @param len Length of available message buffer
  * @param packet Packet to parse
@@ -152,14 +152,14 @@ bool UBX_parse_ubx_packet(
 
 /**
  * @brief Parse UBX-CFG Class Packet
- * 
+ *
  * This is a super function which parses a returned CFG packet into
  * a parsed structure for the specified ID.
- * 
+ *
  * Warning: The correct struct MUST be passed in the void *passed pointer
  * for this to work.  This is a dangerous function which has no error checking.
- * 
- * @param id        UBX Class ID 
+ *
+ * @param id        UBX Class ID
  * @param packet    UBX Packet to Parse
  * @param parsed    UBX Class ID Structure
  */
@@ -167,52 +167,52 @@ void UBX_parse_cfg(UBX_CFG_ID_t id, ubx_packet_t *packet, void *parsed){
 
     switch(id)
     {
-        
+
         case UBX_CFG_RATE:
             module_ubx_parse_cfg_rate_packet(packet, (ubx_cfg_rate_t*) parsed);
             break;
         case UBX_CFG_CFG:
             break;
-        case UBX_CFG_PRT: 
+        case UBX_CFG_PRT:
             module_ubx_parse_cfg_prt_packet(packet, (ubx_cfg_prt_t*) parsed);
             break;
         case UBX_CFG_ANT:
         case UBX_CFG_BATCH:
         case UBX_CFG_DAT:
         case UBX_CFG_DGNSS:
-        case UBX_CFG_DOSC: 
-        case UBX_CFG_ESFALG: 
-        case UBX_CFG_ESFA: 
-        case UBX_CFG_ESFG: 
+        case UBX_CFG_DOSC:
+        case UBX_CFG_ESFALG:
+        case UBX_CFG_ESFA:
+        case UBX_CFG_ESFG:
         case UBX_CFG_ESFWT:
-        case UBX_CFG_ESRC: 
+        case UBX_CFG_ESRC:
         case UBX_CFG_GEOFENCE:
         case UBX_CFG_GNSS:
-        case UBX_CFG_HNR: 
-        case UBX_CFG_INF: 
+        case UBX_CFG_HNR:
+        case UBX_CFG_INF:
         case UBX_CFG_ITFM:
         case UBX_CFG_LOGFILTER:
-        case UBX_CFG_MSG: 
-        case UBX_CFG_NAV5: 
-        case UBX_CFG_NAVX5: 
+        case UBX_CFG_MSG:
+        case UBX_CFG_NAV5:
+        case UBX_CFG_NAVX5:
         case UBX_CFG_NMEA:
-        case UBX_CFG_ODO: 
-        case UBX_CFG_PM2: 
-        case UBX_CFG_PMS: 
-        case UBX_CFG_PWR:  
+        case UBX_CFG_ODO:
+        case UBX_CFG_PM2:
+        case UBX_CFG_PMS:
+        case UBX_CFG_PWR:
         case UBX_CFG_RINV:
         case UBX_CFG_RST:
         case UBX_CFG_RXM:
         case UBX_CFG_SBAS:
         case UBX_CFG_SENIF:
-        case UBX_CFG_SLAS: 
-        case UBX_CFG_SMGR: 
-        case UBX_CFG_SPT: 
+        case UBX_CFG_SLAS:
+        case UBX_CFG_SMGR:
+        case UBX_CFG_SPT:
         case UBX_CFG_TMODE2:
         case UBX_CFG_TMODE3:
-        case UBX_CFG_TP5: 
+        case UBX_CFG_TP5:
         case UBX_CFG_TXSLOT:
-        case UBX_CFG_USB: 
+        case UBX_CFG_USB:
         default:
             /** Not implemented yet */
             break;
@@ -222,14 +222,14 @@ void UBX_parse_cfg(UBX_CFG_ID_t id, ubx_packet_t *packet, void *parsed){
 
 /**
  * @brief Parse UBX-NAV Class Packet
- * 
+ *
  * This is a super function which parses a returned NAV packet into
  * a parsed structure for the specified ID.
- * 
+ *
  * Warning: The correct struct MUST be passed in the void *passed pointer
  * for this to work.  This is a dangerous function which has no error checking.
- * 
- * @param id        UBX Class ID 
+ *
+ * @param id        UBX Class ID
  * @param packet    UBX Packet to Parse
  * @param parsed    UBX Class ID Structure
  */
@@ -259,7 +259,7 @@ void UBX_parse_nav(UBX_NAV_ID_t id, ubx_packet_t *packet, void *parsed){
         case UBX_NAV_POSECEF  :
         case UBX_NAV_POSLLH   :
         case UBX_NAV_RELPOSNED:
-        case UBX_NAV_RESETODO : 
+        case UBX_NAV_RESETODO :
         case UBX_NAV_SBAS     :
         case UBX_NAV_SLAS     :
         case UBX_NAV_SOL      :
@@ -283,11 +283,11 @@ void UBX_parse_nav(UBX_NAV_ID_t id, ubx_packet_t *packet, void *parsed){
 
 /**
  * @brief Create a message (char array) from a UBX packet
- * 
+ *
  * This function creates a character array from a complete
  * UBX packet.  Used to convert a UBX packet into a message
  * to send via I2C.
- * 
+ *
  * @param packet Pointer to UBX Packet to create message from.
  * @param msg Formatted char array from UBX packet
  */
@@ -299,7 +299,7 @@ void UBX_create_msg_from_packet(ubx_packet_t *packet, uint8_t *msg)
     *msg++ = packet->id;
     *msg++ = (uint8_t) (packet->length & 0xFF);
     *msg++ = (uint8_t) (packet->length >> 8) & 0xFF;
-    
+
     memcpy(msg, packet->payload, packet->length);
     msg += packet->length;
     *msg++ = packet->chksumA;
@@ -308,10 +308,10 @@ void UBX_create_msg_from_packet(ubx_packet_t *packet, uint8_t *msg)
 
 /**
  * @brief Create a UBX packet from a message (char array)
- * 
+ *
  * Used to create a UBX packet from a char array.  This function
  * is typically used to take a I2C read and covert to UBX packet.
- * 
+ *
  * @param msg Message (char array) to convert to UBX packet
  * @param len Length of char array
  * @param packet Pointer to packet of converted message
@@ -339,7 +339,7 @@ bool UBX_create_packet_from_msg(uint8_t *msg, uint16_t len, ubx_packet_t *packet
         {
             /** Message doesn't capture full packet */
             retVal = false;
-        } 
+        }
         else if(packet->length > 0)
         {
             /** Non-zero length message */
@@ -358,10 +358,10 @@ bool UBX_create_packet_from_msg(uint8_t *msg, uint16_t len, ubx_packet_t *packet
 
 /**
  * @brief Find the start of UBX packet in random char array
- * 
+ *
  * This function looks for the start of a UBX packet (0xB5 0x62) in a
  * uint8_t array.
- * 
+ *
  * @param buf Pointer to data buffer array
  * @param len Length of data buffer
  * @return uint8_t* Offset from start of buf (-1 = NOT FOUND )
@@ -376,15 +376,15 @@ int16_t UBX_find_start_of_msg(uint8_t *buf, uint16_t len)
         {
             offset = i;
             break;
-        }        
+        }
     }
 
     return offset;
 }
 
 
-ubx_ack_t UBX_check_for_ack(ubx_packet_t *packet, 
-                            uint8_t expectedClass, 
+ubx_ack_t UBX_check_for_ack(ubx_packet_t *packet,
+                            uint8_t expectedClass,
                             uint8_t expectedId)
 {
   ubx_ack_t retVal = UBX_ACK_INVALID_RESPONSE;
@@ -412,9 +412,9 @@ ubx_ack_t UBX_check_for_ack(ubx_packet_t *packet,
 
 /**
  * @brief Parse packet for ACK-ACK/NAK
- * 
+ *
  * Parses a packet to see if a valid ACK-ACK or ACK-NAK was sent.
- * 
+ *
  * @param packet Pointer to UBX Packet
  * @param expectedCls Expected Class of ACK
  * @param expectedId Expected Class ID of ACK
@@ -443,9 +443,9 @@ static ubx_ack_t module_ubx_parse_ack_or_nak_msg(ubx_packet_t *packet, uint8_t e
 
 /**
  * @brief Parse UBX-NAV-PVT Packet
- * 
+ *
  * Parse a UBX-NAV-PVT packet into a NAV-PVT struct
- * 
+ *
  * @param packet Pointer to UBX Packet
  * @param nav Pointer to UBX-NAV-PVT data struct
  */
@@ -490,9 +490,9 @@ static void module_ubx_parse_nav_pvt_packet(ubx_packet_t *packet, ubx_nav_pvt_t 
 
 /**
  * @brief Parse UBX-CFG-PRT Packet
- * 
+ *
  * Parse a UBX-CFG-PRT Packet into a CFG-PRT struct
- * 
+ *
  * @param packet Pointer to UBX-CFG-PRT Packet
  * @param prt Pointer to CFG-PRT struct
  */
@@ -509,13 +509,13 @@ static void module_ubx_parse_cfg_prt_packet(ubx_packet_t *packet, ubx_cfg_prt_t 
     prt-> outProtoMask = bytes_to_u16(&payload[14]);
     prt-> flags = bytes_to_u16(&payload[16]);
     prt-> reserved3 = bytes_to_u16(&payload[18]);
-} 
+}
 
 /**
  * @brief Parse UBX-CFG-RATE Packet
- * 
+ *
  * Parse a UBX-CFG-RATE Packet into a CFG-RATE struct
- * 
+ *
  * @param packet Pointer to UBX-CFG-RATE Packet
  * @param rate Pointer to CFG-Rate struct
  */
@@ -528,10 +528,10 @@ static void module_ubx_parse_cfg_rate_packet(ubx_packet_t *packet, ubx_cfg_rate_
 
 /**
  * @brief Increment UBX Checksum
- * 
+ *
  * Increment UBX Checksum with provided value
- * 
- * @param packet Pointer to UBX Packet 
+ *
+ * @param packet Pointer to UBX Packet
  * @param value Value to add to checksum
  */
 static void UBX_checksum_increment(ubx_packet_t *packet, uint8_t value)
@@ -542,17 +542,17 @@ static void UBX_checksum_increment(ubx_packet_t *packet, uint8_t value)
 
 /**
  * @brief UBX Checksum Calculator
- * 
+ *
  * Used to calculate UBX checksum when the rest of the packet is complete.
- * 
+ *
  * @param packet Pointer to packet to calculate checkum on.
  */
 static void module_ublox_calc_ubx_checksum(ubx_packet_t *packet)
 {
     packet->chksumA = 0;
     packet->chksumB = 0;
-    
-    
+
+
     UBX_checksum_increment(packet, packet->cls);
     UBX_checksum_increment(packet, packet->id);
     UBX_checksum_increment(packet, (uint8_t)(packet->length & 0xFF));
@@ -566,7 +566,7 @@ static void module_ublox_calc_ubx_checksum(ubx_packet_t *packet)
 
 /**
  * @brief Convert byte array to uint32_t
- * 
+ *
  * @param data Pointer to data array
  * @return uint32_t 32-bit unsigned int value
  */
@@ -583,7 +583,7 @@ static uint32_t bytes_to_u32(uint8_t *data)
 
 /**
  * @brief Convert byte array to int32_t
- * 
+ *
  * @param data Pointer to data array
  * @return int32_t 32-bit signed int value
  */
@@ -604,7 +604,7 @@ static int32_t bytes_to_i32(uint8_t *data)
 
 /**
  * @brief Convert byte array to uint16_t
- * 
+ *
  * @param data Pointer to data array
  * @return uint16_t 16-bit unsigned int value
  */
@@ -616,7 +616,7 @@ static uint16_t bytes_to_u16(uint8_t *data)
 
 /**
  * @brief Convert byte array to uint16_t
- * 
+ *
  * @param data Pointer to data array
  * @return int16_t 16-bit signed int value
  */
@@ -628,10 +628,10 @@ static int16_t bytes_to_i16(uint8_t *data)
 }
 
 /**
- * @brief Reverse memcpy.  
- * 
+ * @brief Reverse memcpy.
+ *
  * Reverse memcpy.  Used for little-endian data transfer.
- * 
+ *
  * @param dst Pointer to destination array
  * @param src Poniter to source array
  * @param n Length of memory to copy in reverse

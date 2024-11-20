@@ -162,7 +162,7 @@ main(void)
     //
     run_tasks();
     vTaskStartScheduler();
-    
+
     //
     // We shouldn't ever get here.
     //

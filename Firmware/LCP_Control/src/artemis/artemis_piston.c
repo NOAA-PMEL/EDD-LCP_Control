@@ -81,7 +81,7 @@ typedef struct s_module_t
 //*****************************************************************************
 /**
  * @brief Module Parameters
- * 
+ *
  */
 static module_t module;
 
@@ -160,7 +160,7 @@ void artemis_piston_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop)
             len = 0;
         }
     }
-  
+
 //  while(len-- > 0)
 //  {
 //    artemis_stream_reset(&txstream);

@@ -1,10 +1,10 @@
 /**
  * @file ublox_ubx.h
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-09-28
- * 
+ *
  */
 #ifndef UBLOX_UBX_H
 #define UBLOX_UBX_H
@@ -19,7 +19,6 @@
 /************************************************************************
 *							HEADER FILES
 ************************************************************************/
-
 
 /************************************************************************
 *							MACROS
@@ -53,7 +52,7 @@ typedef struct s_ubx_packet_t
  * @brief UBX-NAV-PVT Struct
  * Navigation Position Velocity Time Solution
  * p375 of u-blox 8/ u-blox M8 Receiver description manual
- * 
+ *
  */
 typedef struct s_ubx_nav_pvt_t {
     uint32_t iTOW;
@@ -91,8 +90,6 @@ typedef struct s_ubx_nav_pvt_t {
     uint16_t magAcc;
 }ubx_nav_pvt_t;
 
-
-
 /**
  * @brief UBX-CFG-PRT Struct
  * Port Configuration for I2C
@@ -110,7 +107,6 @@ typedef struct s_ubx_cfg_prt_t {
     uint16_t reserved3;
 }ubx_cfg_prt_t;
 
-
 /**
  * @brief UBX-CFG-RATE Struct
  * Navigation/Measurement rate settings
@@ -122,7 +118,6 @@ typedef struct s_ubx_cfg_rate_t {
     uint16_t timeRef;
 }ubx_cfg_rate_t;
 
-
 /**
  * @brief ACK-ACK Enum
  * Return from ACK-ACK or ACK-NAK test
@@ -133,15 +128,13 @@ typedef enum e_ubx_ack_nak_t {
     UBX_ACK_ACK_RESPONSE,
 }ubx_ack_t;
 
-
 typedef struct e_ubx_mon_ver_t {
     char *ver;
 }ubx_mon_ver_t;
 
-
 /**
  * @brief UBX Classes
- * 
+ *
  */
 typedef enum {
     UBX_ACK_CLASS = 0x05,
@@ -158,10 +151,9 @@ typedef enum {
     UBX_UPD_CLASS = 0x09
 }eUBX_Class_t;
 
-
 /**
  * @brief UBX-ACK IDs
- * 
+ *
  */
 typedef enum {
     UBX_ACK_ACK     = 0x01,
@@ -170,7 +162,7 @@ typedef enum {
 
 /**
  * @brief UBX-NAV ID's
- * 
+ *
  */
 typedef enum eUBX_NAV_ID_t{
     UBX_NAV_AOPSTATUS        = 0x60,
@@ -191,7 +183,7 @@ typedef enum eUBX_NAV_ID_t{
     UBX_NAV_POSLLH           = 0x02,
     UBX_NAV_PVT              = 0x07,
     UBX_NAV_RELPOSNED        = 0x3C,
-    UBX_NAV_RESETODO         = 0x10, 
+    UBX_NAV_RESETODO         = 0x10,
     UBX_NAV_SAT              = 0x35,
     UBX_NAV_SBAS             = 0x32,
     UBX_NAV_SLAS             = 0x42,
@@ -211,7 +203,7 @@ typedef enum eUBX_NAV_ID_t{
 
 /**
  * @brief UBX-CFG IDs
- * 
+ *
  */
 typedef enum eUBX_CFG_ID_t {
     UBX_CFG_ANT              = 0x13,
@@ -239,7 +231,7 @@ typedef enum eUBX_CFG_ID_t {
     UBX_CFG_PM2              = 0x3B,
     UBX_CFG_PMS              = 0x86,
     UBX_CFG_PRT              = 0x00,
-    UBX_CFG_PWR              = 0x57, 
+    UBX_CFG_PWR              = 0x57,
     UBX_CFG_RATE             = 0x08,
     UBX_CFG_RINV             = 0x34,
     UBX_CFG_RST              = 0x04,
@@ -256,15 +248,13 @@ typedef enum eUBX_CFG_ID_t {
     UBX_CFG_USB              = 0x1B,
 }UBX_CFG_ID_t;
 
-
-
 /************************************************************************
 *					GLOBAL FUNCTION PROTOTYPES
 ************************************************************************/
-void UBX_create_ubx_packet( 
-                        uint8_t ubx_class, 
-                        uint8_t ubx_id, 
-                        uint8_t *payload, 
+void UBX_create_ubx_packet(
+                        uint8_t ubx_class,
+                        uint8_t ubx_id,
+                        uint8_t *payload,
                         uint16_t len,
                         ubx_packet_t *packet
                         );
@@ -276,13 +266,11 @@ bool UBX_parse_ubx_packet(
 void UBX_create_msg_from_packet(ubx_packet_t *packet, uint8_t *msg);
 bool UBX_create_packet_from_msg(uint8_t *msg, uint16_t len, ubx_packet_t *packet);
 int16_t UBX_find_start_of_msg(uint8_t *buf, uint16_t len);
-ubx_ack_t UBX_check_for_ack(ubx_packet_t *packet, 
-                            uint8_t expectedClass, 
+ubx_ack_t UBX_check_for_ack(ubx_packet_t *packet,
+                            uint8_t expectedClass,
                             uint8_t expectedId);
-
 void UBX_parse_cfg(UBX_CFG_ID_t id, ubx_packet_t *packet, void *parsed);
 void UBX_parse_nav(UBX_NAV_ID_t id, ubx_packet_t *packet, void *parsed);
 //void UBX_parse_nav(UBX_NAV_ID_t id, ubx_packet_t *packet, ubx_packet_t *parsed);
-
 
 #endif // UBLOX_UBX_H

@@ -1,7 +1,6 @@
 //
 /// @file artemis_spi.h
 ///
-
 #ifndef ARTEMIS_SPI_H
 #define ARTEMIS_SPI_H
 

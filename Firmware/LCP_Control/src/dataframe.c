@@ -5,7 +5,7 @@
  * @version 0.1
  * @date 2021-10-12
  *
- * 
+ *
  */
 #include "dataframe.h"
 #include <string.h>
@@ -17,7 +17,7 @@
 /**
  * @brief profile struct
  * Contains pointers and values for multi-page dataframes
- * 
+ *
  */
 typedef struct sDF_profile_t
 {
@@ -40,7 +40,7 @@ static DF_profile_t profile;
 static DF_profile_t park;
 
 /************************************************************************
-*					STATIC FUNCTION PROTOTYPES 
+*					STATIC FUNCTION PROTOTYPES
 ************************************************************************/
 
 STATIC uint16_t module_create_crc(uint8_t *data, uint8_t len);
@@ -51,16 +51,16 @@ STATIC int32_t module_convert_longitude_to_int32_t(float longitude);
 
 STATIC void DF_create_generic_header(uint8_t *df, float lat, float lon);
 STATIC uint16_t DF_create_profile_page( uint8_t *df,
-                            uint32_t time, uint16_t len, 
-                            float lat, float lon, 
+                            uint32_t time, uint16_t len,
+                            float lat, float lon,
                             float *temp, float *depth,
                             uint8_t page, bool last);
 
 STATIC uint16_t DF_create_park_page( uint8_t *df, uint16_t len, float lat,  float lon,
-                                uint32_t *time, float *depth, float *temp, 
+                                uint32_t *time, float *depth, float *temp,
                                 uint8_t page, bool last);
 
-STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, uint16_t len, 
+STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, uint16_t len,
                                     uint8_t *data, float lat, float lon, uint8_t page, bool last);
 
 
@@ -68,19 +68,19 @@ STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t 
 *					GLOBAL FUNCTION PROTOTYPES
 ************************************************************************/
 /**
- * @brief Create all profile messages to send 
- * 
- * 
- * 
+ * @brief Create all profile messages to send
+ *
+ *
+ *
  * @param first Is this the first message (t or f)
  * @param df Pointer to dataframe
  * @param time Start time of profile
  * @param dataLen Length of data array
  * @param lat Latitude @ start of profile (last known)
  * @param lon Longitude @ start of profile (last known)
- * @param temp Pointer to temperature array 
+ * @param temp Pointer to temperature array
  * @param depth Pointer to depth array
- * 
+ *
  * @retval End of messages
  * @return true Last message
  * @return false More messages follow
@@ -135,19 +135,19 @@ bool DF_create_profile( bool first, uint8_t *df, uint32_t time, uint16_t dataLen
 
 
 /**
- * @brief Create all park messages to send 
- * 
- * 
- * 
+ * @brief Create all park messages to send
+ *
+ *
+ *
  * @param first Is this the first message (t or f)
  * @param df Pointer to dataframe
  * @param time Pointer to time array
  * @param dataLen Length of data array
  * @param lat Latitude @ start of park (last known)
  * @param lon Longitude @ start of park (last known)
- * @param temp Pointer to temperature array 
+ * @param temp Pointer to temperature array
  * @param depth Pointer to depth array
- * 
+ *
  * @retval End of messages
  * @return true Last message
  * @return false More messages follow
@@ -208,12 +208,12 @@ bool DF_create_park( bool first, uint8_t *df, uint32_t *time, uint16_t dataLen,
 ************************************************************************/
 
 /**
- * @brief  Create a Profile Mode Dataframe 
- * 
+ * @brief  Create a Profile Mode Dataframe
+ *
  * Profile mode datafram has the following structure:
- * 
+ *
  * Start Char, ID, Serial Num, Firmware Major, Firmware Minor, Data Length, Data, CRC, Latitude, Longitude, Start Time, Page #, End Char
- * 
+ *
  * No commas are used.  All values are hex unless noted
  * Start Char (1 byte ascii): * for new message, @ continued message
  * ID (3 bytes ascii): LCP
@@ -227,8 +227,8 @@ bool DF_create_park( bool first, uint8_t *df, uint32_t *time, uint16_t dataLen,
  * Start time (4 byte): Epoch time
  * Page # (1 byte)
  * End Char (1 byte ascii): Either ! for end of message, or & for more message to follow
- * 
- * @param df Pointer to dataframe 
+ *
+ * @param df Pointer to dataframe
  * @param len Number of data samples
  * @param time Start time of profile
  * @param len Length of data arrays
@@ -236,11 +236,11 @@ bool DF_create_park( bool first, uint8_t *df, uint32_t *time, uint16_t dataLen,
  * @param lon Current Longitude
  * @param temp Pointer to temperature data
  * @param depth Pointer to Depth temperature
- * @return uint16_t Data starting position of next message (0 if it all fits in one message) 
+ * @return uint16_t Data starting position of next message (0 if it all fits in one message)
  */
 STATIC uint16_t DF_create_profile_page( uint8_t *df,
-                            uint32_t time, uint16_t len, 
-                            float lat, float lon, 
+                            uint32_t time, uint16_t len,
+                            float lat, float lon,
                             float *temp, float *depth,
                             uint8_t page, bool last)
 {
@@ -269,18 +269,18 @@ STATIC uint16_t DF_create_profile_page( uint8_t *df,
 
 
     DF_create_generic_dataframe(df, LCP_MODE_PROFILE, time, idx, data, lat, lon, page, last);
-    
+
 
 }
 
 
 /**
  * @brief Create a single park page dataframe
- * 
+ *
  * Creates a dataframe for a single page with the following structure:
- * 
+ *
  * Start Char, ID, Serial Num, Firmware Major, Firmware Minor, Data Length, Data, CRC, Latitude, Longitude, Start Time, Page #, End Char
- * 
+ *
  * No commas are used.  All values are hex unless noted
  * Start Char (1 byte ascii): * for new message, @ continued message
  * ID (3 bytes ascii): LCP
@@ -294,13 +294,13 @@ STATIC uint16_t DF_create_profile_page( uint8_t *df,
  * Start time (4 byte): Epoch time
  * Page # (1 byte)
  * End Char (1 byte ascii): Either ! for end of message, or & for more message to follow
- * 
+ *
  * Data block (8 bytes):
  *  data[7:0] = time[3:0], depth[1:0], temperature[1:]
  *  where
  *      depth (uint16_t) = depth (float) * 10
  *      temp (uint16_t) = (temp(float) + 5) * 1000
- * 
+ *
  * @param df pointer to dataframe
  * @param len number of data samples
  * @param lat latitude @ dive
@@ -310,10 +310,10 @@ STATIC uint16_t DF_create_profile_page( uint8_t *df,
  * @param temp pointer to array of temperatures (m)
  * @param page dataframe page #
  * @param last last frame in transmission?
- * @return uint16_t 
+ * @return uint16_t
  */
 STATIC uint16_t DF_create_park_page( uint8_t *df, uint16_t len, float lat,  float lon,
-                                uint32_t *time, float *depth, float *temp, 
+                                uint32_t *time, float *depth, float *temp,
                                 uint8_t page, bool last)
 {
     uint16_t retVal = 0u;
@@ -329,7 +329,7 @@ STATIC uint16_t DF_create_park_page( uint8_t *df, uint16_t len, float lat,  floa
     uint8_t idx = 0;
 
     for(uint16_t i=0; i<len; i++)
-    {       
+    {
         uint16_t d, t;
         d = (uint16_t) (*depth * 10);
         t = (uint16_t)(*temp + 5.0) * 1000;
@@ -408,19 +408,19 @@ STATIC void DF_create_generic_header(uint8_t *df, float lat, float lon)
 
 /**
  * @brief Create a generic dataframe for LCP transmission
- * 
+ *
  * @param df Pointer to dataframe
  * @param mode Dataframe mode (i.e., PROFILE, PARK, etc.)
  * @param time Start time of dataframe
  * @param len Length of data
- * @param data Data block 
+ * @param data Data block
  * @param lat Last know latitude
  * @param lon Last know longitude
  * @param page Dataframe page number
  * @param last Last frame (true or false)
  * @return uint16_t TBD
  */
-STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, uint16_t len, 
+STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t time, uint16_t len,
                                     uint8_t *data, float lat, float lon, uint8_t page, bool last)
 {
     uint16_t retVal = 0u;
@@ -431,13 +431,13 @@ STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t 
     /** Current Setup */
     /** depth > uint16_t > 2 Bytes */
     /** temp > uint16_t > 2 Bytes */
-    
+
     if(len > MAX_DATAFRAME_OUT)
     {
         /** ERROR */
         printf("ERROR");
     }
-    
+
     uint8_t *dStart = df;
 
     if(page == 0)
@@ -449,7 +449,7 @@ STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t 
 
     strcat(df, "LCP");
     df += 3;
-    
+
     /** Serial Number */
     uint16_t sn = SYS_get_serial_num();
     *df++ = sn >> 8;
@@ -469,13 +469,13 @@ STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t 
     *df++ = (uint8_t) (len & 0x00FF);
 
     /** Data */
-    
+
     uint8_t *crcStart = df;
     for(uint8_t i=0; i<len; i++)
     {
         *df++ = *data++;
     }
-    
+
     /** Add the CRC */
     uint16_t crc = module_create_crc(crcStart, len);
     *df++ = (uint8_t) (crc >> 8) & 0x00FF;
@@ -507,7 +507,7 @@ STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t 
 
     /** Page # */
     *df++ = page;
-    
+
     /** Last page? */
     if(last)
     {
@@ -520,7 +520,7 @@ STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t 
 
 /**
  * @brief Create a CRC from the data provided
- * 
+ *
  * @param data Pointer to data array
  * @param len Length of data array
  * @return uint16_t calculated CRC
@@ -543,11 +543,11 @@ uint16_t module_create_crc(uint8_t *data, uint8_t len)
 
 /**
  * @brief Convert depth to uint16_t
- * 
+ *
  * Converts the depth value to fit in an unsigned 16-bit int.
- * 
+ *
  * depth(uint16_t) = depth(float) * 10;
- * 
+ *
  * @param depth Depth
  * @return uint16_t Converted value
  */
@@ -559,11 +559,11 @@ STATIC uint16_t module_convert_depth_to_uint16_t(float depth)
 
 /**
  * @brief Convert temperature to int16_t
- * 
+ *
  * Converts the S9 OEM Temperature value to fit in a signed 16-bit int.
- * 
+ *
  * temp (uint16_t) = (temp (float) + 5.0) * 1000
- * 
+ *
  * @param temp Temperature
  * @return uint16_t Converted value;
  */
@@ -576,7 +576,7 @@ STATIC int16_t module_convert_temperature_to_int16_t(float temp)
 
 /**
  * @brief Convert latitude into signed 32-bit integer
- * 
+ *
  * @param latitude Latitude to convert
  * @return int32_t Converted value
  */
@@ -589,7 +589,7 @@ STATIC int32_t module_convert_latitude_to_int32_t(float latitude)
 
 /**
  * @brief Convert longitude into signed 32-bit integer
- * 
+ *
  * @param longitude Longitude to convert
  * @return int32_t Converted value
  */

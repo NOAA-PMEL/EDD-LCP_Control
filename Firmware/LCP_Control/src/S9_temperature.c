@@ -352,14 +352,14 @@ STATIC int16_t _parse_response(uint8_t *rData, char *pattern, uint16_t len)
 }
 
 /** @brief Parse S9 Temperature response
- * 
- * The S9 Temperature sensor returns a data string 
+ *
+ * The S9 Temperature sensor returns a data string
  * in the format:
  * RRRR.RRRR, TT.TTTT\r
- * 
+ *
  * Where RRRR.RRRR is the thermistor resistance in Ohms
  * and TT.TTTT is the calculated temperature in degC
- * 
+ *
  * @param *data Pointer to data string
  * @param len length of string
  * @param *p Pointer to S9 Temperature structure
@@ -408,8 +408,8 @@ STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p)
 }
 
 /** @brief Parse version info
- * 
- * When the S9 Temp is sent the "ver" command, 
+ *
+ * When the S9 Temp is sent the "ver" command,
  * the following response is sent:
  * S9>ver
  * MID=T003
@@ -421,13 +421,13 @@ STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p)
  * UID=000000000F0F1A08535722E74FBC90B1
  * S9T0 V0.45
  * OK
- * 
+ *
  * This function parses for each individual structure
  * variable and returns.
- * 
+ *
  * @param *data Pointer to response string
  * @param *p Pointer to S9 temperature structure
- * 
+ *
  */
 
 STATIC void _parse_version(uint8_t *data, sS9_t *p, uint8_t rxLen)

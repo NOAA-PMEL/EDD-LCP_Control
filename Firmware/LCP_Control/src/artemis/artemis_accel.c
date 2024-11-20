@@ -1,5 +1,5 @@
 /**! @file artemis_accel.c
- * @brief STM Accelerometer 
+ * @brief STM Accelerometer
  *
  * @author Basharat Martin basharat.martin@noaa.gov
  * @date April 24, 2023
@@ -10,7 +10,7 @@
  * @copyright Environmental Development Division
  *
  * @note Controls the STM LIS2DW12 Acceleration sensor over SPI
- * 
+ *
  *
  * @bug  No known bugs
  *
@@ -47,7 +47,7 @@
 #define ACCEL_READ_CMD       0x80
 
 #define ACCEL_OUT_T_L        0x0D   // R, Temperature Sensor LSB
-#define ACCEL_OUT_T_H        0x0E   // R, Temperature Sensor MSB 
+#define ACCEL_OUT_T_H        0x0E   // R, Temperature Sensor MSB
 #define ACCEL_DEV_ID         0x0F   // R
 
 #define ACCEL_CTRL_1         0x20   // R/W
@@ -184,7 +184,7 @@ void artemis_accel_init(void)
 
 void accel_xyz(int16_t *xyz)
 {
-    // read two bytes (16 bits) consecutively, 
+    // read two bytes (16 bits) consecutively,
     uint8_t rData[6] = {0};
     int16_t l_xyz[3] = {0};
 
@@ -201,7 +201,7 @@ void accel_xyz(int16_t *xyz)
 
 void accel_tempearture(int16_t *temperature)
 {
-    // read two bytes (16 bits) consecutively, 
+    // read two bytes (16 bits) consecutively,
     // temperature LSB fist then MSB
     uint8_t rData[2] = {0};
     int16_t val = 0;

@@ -19,7 +19,7 @@ typedef struct sSensorType_t{
     SemaphoreHandle_t semaphore;
 }SensorType_t;
 
-typedef struct sSensorGps_t {        
+typedef struct sSensorGps_t {
         uint16_t rate;          /**< Sample rate (Hz) */
         bool fix;
         float latitude;
@@ -28,7 +28,7 @@ typedef struct sSensorGps_t {
         uint16_t year;  /**< Calendar Year UTC */
         uint8_t month;  /**< Calendar Month UTC */
         uint8_t day;    /**< Calendar Day UTC */
-        uint8_t hour;   /**< Hour UTC */    
+        uint8_t hour;   /**< Hour UTC */
         uint8_t min;    /**< Minute UTC */
         uint8_t sec;    /**< Second UTC */
         bool data_valid;

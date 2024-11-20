@@ -1,10 +1,10 @@
 /**
  * @file artemis_i9603n.c
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-09-30
- * 
+ *
  */
 
 #include "artemis_i9603n.h"
@@ -105,7 +105,7 @@ typedef struct s_module_t
 //*****************************************************************************
 /**
  * @brief Module Parameters
- * 
+ *
  */
 static module_t module;
 
@@ -124,9 +124,9 @@ static module_t module;
 
 /**
  * @brief Initialize the UBLOX Module
- * 
+ *
  * Initializes Power Pin, EXTINT Pin & IOM Module for I2C.
- * 
+ *
  * @param i2c_addr I2C Address of Module
  */
 void artemis_i9603n_initialize(void)

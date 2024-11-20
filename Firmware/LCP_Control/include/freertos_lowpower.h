@@ -43,7 +43,6 @@
 // This is part of revision 2.5.1 of the AmbiqSuite Development Package.
 //
 //*****************************************************************************
-
 #ifndef FREERTOS_LOWPOWER_H
 #define FREERTOS_LOWPOWER_H
 
@@ -89,6 +88,5 @@
 //
 //*****************************************************************************
 extern void disable_print_interface(void);
-
 
 #endif // FREERTOS_LOWPOWER_H

@@ -5,8 +5,8 @@
 #include "artemis_stream.h"
 
 ///
-/// 
-/// 
+///
+///
 void artemis_stream_setbuffer(artemis_stream_t *stream, uint8_t *buffer, size_t length)
 {
     stream->buffer = buffer;

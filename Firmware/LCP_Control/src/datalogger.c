@@ -12,7 +12,7 @@
  * @copyright Environmental Development Division
  *
  * @note interfaces with i2c protocol, can be connected with either I2C_1 or I2C_4 (debug)
- * 
+ *
  *
  **/
 
@@ -605,7 +605,7 @@ void datalogger_writefile(char *contents)
             // send 31 bytes to the SD-card
             datalogger_i2c_write(cmd, 1, module.txbuffer, i);
             j += i;
-        } 
+        }
     }
     else if (len < 32 && len > 0)
     {
@@ -716,7 +716,7 @@ uint16_t datalogger_fw_version(void)
 
 /**
  * @brief Power Up the Datalogger Module
- * 
+ *
  */
 void datalogger_power_on(void)
 {
@@ -734,7 +734,7 @@ void datalogger_power_on(void)
 
 /**
  * @brief Power Down the Datalogger Module
- * 
+ *
  */
 void datalogger_power_off(void)
 {

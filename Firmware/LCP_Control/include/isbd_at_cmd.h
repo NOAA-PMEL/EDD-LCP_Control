@@ -4,32 +4,33 @@
  * @brief Iridium SBD AT Commands
  * @version 0.1
  * @date 2021-09-30
- * 
+ *
  */
 #ifndef ISBD_AT_CMD_H
 #define ISBD_AT_CMD_H
+
 /************************************************************************
 *						STANDARD LIBRARIES
 ************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
+
 /************************************************************************
 *							HEADER FILES
 ************************************************************************/
 
-
 /************************************************************************
 *							MACROS
 ************************************************************************/
-
 #define ISBD_AT_MSG_MAX_LENGTH      ( 270 )
 #define ISBD_AT_CHECKSUM_LENGTH     ( 2 )
+
 /************************************************************************
 *							ENUM & STRUCTS
 ************************************************************************/
 /**
  * @brief AT Errors
- * 
+ *
  */
 typedef enum eISBD_AT_Error_t {
     ISBD_AT_ERROR_NONE,
@@ -39,7 +40,7 @@ typedef enum eISBD_AT_Error_t {
 
 /**
  * @brief SBD Command Types
- * 
+ *
  */
 typedef enum e_isbd_at_cmd_t{
     ISBD_AT_CMD_NONE,       /**< Placeholder */
@@ -55,10 +56,10 @@ typedef enum e_isbd_at_cmd_t{
 
 /**
  * @brief AT Packet Stucts
- * 
+ *
  */
 typedef struct s_isbd_at_packet_t
-{  
+{
     struct {
         isbd_at_cmd_t ecmd;     /**< SBD Command type */
         uint8_t msg[20];        /**< ASCII command */
@@ -79,7 +80,5 @@ bool ISBD_AT_create_packet( isbd_at_cmd_t cmd,
                             isbd_at_packet_t *packet
                             );
 bool ISBD_AT_send_packet( isbd_at_packet_t *packet);
-
-
 
 #endif

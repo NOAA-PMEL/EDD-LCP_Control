@@ -1,13 +1,12 @@
 /**
  * @file data.c
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-10-15
- * 
- * 
+ *
+ *
  */
-
 #include <string.h>
 #include <math.h>
 #include "data.h"
@@ -261,7 +260,7 @@ uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour,
 //*****************************************************************************
 /**
  * @brief Convert the uint16_t version of depth to a float version
- * 
+ *
  * @param depth uint16_t version of depth
  * @return float float version of depth
  */
@@ -272,7 +271,7 @@ static float module_convert_uint16_t_to_depth(uint16_t depth)
 
 /**
  * @brief Convert the uint16_t version of temperature to float version
- * 
+ *
  * @param temp uitn16_t representation of temperature
  * @return float Actual float representation of temperature
  * @shit -5° to the left (fitting values within 12 bits (-5 to 35.59)
@@ -287,11 +286,11 @@ static float module_convert_uint16_t_to_temperature(uint16_t temp)
 
 /**
  * @brief Convert pressure to uint8_t
- * 
+ *
  * Converts the pressure value to fit in an unsigned 8-bit uint, precision 0.1.
- * 
+ *
  *  (uint8_t) pressure = (float)(pressure * 10);
- * 
+ *
  * @param pressure Pressure
  * @return uint8_t Converted value
  */
@@ -308,11 +307,11 @@ STATIC float module_convert_uint8_t_to_pressure(uint8_t pressure)
 
 /**
  * @brief Convert temperature to uint16_t
- * 
+ *
  * Converts the S9 OEM Temperature value to fit in a unsigned 16-bit uint.
  * shitfing +5° so that (-5 to 35.59) can fit within 12-bits of 16 bits, precision 0.01
  * temp (uint16_t) = (temp (float) + 5.0) * 100
- * 
+ *
  * @param temp Temperature
  * @return int16_t Converted value;
  */

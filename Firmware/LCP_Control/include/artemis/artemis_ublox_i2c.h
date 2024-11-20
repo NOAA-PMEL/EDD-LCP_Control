@@ -1,11 +1,9 @@
 /**
  * @file artemis_ublox_i2c.h
  * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-09-28
- * 
- * 
  */
 #ifndef ARTEMIS_UBLOX_I2C_H
 #define ARTEMIS_UBLOX_I2C_H
@@ -14,7 +12,7 @@
 /** Add the actual values if running release */
 #ifdef TEST
 #ifndef STATIC
-#define STATIC  
+#define STATIC
 #endif
 #ifndef PERSISTENT
 #define PERSISTENT
@@ -24,7 +22,7 @@
 #define STATIC  static
 #endif
 #ifndef PERSISTENT
-#define PERSISTENT __persistent 
+#define PERSISTENT __persistent
 #endif
 #endif
 /************************************************************************

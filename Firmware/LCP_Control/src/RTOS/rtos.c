@@ -178,4 +178,3 @@ vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName)
         __asm("BKPT #0\n") ; // Break into the debugger
     }
 }
-

@@ -981,7 +981,7 @@ void module_sps_move_to_park(void)
         PIS_set_piston_rate(1);
         PIS_task_move_zero(&xPiston); /*This is the piston zero reset command*/
         vTaskDelay(piston_period);
-    
+
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Setting -> Piston encoder value to zero, %u profiles reached since last cal >>\n\n", pistoncal_number);
         pistoncal_number = 0;
 
@@ -990,7 +990,7 @@ void module_sps_move_to_park(void)
         {
             eStatus = eTaskGetState( xPiston );
             if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
-            {   
+            {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->active\n");
                 /* piston time for up to 180 seconds */
                 piston_timer += piston_period;
@@ -1020,10 +1020,10 @@ void module_sps_move_to_park(void)
             vTaskDelay(piston_period);
         }
     }
-    
+
      /** Set park_piston_length */
     /* for now , pressure and temperature variables are zeros for compressibility and thermal expansion */
-    
+
     if (park_piston_length == 0.0)
     {
         CTRL_set_lcp_density(PARK_DENSITY);
@@ -2232,7 +2232,7 @@ void module_sps_move_to_profile(void)
                     /* start the timer for TO_PROFILE_STATE_TIMER (20 mins) */
                     to_profile_state_time += (period * rate_count);
                     ARTEMIS_DEBUG_PRINTF("<< SPS :: move_to_profile, critical piston minimum position time = %.2f seconds >>\n", (float)to_profile_state_time/xDelay1000ms);
-                    
+
                     if (to_profile_state_time >= TO_PROFILE_STATE_TIMER*xDelay1000ms)
                     {
                         ARTEMIS_DEBUG_PRINTF("<< SPS :: move_to_profile, critical piston minimum position time out = %.2f mins >>\n", (float)to_profile_state_time/(60.0*xDelay1000ms));
