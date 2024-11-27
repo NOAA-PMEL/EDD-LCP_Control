@@ -200,7 +200,7 @@ ODFLAGS = -S
 #******************************************************************************
 all: directories svl
 asb: directories $(BIN)/$(TARGET)_asb.bin
-#svl: directories $(BIN)/$(TARGET)_svl.bin
+svl: directories $(BIN)/$(TARGET)_svl.bin
 sim: directories $(BIN)/$(TARGET).bin
 
 ### Bootloader Tools

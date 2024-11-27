@@ -1,0 +1,11 @@
+doxygen/doxygen_new_line_after_brief=true
+doxygen/doxygen_use_brief_tag=false
+doxygen/doxygen_use_javadoc_tags=true
+doxygen/doxygen_use_pre_tag=false
+doxygen/doxygen_use_structural_commands=false
+eclipse.preferences.version=1
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.577916574/AmbiqSuiteSDK/delimiter=;
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.577916574/AmbiqSuiteSDK/operation=replace
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.577916574/AmbiqSuiteSDK/value=C\:/Users/kurina/Documents/GitHub/AmbiqSuiteSDK/
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.577916574/append=true
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.577916574/appendContributed=true
