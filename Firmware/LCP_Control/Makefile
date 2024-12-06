@@ -198,7 +198,8 @@ ODFLAGS = -S
 # Targets / Rules
 #
 #******************************************************************************
-all: directories svl
+#all: directories svl
+all: directories $(BIN)/$(TARGET).bin
 asb: directories $(BIN)/$(TARGET)_asb.bin
 #svl: directories $(BIN)/$(TARGET)_svl.bin
 sim: directories $(BIN)/$(TARGET).bin

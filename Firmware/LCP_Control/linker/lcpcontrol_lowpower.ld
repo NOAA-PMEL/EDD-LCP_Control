@@ -1,7 +1,7 @@
-/******************************************************************************
- *
- * freertos_lowpower.ld - Linker script for applications using startup_gnu.c
- *
+/****************************************************************************** 
+ * 
+ * freertos_lowpower.ld - Linker script for applications using startup_gnu.c 
+ * 
  *****************************************************************************/
 ENTRY(Reset_Handler)
 
@@ -57,6 +57,17 @@ SECTIONS
         *(COMMON)
         . = ALIGN(4);
         _ebss = .;
+    } > RWMEM
+
+    /* Define end of BSS as the start of the heap */
+    PROVIDE(end = _ebss);
+
+    /* Heap section (optional) */
+    .heap (NOLOAD):
+    {
+        _heap_start = .;
+        . = ORIGIN(RWMEM) + LENGTH(RWMEM) - 1K; /* Reserve 1K for stack growth */
+        _heap_end = .;
     } > RWMEM
 
     .ARM.attributes 0 : { *(.ARM.attributes) }
