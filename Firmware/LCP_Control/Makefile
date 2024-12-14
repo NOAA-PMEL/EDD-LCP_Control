@@ -233,6 +233,12 @@ $(BIN)/$(TARGET).bin: $(BIN)/$(TARGET).axf
 	@echo " Copying $(COMPILERNAME) $@..." ;\
 	$(CP) $(CPFLAGS) $< $@ ;\
 	$(OD) $(ODFLAGS) $< > $(BIN)/$(TARGET).lst
+	
+# Rule to generate ASB binary
+$(BIN)/$(TARGET)_asb.bin: $(BIN)/$(TARGET)_asb.axf
+	@echo " Copying $(COMPILERNAME) $@..."
+	$(CP) $(CPFLAGS) $< $@
+	$(OD) $(ODFLAGS) $< > $(BIN)/$(TARGET)_asb.lst
 
 $(BIN)/$(TARGET)_asb.axf: LINKER_FILE_ASB = ./linker/lcpcontrol_lowpower_asb.ld
 $(BIN)/$(TARGET)_asb.axf: $(OBJS) $(LIBS)
