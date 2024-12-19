@@ -69,7 +69,7 @@ int main(void)
 
     ARTEMIS_DEBUG_PRINTF("\n*****************************\n");
     ARTEMIS_DEBUG_PRINTF("FreeRTOS here\n");
-    ARTEMIS_DEBUG_PRINTF("schedular is going to start\n");
+    ARTEMIS_DEBUG_PRINTF("scheduler is going to start\n");
     ARTEMIS_DEBUG_PRINTF("*****************************\n\n");
     vTaskStartScheduler();
     ARTEMIS_DEBUG_PRINTF("Do not get here\n");
@@ -84,7 +84,7 @@ int main(void)
 
     ARTEMIS_DEBUG_PRINTF("\n*****************************\n");
     ARTEMIS_DEBUG_PRINTF("FreeRTOS here\n");
-    ARTEMIS_DEBUG_PRINTF("schedular is going to start\n");
+    ARTEMIS_DEBUG_PRINTF("scheduler is going to start\n");
     ARTEMIS_DEBUG_PRINTF("*****************************\n\n");
     vTaskStartScheduler();
     ARTEMIS_DEBUG_PRINTF("Do not get here\n");
