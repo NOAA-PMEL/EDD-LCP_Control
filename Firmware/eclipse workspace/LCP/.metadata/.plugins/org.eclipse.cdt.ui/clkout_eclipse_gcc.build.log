@@ -1,0 +1,16 @@
+11:06:49 **** Build of configuration Default for project clkout_eclipse_gcc ****
+make all 
+CC not found on PATH (arm-none-eabi-gcc).
+LD not found on PATH (arm-none-eabi-ld).
+CP not found on PATH (arm-none-eabi-objcopy).
+OD not found on PATH (arm-none-eabi-objdump).
+AR not found on PATH (arm-none-eabi-ar).
+RD not found on PATH (arm-none-eabi-readelf).
+SIZE not found on PATH (arm-none-eabi-size).
+GCC not found on PATH (arm-none-eabi-gcc).
+Required Program(s) CC LD CP OD AR RD SIZE GCC not found
+Tools arm-none-eabi-gcc not installed.
+rm -rf bin
+
+11:06:53 Build Finished. 0 errors, 0 warnings. (took 3s.612ms)
+

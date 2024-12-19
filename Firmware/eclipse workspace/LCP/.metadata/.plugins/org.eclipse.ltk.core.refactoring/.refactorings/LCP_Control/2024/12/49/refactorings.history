@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;LCP_Control/Makefile&apos; to &apos;Makefile_curr&apos;" description="Rename resource &apos;Makefile&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Makefile" name="Makefile_curr" stamp="1733183378550" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;LCP_Control/Makefile_curr&apos; to &apos;Makefile&apos;" description="Rename resource &apos;Makefile_curr&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Makefile_curr" name="Makefile" stamp="1733273958432" updateReferences="true"/>
+</session>
