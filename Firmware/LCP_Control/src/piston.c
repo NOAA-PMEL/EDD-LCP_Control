@@ -27,6 +27,7 @@ static volatile bool pistonRun = false;
 //
 //*****************************************************************************
 static bool module_pis_read_if_full(void);
+static bool module_pis_read_if_fullreset(void);
 static bool module_pis_read_if_zero(void);
 static bool module_pis_trv_eng(void);
 static float module_pis_get_volume(void);
@@ -134,6 +135,14 @@ void PIS_task_move_full(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_full,
                                 "Piston_Task_move_full", 256, NULL,
+                                tskIDLE_PRIORITY + 4UL,
+                                xPiston) == pdPASS );
+}
+
+void PIS_task_reset_full(TaskHandle_t *xPiston)
+{
+    configASSERT(xTaskCreate((TaskFunction_t) task_reset_piston_to_full,
+                                "Piston_Task_reset_full", 256, NULL,
                                 tskIDLE_PRIORITY + 4UL,
                                 xPiston) == pdPASS );
 }
@@ -307,6 +316,77 @@ void task_move_piston_to_full(void)
             {
                 vTaskDelay(xDelay250ms);
                 fullFlag = module_pis_read_if_full();
+            }
+            //xSemaphoreGive(piston.rtos.semaphore);
+        //}
+        vTaskDelay(period);
+        //vTaskDelayUntil(&xLastWakeTime, period);
+    }
+
+    /* get the length and update it */
+    float length = module_pis_get_length();
+    taskENTER_CRITICAL();
+    piston.length = length;
+    taskEXIT_CRITICAL();
+
+    vTaskDelay(xDelay100ms);
+    vTaskDelete(NULL);
+}
+
+void task_reset_piston_to_full(void)
+{
+    assert(piston.rtos.rate != 0);
+    uint32_t period = xDelay1000ms/piston.rtos.rate;
+
+    if(module_pis_trv_eng() == true)
+    {
+        ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
+        vTaskDelete(NULL);
+        return;
+    }
+
+    /** Start Piston Extend to full length and reset encoder counts */
+    PIS_reset_to_full();
+    vTaskDelay(period);
+
+    /** Start the task of reading until we hit the end stop */
+    pistonRun = true;
+    bool fullFlag = false;
+    uint8_t count_reset = 0;
+
+    /* Initialise the xLastWakeTime variable with the current time*/
+    //TickType_t xLastWakeTime;
+    //xLastWakeTime = xTaskGetTickCount();
+
+    while(pistonRun)
+    {
+        /** Read the piston memory to see if we're done */
+        //if(xSemaphoreTake(piston.rtos.semaphore, period) == pdTRUE)
+        //{
+            if(module_pis_trv_eng() == false)
+            {
+                count_reset++;
+                vTaskDelay(xDelay250ms);
+                fullFlag = module_pis_read_if_fullreset();
+                if (fullFlag)
+                {
+                    pistonRun = false;
+                }
+                if (count_reset > 4)
+                {
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
+                    vTaskDelay(period);
+                    PIS_Reset();
+                    vTaskDelay(period);
+                    PIS_reset_to_full();
+                    vTaskDelay(period);
+                    count_reset = 0;
+                }
+            }
+            else
+            {
+                vTaskDelay(xDelay250ms);
+                fullFlag = module_pis_read_if_fullreset();
             }
             //xSemaphoreGive(piston.rtos.semaphore);
         //}
@@ -765,6 +845,17 @@ static bool module_pis_read_if_full(void)
     return (bool) data;
 }
 
+static bool module_pis_read_if_fullreset(void)
+{
+    uint8_t addr = PISTON_I2C_R_TRV_FRST;
+    uint8_t data;
+
+    /** Send the message to read TRV_FRST address */
+    artemis_piston_i2c_read(addr, &data, 1);
+    
+    return (bool) data;
+}
+
 static bool module_pis_read_if_zero(void)
 {
     uint8_t addr = PISTON_I2C_R_TRV_ZERO;
@@ -848,6 +939,14 @@ void PIS_move_to_full(void)
 void PIS_move_to_zero(void)
 {
     uint8_t addr = PISTON_I2C_RW_MOV_ZERO;
+    uint8_t cmd[2] = {addr, 0x01};
+    artemis_piston_set_write_mode(true);
+    artemis_piston_i2c_send_msg(cmd, 2, true);
+}
+
+void PIS_reset_to_full(void)
+{
+    uint8_t addr = PISTON_I2C_RW_RST_FULL;
     uint8_t cmd[2] = {addr, 0x01};
     artemis_piston_set_write_mode(true);
     artemis_piston_i2c_send_msg(cmd, 2, true);

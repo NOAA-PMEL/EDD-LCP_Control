@@ -88,7 +88,8 @@ typedef enum {
     MODE_POPUP,
     MODE_IDLE,
     MODE_DONE,
-    MODE_CRIT_TO_PARK
+    MODE_CRIT_TO_PARK,
+    MODE_CRUSH_TO_PROFILE
 } Event_e;
 
 static Event_e gEvent;
@@ -143,7 +144,8 @@ static volatile uint8_t m_prof_number = 0;
 static volatile uint16_t m_prof_length = 0;
 static volatile uint8_t m_park_number = 0;
 static volatile uint16_t m_park_length = 0;
-static volatile uint8_t pistoncal_number = 0;
+static volatile uint8_t pistonzero_number = 0;
+static volatile uint8_t pistonfull_number = 0;
 ///* for extended measurements */
 //static uint8_t m_prof_number_ext = 0;
 //static uint8_t m_prof_length_ext = 0;
@@ -159,6 +161,7 @@ static volatile float park_piston_length = 0.0;
 static volatile float to_prof_piston_length = 0.0;
 static volatile float prof_piston_length = 0.0;
 static volatile bool critical_park_state = false;
+static volatile bool crush_depth = false;
 
 //*****************************************************************************
 //
@@ -920,6 +923,13 @@ void STATE_Profiler(void)
             system.profiler.state = SPS_MoveToParkDepth_mode;
             vTaskDelay(xDelay2000ms);
         }
+        /** add a special MODE in case of hitting the Crush Depth then surface and adjust piston length settings */
+        else if (spsEvent == MODE_CRUSH_TO_PROFILE)
+        {
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: Switching to Surface State !! <<< CRUSH DEPTH EXCEEDED >>>\n\n");
+            system.profiler.state = SPS_Sample_mode;
+            vTaskDelay(xDelay2000ms);
+        }
     }
 }
 
@@ -961,6 +971,8 @@ void module_sps_move_to_park(void)
     float Length = 0.0;
     float Density = 0.0;
     float length_update = 0.0;
+    float zlengthadjust = 0.0;
+    float zlengthdrift  = 0.0;
 
     /* set crush depth to false */
     bool crush_depth = false;
@@ -970,7 +982,7 @@ void module_sps_move_to_park(void)
 #else
 
     /*Check if it is time to zero the piston encoder counts, if yes, then zero cal the piston*/
-    if( pistoncal_number >= PISTON_ZEROCAL_COUNTER )
+    if( pistonzero_number >= PISTON_ZEROCAL_COUNTER )
     {
         uint32_t piston_period = xDelay1000ms;
         uint32_t piston_timer = 0;
@@ -982,8 +994,8 @@ void module_sps_move_to_park(void)
         PIS_task_move_zero(&xPiston); /*This is the piston zero reset command*/
         vTaskDelay(piston_period);
     
-        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Setting -> Piston encoder value to zero, %u profiles reached since last cal >>\n\n", pistoncal_number);
-        pistoncal_number = 0;
+        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Setting -> Piston encoder value to zero, %u profiles reached since last cal >>\n\n", pistonzero_number);
+        pistonzero_number = 0;
 
             /* check on piston movement */
         while (piston_move)
@@ -1011,14 +1023,23 @@ void module_sps_move_to_park(void)
             }
             else if (eStatus==eDeleted)
             {
-                PIS_Get_Length(&Length);
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Length=%.4fin\n", Length);
+                PIS_Get_Length(&zlengthdrift);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Length=%.4fin\n", zlengthdrift);
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Task->Finished\n");
                 piston_move = false;
                 piston_timer = 0;
             }
             vTaskDelay(piston_period);
         }
+        /*Adjust saved position settings retain correct buoyancy states*/
+        PIS_Get_Length(&Length);
+        vTaskDelay(piston_period);
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, New Piston Zero Cal Length=%.4fin\n", Length);
+        zlengthadjust = Length - zlengthdrift;
+        park_piston_length = park_piston_length + zlengthadjust;
+        to_prof_piston_length= to_prof_piston_length + zlengthadjust;
+        prof_piston_length = prof_piston_length + zlengthadjust;
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Setting -> Piston Length Adjustment %.4fin, Park Length=%.4fin, To Prof Length=%.4fin, Prof Length=%.4fin\n", zlengthadjust, park_piston_length, to_prof_piston_length, prof_piston_length);
     }
     
      /** Set park_piston_length */
@@ -1419,7 +1440,7 @@ void module_sps_move_to_park(void)
                             SENS_sensor_depth_off();
                         }
 
-                        spsEvent = MODE_POPUP;
+                        spsEvent = MODE_CRUSH_TO_PROFILE;
                         vTaskDelay(piston_period);
                         run = false;
                         break;
@@ -1438,6 +1459,9 @@ void module_sps_move_to_park(void)
         /* keep checking for crush depth */
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {
+            /*add a CRUSH DEPTH FOS to the saved move-to-park piston length for next profile*/
+            length_update = length_update + 0.5;
+            
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
             {
@@ -1877,7 +1901,7 @@ void module_sps_park(void)
                             SENS_sensor_depth_off();
                         }
 
-                        spsEvent = MODE_POPUP;
+                        spsEvent = MODE_CRUSH_TO_PROFILE;
                         vTaskDelay(piston_period);
                         run = false;
                         break;
@@ -1896,6 +1920,9 @@ void module_sps_park(void)
         /* emergency blow , extend piston to full */
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {
+            /*add a CRUSH DEPTH FOS to the saved park piston length for next profile*/
+            length_update = length_update + 0.5;
+            
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
             {
@@ -1907,7 +1934,7 @@ void module_sps_park(void)
             }
 
             vTaskDelay(piston_period);
-            PIS_set_length(PISTON_POSITION_MAXIMUM);
+            PIS_set_length(CRUSH_DEPTH_PISTON_POSITION);
             PIS_task_move_length(&xPiston);
             piston_move = true;
             crush_depth = true;
@@ -2405,7 +2432,7 @@ void module_sps_move_to_profile(void)
                         }
 
                         /* stop here, in case of emergency blow */
-                        spsEvent = MODE_POPUP;
+                        spsEvent = MODE_CRUSH_TO_PROFILE;
                         vTaskDelay(piston_period);
                         run = false;
                         break;
@@ -2424,6 +2451,9 @@ void module_sps_move_to_profile(void)
         /* keep checking for crush depth */
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {
+            /*add a CRUSH DEPTH FOS to the saved move-to-profile piston length for next profile*/
+            length_update = length_update + 0.5;
+
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
             {
@@ -2457,7 +2487,11 @@ void module_sps_move_to_profile(void)
 
 void module_sps_profile(void)
 {
-    bool crush_depth = false;
+    float Volume = 0.0;
+    float Density = 0.0;
+    float Length = 0.0;
+    float length_update = 0.0;
+
 #ifdef TEST
     /** Start Depth and Temperature Sensor @ 9Hz */
     float s_rate = 9.0;
@@ -2480,11 +2514,6 @@ void module_sps_profile(void)
     TaskHandle_t xTemp  = NULL;
     vTaskDelay(xDelay100ms);
 #endif
-
-    float Volume = 0.0;
-    float Density = 0.0;
-    float Length = 0.0;
-    float length_update = 0.0;
 
 #ifdef TEST
     /* do nothing */
@@ -2516,6 +2545,17 @@ void module_sps_profile(void)
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Setting -> adjusted prof_piston_length=%.4f >>\n", prof_piston_length);
     }
     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Setting -> Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n\n", Density, Volume, length_update);
+
+    /* time for critical depth piston position */
+    uint32_t crit_depth_piston_pos_time = 0;
+    float length_update_last_adjusted = length_update;
+    
+    /*If entering profile state because exceeded Crush_Depth*/
+    if (crush_depth)
+    {
+        length_update = CRUSH_DEPTH_PISTON_POSITION
+        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Setting -> ENTERING PROFILE CRUSH DEPTH Activation Length=%.4fin\n\n", length_update);
+    }
 
     /** Set volume or length */
     uint32_t piston_period = xDelay1000ms;
@@ -2608,10 +2648,6 @@ void module_sps_profile(void)
     /** check for the depth rate up to ~1min - 60 measurements */
     uint8_t rate_count = 0;
     float rate_avg = 0;
-
-    /* time for critical depth piston position */
-    uint32_t crit_depth_piston_pos_time = 0;
-    float length_update_last_adjusted = length_update;
 
     /* variable to align the measurements for 1m bin */
     float bin_pressure = 0.0;
@@ -2819,7 +2855,7 @@ void module_sps_profile(void)
 	    if (rate_count >= PROFILE_DEPTH_RATE_COUNTER)
 	    {
             float averaged_rate = (float) (rate_avg/rate_count);
-            if ( averaged_rate >= (-1*SYSTEM_RISE_RATE_MIN) && !piston_move && !crush_depth)
+            if ( averaged_rate >= (-1*SYSTEM_RISE_RATE_MIN) && !piston_move)
             {
                 /* increase piston position by PARK_POSITION_INCREMENT inches */
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Depth Rate = %.4f, increase %fin\n", averaged_rate, PARK_POSITION_INCREMENT);
@@ -3083,26 +3119,14 @@ void module_sps_profile(void)
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->finished\n");
                 piston_move = false;
                 piston_timer = 0;
-
-                if (crush_depth)
-                {
-                    /* stop here, in case of emergency blow */
-                    SENS_task_delete(xTemp);
-                    SENS_sensor_temperature_off();
-                    SENS_task_delete(xDepth);
-                    SENS_sensor_depth_off();
-                    spsEvent = MODE_POPUP;
-                    vTaskDelay(piston_period);
-                    run = false;
-                    /* break would be faster to go out */
-                    break;
-                }
             }
         }
 
         /* emergency blow , extend piston to full */
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {
+            /*add a CRUSH DEPTH FOS to the saved profile piston length for next profile*/
+            length_update_last_adjusted = length_update + 0.5;
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
             {
@@ -3121,7 +3145,7 @@ void module_sps_profile(void)
             ARTEMIS_DEBUG_PRINTF("\n\n\nSPS :: profile, <<< CRUSH DEPTH activated >>>\n\n\n");
         }
 
-        if (Depth <= BALLAST_DEPTH_PROFILE && !crush_depth)
+        if (Depth <= BALLAST_DEPTH_PROFILE)
         {
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
@@ -3133,6 +3157,13 @@ void module_sps_profile(void)
                 piston_move = false;
                 piston_timer = 0;
             }
+            if (crush_depth)
+            {
+                /* set to previous adjusted length update */
+                prof_piston_length = length_update_last_adjusted;
+            }
+            
+            crush_depth = false;
             run = false;
             SENS_task_delete(xTemp);
             SENS_sensor_temperature_off();
@@ -3145,7 +3176,8 @@ void module_sps_profile(void)
     }
 
     prof_number++;
-    pistoncal_number++;
+    pistonzero_number++;
+    pistonfull_number++;
 
     /* check Heap size */
     uint32_t size = xPortGetFreeHeapSize();
@@ -3165,6 +3197,8 @@ void module_sps_move_to_surface(void)
     float Volume = 0.0;
     float Density = 0.0;
     float Length = 0.0;
+    float lengthadjust = 0.0;
+    float lengthdrift  = 0.0;
 
     TaskHandle_t xPiston = NULL;
     eTaskState eStatus;
@@ -3220,6 +3254,111 @@ void module_sps_move_to_surface(void)
             piston_timer = 0;
         }
         vTaskDelay(piston_period);
+    }
+    /*Check if it is time to reset the piston encoder counts to max at full piston extent, if yes, then run reset encoder to max value at full*/
+    if( pistonfull_number >= PISTON_FULLCAL_COUNTER )
+    {
+        uint32_t piston_period = xDelay1000ms;
+        uint32_t piston_timer = 0;
+        bool piston_move = true;
+
+        eTaskState eStatus;
+        TaskHandle_t xPiston = NULL;
+        PIS_set_piston_rate(1);
+        PIS_task_move_full(&xPiston); /*This is the move piston full command may not need it if I get god length before reset with reset full command XXXXXXX*/
+        vTaskDelay(piston_period);
+    
+        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Piston move to full, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
+        pistonfull_number = 0;
+
+        /* check on piston movement */
+        while (piston_move)
+        {
+            eStatus = eTaskGetState( xPiston );
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
+            {   
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full task->active\n");
+                /* piston time for up to 30 seconds */
+                piston_timer += piston_period;
+                if (piston_timer >= 30000)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full time-out, task->finished\n");
+                    PIS_task_delete(xPiston);
+                    vTaskDelay(piston_period);
+                    PIS_Reset();
+                    piston_timer = 0;
+                }
+            }
+            else if (eStatus==eSuspended)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full task->suspended\n");
+                PIS_task_delete(xPiston);
+                piston_timer = 0;
+            }
+            else if (eStatus==eDeleted)
+            {
+                PIS_Get_Length(&Length);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full Length=%.4fin\n", Length);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full Task->Finished\n");
+                piston_move = false;
+                piston_timer = 0;
+            }
+            vTaskDelay(piston_period);
+        }
+        
+        lengthdrift = Length;
+        uint32_t piston_timer = 0;
+        bool piston_move = true;
+
+        eTaskState eStatus;
+        TaskHandle_t xPiston = NULL;
+        PIS_set_piston_rate(1);
+        PIS_task_reset_full(&xPiston); /*This is the reset piston encoder to full command*/
+        vTaskDelay(piston_period);
+    
+        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Setting -> Piston encoder value to max, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
+        pistonfull_number = 0;
+
+        /* check on piston movement */
+        while (piston_move)
+        {
+            eStatus = eTaskGetState( xPiston );
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
+            {   
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full task->active\n");
+                /* piston time for up to 30 seconds */
+                piston_timer += piston_period;
+                if (piston_timer >= 30000)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full time-out, task->finished\n");
+                    PIS_task_delete(xPiston);
+                    vTaskDelay(piston_period);
+                    PIS_Reset();
+                    piston_timer = 0;
+                }
+            }
+            else if (eStatus==eSuspended)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full task->suspended\n");
+                PIS_task_delete(xPiston);
+                piston_timer = 0;
+            }
+            else if (eStatus==eDeleted)
+            {
+                PIS_Get_Length(&Length);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston encoder reset to full Length=%.4fin\n", Length);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full Task->Finished\n");
+                piston_move = false;
+                piston_timer = 0;
+            }
+            vTaskDelay(piston_period);
+        }
+        /*Adjust saved position settings retain correct buoyancy states*/
+        lengthadjust = Length - lengthdrift;
+        park_piston_length = park_piston_length + lengthadjust;
+        to_prof_piston_length= to_prof_piston_length + lengthadjust;
+        prof_piston_length = prof_piston_length + lengthadjust;
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Setting -> Piston Length Adjustment %.4fin, Park Length=%.4fin, To Prof Length=%.4fin, Prof Length=%.4fin\n", lengthadjust, park_piston_length, to_prof_piston_length, prof_piston_length);
     }
 
     /** Turn on the GPS */

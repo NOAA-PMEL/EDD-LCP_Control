@@ -47,6 +47,7 @@
 #define PISTON_I2C_RW_TRV_USER_OR   ( 0x63 )
 #define PISTON_I2C_RW_MOV_ZERO      ( 0x64 )
 #define PISTON_I2C_RW_MOV_FULL      ( 0x65 )
+#define PISTON_I2C_RW_RST_FULL      ( 0x66 )
 
 /* MEM READ ADDRESSES */
 #define PISTON_I2C_R_VOLUME_TOTAL   ( 0x08 )
@@ -60,6 +61,7 @@
 #define PISTON_I2C_R_TRV_FULL       ( 0x69 )
 #define PISTON_I2C_R_TRV_MIN        ( 0x6A )
 #define PISTON_I2C_R_TRV_MAX        ( 0x6B )
+#define PISTON_I2C_R_TRV_FRST       ( 0x6C )
 
 #define PISTON_I2C_R_SYS_ID         ( 0xE8 )
 #define PISTON_I2C_R_YEAR_BUILD     ( 0xF8 )
@@ -103,6 +105,7 @@ bool PIS_set_volume(float volume);
 bool PIS_set_length(float length);
 void PIS_move_to_zero(void);
 void PIS_move_to_full(void);
+void PIS_reset_to_full(void);
 void PIS_extend(void);
 void PIS_retract(void);
 void PIS_stop(void);
