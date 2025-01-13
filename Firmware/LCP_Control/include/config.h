@@ -84,9 +84,9 @@
 #define PISTON_POSITION_INCREMENT2          ( 0.010f )      /* Piston position increment-decrement in inches, minimum length is 0.008in */
 #define PISTON_POSITION_MAXIMUM             ( 11.6f )      /* Piston position maximum in inches */
 #define PISTON_POSITION_MINIMUM             ( 0.1f )        /* Piston position minimum in inches */
-#define PISTON_ZEROCAL_COUNTER              ( 50 )          /*Number of profiles between zeroing the piston encoder*/
-#define PISTON_FULLCAL_COUNTER              ( 2 )          /*Number of profiles between reseting the max encoder values at full piston extent*/
-#define CRUSH_DEPTH_PISTON_POSITION         ( 5.25f )       /* Piston position maximum in inches */
+#define PISTON_ZEROCAL_COUNTER              ( 5 )          /*Number of profiles between zeroing the piston encoder*/
+#define PISTON_FULLCAL_COUNTER              ( 3 )          /*Number of profiles between reseting the max encoder values at full piston extent*/
+#define CRUSH_DEPTH_PISTON_POSITION         ( 5.00f )       /* Piston position maximum in inches */
 #define CRITICAL_PISTON_POSITON_DEPTH       ( 45.0f )       /* Critical depth where piston length must not exceed 5.25 inches */
 #define PISTON_MOVE_TO_SURFACE              ( 10.5f ) //11.0f )       /* Piston position move to surface in inches */
 #define PROFILE_DEPTH_RATE_COUNTER          ( 60.0f )       /* Change piston position after this number of measurements */
