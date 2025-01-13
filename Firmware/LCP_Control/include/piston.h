@@ -125,10 +125,12 @@ bool PIS_Get_Length(float *length);
 void PIS_task_move_length(TaskHandle_t *xPiston);
 void PIS_task_move_volume(TaskHandle_t *xPiston);
 void PIS_task_move_full(TaskHandle_t *xPiston);
+void PIS_task_reset_full(TaskHandle_t *xPiston);
 void PIS_task_move_zero(TaskHandle_t *xPiston);
 
 void task_move_piston_to_zero(void);
 void task_move_piston_to_full(void);
+void task_reset_piston_to_full(void);
 void task_move_piston_to_volume(void);
 void task_move_piston_to_length(void);
 void PIS_set_piston_rate(uint8_t rate);
