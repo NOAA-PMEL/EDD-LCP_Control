@@ -2552,7 +2552,7 @@ void module_sps_profile(void)
     /*If entering profile state because exceeded Crush_Depth*/
     if (crush_depth)
     {
-        length_update = CRUSH_DEPTH_PISTON_POSITION
+        length_update = CRUSH_DEPTH_PISTON_POSITION;
         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Setting -> ENTERING PROFILE CRUSH DEPTH Activation Length=%.4fin\n\n", length_update);
     }
 
