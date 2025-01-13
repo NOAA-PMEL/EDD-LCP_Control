@@ -29,7 +29,6 @@
 //*****************************************************************************
 #include <string.h>
 #include <math.h>
-
 #include "artemis_debug.h"
 #include "artemis_rtc.h"
 #include "StateMachine.h"
@@ -3265,7 +3264,7 @@ void module_sps_move_to_surface(void)
         eTaskState eStatus;
         TaskHandle_t xPiston = NULL;
         PIS_set_piston_rate(1);
-        PIS_task_move_full(&xPiston); /*This is the move piston full command may not need it if I get god length before reset with reset full command XXXXXXX*/
+        PIS_task_move_full(&xPiston); /*This is the move piston full command may not need it if I get good length before reset with reset full command XXXXXXX*/
         vTaskDelay(piston_period);
     
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Piston move to full, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
@@ -3307,11 +3306,8 @@ void module_sps_move_to_surface(void)
         }
         
         lengthdrift = Length;
-        uint32_t piston_timer = 0;
-        bool piston_move = true;
+        piston_move = true;
 
-        eTaskState eStatus;
-        TaskHandle_t xPiston = NULL;
         PIS_set_piston_rate(1);
         PIS_task_reset_full(&xPiston); /*This is the reset piston encoder to full command*/
         vTaskDelay(piston_period);
