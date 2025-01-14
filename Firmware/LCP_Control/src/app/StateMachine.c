@@ -925,7 +925,7 @@ void STATE_Profiler(void)
         /** add a special MODE in case of hitting the Crush Depth then surface and adjust piston length settings */
         else if (spsEvent == MODE_CRUSH_TO_PROFILE)
         {
-            ARTEMIS_DEBUG_PRINTF("\nSPS :: Switching to Surface State !! <<< CRUSH DEPTH EXCEEDED >>>\n\n");
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: Switching to Profile State !! <<< CRUSH DEPTH EXCEEDED >>>\n\n");
             system.profiler.state = SPS_Sample_mode;
             vTaskDelay(xDelay2000ms);
         }
@@ -974,7 +974,7 @@ void module_sps_move_to_park(void)
     float zlengthdrift  = 0.0;
 
     /* set crush depth to false */
-    bool crush_depth = false;
+    crush_depth = false;
 
 #ifdef TEST
     /* do nothing */
@@ -1495,7 +1495,7 @@ void module_sps_move_to_park(void)
 void module_sps_park(void)
 {
     /* set crush depth to false */
-    bool crush_depth = false;
+    crush_depth = false;
 
 #ifdef TEST
     /** Sample at 9Hz */
@@ -2025,7 +2025,7 @@ void module_sps_park(void)
 
 void module_sps_move_to_profile(void)
 {
-    bool crush_depth = false;
+    crush_depth = false;
     float Volume = 0.0;
     float Length = 0.0;
     float Density = 0.0;
