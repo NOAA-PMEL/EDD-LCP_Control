@@ -2867,29 +2867,31 @@ void module_sps_profile(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Depth=%.4f is @critical piston position >>\n", Depth);
                         length_update = CRUSH_DEPTH_PISTON_POSITION;
-
-                        /* set a timer for 5 mins ? , period = xDelay1000ms , it can change in case of TEST */
-                        crit_depth_piston_pos_time += (period * rate_count);
-                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Critical Depth Piston Position Timer = %f seconds >>\n", (float) crit_depth_piston_pos_time/period);
-                        if (crit_depth_piston_pos_time >= period*SYSTEM_CDPP_TIMER)
+                        if(!crush_depth)
                         {
-                            /* set to previous adjusted length update */
-                            prof_piston_length = length_update_last_adjusted;
-                            /* send it to -> Critical Park State */
-                            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Critical Depth Piston Position Time out %f mins >>\n", (float) SYSTEM_CDPP_TIMER/60);
-                            critical_park_state = true;
-                            crit_depth_piston_pos_time = 0;
-                            spsEvent = MODE_CRIT_TO_PARK;
+                            /* set a timer for 5 mins ? , period = xDelay1000ms , it can change in case of TEST */
+                            crit_depth_piston_pos_time += (period * rate_count);
+                            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Critical Depth Piston Position Timer = %f seconds >>\n", (float) crit_depth_piston_pos_time/period);
+                            if (crit_depth_piston_pos_time >= period*SYSTEM_CDPP_TIMER)
+                            {
+                                /* set to previous adjusted length update */
+                                prof_piston_length = length_update_last_adjusted;
+                                /* send it to -> Critical Park State */
+                                ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Critical Depth Piston Position Time out %f mins >>\n", (float) SYSTEM_CDPP_TIMER/60);
+                                critical_park_state = true;
+                                crit_depth_piston_pos_time = 0;
+                                spsEvent = MODE_CRIT_TO_PARK;
 
-                            /* turn off the sensors */
-                            SENS_task_delete(xTemp);
-                            SENS_sensor_temperature_off();
-                            SENS_task_delete(xDepth);
-                            SENS_sensor_depth_off();
-                            piston_move = false;
-                            run = false;
-                            /* break here */
-                            break;
+                                /* turn off the sensors */
+                                SENS_task_delete(xTemp);
+                                SENS_sensor_temperature_off();
+                                SENS_task_delete(xDepth);
+                                SENS_sensor_depth_off();
+                                piston_move = false;
+                                run = false;
+                                /* break here */
+                                break;
+                            }
                         }
                     }
                     else if (Depth < CRITICAL_PISTON_POSITON_DEPTH)
@@ -2971,7 +2973,7 @@ void module_sps_profile(void)
             }
             else if ( averaged_rate < (-1*SYSTEM_RISE_RATE_MAX) && !piston_move && !crush_depth)
             {
-                /* decrease piston position by PARK_POSITION_INCREMENT inches */
+                /* decrease piston position by PARK_POSITION_INCREMENT2 inches */
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Depth Rate = %.4f, decrease %fin\n", averaged_rate, PARK_POSITION_INCREMENT2);
                 length_update -= PARK_POSITION_INCREMENT2;
 
@@ -2983,30 +2985,30 @@ void module_sps_profile(void)
                         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Depth=%.4f is @critial piston position >>\n", Depth);
                         length_update = CRUSH_DEPTH_PISTON_POSITION;
 
-                        /* set a timer for 5 mins ? , period = xDelay1000ms , it can change in case of TEST */
-                        crit_depth_piston_pos_time += period;
-                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Critical Depth Piston Position Timer = %f seconds >>\n", (float) crit_depth_piston_pos_time/period);
-                        if (crit_depth_piston_pos_time >= period*SYSTEM_CDPP_TIMER)
-                        {
-                            /* set to previous adjusted length update */
-                            prof_piston_length = length_update_last_adjusted;
+                        ///* set a timer for 5 mins ? , period = xDelay1000ms , it can change in case of TEST */
+                        //crit_depth_piston_pos_time += period;
+                        //ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Critical Depth Piston Position Timer = %f seconds >>\n", (float) crit_depth_piston_pos_time/period);
+                        //if (crit_depth_piston_pos_time >= period*SYSTEM_CDPP_TIMER)
+                        //{
+                        //    /* set to previous adjusted length update */
+                        //    prof_piston_length = length_update_last_adjusted;
+                        //
+                        //    /* send it to -> Critical Park State */
+                        //    ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Critical Depth Piston Position Time out %f mins >>\n", (float) SYSTEM_CDPP_TIMER/60);
+                        //    critical_park_state = true;
+                        //    crit_depth_piston_pos_time = 0;
+                        //    spsEvent = MODE_CRIT_TO_PARK;
 
-                            /* send it to -> Critical Park State */
-                            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Critical Depth Piston Position Time out %f mins >>\n", (float) SYSTEM_CDPP_TIMER/60);
-                            critical_park_state = true;
-                            crit_depth_piston_pos_time = 0;
-                            spsEvent = MODE_CRIT_TO_PARK;
-
-                            /* turn off the sensors */
-                            SENS_task_delete(xTemp);
-                            SENS_sensor_temperature_off();
-                            SENS_task_delete(xDepth);
-                            SENS_sensor_depth_off();
-                            piston_move = false;
-                            run = false;
-                            /* break here */
-                            break;
-                        }
+                        //    /* turn off the sensors */
+                        //    SENS_task_delete(xTemp);
+                        //    SENS_sensor_temperature_off();
+                        //    SENS_task_delete(xDepth);
+                        //    SENS_sensor_depth_off();
+                        //    piston_move = false;
+                        //    run = false;
+                        //    /* break here */
+                        //    break;
+                        //}
                     }
                 }
 
@@ -3135,7 +3137,7 @@ void module_sps_profile(void)
                 PIS_stop();
                 piston_timer = 0;
             }
-
+            length_update = CRUSH_DEPTH_PISTON_POSITION;
             vTaskDelay(piston_period);
             PIS_set_length(CRUSH_DEPTH_PISTON_POSITION);
             PIS_task_move_length(&xPiston);
