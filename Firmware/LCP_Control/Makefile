@@ -78,7 +78,7 @@ FPU = fpv4-sp-d16
 # applications may need the software calling convention.
 #FABI = softfp
 FABI = hard
-PYTHON3 = python3
+PYTHON3 = python3.8
 
 LINKER_FILE := ./linker/lcpcontrol_lowpower.ld
 STARTUP_FILE := ./src/startup_$(COMPILERNAME).c
