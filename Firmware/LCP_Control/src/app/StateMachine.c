@@ -1389,6 +1389,7 @@ void module_sps_move_to_park(void)
                             vTaskDelay(piston_period);
                             PIS_Reset();
                             piston_timer = 0;
+                            crush_depth = false;
                         }
                     }
                     else
@@ -1408,12 +1409,14 @@ void module_sps_move_to_park(void)
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
                     piston_move = false;
                     piston_timer = 0;
+                    crush_depth = false;
                 }
                 else if (eStatus==eSuspended)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->suspended\n");
                     PIS_task_delete(xPiston);
                     piston_timer = 0;
+                    crush_depth = false;
                 }
                 else if (eStatus==eDeleted)
                 {
@@ -1849,6 +1852,7 @@ void module_sps_park(void)
                             vTaskDelay(piston_period);
                             PIS_Reset();
                             piston_timer = 0;
+                            crush_depth = false;
                         }
                     }
                     else
@@ -1868,12 +1872,14 @@ void module_sps_park(void)
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->Ready\n");
                     piston_move = false;
                     piston_timer = 0;
+                    crush_depth = false;
                 }
                 else if (eStatus==eSuspended)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->suspended\n");
                     PIS_task_delete(xPiston);
                     piston_timer = 0;
+                    crush_depth = false;
                 }
                 else if (eStatus==eDeleted)
                 {
@@ -2381,6 +2387,7 @@ void module_sps_move_to_profile(void)
                             PIS_task_delete(xPiston);
                             PIS_Reset();
                             piston_timer = 0;
+                            crush_depth = false;
                         }
                     }
                     else
@@ -2399,12 +2406,14 @@ void module_sps_move_to_profile(void)
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->ready\n");
                     piston_move = false;
                     piston_timer = 0;
+                    crush_depth = false;
                 }
                 else if (eStatus==eSuspended)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_porfile, Piston task->suspended\n");
                     PIS_task_delete(xPiston);
                     piston_timer = 0;
+                    crush_depth = false;
                 }
                 else if (eStatus==eDeleted)
                 {
@@ -3085,6 +3094,7 @@ void module_sps_profile(void)
                         PIS_task_delete(xPiston);
                         PIS_Reset();
                         piston_timer = 0;
+                        crush_depth = false;
                     }
                 }
                 else
@@ -3104,12 +3114,14 @@ void module_sps_profile(void)
                 //PIS_task_delete(xPiston);
                 piston_move = false;
                 piston_timer = 0;
+                crush_depth = false;
             }
             else if (eStatus==eSuspended)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: porfile, Piston task->suspended\n");
                 PIS_task_delete(xPiston);
                 piston_timer = 0;
+                crush_depth = false;
             }
             else if (eStatus==eDeleted)
             {
