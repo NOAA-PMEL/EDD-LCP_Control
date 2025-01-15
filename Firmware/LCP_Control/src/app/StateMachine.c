@@ -1389,7 +1389,23 @@ void module_sps_move_to_park(void)
                             vTaskDelay(piston_period);
                             PIS_Reset();
                             piston_timer = 0;
-                            crush_depth = false;
+
+                            /* piston task delay 1000ms */
+                            if (period >= xDelay10000ms)
+                            {
+                                /* sensor task is already deleted */
+                            }
+                            else
+                            {
+                                /* stop here, in case of emergency blow */
+                                SENS_task_delete(xDepth);
+                                SENS_sensor_depth_off();
+                            }
+
+                            spsEvent = MODE_CRUSH_TO_PROFILE;
+                            vTaskDelay(piston_period);
+                            run = false;
+                            break;
                         }
                     }
                     else
@@ -1409,14 +1425,52 @@ void module_sps_move_to_park(void)
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
                     piston_move = false;
                     piston_timer = 0;
-                    crush_depth = false;
+
+                    if (crush_depth)
+                    {
+                        /* piston task delay 1000ms */
+                        if (period >= xDelay10000ms)
+                        {
+                            /* sensor task is already deleted */
+                        }
+                        else
+                        {
+                            /* stop here, in case of emergency blow */
+                            SENS_task_delete(xDepth);
+                            SENS_sensor_depth_off();
+                        }
+
+                        spsEvent = MODE_CRUSH_TO_PROFILE;
+                        vTaskDelay(piston_period);
+                        run = false;
+                        break;
+                    }
                 }
                 else if (eStatus==eSuspended)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->suspended\n");
                     PIS_task_delete(xPiston);
                     piston_timer = 0;
-                    crush_depth = false;
+
+                    if (crush_depth)
+                    {
+                        /* piston task delay 1000ms */
+                        if (period >= xDelay10000ms)
+                        {
+                            /* sensor task is already deleted */
+                        }
+                        else
+                        {
+                            /* stop here, in case of emergency blow */
+                            SENS_task_delete(xDepth);
+                            SENS_sensor_depth_off();
+                        }
+
+                        spsEvent = MODE_CRUSH_TO_PROFILE;
+                        vTaskDelay(piston_period);
+                        run = false;
+                        break;
+                    }
                 }
                 else if (eStatus==eDeleted)
                 {
@@ -1852,7 +1906,24 @@ void module_sps_park(void)
                             vTaskDelay(piston_period);
                             PIS_Reset();
                             piston_timer = 0;
-                            crush_depth = false;
+
+                            /* stop here, in case of emergency blow */
+                            if (park_period >= xDelay10000ms)
+                            {
+                                /* do nothing, tasks are already deleted and sensors are turned off */
+                            }
+                            else
+                            {
+                                SENS_task_delete(xTemp);
+                                SENS_sensor_temperature_off();
+                                SENS_task_delete(xDepth);
+                                SENS_sensor_depth_off();
+                            }
+
+                            spsEvent = MODE_CRUSH_TO_PROFILE;
+                            vTaskDelay(piston_period);
+                            run = false;
+                            break;
                         }
                     }
                     else
@@ -1872,14 +1943,54 @@ void module_sps_park(void)
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->Ready\n");
                     piston_move = false;
                     piston_timer = 0;
-                    crush_depth = false;
+                    
+                    if (crush_depth)
+                    {
+                        /* stop here, in case of emergency blow */
+                        if (park_period >= xDelay10000ms)
+                        {
+                            /* do nothing, tasks are already deleted and sensors are turned off */
+                        }
+                        else
+                        {
+                            SENS_task_delete(xTemp);
+                            SENS_sensor_temperature_off();
+                            SENS_task_delete(xDepth);
+                            SENS_sensor_depth_off();
+                        }
+
+                        spsEvent = MODE_CRUSH_TO_PROFILE;
+                        vTaskDelay(piston_period);
+                        run = false;
+                        break;
+                    }
                 }
                 else if (eStatus==eSuspended)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->suspended\n");
                     PIS_task_delete(xPiston);
                     piston_timer = 0;
-                    crush_depth = false;
+
+                    if (crush_depth)
+                    {
+                        /* stop here, in case of emergency blow */
+                        if (park_period >= xDelay10000ms)
+                        {
+                            /* do nothing, tasks are already deleted and sensors are turned off */
+                        }
+                        else
+                        {
+                            SENS_task_delete(xTemp);
+                            SENS_sensor_temperature_off();
+                            SENS_task_delete(xDepth);
+                            SENS_sensor_depth_off();
+                        }
+
+                        spsEvent = MODE_CRUSH_TO_PROFILE;
+                        vTaskDelay(piston_period);
+                        run = false;
+                        break;
+                    }
                 }
                 else if (eStatus==eDeleted)
                 {
@@ -2387,7 +2498,24 @@ void module_sps_move_to_profile(void)
                             PIS_task_delete(xPiston);
                             PIS_Reset();
                             piston_timer = 0;
-                            crush_depth = false;
+                            
+                            /* piston task delay 1000ms */
+                            if (period >= xDelay10000ms)
+                            {
+                                /* sensor task is already deleted */
+                            }
+                            else
+                            {
+                            /* stop here, in case of emergency blow */
+                                SENS_task_delete(xDepth);
+                                SENS_sensor_depth_off();
+                            }
+
+                            /* stop here, in case of emergency blow */
+                            spsEvent = MODE_CRUSH_TO_PROFILE;
+                            vTaskDelay(piston_period);
+                            run = false;
+                            break;
                         }
                     }
                     else
@@ -2406,14 +2534,54 @@ void module_sps_move_to_profile(void)
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->ready\n");
                     piston_move = false;
                     piston_timer = 0;
-                    crush_depth = false;
+                    
+                    if (crush_depth)
+                    {
+                        /* piston task delay 1000ms */
+                        if (period >= xDelay10000ms)
+                        {
+                            /* sensor task is already deleted */
+                        }
+                        else
+                        {
+                            /* stop here, in case of emergency blow */
+                            SENS_task_delete(xDepth);
+                            SENS_sensor_depth_off();
+                        }
+
+                        /* stop here, in case of emergency blow */
+                        spsEvent = MODE_CRUSH_TO_PROFILE;
+                        vTaskDelay(piston_period);
+                        run = false;
+                        break;
+                    }
                 }
                 else if (eStatus==eSuspended)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_porfile, Piston task->suspended\n");
                     PIS_task_delete(xPiston);
                     piston_timer = 0;
-                    crush_depth = false;
+
+                    if (crush_depth)
+                    {
+                        /* piston task delay 1000ms */
+                        if (period >= xDelay10000ms)
+                        {
+                            /* sensor task is already deleted */
+                        }
+                        else
+                        {
+                            /* stop here, in case of emergency blow */
+                            SENS_task_delete(xDepth);
+                            SENS_sensor_depth_off();
+                        }
+
+                        /* stop here, in case of emergency blow */
+                        spsEvent = MODE_CRUSH_TO_PROFILE;
+                        vTaskDelay(piston_period);
+                        run = false;
+                        break;
+                    }
                 }
                 else if (eStatus==eDeleted)
                 {
@@ -3094,7 +3262,6 @@ void module_sps_profile(void)
                         PIS_task_delete(xPiston);
                         PIS_Reset();
                         piston_timer = 0;
-                        crush_depth = false;
                     }
                 }
                 else
@@ -3114,14 +3281,12 @@ void module_sps_profile(void)
                 //PIS_task_delete(xPiston);
                 piston_move = false;
                 piston_timer = 0;
-                crush_depth = false;
             }
             else if (eStatus==eSuspended)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: porfile, Piston task->suspended\n");
                 PIS_task_delete(xPiston);
                 piston_timer = 0;
-                crush_depth = false;
             }
             else if (eStatus==eDeleted)
             {
@@ -3177,11 +3342,11 @@ void module_sps_profile(void)
             }
             
             crush_depth = false;
-            run = false;
             SENS_task_delete(xTemp);
             SENS_sensor_temperature_off();
             SENS_task_delete(xDepth);
             SENS_sensor_depth_off();
+            run = false;
             spsEvent = MODE_DONE;
         }
 #endif
