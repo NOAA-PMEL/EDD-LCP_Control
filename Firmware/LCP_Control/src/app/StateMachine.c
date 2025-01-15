@@ -1516,7 +1516,7 @@ void module_sps_move_to_park(void)
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {
             /*add a CRUSH DEPTH FOS to the saved move-to-park piston length for next profile*/
-            length_update = length_update + 0.5;
+            park_piston_length = length_update + 0.5;
             
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
@@ -2037,7 +2037,7 @@ void module_sps_park(void)
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {
             /*add a CRUSH DEPTH FOS to the saved park piston length for next profile*/
-            length_update = length_update + 0.5;
+            park_piston_length = length_update + 0.5;
             
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
@@ -2628,7 +2628,7 @@ void module_sps_move_to_profile(void)
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {
             /*add a CRUSH DEPTH FOS to the saved move-to-profile piston length for next profile*/
-            length_update = length_update + 0.5;
+            to_prof_piston_length = length_update + 0.5;
 
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
