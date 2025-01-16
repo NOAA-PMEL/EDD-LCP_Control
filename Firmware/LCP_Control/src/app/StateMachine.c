@@ -3447,7 +3447,6 @@ void module_sps_move_to_surface(void)
         vTaskDelay(piston_period);
     
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Piston move to full, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
-        pistonfull_number = 0;
 
         /* check on piston movement */
         while (piston_move)
@@ -3475,7 +3474,9 @@ void module_sps_move_to_surface(void)
             }
             else if (eStatus==eDeleted)
             {
+                vTaskDelay(piston_period);
                 PIS_Get_Length(&Length);
+                vTaskDelay(piston_period);
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full Length=%.4fin\n", Length);
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full Task->Finished\n");
                 piston_move = false;
@@ -3520,7 +3521,9 @@ void module_sps_move_to_surface(void)
             }
             else if (eStatus==eDeleted)
             {
+                TaskDelay(piston_period);
                 PIS_Get_Length(&Length);
+                TaskDelay(piston_period);
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston encoder reset to full Length=%.4fin\n", Length);
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full Task->Finished\n");
                 piston_move = false;
