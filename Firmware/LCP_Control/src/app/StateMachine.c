@@ -1087,6 +1087,7 @@ void module_sps_move_to_park(void)
         }
         else
         {
+            zlengthadjust = 0.0 - zlengthdrift;
             /*Adjust saved position settings retain correct buoyancy states*/
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, New Piston Zero Cal Length=0in\n");
             park_piston_length = park_piston_length + zlengthadjust;
@@ -3607,19 +3608,20 @@ void module_sps_move_to_surface(void)
         }
         else
         {
+            lengthadjust = PISTON_POSITION_ATFULLRESET - lengthdrift;
             /*Adjust saved position settings retain correct buoyancy states*/
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, New Piston Full Cal Length=%.4fin\n", PISTON_POSITION_ATFULLRESET);
-            park_piston_length = park_piston_length + zlengthadjust;
+            park_piston_length = park_piston_length + lengthadjust;
             if(park_piston_length >= CRUSH_DEPTH_PISTON_POSITION && (PARK_DEPTH + PARK_DEPTH_ERR) >= CRITICAL_PISTON_POSITON_DEPTH)
             {
                 park_piston_length = CRUSH_DEPTH_PISTON_POSITION;
             }
-            to_prof_piston_length= to_prof_piston_length + zlengthadjust;
+            to_prof_piston_length= to_prof_piston_length + lengthadjust;
             if(to_prof_piston_length >= CRUSH_DEPTH_PISTON_POSITION && (PROFILE_DEPTH + PROFILE_DEPTH_ERR) >= CRITICAL_PISTON_POSITON_DEPTH)
             {
                 to_prof_piston_length = CRUSH_DEPTH_PISTON_POSITION;
             }
-            prof_piston_length = prof_piston_length + zlengthadjust;
+            prof_piston_length = prof_piston_length + lengthadjust;
             if(prof_piston_length >= CRUSH_DEPTH_PISTON_POSITION && (PROFILE_DEPTH + PROFILE_DEPTH_ERR) >= CRITICAL_PISTON_POSITON_DEPTH)
             {
                 prof_piston_length = CRUSH_DEPTH_PISTON_POSITION;
