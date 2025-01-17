@@ -56,6 +56,7 @@
 #define SYSTEM_RISE_RATE_SETPOINT           ( 0.100f )
 #define SYSTEM_RISE_RATE_MAX                ( 0.333f )
 #define SYSTEM_RISE_RATE_MIN                ( 0.070f )  //0.015f 
+#define SYSTEM_FALL_RATE_SETPOINT           ( 0.100f )
 #define SYSTEM_FALL_RATE_MAX                ( 0.5f )
 #define SYSTEM_FALL_RATE_MIN                ( 0.005f )  /* need to think about it*/
 
