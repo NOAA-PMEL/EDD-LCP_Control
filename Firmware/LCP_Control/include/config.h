@@ -82,7 +82,8 @@
 #define SYSTEM_PROFILE_NUMBER               ( 100 )         /* for testing */
 #define PISTON_POSITION_INCREMENT           ( 0.030f )      /* Piston position increment-decrement in inches 0.015*/
 #define PISTON_POSITION_INCREMENT2          ( 0.010f )      /* Piston position increment-decrement in inches, minimum length is 0.008in */
-#define PISTON_POSITION_MAXIMUM             ( 11.6f )      /* Piston position maximum in inches */
+#define PISTON_POSITION_MAXIMUM             ( 11.6f )      /* Piston position maximum in inches at full extension IMPORTANT NEEDS TO MATCH PISTON CONTROL VARIABLE*/
+#define PISTON_POSITION_ATFULLRESET         ( 11.65f )      /* Piston position maximum in inches at full extension IMPORTANT NEEDS TO MATCH PISTON CONTROL VARIABLE: SYS_ENCODER_LENGTH_DEFAULT*/
 #define PISTON_POSITION_MINIMUM             ( 0.1f )        /* Piston position minimum in inches */
 #define PISTON_ZEROCAL_COUNTER              ( 5 )          /*Number of profiles between zeroing the piston encoder*/
 #define PISTON_FULLCAL_COUNTER              ( 3 )          /*Number of profiles between reseting the max encoder values at full piston extent*/

@@ -1032,10 +1032,8 @@ void module_sps_move_to_park(void)
             vTaskDelay(piston_period);
         }
         /*Adjust saved position settings retain correct buoyancy states*/
-        PIS_Get_Length(&Length);
-        vTaskDelay(piston_period);
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, New Piston Zero Cal Length=%.4fin\n", Length);
-        zlengthadjust = Length - zlengthdrift;
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, New Piston Zero Cal Length=0in\n", );
+        zlengthadjust = 0.0 - zlengthdrift;
         park_piston_length = park_piston_length + zlengthadjust;
         to_prof_piston_length= to_prof_piston_length + zlengthadjust;
         prof_piston_length = prof_piston_length + zlengthadjust;
@@ -3486,10 +3484,9 @@ void module_sps_move_to_surface(void)
             vTaskDelay(piston_period);
         }
         /*Adjust saved position settings retain correct buoyancy states*/
-        PIS_Get_Length(&Length);
-        vTaskDelay(piston_period);
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, New Piston Full Cal Length=%.4fin\n", Length);
-        lengthadjust = Length - lengthdrift;
+
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, New Piston Full Cal Length=%.4fin\n", PISTON_POSITION_ATFULLRESET);
+        lengthadjust = PISTON_POSITION_ATFULLRESET - lengthdrift;
         park_piston_length = park_piston_length + lengthadjust;
         to_prof_piston_length= to_prof_piston_length + lengthadjust;
         prof_piston_length = prof_piston_length + lengthadjust;
