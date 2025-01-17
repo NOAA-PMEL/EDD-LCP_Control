@@ -1032,7 +1032,7 @@ void module_sps_move_to_park(void)
             vTaskDelay(piston_period);
         }
         /*Adjust saved position settings retain correct buoyancy states*/
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, New Piston Zero Cal Length=0in\n", );
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, New Piston Zero Cal Length=0in\n");
         zlengthadjust = 0.0 - zlengthdrift;
         park_piston_length = park_piston_length + zlengthadjust;
         to_prof_piston_length= to_prof_piston_length + zlengthadjust;
