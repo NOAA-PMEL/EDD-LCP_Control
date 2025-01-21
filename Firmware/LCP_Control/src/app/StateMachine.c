@@ -1034,10 +1034,11 @@ void module_sps_move_to_park(void)
         }
         zlengthadjust = 0.0 - zlengthdrift;
 
-        if( (zlengthadjust>=0.25) || (zlengthadjust<=0.25))
+        if( (zlengthadjust>=0.25) || (zlengthadjust<=-0.25))
         {
             if ( pistoncal < 1)
             {
+                pistoncal++;
                 piston_period = xDelay1000ms;
                 piston_timer = 0;
                 piston_move = true;
@@ -1082,12 +1083,11 @@ void module_sps_move_to_park(void)
                     }
                     vTaskDelay(piston_period);
                 }
-                pistoncal++;
             }
-        }
-        else
-        {
             zlengthadjust = 0.0 - zlengthdrift;
+        }
+        if( (zlengthadjust<=0.25) && (zlengthadjust>=-0.25))
+        {
             /*Adjust saved position settings retain correct buoyancy states*/
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, New Piston Zero Cal Length=0in\n");
             park_piston_length = park_piston_length + zlengthadjust;
@@ -3555,10 +3555,11 @@ void module_sps_move_to_surface(void)
         }
         lengthadjust = PISTON_POSITION_ATFULLRESET - lengthdrift;
 
-        if( (lengthadjust>=0.25) || (lengthadjust<=0.25))
+        if( (lengthadjust>=0.25) || (lengthadjust<=-0.25))
         {
             if ( pistoncal < 1)
             {
+                pistoncal++;
                 piston_period = xDelay1000ms;
                 piston_timer = 0;
                 piston_move = true;
@@ -3566,7 +3567,7 @@ void module_sps_move_to_surface(void)
                 eTaskState eStatus;
                 TaskHandle_t xPiston = NULL;
                 PIS_set_piston_rate(1);
-                PIS_task_move_zero(&xPiston); /*This is the piston zero reset command*/
+                PIS_task_reset_full(&xPiston); /*This is the reset piston encoder to full command*/
                 vTaskDelay(piston_period);
                 
                 while (piston_move)
@@ -3603,10 +3604,10 @@ void module_sps_move_to_surface(void)
                     }
                     vTaskDelay(piston_period);
                 }
-                pistoncal++;
             }
+            lengthadjust = PISTON_POSITION_ATFULLRESET - lengthdrift;
         }
-        else
+        if( (lengthadjust<=0.25) && (lengthadjust>=-0.25))
         {
             lengthadjust = PISTON_POSITION_ATFULLRESET - lengthdrift;
             /*Adjust saved position settings retain correct buoyancy states*/
