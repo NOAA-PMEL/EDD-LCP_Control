@@ -315,7 +315,7 @@ void module_pus_idle(void)
 
 void module_pus_surface_float(void)
 {
-    uint32_t piston_period = xDelay1000ms;
+    uint32_t piston_period = xDelay2000ms;
     uint32_t piston_timer = 0;
     bool piston_move = false;
     float Volume = 0.0;
@@ -593,7 +593,7 @@ void module_pds_idle(void)
     float Length = CTRL_calculate_length_from_volume(Volume);
     ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
 
-    uint32_t piston_period = xDelay1000ms;
+    uint32_t piston_period = xDelay2000ms;
     uint32_t piston_timer = 0;
     bool piston_move = true;
     TaskHandle_t xPiston = NULL;
@@ -972,6 +972,9 @@ void module_sps_move_to_park(void)
     float length_update = 0.0;
     float zlengthadjust = 0.0;
     float zlengthdrift  = 0.0;
+    uint32_t piston_period = xDelay2000ms;
+    uint32_t piston_timer = 0;
+    bool piston_move = true;
 
     /* set crush depth to false */
     crush_depth = false;
@@ -983,10 +986,10 @@ void module_sps_move_to_park(void)
     /*Check if it is time to zero the piston encoder counts, if yes, then zero cal the piston*/
     if( pistonzero_number >= PISTON_ZEROCAL_COUNTER )
     {
-        uint32_t piston_period = xDelay1000ms;
-        uint32_t piston_timer = 0;
+
+        piston_timer = 0;
         uint8_t pistoncal = 0;
-        bool piston_move = true;
+        piston_move = true;
 
         eTaskState eStatus;
         TaskHandle_t xPiston = NULL;
@@ -1023,6 +1026,7 @@ void module_sps_move_to_park(void)
             }
             else if (eStatus==eDeleted)
             {
+                vTaskDelay(piston_period);
                 PIS_Get_Length(&zlengthdrift);
                 vTaskDelay(piston_period);
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Length=%.4fin, Try%u\n", zlengthdrift, pistoncal);
@@ -1039,7 +1043,6 @@ void module_sps_move_to_park(void)
             if ( pistoncal < 1)
             {
                 pistoncal++;
-                piston_period = xDelay1000ms;
                 piston_timer = 0;
                 piston_move = true;
 
@@ -1048,7 +1051,7 @@ void module_sps_move_to_park(void)
                 PIS_set_piston_rate(1);
                 PIS_task_move_zero(&xPiston); /*This is the piston zero reset command*/
                 vTaskDelay(piston_period);
-                pistoncal++;
+
                 while (piston_move)
                 {
                     eStatus = eTaskGetState( xPiston );
@@ -1074,6 +1077,7 @@ void module_sps_move_to_park(void)
                     }
                     else if (eStatus==eDeleted)
                     {
+                        vTaskDelay(piston_period);
                         PIS_Get_Length(&zlengthdrift);
                         vTaskDelay(piston_period);
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Length=%.4fin, Try%u\n", zlengthdrift, pistoncal);
@@ -1144,9 +1148,8 @@ void module_sps_move_to_park(void)
     Density = CTRL_calculate_lcp_density(Volume);
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Setting -> Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n\n", Density, Volume, length_update);
 
-    uint32_t piston_period = xDelay1000ms;
-    uint32_t piston_timer = 0;
-    bool piston_move = true;
+    piston_timer = 0;
+    piston_move = true;
 
     eTaskState eStatus;
     TaskHandle_t xPiston = NULL;
@@ -1705,7 +1708,7 @@ void module_sps_park(void)
     TaskHandle_t xPiston = NULL;
     PIS_set_piston_rate(1);
     uint32_t piston_timer = 0;
-    uint32_t piston_period = xDelay1000ms;
+    uint32_t piston_period = xDelay2000ms;
     float Volume = 0.0;
     float Density = 0.0;
     float Length = 0.0;
@@ -2255,7 +2258,7 @@ void module_sps_move_to_profile(void)
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Setting -> Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n\n", Density, Volume, length_update);
 
     /** move to length */
-    uint32_t piston_period = xDelay1000ms;
+    uint32_t piston_period = xDelay2000ms;
     uint32_t piston_timer = 0;
     bool piston_move = true;
     TaskHandle_t xPiston = NULL;
@@ -2802,7 +2805,7 @@ void module_sps_profile(void)
     }
 
     /** Set volume or length */
-    uint32_t piston_period = xDelay1000ms;
+    uint32_t piston_period = xDelay2000ms;
     bool piston_move = true;
     uint32_t piston_timer = 0;
 
@@ -3437,7 +3440,7 @@ void module_sps_profile(void)
 void module_sps_move_to_surface(void)
 {
     /** Extend the piston fully out */
-    uint32_t piston_period = xDelay1000ms;
+    uint32_t piston_period = xDelay2000ms;
     uint32_t piston_timer = 0;
     bool piston_move = true;
     float Volume = 0.0;
@@ -3504,10 +3507,9 @@ void module_sps_move_to_surface(void)
     /*Check if it is time to reset the piston encoder counts to max at full piston extent, if yes, then run reset encoder to max value at full*/
     if( pistonfull_number >= PISTON_FULLCAL_COUNTER )
     {
-        uint32_t piston_period = xDelay1000ms;
-        uint32_t piston_timer = 0;
+        piston_timer = 0;
         uint8_t pistoncal = 0;
-        bool piston_move = true;
+        piston_move = true;
 
         eTaskState eStatus;
         TaskHandle_t xPiston = NULL;
@@ -3544,6 +3546,7 @@ void module_sps_move_to_surface(void)
             }
             else if (eStatus==eDeleted)
             {
+                vTaskDelay(piston_period);
                 PIS_Get_Length(&lengthdrift);
                 vTaskDelay(piston_period);
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston encoder reset to full Length=%.4fin, Try%u\n", lengthdrift, pistoncal);
@@ -3560,7 +3563,6 @@ void module_sps_move_to_surface(void)
             if ( pistoncal < 1)
             {
                 pistoncal++;
-                piston_period = xDelay1000ms;
                 piston_timer = 0;
                 piston_move = true;
 
@@ -3595,6 +3597,7 @@ void module_sps_move_to_surface(void)
                     }
                     else if (eStatus==eDeleted)
                     {
+                        vTaskDelay(piston_period);
                         PIS_Get_Length(&lengthdrift);
                         vTaskDelay(piston_period);
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston encoder reset to full Length=%.4fin, Try%u\n", lengthdrift, pistoncal);
