@@ -315,7 +315,7 @@ void module_pus_idle(void)
 
 void module_pus_surface_float(void)
 {
-    uint32_t piston_period = xDelay2000ms;
+    uint32_t piston_period = xDelay1000ms;
     uint32_t piston_timer = 0;
     bool piston_move = false;
     float Volume = 0.0;
@@ -593,7 +593,7 @@ void module_pds_idle(void)
     float Length = CTRL_calculate_length_from_volume(Volume);
     ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
 
-    uint32_t piston_period = xDelay2000ms;
+    uint32_t piston_period = xDelay1000ms;
     uint32_t piston_timer = 0;
     bool piston_move = true;
     TaskHandle_t xPiston = NULL;
@@ -972,7 +972,7 @@ void module_sps_move_to_park(void)
     float length_update = 0.0;
     float zlengthadjust = 0.0;
     float zlengthdrift  = 0.0;
-    uint32_t piston_period = xDelay2000ms;
+    uint32_t piston_period = xDelay1000ms;
     uint32_t piston_timer = 0;
     bool piston_move = true;
 
@@ -1708,7 +1708,7 @@ void module_sps_park(void)
     TaskHandle_t xPiston = NULL;
     PIS_set_piston_rate(1);
     uint32_t piston_timer = 0;
-    uint32_t piston_period = xDelay2000ms;
+    uint32_t piston_period = xDelay1000ms;
     float Volume = 0.0;
     float Density = 0.0;
     float Length = 0.0;
@@ -2258,7 +2258,7 @@ void module_sps_move_to_profile(void)
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Setting -> Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n\n", Density, Volume, length_update);
 
     /** move to length */
-    uint32_t piston_period = xDelay2000ms;
+    uint32_t piston_period = xDelay1000ms;
     uint32_t piston_timer = 0;
     bool piston_move = true;
     TaskHandle_t xPiston = NULL;
@@ -2805,7 +2805,7 @@ void module_sps_profile(void)
     }
 
     /** Set volume or length */
-    uint32_t piston_period = xDelay2000ms;
+    uint32_t piston_period = xDelay1000ms;
     bool piston_move = true;
     uint32_t piston_timer = 0;
 
@@ -3440,7 +3440,7 @@ void module_sps_profile(void)
 void module_sps_move_to_surface(void)
 {
     /** Extend the piston fully out */
-    uint32_t piston_period = xDelay2000ms;
+    uint32_t piston_period = xDelay1000ms;
     uint32_t piston_timer = 0;
     bool piston_move = true;
     float Volume = 0.0;
