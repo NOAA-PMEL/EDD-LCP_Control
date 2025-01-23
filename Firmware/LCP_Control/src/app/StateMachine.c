@@ -998,7 +998,6 @@ void module_sps_move_to_park(void)
         vTaskDelay(piston_period);
     
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Setting -> Piston encoder value to zero, %u profiles reached since last cal >>\n\n", pistonzero_number);
-        pistonzero_number = 0;
 
             /* check on piston movement */
         while (piston_move)
@@ -1111,6 +1110,7 @@ void module_sps_move_to_park(void)
             }
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Setting -> Piston Length Adjustment %.4fin, Park Length=%.4fin, To Prof Length=%.4fin, Prof Length=%.4fin\n", zlengthadjust, park_piston_length, to_prof_piston_length, prof_piston_length);
         }
+        pistonzero_number = 0;
     }
     
      /** Set park_piston_length */
@@ -3518,7 +3518,6 @@ void module_sps_move_to_surface(void)
         vTaskDelay(piston_period);
     
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Setting -> Piston encoder value to max, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
-        pistonfull_number = 0;
 
         /* check on piston movement */
         while (piston_move)
@@ -3632,6 +3631,7 @@ void module_sps_move_to_surface(void)
             }
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Setting -> Piston Length Adjustment %.4fin, Park Length=%.4fin, To Prof Length=%.4fin, Prof Length=%.4fin\n", lengthadjust, park_piston_length, to_prof_piston_length, prof_piston_length);
         }
+        pistonfull_number = 0;
     }
 
     /** Turn on the GPS */
