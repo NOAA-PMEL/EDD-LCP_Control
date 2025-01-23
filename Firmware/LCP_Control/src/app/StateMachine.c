@@ -994,10 +994,12 @@ void module_sps_move_to_park(void)
         eTaskState eStatus;
         TaskHandle_t xPiston = NULL;
         PIS_set_piston_rate(1);
+        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Setting -> Piston encoder value to zero, %u profiles reached since last cal >>\n\n", pistonzero_number);
         PIS_task_move_zero(&xPiston); /*This is the piston zero reset command*/
+        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Setting -> Piston encoder value to zero, %u profiles reached since last cal@ >>\n\n", pistonzero_number);
         vTaskDelay(piston_period);
     
-        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Setting -> Piston encoder value to zero, %u profiles reached since last cal >>\n\n", pistonzero_number);
+        
 
             /* check on piston movement */
         while (piston_move)
@@ -1037,58 +1039,6 @@ void module_sps_move_to_park(void)
         }
         zlengthadjust = 0.0 - zlengthdrift;
 
-        if( (zlengthadjust>=0.25) || (zlengthadjust<=-0.25))
-        {
-            if ( pistoncal < 1)
-            {
-                pistoncal++;
-                piston_timer = 0;
-                piston_move = true;
-
-                eTaskState eStatus;
-                TaskHandle_t xPiston = NULL;
-                PIS_set_piston_rate(1);
-                PIS_task_move_zero(&xPiston); /*This is the piston zero reset command*/
-                vTaskDelay(piston_period);
-
-                while (piston_move)
-                {
-                    eStatus = eTaskGetState( xPiston );
-                    if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
-                    {   
-                        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->active\n");
-                        /* piston time for up to 60 seconds */
-                        piston_timer += piston_period;
-                        if (piston_timer >= 60000)
-                        {
-                            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero time-out, task->finished\n");
-                            PIS_task_delete(xPiston);
-                            vTaskDelay(piston_period);
-                            PIS_Reset();
-                            piston_timer = 0;
-                        }
-                    }
-                    else if (eStatus==eSuspended)
-                    {
-                        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->suspended\n");
-                        PIS_task_delete(xPiston);
-                        piston_timer = 0;
-                    }
-                    else if (eStatus==eDeleted)
-                    {
-                        vTaskDelay(piston_period);
-                        PIS_Get_Length(&zlengthdrift);
-                        vTaskDelay(piston_period);
-                        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Length=%.4fin, Try%u\n", zlengthdrift, pistoncal);
-                        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Task->Finished\n");
-                        piston_move = false;
-                        piston_timer = 0;
-                    }
-                    vTaskDelay(piston_period);
-                }
-            }
-            zlengthadjust = 0.0 - zlengthdrift;
-        }
         if( (zlengthadjust<=0.25) && (zlengthadjust>=-0.25))
         {
             /*Adjust saved position settings retain correct buoyancy states*/
@@ -3507,6 +3457,55 @@ void module_sps_move_to_surface(void)
     /*Check if it is time to reset the piston encoder counts to max at full piston extent, if yes, then run reset encoder to max value at full*/
     if( pistonfull_number >= PISTON_FULLCAL_COUNTER )
     {
+        
+        piston_timer = 0;
+        piston_move = true;
+
+        eTaskState eStatus;
+        TaskHandle_t xPiston = NULL;
+        PIS_set_piston_rate(1);
+        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Piston move to full, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
+        PIS_task_move_full(&xPiston); /*This is the move piston full command*/
+        vTaskDelay(piston_period);
+
+        /* check on piston movement */
+        while (piston_move)
+        {
+            eStatus = eTaskGetState( xPiston );
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
+            {   
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full task->active\n");
+                /* piston time for up to 30 seconds */
+                piston_timer += piston_period;
+                if (piston_timer >= 30000)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full time-out, task->finished\n");
+                    PIS_task_delete(xPiston);
+                    vTaskDelay(piston_period);
+                    PIS_Reset();
+                    piston_timer = 0;
+                }
+            }
+            else if (eStatus==eSuspended)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full task->suspended\n");
+                PIS_task_delete(xPiston);
+                piston_timer = 0;
+            }
+            else if (eStatus==eDeleted)
+            {
+                vTaskDelay(piston_period);
+                PIS_Get_Length(&Length);
+                vTaskDelay(piston_period);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full Length=%.4fin\n", Length);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full Task->Finished\n");
+                piston_move = false;
+                piston_timer = 0;
+            }
+            vTaskDelay(piston_period);
+        }
+        
+        lengthdrift = Length;   
         piston_timer = 0;
         uint8_t pistoncal = 0;
         piston_move = true;
@@ -3514,10 +3513,10 @@ void module_sps_move_to_surface(void)
         eTaskState eStatus;
         TaskHandle_t xPiston = NULL;
         PIS_set_piston_rate(1);
-        PIS_task_reset_full(&xPiston); /*This is the reset piston encoder to full command*/
-        vTaskDelay(piston_period);
-    
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Setting -> Piston encoder value to max, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
+        PIS_task_reset_full(&xPiston); /*This is the reset piston encoder to full command*/
+        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Setting -> Piston encoder value to max, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
+        vTaskDelay(piston_period);
 
         /* check on piston movement */
         while (piston_move)
@@ -3546,74 +3545,21 @@ void module_sps_move_to_surface(void)
             else if (eStatus==eDeleted)
             {
                 vTaskDelay(piston_period);
-                PIS_Get_Length(&lengthdrift);
+                PIS_Get_Length(&Length);
                 vTaskDelay(piston_period);
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston encoder reset to full Length=%.4fin, Try%u\n", lengthdrift, pistoncal);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston encoder reset to full Length=%.4fin, Try%u\n", Length);
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full Task->Finished\n");
                 piston_move = false;
                 piston_timer = 0;
             }
             vTaskDelay(piston_period);
         }
-        lengthadjust = PISTON_POSITION_ATFULLRESET - lengthdrift;
+        lengthadjust = Length - lengthdrift;
 
-        if( (lengthadjust>=0.25) || (lengthadjust<=-0.25))
-        {
-            if ( pistoncal < 1)
-            {
-                pistoncal++;
-                piston_timer = 0;
-                piston_move = true;
-
-                eTaskState eStatus;
-                TaskHandle_t xPiston = NULL;
-                PIS_set_piston_rate(1);
-                PIS_task_reset_full(&xPiston); /*This is the reset piston encoder to full command*/
-                vTaskDelay(piston_period);
-                
-                while (piston_move)
-                {
-                    eStatus = eTaskGetState( xPiston );
-                    if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
-                    {   
-                        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full task->active\n");
-                        /* piston time for up to 60 seconds */
-                        piston_timer += piston_period;
-                        if (piston_timer >= 60000)
-                        {
-                            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full time-out, task->finished\n");
-                            PIS_task_delete(xPiston);
-                            vTaskDelay(piston_period);
-                            PIS_Reset();
-                            piston_timer = 0;
-                        }
-                    }
-                    else if (eStatus==eSuspended)
-                    {
-                        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full task->suspended\n");
-                        PIS_task_delete(xPiston);
-                        piston_timer = 0;
-                    }
-                    else if (eStatus==eDeleted)
-                    {
-                        vTaskDelay(piston_period);
-                        PIS_Get_Length(&lengthdrift);
-                        vTaskDelay(piston_period);
-                        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston encoder reset to full Length=%.4fin, Try%u\n", lengthdrift, pistoncal);
-                        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full Task->Finished\n");
-                        piston_move = false;
-                        piston_timer = 0;
-                    }
-                    vTaskDelay(piston_period);
-                }
-            }
-            lengthadjust = PISTON_POSITION_ATFULLRESET - lengthdrift;
-        }
         if( (lengthadjust<=0.25) && (lengthadjust>=-0.25))
         {
-            lengthadjust = PISTON_POSITION_ATFULLRESET - lengthdrift;
             /*Adjust saved position settings retain correct buoyancy states*/
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, New Piston Full Cal Length=%.4fin\n", PISTON_POSITION_ATFULLRESET);
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, New Piston Full Cal Length=%.4fin\n", Length);
             park_piston_length = park_piston_length + lengthadjust;
             if(park_piston_length >= CRUSH_DEPTH_PISTON_POSITION && (PARK_DEPTH + PARK_DEPTH_ERR) >= CRITICAL_PISTON_POSITON_DEPTH)
             {

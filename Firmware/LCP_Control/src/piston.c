@@ -194,7 +194,7 @@ void PIS_task_delete(TaskHandle_t xHandle)
 void task_move_piston_to_zero(void)
 {
     assert(piston.rtos.rate != 0);
-    uint32_t period = xDelay1000ms/piston.rtos.rate;
+    uint32_t period = xDelay5000ms/piston.rtos.rate;
 
     if(module_pis_trv_eng() == true)
     {
@@ -232,7 +232,7 @@ void task_move_piston_to_zero(void)
                 if (count_reset > 4)
                 {
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
-                    vTaskDelay(period);
+                    vTaskDelay(xDelay1000ms);
                     PIS_Reset();
                     vTaskDelay(period);
                     PIS_move_to_zero();
@@ -265,7 +265,7 @@ void task_move_piston_to_zero(void)
 void task_move_piston_to_full(void)
 {
     assert(piston.rtos.rate != 0);
-    uint32_t period = xDelay1000ms/piston.rtos.rate;
+    uint32_t period = xDelay5000ms/piston.rtos.rate;
 
     if(module_pis_trv_eng() == true)
     {
@@ -304,7 +304,7 @@ void task_move_piston_to_full(void)
                 if (count_reset > 4)
                 {
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
-                    vTaskDelay(period);
+                    vTaskDelay(xDelay1000ms);
                     PIS_Reset();
                     vTaskDelay(period);
                     PIS_move_to_full();
@@ -336,7 +336,7 @@ void task_move_piston_to_full(void)
 void task_reset_piston_to_full(void)
 {
     assert(piston.rtos.rate != 0);
-    uint32_t period = xDelay1000ms/piston.rtos.rate;
+    uint32_t period = xDelay5000ms/piston.rtos.rate;
 
     if(module_pis_trv_eng() == true)
     {
@@ -375,7 +375,7 @@ void task_reset_piston_to_full(void)
                 if (count_reset > 4)
                 {
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
-                    vTaskDelay(period);
+                    vTaskDelay(xDelay1000ms);
                     PIS_Reset();
                     vTaskDelay(period);
                     PIS_reset_to_full();
@@ -407,7 +407,7 @@ void task_reset_piston_to_full(void)
 void task_move_piston_to_length(void)
 {
     assert(piston.rtos.rate != 0);
-    uint32_t period = xDelay1000ms/piston.rtos.rate;
+    uint32_t period = xDelay5000ms/piston.rtos.rate;
     float length = 0.0;
 
     /*  before sending any write cmd to piston, read first
@@ -530,7 +530,7 @@ bool PIS_Get_Length(float *length)
 void task_move_piston_to_volume(void)
 {
     assert(piston.rtos.rate != 0);
-    uint32_t period = xDelay1000ms/piston.rtos.rate;
+    uint32_t period = xDelay5000ms/piston.rtos.rate;
     float volume = 0.0;
 
     /*  before sending any write cmd to piston, read first
