@@ -3406,7 +3406,7 @@ void module_sps_move_to_surface(void)
     /*Check if it is time to reset the piston encoder counts to max at full piston extent, if yes, then run reset encoder to max value at full*/
     if( pistonfull_number >= PISTON_FULLCAL_COUNTER )
     {
-        
+        Length = PISTON_POSITION_ATFULLRESET;
         piston_timer = 0;
         piston_move = true;
 
