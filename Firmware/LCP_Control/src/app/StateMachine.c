@@ -3460,9 +3460,6 @@ void module_sps_move_to_surface(void)
         lengthdrift = Length;   
         piston_timer = 0;
         piston_move = true;
-
-        eTaskState eStatus;
-        TaskHandle_t xPiston = NULL;
         PIS_set_piston_rate(1);
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Setting -> Piston encoder value to max, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
         PIS_task_reset_full(&xPiston); /*This is the reset piston encoder to full command*/
@@ -3592,6 +3589,7 @@ void module_sps_move_to_surface(void)
     spsEvent = MODE_DONE;
 #else
     SENS_sensor_gps_on();
+    eTaskState eStatus;
     TaskHandle_t xGps = NULL;
     SENS_task_gps(&xGps);
     SensorGps_t gps;
