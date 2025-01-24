@@ -995,7 +995,7 @@ void module_sps_move_to_park(void)
         PIS_set_piston_rate(1);
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Setting -> Piston encoder value to zero, %u profiles reached since last cal >>\n\n", pistonzero_number);
         PIS_task_move_zero(&xPiston); /*This is the piston zero reset command*/
-        vTaskDelay(xDelay30000ms);
+        vTaskDelay(xDelay180000ms);
 
             /* check on piston movement */
         while (piston_move)
@@ -3439,7 +3439,7 @@ void module_sps_move_to_surface(void)
         PIS_set_piston_rate(1);
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Piston move to full, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
         PIS_task_move_full(&xPiston); /*This is the move piston full command*/
-        vTaskDelay(xDelay30000ms); 
+        vTaskDelay(xDelay180000ms); 
 
         /* check on piston movement */
         while (piston_move)
@@ -3566,7 +3566,7 @@ void module_sps_move_to_surface(void)
         eTaskState eStatus;
         PIS_set_piston_rate(1);
         PIS_task_move_length(&xPiston);
-        vTaskDelay(xDelay30000ms);
+        vTaskDelay(xDelay180000ms);
 
         while (piston_move)
         {
