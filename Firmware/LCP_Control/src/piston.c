@@ -200,7 +200,9 @@ void task_move_piston_to_zero(void)
     if(module_pis_trv_eng() == true)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
-        vTaskDelete(NULL);
+        PIS_Reset();
+        vTaskDelay(period);
+        //vTaskDelete(NULL);
     }
 
     /** Start Piston Retract to zero length */
@@ -274,8 +276,10 @@ void task_move_piston_to_full(void)
     if(module_pis_trv_eng() == true)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
-        vTaskDelete(NULL);
-        return;
+        PIS_Reset();
+        vTaskDelay(period);
+        //vTaskDelete(NULL);
+        //return;
     }
 
     /** Start Piston Extend to full length */
@@ -348,8 +352,10 @@ void task_reset_piston_to_full(void)
     if(module_pis_trv_eng() == true)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
-        vTaskDelete(NULL);
-        return;
+        PIS_Reset();
+        vTaskDelay(period);
+        //vTaskDelete(NULL);
+        //return;
     }
 
     /** Start Piston Extend to full length and reset encoder counts */
