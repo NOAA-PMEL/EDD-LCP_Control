@@ -995,13 +995,13 @@ void module_sps_move_to_park(void)
         PIS_set_piston_rate(1);
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Setting -> Piston encoder value to zero, %u profiles reached since last cal >>\n\n", pistonzero_number);
         PIS_task_move_zero(&xPiston); /*This is the piston zero reset command*/
-        vTaskDelay(xDelay5000ms);
+        vTaskDelay(xDelay30000ms);
 
             /* check on piston movement */
         while (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
-            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) )
             {   
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->active\n");
                 /* piston time for up to 180 seconds */
@@ -1014,6 +1014,12 @@ void module_sps_move_to_park(void)
                     PIS_Reset();
                     piston_timer = 0;
                 }
+            }
+            else if (eStatus==eReady)
+            {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->Ready\n");
+                    piston_move = false;
+                    piston_timer = 0;
             }
             else if (eStatus==eSuspended)
             {
@@ -1109,7 +1115,7 @@ void module_sps_move_to_park(void)
     while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
-        if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
+        if ( (eStatus==eRunning) || (eStatus==eBlocked) )
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->active\n");
             /* piston time for up to 180 seconds */
@@ -1122,6 +1128,12 @@ void module_sps_move_to_park(void)
                 PIS_Reset();
                 piston_timer = 0;
             }
+        }
+        else if (eStatus==eReady)
+        {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+                piston_move = false;
+                piston_timer = 0;
         }
         else if (eStatus==eSuspended)
         {
@@ -2219,7 +2231,7 @@ void module_sps_move_to_profile(void)
     while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
-        if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
+        if ( (eStatus==eRunning) || (eStatus==eBlocked) )
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->active\n");
             /* piston time for up to 60 seconds */
@@ -2233,6 +2245,12 @@ void module_sps_move_to_profile(void)
                 //piston_move = false;
                 piston_timer = 0;
             }
+        }
+        else if (eStatus==eReady)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+            piston_move = false;
+            piston_timer = 0;
         }
         else if (eStatus==eSuspended)
         {
@@ -2774,7 +2792,7 @@ void module_sps_profile(void)
     while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
-        if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
+        if ( (eStatus==eRunning) || (eStatus==eBlocked) )
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->active\n");
             /* piston time for up to 120 seconds */
@@ -2786,6 +2804,12 @@ void module_sps_profile(void)
                 PIS_Reset();
                 piston_timer = 0;
             }
+        }
+        else if (eStatus==eReady)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+            piston_move = false;
+            piston_timer = 0;
         }
         else if (eStatus==eSuspended)
         {
@@ -3415,13 +3439,13 @@ void module_sps_move_to_surface(void)
         PIS_set_piston_rate(1);
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Piston move to full, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
         PIS_task_move_full(&xPiston); /*This is the move piston full command*/
-        vTaskDelay(xDelay5000ms); 
+        vTaskDelay(xDelay30000ms); 
 
         /* check on piston movement */
         while (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
-            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) )
             {   
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full task->active\n");
                 /* piston time for up to 180 seconds */
@@ -3434,6 +3458,12 @@ void module_sps_move_to_surface(void)
                     PIS_Reset();
                     piston_timer = 0;
                 }
+            }
+            else if (eStatus==eReady)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+                piston_move = false;
+                piston_timer = 0;
             }
             else if (eStatus==eSuspended)
             {
@@ -3467,7 +3497,7 @@ void module_sps_move_to_surface(void)
         while (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
-            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) )
             {   
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full task->active\n");
                 /* piston time for up to 60 seconds */
@@ -3480,6 +3510,12 @@ void module_sps_move_to_surface(void)
                     PIS_Reset();
                     piston_timer = 0;
                 }
+            }
+            else if (eStatus==eReady)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+                piston_move = false;
+                piston_timer = 0;
             }
             else if (eStatus==eSuspended)
             {
@@ -3530,12 +3566,12 @@ void module_sps_move_to_surface(void)
         eTaskState eStatus;
         PIS_set_piston_rate(1);
         PIS_task_move_length(&xPiston);
-        vTaskDelay(xDelay5000ms);
+        vTaskDelay(xDelay30000ms);
 
         while (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
-            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) )
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->active\n");
                 /* piston time for up to 180 seconds */
@@ -3553,6 +3589,12 @@ void module_sps_move_to_surface(void)
                     piston_move = false;
                     piston_timer = 0;
                 }
+            }
+            else if (eStatus==eReady)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+                piston_move = false;
+                piston_timer = 0;
             }
             else if (eStatus==eSuspended)
             {
