@@ -195,6 +195,7 @@ void task_move_piston_to_zero(void)
 {
     assert(piston.rtos.rate != 0);
     uint32_t period = xDelay5000ms/piston.rtos.rate;
+    float length = 0.0;
 
     if(module_pis_trv_eng() == true)
     {
@@ -243,17 +244,19 @@ void task_move_piston_to_zero(void)
             else
             {
                 vTaskDelay(xDelay250ms);
+                length = module_pis_get_length();
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
                 fullFlag = module_pis_read_if_zero();
                 //ARTEMIS_DEBUG_PRINTF("Piston not zero yet\n");
             }
             //xSemaphoreGive(piston.rtos.semaphore);
         //}
-        vTaskDelay(period);
+        vTaskDelay(xDelay1000ms);
         //vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     /* get the length and update it */
-    float length = module_pis_get_length();
+    length = module_pis_get_length();
     taskENTER_CRITICAL();
     piston.length = length;
     taskEXIT_CRITICAL();
@@ -266,6 +269,7 @@ void task_move_piston_to_full(void)
 {
     assert(piston.rtos.rate != 0);
     uint32_t period = xDelay5000ms/piston.rtos.rate;
+    float length = 0.0;
 
     if(module_pis_trv_eng() == true)
     {
@@ -315,16 +319,18 @@ void task_move_piston_to_full(void)
             else
             {
                 vTaskDelay(xDelay250ms);
+                length = module_pis_get_length();
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
                 fullFlag = module_pis_read_if_full();
             }
             //xSemaphoreGive(piston.rtos.semaphore);
         //}
-        vTaskDelay(period);
+        vTaskDelay(xDelay1000ms);
         //vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     /* get the length and update it */
-    float length = module_pis_get_length();
+    length = module_pis_get_length();
     taskENTER_CRITICAL();
     piston.length = length;
     taskEXIT_CRITICAL();
@@ -337,6 +343,7 @@ void task_reset_piston_to_full(void)
 {
     assert(piston.rtos.rate != 0);
     uint32_t period = xDelay5000ms/piston.rtos.rate;
+    float length = 0.0;
 
     if(module_pis_trv_eng() == true)
     {
@@ -386,16 +393,18 @@ void task_reset_piston_to_full(void)
             else
             {
                 vTaskDelay(xDelay250ms);
+                length = module_pis_get_length();
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
                 fullFlag = module_pis_read_if_fullreset();
             }
             //xSemaphoreGive(piston.rtos.semaphore);
         //}
-        vTaskDelay(period);
+        vTaskDelay(xDelay1000ms);
         //vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     /* get the length and update it */
-    float length = module_pis_get_length();
+    length = module_pis_get_length();
     taskENTER_CRITICAL();
     piston.length = length;
     taskEXIT_CRITICAL();
