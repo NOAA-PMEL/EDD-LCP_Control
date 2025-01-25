@@ -1004,9 +1004,9 @@ void module_sps_move_to_park(void)
             if ( (eStatus==eRunning) || (eStatus==eBlocked) )
             {   
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->active\n");
-                /* piston time for up to 180 seconds */
+                /* piston time for up to 60 seconds */
                 piston_timer += piston_period;
-                if (piston_timer >= 180000)
+                if (piston_timer >= 60000)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero time-out, task->finished\n");
                     PIS_task_delete(xPiston);
@@ -3448,9 +3448,9 @@ void module_sps_move_to_surface(void)
             if ( (eStatus==eRunning) || (eStatus==eBlocked) )
             {   
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full task->active\n");
-                /* piston time for up to 180 seconds */
+                /* piston time for up to 60 seconds */
                 piston_timer += piston_period;
-                if (piston_timer >= 180000)
+                if (piston_timer >= 60000)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full time-out, task->finished\n");
                     PIS_task_delete(xPiston);
