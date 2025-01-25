@@ -154,6 +154,7 @@ SRC += artemis_rtc.c
 SRC += artemis_accel.c
 SRC += datalogger.c
 SRC += sensors_test.c
+SRC += flash.c
 
 CSRC = $(filter %.c,$(SRC))
 OBJS = $(CSRC:%.c=$(CONFIG)/%.o)
