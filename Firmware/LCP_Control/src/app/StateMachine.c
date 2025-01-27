@@ -434,9 +434,7 @@ void module_pus_surface_float(void)
         while (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
-            if ( (eStatus==eRunning) ||
-                 (eStatus==eReady)   ||
-                 (eStatus==eBlocked)  )
+            if ( (eStatus==eRunning) || (eStatus==eBlocked)  )
             {
                 ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->active\n");
 
@@ -452,9 +450,14 @@ void module_pus_surface_float(void)
                     PIS_task_delete(xPiston);
                     vTaskDelay(piston_period);
                     PIS_Reset();
-                    piston_move = false;
                     piston_timer = 0;
                 }
+            }
+            else if (eStatus==eReady)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+                piston_move = false;
+                piston_timer = 0;
             }
             else if (eStatus==eSuspended)
             {
@@ -487,9 +490,7 @@ void module_pus_surface_float(void)
     while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
-        if ( (eStatus==eRunning) ||
-             (eStatus==eReady)   ||
-             (eStatus==eBlocked)  )
+        if ( (eStatus==eRunning) || (eStatus==eBlocked) )
         {
             ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->active\n");
 
@@ -505,10 +506,15 @@ void module_pus_surface_float(void)
                 PIS_task_delete(xPiston);
                 vTaskDelay(piston_period);
                 PIS_Reset();
-                piston_move = false;
                 piston_timer = 0;
                 pusEvent = MODE_DONE;
             }
+        }
+        else if (eStatus==eReady)
+        {
+            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+            piston_move = false;
+            piston_timer = 0;
         }
         else if (eStatus==eSuspended)
         {
@@ -605,9 +611,7 @@ void module_pds_idle(void)
     while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
-        if ( (eStatus==eRunning) ||
-             (eStatus==eReady)   ||
-             (eStatus==eBlocked)  )
+        if ( (eStatus==eRunning) || (eStatus==eBlocked)  )
         {
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task->active\n");
             /* piston time for up to 120 seconds */
@@ -618,6 +622,11 @@ void module_pds_idle(void)
                 PIS_task_delete(xPiston);
                 vTaskDelay(piston_period);
                 PIS_Reset();
+                piston_timer = 0;
+            }
+            else if (eStatus==eReady)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
                 piston_move = false;
                 piston_timer = 0;
             }
@@ -3586,13 +3595,12 @@ void module_sps_move_to_surface(void)
                     PIS_task_delete(xPiston);
                     vTaskDelay(piston_period);
                     PIS_Reset();
-                    piston_move = false;
                     piston_timer = 0;
                 }
             }
             else if (eStatus==eReady)
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->Ready\n");
                 piston_move = false;
                 piston_timer = 0;
             }
