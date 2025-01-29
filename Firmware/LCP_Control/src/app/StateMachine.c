@@ -404,6 +404,7 @@ void module_pus_surface_float(void)
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
                     piston_move = true;
+                    vTaskDelay(xDelay2000ms);
                 }
                 else if (averaged_rate == 0.0 && !piston_move)
                 {
@@ -424,6 +425,7 @@ void module_pus_surface_float(void)
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
                     piston_move = true;
+                    vTaskDelay(xDelay2000ms);
                 }
                 /* reset the rate counter and rate_avg*/
                 rate_count = 0;
@@ -1118,7 +1120,7 @@ void module_sps_move_to_park(void)
     PIS_set_piston_rate(1);
     PIS_set_length(length_update);
     PIS_task_move_length(&xPiston);
-    vTaskDelay(piston_period);
+    vTaskDelay(xDelay2000ms);
 
     /* check on piston movement */
     while (piston_move)
@@ -1357,6 +1359,7 @@ void module_sps_move_to_park(void)
                         PIS_set_length(length_update);
                         PIS_task_move_length(&xPiston);
                         piston_move = true;
+                        vTaskDelay(xDelay2000ms);
                     }
                 }
                 else
@@ -1365,6 +1368,7 @@ void module_sps_move_to_park(void)
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
                     piston_move = true;
+                    vTaskDelay(xDelay2000ms);
                 }
             }
             /* reset the rate counter and rate_avg*/
@@ -1573,6 +1577,7 @@ void module_sps_move_to_park(void)
             piston_move = true;
             crush_depth = true;
             ARTEMIS_DEBUG_PRINTF("\n\n\nSPS :: move_to_park, <<< CRUSH DEPTH activated >>>\n\n\n");
+            vTaskDelay(xDelay2000ms);
         }
 
 #endif
@@ -1815,6 +1820,7 @@ void module_sps_park(void)
                         PIS_set_length(length_update);
                         PIS_task_move_length(&xPiston);
                         piston_move = true;
+                        vTaskDelay(xDelay2000ms);
                     }
                     else if (averaged_rate < 0.0 && !piston_move && !crush_depth)
                     {
@@ -1836,6 +1842,7 @@ void module_sps_park(void)
                         PIS_set_length(length_update);
                         PIS_task_move_length(&xPiston);
                         piston_move = true;
+                        vTaskDelay(xDelay2000ms);
                     }
                 }
                 else if (Depth < PARK_DEPTH-PARK_DEPTH_ERR)
@@ -1877,6 +1884,7 @@ void module_sps_park(void)
                         PIS_set_length(length_update);
                         PIS_task_move_length(&xPiston);
                         piston_move = true;
+                        vTaskDelay(xDelay2000ms);
                         }
                     }
                     else if (averaged_rate > 0.0 && !piston_move && !crush_depth)
@@ -1916,6 +1924,7 @@ void module_sps_park(void)
                         PIS_set_length(length_update);
                         PIS_task_move_length(&xPiston);
                         piston_move = true;
+                        vTaskDelay(xDelay2000ms);
                         }
                     }
                 }
@@ -2094,6 +2103,7 @@ void module_sps_park(void)
             piston_move = true;
             crush_depth = true;
             ARTEMIS_DEBUG_PRINTF("\n\n\nSPS :: park, <<< CRUSH DEPTH activated >>>\n\n\n");
+            vTaskDelay(xDelay2000ms);
         }
 
         /* check on Maximum park depth = ? */
@@ -2234,7 +2244,7 @@ void module_sps_move_to_profile(void)
     PIS_set_piston_rate(1);
     PIS_set_length(length_update);
     PIS_task_move_length(&xPiston);
-    vTaskDelay(piston_period);
+    vTaskDelay(xDelay2000ms);
 
     /* check on piston movement */
     while (piston_move)
@@ -2474,6 +2484,7 @@ void module_sps_move_to_profile(void)
                         PIS_set_length(length_update);
                         PIS_task_move_length(&xPiston);
                         piston_move = true;
+                        vTaskDelay(xDelay2000ms);
                     }
                 }
                 else
@@ -2482,6 +2493,7 @@ void module_sps_move_to_profile(void)
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
                     piston_move = true;
+                    vTaskDelay(xDelay2000ms);
                 }
             }
             /* reset the rate counter and rate_avg*/
@@ -2691,6 +2703,7 @@ void module_sps_move_to_profile(void)
             piston_timer = 0;
             crush_depth = true;
             ARTEMIS_DEBUG_PRINTF("\n\nSPS :: move_to_profile, <<< CRUSH DEPTH activated >>>\n\n");
+            vTaskDelay(xDelay2000ms);
         }
         vTaskDelay(period);
     }
@@ -2795,7 +2808,7 @@ void module_sps_profile(void)
 
     PIS_set_length(length_update);
     PIS_task_move_length(&xPiston);
-    vTaskDelay(piston_period);
+    vTaskDelay(xDelay2000ms);
 
     /* check on piston movement */
     while (piston_move)
@@ -3174,6 +3187,7 @@ void module_sps_profile(void)
                             PIS_set_length(length_update);
                             PIS_task_move_length(&xPiston);
                             piston_move = true;
+                            vTaskDelay(xDelay2000ms);
                         }
                     }
                     else if (Depth < CRITICAL_PISTON_POSITON_DEPTH)
@@ -3188,6 +3202,7 @@ void module_sps_profile(void)
                             PIS_set_length(length_update);
                             PIS_task_move_length(&xPiston);
                             piston_move = true;
+                            vTaskDelay(xDelay2000ms);
                         }
                     }
                 }
@@ -3197,6 +3212,7 @@ void module_sps_profile(void)
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
                     piston_move = true;
+                    vTaskDelay(xDelay2000ms);
                 }
             }
             else if ( averaged_rate < (-1*SYSTEM_RISE_RATE_MAX) && !piston_move && !crush_depth)
@@ -3265,6 +3281,7 @@ void module_sps_profile(void)
                             PIS_set_length(length_update);
                             PIS_task_move_length(&xPiston);
                             piston_move = true;
+                            vTaskDelay(xDelay2000ms);
                         }
                     }
                     else if (Depth < CRITICAL_PISTON_POSITON_DEPTH)
@@ -3279,6 +3296,7 @@ void module_sps_profile(void)
                             PIS_set_length(length_update);
                             PIS_task_move_length(&xPiston);
                             piston_move = true;
+                            vTaskDelay(xDelay2000ms);
                         }
                     }
                 }
@@ -3288,6 +3306,7 @@ void module_sps_profile(void)
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
                     piston_move = true;
+                    vTaskDelay(xDelay2000ms);
                 }
             }
             /* reset the rate counter and rate_avg*/
@@ -3372,6 +3391,7 @@ void module_sps_profile(void)
             piston_move = true;
             crush_depth = true;
             ARTEMIS_DEBUG_PRINTF("\n\n\nSPS :: profile, <<< CRUSH DEPTH activated >>>\n\n\n");
+            vTaskDelay(xDelay2000ms);
         }
 
         if (Depth <= BALLAST_DEPTH_PROFILE)
