@@ -430,7 +430,9 @@ void task_move_piston_to_length(void)
     if(module_pis_trv_eng() == true)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
-        vTaskDelete(NULL);
+        PIS_Reset();
+        vTaskDelay(period);
+        //vTaskDelete(NULL);
     }
     vTaskDelay(xDelay50ms);
     /** Start the move */
@@ -553,8 +555,10 @@ void task_move_piston_to_volume(void)
     if(module_pis_trv_eng() == true)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
-        vTaskDelete(NULL);
-        return;
+        PIS_Reset();
+        vTaskDelay(period);
+        //vTaskDelete(NULL);
+        //return;
     }
     vTaskDelay(xDelay50ms);
     PIS_move_to_volume(piston.setpoint_v);
