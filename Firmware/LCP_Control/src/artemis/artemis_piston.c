@@ -260,7 +260,7 @@ void artemis_piston_i2c_read(uint8_t addr, uint8_t *data, uint16_t len)
     //artemis_stream_put(&txstream, 0x00);
     artemis_i2c_send(i2c, true, &txstream);
 
-    am_hal_systick_delay_us(50000);
+    am_hal_systick_delay_us(100000); /*Increased frm 50000 to fix failure to properly read piston TRV_ENG*/
 
     artemis_i2c_receive(i2c, true, &rxstream, len);
     artemis_stream_read(&rxstream, data, len);
