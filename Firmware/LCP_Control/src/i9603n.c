@@ -1568,21 +1568,26 @@ static i9603n_result_t module_i9603n_read_AT(uint16_t *len)
     bool contFlag = true;
     uint8_t wait = 30 * 2; //30 seconds maximum for iridium response
 
+    ARTEMIS_DEBUG_PRINTF("Entering the main module_i9603n_read_AT() while loop...\n");
+
     while(contFlag && wait-- > 0)
     {
+        //
+        ARTEMIS_DEBUG_PRINTF("Wait variable is = %d\n", wait);
+
         msg_len = artemis_i9603n_receive(irid_buf_rx);
 
         if(msg_len > 0)
         {
             /* Debug */
-            //for (uint16_t i=0; i<msg_len; i++)
-            //{
-            //    ARTEMIS_DEBUG_PRINTF("0x%02X ", pStart[i]);
-            //}
-            //ARTEMIS_DEBUG_PRINTF("\n");
+            for (uint16_t i=0; i<msg_len; i++)
+            {
+                ARTEMIS_DEBUG_PRINTF("0x%02X ", pStart[i]);
+            }
+            ARTEMIS_DEBUG_PRINTF("\n");
 
             do{
-
+                ARTEMIS_DEBUG_PRINTF("Inside the inner module_i9603n_read_AT() DO-While Loop...\n");
                 if(parse_AT(pStart, "OK\r\n", msg_len+rem_len) != -1)
                 {
                     result = I9603N_RESULT_OK;
@@ -1606,52 +1611,61 @@ static i9603n_result_t module_i9603n_read_AT(uint16_t *len)
 
                 if(result == I9603N_RESULT_FAIL)
                 {
+                    ARTEMIS_DEBUG_PRINTF("Result is equal to I9603_RESULT_FAIL right now...\n");
                     uint16_t length = artemis_i9603n_receive(remBuff);
                     if (length > 0)
                     {
                         for (uint16_t i=0; i<length; i++)
                         {
                             irid_buf_rx[msg_len+i] = remBuff[i];
-                            //ARTEMIS_DEBUG_PRINTF("0x%02X ", pStart[msg_len+i+1]);
+                            ARTEMIS_DEBUG_PRINTF("0x%02X ", pStart[msg_len+i+1]);
                         }
                         rem_len += length;
-                        ///* Debug */
-                        //ARTEMIS_DEBUG_PRINTF("\n");
-                        //for (uint16_t i=0; i<(msg_len+rem_len); i++)
-                        //{
-                        //    //ARTEMIS_DEBUG_PRINTF("%c", pStart[i]);
-                        //    //ARTEMIS_DEBUG_PRINTF("%c", irid_buf_rx[i]);
-                        //    ARTEMIS_DEBUG_PRINTF("0x%02X ", irid_buf_rx[i]);
-                        //    //ARTEMIS_DEBUG_PRINTF("%c", remBuff[i]);
-                        //}
-                        //ARTEMIS_DEBUG_PRINTF("\n");
+                        
+                        /* Debug */
+                        ARTEMIS_DEBUG_PRINTF("\n");
+                        for (uint16_t i=0; i<(msg_len+rem_len); i++)
+                        {
+                            ARTEMIS_DEBUG_PRINTF("%c", pStart[i]);
+                            ARTEMIS_DEBUG_PRINTF("%c", irid_buf_rx[i]);
+                            ARTEMIS_DEBUG_PRINTF("0x%02X ", irid_buf_rx[i]);
+                            ARTEMIS_DEBUG_PRINTF("%c", remBuff[i]);
+                        }
+                        ARTEMIS_DEBUG_PRINTF("\n");
+                        /* Debug */
                     }
                 }
                 else
                 {
+                    ARTEMIS_DEBUG_PRINTF("Result is *not* equal to I9603_RESULT_FAIL right now...\n");
                     contFlag = false;
                     //wait = 0;
                 }
 
 #ifdef FREERTOS
                 /* 500ms delay */
+                ARTEMIS_DEBUG_PRINTF("500ms Delay Statement in the module_i9603n_read_AT() inner DO-While Block Here\n");
                 vTaskDelay(xDelay500ms);
 #else
                 /* 500ms delay */
                 am_hal_systick_delay_us(500000);
 #endif
+            ARTEMIS_DEBUG_PRINTF("Finishing the DO block, checking the WHILE conditional...\n");
             } while(result == I9603N_RESULT_FAIL && wait-- > 0);
+            ARTEMIS_DEBUG_PRINTF("Program has exited the module_i9603n_read_AT() inner DO-While Loop...\n");
         }
 
 #ifdef FREERTOS
         /* 500ms delay */
+        ARTEMIS_DEBUG_PRINTF("500ms Delay Statement in the Main While-Loop Here...\n");
         vTaskDelay(xDelay500ms);
 #else
         /* 500ms delay */
         am_hal_systick_delay_us(500000);
 #endif
+    ARTEMIS_DEBUG_PRINTF("Finishing a module_i9603n_read_AT() main While-Loop iteration, checking the WHILE conditional now...\n");
     }
-
+    ARTEMIS_DEBUG_PRINTF("Program has exited the main module_i9603n_read_AT() While Loop...\n");
     *len = msg_len+rem_len;
     return result;
 }
