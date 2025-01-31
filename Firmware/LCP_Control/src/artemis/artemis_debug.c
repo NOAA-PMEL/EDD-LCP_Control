@@ -23,7 +23,7 @@ void artemis_debug_initialize(void)
 #endif
 
     bool success = false;
-    success = datalogger_init(4);
+    success = datalogger_init(1);
     if (success)
     {
         datalogger_power_on();

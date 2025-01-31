@@ -1,4 +1,4 @@
-/** @file flash.h
+/** @file artemis_flash.h
  *  @brief Flash memory library
  *
  *  @author Joseph Kurina, joseph.kurina@noaa.gov
@@ -14,8 +14,8 @@
  *  @bug  No known bugs
  */
 
-#ifndef FLASH_H
-#define FLASH_H
+#ifndef ARTEMIS_FLASH_H
+#define ARTEMIS_FLASH_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -77,4 +77,4 @@ int flash_is_valid_range(uint32_t offset, size_t size);
  */
 size_t flash_get_page_size(void);
 
-#endif // FLASH_H
+#endif // ARTEMIS_FLASH_H

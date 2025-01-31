@@ -143,6 +143,7 @@ SRC += artemis_supercap.c
 SRC += artemis_time.c
 SRC += artemis_uart.c
 SRC += artemis_ublox_i2c.c
+SRC += artemis_flash.c
 SRC += rtos.c
 SRC += sysinfo.c
 SRC += temperature.c
@@ -154,7 +155,6 @@ SRC += artemis_rtc.c
 SRC += artemis_accel.c
 SRC += datalogger.c
 SRC += sensors_test.c
-SRC += flash.c
 
 CSRC = $(filter %.c,$(SRC))
 OBJS = $(CSRC:%.c=$(CONFIG)/%.o)

@@ -1,4 +1,4 @@
-/** @file flash.c
+/** @file artemis_flash.c
  *  @brief Flash memory library
  *
  *  @author Joseph Kurina, joseph.kurina@noaa.gov
@@ -14,7 +14,7 @@
  *  @bug  No known bugs
  */
 
-#include "flash.h"
+#include "artemis_flash.h"
 #include "am_hal_flash.h"
 #include <string.h> // For memcpy (if needed for reading)
 

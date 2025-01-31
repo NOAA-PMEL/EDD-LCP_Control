@@ -20,8 +20,11 @@
 #include "main.h"
 #include "sensors.h"
 #include "StateMachine.h"
-#include "flash.h"
+
+//Joe Flash & Datalogger Test Includes
+#include "artemis_flash.h"
 #include <string.h>
+#include "datalogger.h"
 
 //#define LCP_FREE_RTOS
 //#define SENSORS_Test
@@ -93,6 +96,8 @@ int main(void)
     ARTEMIS_DEBUG_PRINTF("Do not get here\n");
 #endif
 
+
+/*
     // Test flash operations
     ARTEMIS_DEBUG_PRINTF("\nTesting Flash Operations\n");
 
@@ -144,7 +149,7 @@ int main(void)
     {
         ARTEMIS_DEBUG_PRINTF("Data verification failed: Read data does not match written data.\n");
     }
-
+*/
     am_util_delay_ms(500);
     while (1)
     {
