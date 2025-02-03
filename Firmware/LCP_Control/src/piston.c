@@ -521,6 +521,7 @@ void task_move_piston_to_length(void)
         ARTEMIS_DEBUG_PRINTF("PISTON :: SUCCESS, Length = %0.5f, diff = %0.5f, max_diff = %0.5f\n",
                                     length, (length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
     }
+    vTaskDelay(xDelay100ms);
     vTaskDelete(NULL);
 }
 
@@ -647,7 +648,7 @@ void task_move_piston_to_volume(void)
         ARTEMIS_DEBUG_PRINTF("PISTON :: SUCCESS. Volume = %0.3f, diff = %0.3f, max_diff = %0.3f\n",
                                     volume, (volume - piston.setpoint_v), PISTON_VOLUME_DIFF_MAX);
     }
-    vTaskDelay(xDelay10ms);
+    vTaskDelay(xDelay100ms);
     vTaskDelete(NULL);
 }
 
