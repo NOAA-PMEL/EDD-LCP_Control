@@ -85,8 +85,8 @@
 #define PISTON_POSITION_MAXIMUM             ( 11.6f )      /* Piston position maximum in inches at full extension*/
 #define PISTON_POSITION_ATFULLRESET         ( 11.65f )      /* Piston position maximum in inches at full extension IMPORTANT NEEDS TO MATCH PISTON CONTROL VARIABLE: SYS_ENCODER_LENGTH_DEFAULT*/
 #define PISTON_POSITION_MINIMUM             ( 0.1f )        /* Piston position minimum in inches */
-#define PISTON_ZEROCAL_COUNTER              ( 5 )          /*Number of profiles between zeroing the piston encoder*/
-#define PISTON_FULLCAL_COUNTER              ( 3 )          /*Number of profiles between reseting the max encoder values at full piston extent*/
+#define PISTON_ZEROCAL_COUNTER              ( 35 )          /*Number of profiles between zeroing the piston encoder*/
+#define PISTON_FULLCAL_COUNTER              ( 10 )          /*Number of profiles between reseting the max encoder values at full piston extent*/
 #define CRUSH_DEPTH_PISTON_POSITION         ( 5.00f )       /* Piston position maximum in inches */
 #define CRITICAL_PISTON_POSITON_DEPTH       ( 45.0f )       /* Critical depth where piston length must not exceed 5.25 inches */
 #define PISTON_MOVE_TO_SURFACE              ( 10.5f ) //11.0f /* Piston position move to surface in inches */
