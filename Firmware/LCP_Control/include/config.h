@@ -132,7 +132,7 @@
 /** TEST profile1 */
 #define BALLAST_DEPTH                       ( 1.5f )    // pressure reading ( 0.0101f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
-#define BALLAST_DEPTH_PROFILE               ( 1.0f )
+#define BALLAST_DEPTH_PROFILE               ( 4.0f )
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 1.0f )
 #define PARK_DEPTH                          ( 160.0f )
 #define PARK_DEPTH_ERR                      ( 10.0f )
@@ -207,7 +207,7 @@
 /** Puget Sound Testing */
 #define BALLAST_DEPTH                       ( 1.5f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
-#define BALLAST_DEPTH_PROFILE               ( 1.0f )
+#define BALLAST_DEPTH_PROFILE               ( 4.0f )
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 0.05f )
 #define PARK_DEPTH                          ( 160.0f ) //( 4.0f )
 #define PARK_DEPTH_ERR                      ( 15.0f )
@@ -226,7 +226,7 @@
 #define CRUSH_DEPTH                         ( 220.0f )
 #define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 #define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
-#define PISTON_MOVEMENT_ON_BOTTOM           ( 0.70f )    /* 0.70 inch piston length if we hit the bottom */
+#define PISTON_MOVEMENT_ON_BOTTOM           ( 0.50f )    /* 0.70 inch piston length if we hit the bottom */
 
 
 #elif defined(__TEST_LAKE__)
