@@ -3426,7 +3426,7 @@ void module_sps_profile(void)
             PIS_set_piston_rate(1);
             PIS_task_move_length(&xPiston);
             piston_move = true;
-            vTaskDelay(xDelay2000ms);
+            vTaskDelay(xDelay180000ms);
 
             while (piston_move)
             {
@@ -3475,11 +3475,25 @@ void module_sps_profile(void)
                 vTaskDelay(piston_period);
             }
 
+            /* check if piston is still moving then reset it and stop */
+            if (piston_move)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
+                PIS_task_delete(xPiston);
+                /* try to stop first*/
+                PIS_stop();
+                piston_move = false;   
+            }
+
             if (crush_depth)
             {
                 /* set to previous adjusted length update */
                 prof_piston_length = length_update_last_adjusted;
             }
+
+            /* check Heap size */
+            uint32_t sizeA = xPortGetFreeHeapSize();
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: profile, FreeRTOS HEAP SIZE A = %u Bytes\n\n", sizeA);
             
             crush_depth = false;
             SENS_task_delete(xTemp);
@@ -3517,12 +3531,12 @@ void module_sps_move_to_surface(void)
     float lengthadjust = 0.0;
     float lengthdrift  = 0.0;
 
-// #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
-//     /* set piston to 10.5in */
-//     PIS_set_length(10.5);
-// #else
-//     PIS_set_length(PISTON_MOVE_TO_SURFACE);
-// #endif
+    #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+        /* set piston to 10.5in */
+        PIS_set_length(10.5);
+    #else
+        PIS_set_length(PISTON_MOVE_TO_SURFACE);
+    #endif
 
     /*Check if it is time to reset the piston encoder counts to max at full piston extent, if yes, then run reset encoder to max value at full*/
     if( pistonfull_number >= PISTON_FULLCAL_COUNTER )
@@ -3657,61 +3671,61 @@ void module_sps_move_to_surface(void)
         }
         pistonfull_number = 0;
     }
-    // else
-    // {
-    //     TaskHandle_t xPiston = NULL;
-    //     eTaskState eStatus;
-    //     PIS_set_piston_rate(1);
-    //     PIS_task_move_length(&xPiston);
-    //     vTaskDelay(xDelay180000ms);
+    else
+    {
+        TaskHandle_t xPiston = NULL;
+        eTaskState eStatus;
+        PIS_set_piston_rate(1);
+        PIS_task_move_length(&xPiston);
+        vTaskDelay(piston_period);
 
-    //     while (piston_move)
-    //     {
-    //         eStatus = eTaskGetState( xPiston );
-    //         if ( (eStatus==eRunning) || (eStatus==eBlocked) )
-    //         {
-    //             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->active\n");
-    //             /* piston time for up to 180 seconds */
-    //             piston_timer += piston_period;
-    //             if (piston_timer >= 180000)
-    //             {
-    //                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston time-out, task->finished\n");
-    //                 PIS_Get_Length(&Length);
-    //                 Volume = CTRL_calculate_volume_from_length(Length);
-    //                 Density = CTRL_calculate_lcp_density(Volume);
-    //                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
-    //                 PIS_task_delete(xPiston);
-    //                 vTaskDelay(piston_period);
-    //                 PIS_Reset();
-    //                 piston_timer = 0;
-    //             }
-    //         }
-    //         else if (eStatus==eReady)
-    //         {
-    //             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->Ready\n");
-    //             piston_move = false;
-    //             piston_timer = 0;
-    //         }
-    //         else if (eStatus==eSuspended)
-    //         {
-    //             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->suspended\n");
-    //             PIS_task_delete(xPiston);
-    //             //piston_move = false;
-    //             piston_timer = 0;
-    //         }
-    //         else if (eStatus==eDeleted)
-    //         {
-    //             PIS_Get_Length(&Length);
-    //             Volume = CTRL_calculate_volume_from_length(Length);
-    //             Density = CTRL_calculate_lcp_density(Volume);
-    //             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
-    //             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->finished\n");
-    //             piston_move = false;
-    //             piston_timer = 0;
-    //         }
-    //         vTaskDelay(piston_period);
-    //     }
-    // }
+        while (piston_move)
+        {
+            eStatus = eTaskGetState( xPiston );
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) )
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->active\n");
+                /* piston time for up to 180 seconds */
+                piston_timer += piston_period;
+                if (piston_timer >= 180000)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston time-out, task->finished\n");
+                    PIS_Get_Length(&Length);
+                    Volume = CTRL_calculate_volume_from_length(Length);
+                    Density = CTRL_calculate_lcp_density(Volume);
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
+                    PIS_task_delete(xPiston);
+                    vTaskDelay(piston_period);
+                    PIS_Reset();
+                    piston_timer = 0;
+                }
+            }
+            else if (eStatus==eReady)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->Ready\n");
+                piston_move = false;
+                piston_timer = 0;
+            }
+            else if (eStatus==eSuspended)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->suspended\n");
+                PIS_task_delete(xPiston);
+                //piston_move = false;
+                piston_timer = 0;
+            }
+            else if (eStatus==eDeleted)
+            {
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->finished\n");
+                piston_move = false;
+                piston_timer = 0;
+            }
+            vTaskDelay(piston_period);
+        }
+    }
 
     /** Turn on the GPS */
     uint8_t s_rate = 1;
