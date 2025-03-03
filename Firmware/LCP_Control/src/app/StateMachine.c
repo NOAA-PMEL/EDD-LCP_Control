@@ -3685,9 +3685,9 @@ void module_sps_move_to_surface(void)
             if ( (eStatus==eRunning) || (eStatus==eBlocked) )
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->active\n");
-                /* piston time for up to 180 seconds */
+                /* piston time for up to 60 seconds */
                 piston_timer += piston_period;
-                if (piston_timer >= 180000)
+                if (piston_timer >= 60000)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston time-out, task->finished\n");
                     PIS_Get_Length(&Length);
