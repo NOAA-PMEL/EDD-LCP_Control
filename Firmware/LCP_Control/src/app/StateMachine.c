@@ -3415,13 +3415,14 @@ void module_sps_profile(void)
                 piston_timer = 0;
             }
             /* Move piston all the way to the surface setting */
-            #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
-                /* set piston to 10.5in */
-                PIS_set_length(10.5);
-            #else
-                PIS_set_length(PISTON_MOVE_TO_SURFACE);
-            #endif
-            
+            // #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+            //     /* set piston to 10.5in */
+            //     length_update = 10.5;
+            // #else
+                length_update = PISTON_MOVE_TO_SURFACE;
+            //#endif
+            vTaskDelay(piston_period);
+            PIS_set_length(PISTON_MOVE_TO_SURFACE);
             PIS_task_move_length(&xPiston);
             piston_move = true;
             vTaskDelay(xDelay2000ms);
