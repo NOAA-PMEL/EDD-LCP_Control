@@ -3331,14 +3331,14 @@ void module_sps_profile(void)
             if ( (eStatus==eRunning) || (eStatus==eBlocked) )
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->active\n");
-                /* keep piston time for up to 30 seconds unless crush_depth activated or at the surface use piston up to 180 seconds */
+                /* keep piston time for up to 15 seconds unless crush_depth activated or at the surface use piston up to 180 seconds */
                 piston_timer += period;
 
-                if (crush_depth || (Depth <= BALLAST_DEPTH_PROFILE))
+                if ( (crush_depth) || (Depth <= BALLAST_DEPTH_PROFILE) )
                 {
                     if (piston_timer >= 180000)
                     {
-                        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston CRUSH_SURFACE time-out, task->finished\n");
+                        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston CRUSH or SURFACE time-out, task->finished\n");
                         PIS_task_delete(xPiston);
                         PIS_Reset();
                         piston_timer = 0;
@@ -3406,35 +3406,30 @@ void module_sps_profile(void)
 
         if (Depth <= BALLAST_DEPTH_PROFILE && !surface)
         {
-            if (piston_move)
+            if (!piston_move)
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
-                PIS_task_delete(xPiston);
-                /* try to stop first*/
-                PIS_stop();
-                piston_timer = 0;
-            }
-            /* Move piston all the way to the surface setting */
-            // #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
-            //     /* set piston to 10.5in */
-            //     length_update = 10.5;
-            // #else
+                /* Move piston all the way to the surface setting */
+                // #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+                //     /* set piston to 10.5in */
+                //     length_update = 10.5;
+                // #else
                 length_update = PISTON_MOVE_TO_SURFACE;
-            //#endif
-            vTaskDelay(piston_period);
-            PIS_set_length(PISTON_MOVE_TO_SURFACE);
-            PIS_task_move_length(&xPiston);
-            piston_move = true;
-            vTaskDelay(xDelay2000ms);
+                //#endif
+                vTaskDelay(piston_period);
+                PIS_set_length(PISTON_MOVE_TO_SURFACE);
+                PIS_task_move_length(&xPiston);
+                piston_move = true;
+                vTaskDelay(xDelay2000ms);
+            }
 
              /*start a 210 second timer to keep recording until LCP reaches the surface*/
             surface_timer += period;
             if (surface_timer >= 210000)
-                    {
-                        ARTEMIS_DEBUG_PRINTF("SPS :: profile, surface time-out, task->finished\n");
-                        surface = true;
-                        surface_timer = 0;
-                    }
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, surface time-out, task->finished\n");
+                surface = true;
+                surface_timer = 0;
+            }
         }
 
         if (Depth <= BALLAST_DEPTH_PROFILE && surface)
