@@ -2733,6 +2733,8 @@ void module_sps_profile(void)
     float Density = 0.0;
     float Length = 0.0;
     float length_update = 0.0;
+    bool surface = false;
+    uint32_t surface_timer = 0;
 
 #ifdef TEST
     /** Start Depth and Temperature Sensor @ 9Hz */
@@ -3402,10 +3404,17 @@ void module_sps_profile(void)
             vTaskDelay(xDelay2000ms);
         }
 
-        if (Depth <= BALLAST_DEPTH_PROFILE)
+        if (Depth <= BALLAST_DEPTH_PROFILE && !surface)
         {
+            if (piston_move)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
+                PIS_task_delete(xPiston);
+                /* try to stop first*/
+                PIS_stop();
+                piston_timer = 0;
+            }
             /* Move piston all the way to the surface setting */
-            piston_timer = 0;
             #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
                 /* set piston to 10.5in */
                 PIS_set_length(10.5);
@@ -3413,13 +3422,22 @@ void module_sps_profile(void)
                 PIS_set_length(PISTON_MOVE_TO_SURFACE);
             #endif
             
-            TaskHandle_t xPiston = NULL;
-            eTaskState eStatus;
-            PIS_set_piston_rate(1);
             PIS_task_move_length(&xPiston);
             piston_move = true;
-            vTaskDelay(xDelay180000ms);
+            vTaskDelay(xDelay2000ms);
 
+             /*start a 210 second timer to keep recording until LCP reaches the surface*/
+            surface_timer += period;
+            if (surface_timer >= 210000)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("SPS :: profile, surface time-out, task->finished\n");
+                        surface = true;
+                        surface_timer = 0;
+                    }
+        }
+
+        if (Depth <= BALLAST_DEPTH_PROFILE && surface)
+        {
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
             {
@@ -3441,6 +3459,7 @@ void module_sps_profile(void)
             ARTEMIS_DEBUG_PRINTF("\nSPS :: profile, FreeRTOS HEAP SIZE A = %u Bytes\n\n", sizeA);
             
             crush_depth = false;
+            surface = false;
             SENS_task_delete(xTemp);
             SENS_sensor_temperature_off();
             SENS_task_delete(xDepth);
