@@ -876,7 +876,7 @@ void STATE_Profiler(void)
                 break;
             case SPS_Sample_mode:
                 configASSERT(xTaskCreate((TaskFunction_t) module_sps_profile,
-                                        "sps_profile", 1048, NULL,
+                                        "sps_profile", 2048, NULL,
                                         tskIDLE_PRIORITY + 2UL,
                                         NULL) == pdPASS );
                 ReceiveEvent(spsEventQueue, &spsEvent);
@@ -3534,7 +3534,7 @@ void module_sps_move_to_surface(void)
             }
             else if (eStatus==eReady)
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->Ready\n");
                 piston_move = false;
                 piston_timer = 0;
             }
@@ -3564,7 +3564,7 @@ void module_sps_move_to_surface(void)
         PIS_set_piston_rate(1);
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Setting -> Piston encoder value to max, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
         PIS_task_reset_full(&xPiston); /*This is the reset piston encoder to full command*/
-        vTaskDelay(piston_period);
+        vTaskDelay(xDelay30000ms);
 
         /* check on piston movement */
         while (piston_move)
@@ -3586,7 +3586,7 @@ void module_sps_move_to_surface(void)
             }
             else if (eStatus==eReady)
             {
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->Ready\n");
                 piston_move = false;
                 piston_timer = 0;
             }
@@ -3639,7 +3639,7 @@ void module_sps_move_to_surface(void)
         eTaskState eStatus;
         PIS_set_piston_rate(1);
         PIS_task_move_length(&xPiston);
-        vTaskDelay(piston_period);
+        vTaskDelay(xDelay180000ms);
 
         while (piston_move)
         {
