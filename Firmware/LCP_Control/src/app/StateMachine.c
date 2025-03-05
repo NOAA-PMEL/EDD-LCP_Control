@@ -3409,6 +3409,10 @@ void module_sps_profile(void)
         {
             if (!surface_piston)
             {
+                 /* check Heap size */
+                uint32_t sizeA = xPortGetFreeHeapSize();
+                ARTEMIS_DEBUG_PRINTF("\nSPS :: profile, FreeRTOS HEAP SIZE A = %u Bytes\n\n", sizeA);
+                
                 /* Move piston all the way to the surface setting */
                 // #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
                 //     /* set piston to 10.5in */
@@ -3451,11 +3455,7 @@ void module_sps_profile(void)
                 /* set to previous adjusted length update */
                 prof_piston_length = length_update_last_adjusted;
             }
-
-            /* check Heap size */
-            uint32_t sizeA = xPortGetFreeHeapSize();
-            ARTEMIS_DEBUG_PRINTF("\nSPS :: profile, FreeRTOS HEAP SIZE A = %u Bytes\n\n", sizeA);
-            
+          
             crush_depth = false;
             surface = false;
             SENS_task_delete(xTemp);
