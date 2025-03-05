@@ -521,6 +521,15 @@ void task_move_piston_to_length(void)
         ARTEMIS_DEBUG_PRINTF("PISTON :: SUCCESS, Length = %0.5f, diff = %0.5f, max_diff = %0.5f\n",
                                     length, (length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
     }
+
+    /* check Heap size for debug only*/
+    uint32_t sizeB = xPortGetFreeHeapSize();
+    ARTEMIS_DEBUG_PRINTF("PISTON :: FreeRTOS HEAP SIZE = %u Bytes\n\n", sizeB);
+
+    uint32_t sizeC = xPortGetMinimumEverFreeHeapSize();
+    ARTEMIS_DEBUG_PRINTF("PISTON :: FreeRTOS MIN HEAP SIZE = %u Bytes\n\n", sizeC);
+
+
     vTaskDelay(xDelay100ms);
     vTaskDelete(NULL);
 }

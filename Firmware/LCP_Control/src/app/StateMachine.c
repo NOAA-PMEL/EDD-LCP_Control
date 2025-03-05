@@ -3474,8 +3474,8 @@ void module_sps_profile(void)
     pistonfull_number++;
 
     /* check Heap size */
-    uint32_t size = xPortGetFreeHeapSize();
-    ARTEMIS_DEBUG_PRINTF("\nSPS :: profile, FreeRTOS HEAP SIZE = %u Bytes\n\n", size);
+    uint32_t size = xPortGetMinimumEverFreeHeapSize();
+    ARTEMIS_DEBUG_PRINTF("\nSPS :: profile, FreeRTOS MIN HEAP SIZE = %u Bytes\n\n", size);
 
     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Task->finished\n");
     SendEvent(spsEventQueue, &spsEvent);
