@@ -2735,6 +2735,7 @@ void module_sps_profile(void)
     float length_update = 0.0;
     bool surface = false;
     uint32_t surface_timer = 0;
+    bool surface_piston = false;
 
 #ifdef TEST
     /** Start Depth and Temperature Sensor @ 9Hz */
@@ -3406,7 +3407,7 @@ void module_sps_profile(void)
 
         if (Depth <= BALLAST_DEPTH_PROFILE && !surface)
         {
-            if (!piston_move)
+            if (!surface_piston)
             {
                 /* Move piston all the way to the surface setting */
                 // #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
@@ -3419,6 +3420,7 @@ void module_sps_profile(void)
                 PIS_set_length(PISTON_MOVE_TO_SURFACE);
                 PIS_task_move_length(&xPiston);
                 piston_move = true;
+                surface_piston = true;
                 vTaskDelay(xDelay2000ms);
             }
 
