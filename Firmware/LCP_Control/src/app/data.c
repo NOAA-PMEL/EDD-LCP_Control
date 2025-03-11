@@ -154,6 +154,134 @@ void DATA_add(Data_t *buf, uint32_t time, float pressure, float temperature, uin
     //return(0);
 }
 
+// Delete the data after successfull transmission and consolidate remaining measurements into a contiguous block
+bool DATA_clear(Data_t *buf, uint8_t pNumber) {
+    // First perform a sanity check to verify that buf points to valid memory and isn't a null pointer.
+    // Also checks to make sure that pNumber passed in isn't higher than the profile number stored in the buffer
+    if (buf == NULL || pNumber > buf->pNumber) {
+        ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR : ERROR, Invalid buffer or profile number\n");
+        return false;
+    }
+
+    // Get the start index and length of the profile to be deleted
+    uint32_t startIdx = buf->p[pNumber].pIndex;
+    uint32_t length = buf->p[pNumber].pLength;
+    
+    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR : Compacting memory for profile %u, start=%u, length=%u\n", 
+                        pNumber, startIdx, length);
+    
+    
+    // Show the available space in memory before deletion
+    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR : Current memory status: %u/%u measurements used (%u%% full)\n", 
+                        buf->cbuf.written, 
+                        buf->cbuf.length,
+                        (buf->cbuf.written * 100) / buf->cbuf.length);
+    
+    // If profile length is already 0 or there's nothing to move, just return
+    if (length == 0 || startIdx + length >= buf->cbuf.written) {
+        buf->p[pNumber].pLength = 0;
+        return true;
+    }
+    
+    // Calculate how many measurements need to be shifted
+    uint32_t moveCount = buf->cbuf.written - (startIdx + length);
+    
+    // Shift remaining data to fill the memory gap created by the deleted profile
+    for (uint32_t i = 0; i < moveCount; i++) {
+        // Move the next pressure measurement to where the previous one started
+        buf->data.pressure[startIdx + i] = buf->data.pressure[startIdx + length + i];
+        // Same, but for temperature 
+        buf->data.temperature[startIdx + i] = buf->data.temperature[startIdx + length + i]; 
+        // This will need to be expanded as new sensors are added to the system
+    }
+    
+    // Update the write position for the next profile
+    buf->cbuf.written -= length;
+    
+    // Loop through the profiles and update each index 
+    for (uint8_t i = pNumber + 1; i <= buf->pNumber; i++) {
+        buf->p[i].pIndex -= length;
+    }
+    
+    // Set length = 0 for the profile being cleared
+    buf->p[pNumber].pLength = 0;
+    
+    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR : Successfully compacted memory for profile %u, freed %u measurements\n", 
+                         pNumber, length);
+
+    // Show available space after deletion
+    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR : Available memory: %u/%u measurements (%u%%)\n", 
+                         buf->cbuf.length - buf->cbuf.written, 
+                         buf->cbuf.length,
+                         ((buf->cbuf.length - buf->cbuf.written) * 100) / buf->cbuf.length);
+    return true;
+}
+
+// Partially delete data after a page has been successfully sent
+bool DATA_clear_partial(Data_t *buf, uint8_t pNumber, uint32_t startOffset, uint32_t length) {
+    // First perform a sanity check to verify that buf points to valid memory and isn't a null pointer.
+    // Also checks to make sure that pNumber passed in isn't higher than the profile number stored in the buffer
+    if (buf == NULL || pNumber > buf->pNumber) {
+        ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR_PARTIAL : ERROR, Invalid buffer or profile number\n");
+        return false;
+    }
+    
+    // Get profile's base info
+    uint32_t profileStartIdx = buf->p[pNumber].pIndex;
+    uint32_t profileLength = buf->p[pNumber].pLength;
+    
+    // Make sure startOffset and length are within the bounds of the profile specified by pNumber
+    if (startOffset + length > profileLength) {
+        ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR_PARTIAL : ERROR, Requested range exceeds profile length\n");
+        return false;
+    }
+    
+    // Calculate absolute positions within the buffer
+    uint32_t absoluteStartIdx = profileStartIdx + startOffset;
+    uint32_t dataEndIdx = absoluteStartIdx + length;
+    
+    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR_PARTIAL : Removing %u measurements at offset %u from profile %u\n", 
+                        length, startOffset, pNumber);
+    
+    // Show the available space in memory before deletion
+    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR_PARTIAL : Current memory status: %u/%u measurements used (%u%% full)\n", 
+                        buf->cbuf.written, 
+                        buf->cbuf.length,
+                        (buf->cbuf.written * 100) / buf->cbuf.length);
+    
+    // Calculate how many measurements need to be shifted
+    uint32_t moveCount = buf->cbuf.written - dataEndIdx;
+    
+    // Shift remaining data to fill the gap
+    for (uint32_t i = 0; i < moveCount; i++) {
+        buf->data.pressure[absoluteStartIdx + i] = buf->data.pressure[dataEndIdx + i];
+        buf->data.temperature[absoluteStartIdx + i] = buf->data.temperature[dataEndIdx + i];
+        // Add other sensor types here as needed
+    }
+    
+    // Update the write position
+    buf->cbuf.written -= length;
+    
+    // Update the current profile's length
+    buf->p[pNumber].pLength -= length;
+    
+    // Update indices for profiles that come after this one
+    for (uint8_t i = pNumber + 1; i <= buf->pNumber; i++) {
+        buf->p[i].pIndex -= length;
+    }
+    
+    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR_PARTIAL : Successfully removed %u measurements from profile %u\n", 
+                        length, pNumber);
+                        
+    // Show available space after deletion
+    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR_PARTIAL : Available memory: %u/%u measurements (%u%%)\n", 
+                        buf->cbuf.length - buf->cbuf.written, 
+                        buf->cbuf.length,
+                        ((buf->cbuf.length - buf->cbuf.written) * 100) / buf->cbuf.length);
+    
+    return true;
+}
+
 void DATA_get_original(Data_t *buf, pData *P, float *pressure, float *temperature, uint8_t pNumber)
 {
     if (buf->cbuf.read < buf->cbuf.written)
