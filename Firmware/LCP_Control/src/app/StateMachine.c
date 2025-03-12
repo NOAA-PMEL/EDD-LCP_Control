@@ -3983,9 +3983,22 @@ void module_sps_tx(void)
                             {
                                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park transmit <Successful>\n\n");
                                 park_run = false;
+
+                                // Calculate starting offset in the profile based on page number
+                                uint32_t pageOffset = sPark.pageNumber * MEASUREMENT_MAX;
+    
+                                // Clear just the successfully transmitted page
+                                DATA_clear_partial(&park, m_park_number, pageOffset, sPark.mLength);
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park page %u (containing %u measurements) cleared for profile %u\n", 
+                                                        sPark.pageNumber, sPark.mLength, m_park_number);
+
                                 /* reset m_park_length and m_park_number */
                                 if (m_park_length == 0)
                                 {
+                                    /* Clear the full park data after all pages are successfully transmitted */
+                                    //DATA_clear(&park, m_park_number);
+                                    //ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park data cleared for profile %u\n", m_park_number);
+                                    
                                     m_park_number++;
                                     sPark.pageNumber = 0;
                                     sPark.mLength = 0;
@@ -4233,9 +4246,21 @@ void module_sps_tx(void)
                                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile transmit <Successful>\n\n");
                                 prof_run = false;
 
+                                // Calculate starting offset in the profile based on page number
+                                uint32_t pageOffset = sProf.pageNumber * MEASUREMENT_MAX;
+                                
+                                // Clear just the successfully transmitted page
+                                DATA_clear_partial(&prof, m_prof_number, pageOffset, sProf.mLength);
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile page %u (containing %u measurements) cleared for profile %u\n", 
+                                                        sProf.pageNumber, sProf.mLength, m_prof_number);
+
                                 /* reset m_park_length and m_park_number */
                                 if (m_prof_length == 0)
                                 {
+                                    /* Clear the full profile data all pages are successfully transmitted */
+                                    //DATA_clear(&prof, m_prof_number);
+                                    //ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile data cleared for profile %u\n", m_prof_number);
+
                                     m_prof_number++;
                                     sProf.pageNumber = 0;
                                     sProf.mLength = 0;
