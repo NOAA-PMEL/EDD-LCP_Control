@@ -201,7 +201,7 @@ void task_move_piston_to_zero(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(period);
+        vTaskDelay(xDelay2000ms);
         //vTaskDelete(NULL);
     }
 
@@ -277,7 +277,7 @@ void task_move_piston_to_full(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(period);
+        vTaskDelay(xDelay2000ms);
         //vTaskDelete(NULL);
         //return;
     }
@@ -353,7 +353,7 @@ void task_reset_piston_to_full(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(period);
+        vTaskDelay(xDelay2000ms);
         //vTaskDelete(NULL);
         //return;
     }
@@ -431,8 +431,8 @@ void task_move_piston_to_length(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(period);
-        //vTaskDelete(NULL);
+        vTaskDelay(xDelay2000ms);
+        vTaskDelete(NULL);
     }
     vTaskDelay(xDelay50ms);
     /** Start the move */
@@ -522,12 +522,12 @@ void task_move_piston_to_length(void)
                                     length, (length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
     }
 
-    /* check Heap size for debug only*/
-    uint32_t sizeB = xPortGetFreeHeapSize();
-    ARTEMIS_DEBUG_PRINTF("PISTON :: FreeRTOS HEAP SIZE = %u Bytes\n\n", sizeB);
+    // /* check Heap size for debug only*/
+    // uint32_t sizeB = xPortGetFreeHeapSize();
+    // ARTEMIS_DEBUG_PRINTF("PISTON :: FreeRTOS HEAP SIZE = %u Bytes\n\n", sizeB);
 
-    uint32_t sizeC = xPortGetMinimumEverFreeHeapSize();
-    ARTEMIS_DEBUG_PRINTF("PISTON :: FreeRTOS MIN HEAP SIZE = %u Bytes\n\n", sizeC);
+    // uint32_t sizeC = xPortGetMinimumEverFreeHeapSize();
+    // ARTEMIS_DEBUG_PRINTF("PISTON :: FreeRTOS MIN HEAP SIZE = %u Bytes\n\n", sizeC);
 
 
     vTaskDelay(xDelay100ms);
@@ -566,8 +566,8 @@ void task_move_piston_to_volume(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(period);
-        //vTaskDelete(NULL);
+        vTaskDelay(xDelay2000ms);
+        vTaskDelete(NULL);
         //return;
     }
     vTaskDelay(xDelay50ms);

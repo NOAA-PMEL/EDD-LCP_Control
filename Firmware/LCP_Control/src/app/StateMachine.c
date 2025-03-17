@@ -486,7 +486,7 @@ void module_pus_surface_float(void)
     vTaskDelay(piston_period);
     PIS_task_move_full(&xPiston);
     piston_move = true;
-    vTaskDelay(piston_period);
+    vTaskDelay(xDelay2000ms);
 
     Event_e pusEvent;
     while (piston_move)
@@ -496,9 +496,9 @@ void module_pus_surface_float(void)
         {
             ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->active\n");
 
-            /* piston time for up to 120 seconds */
+            /* piston time for up to 170 seconds */
             piston_timer += piston_period;
-            if (piston_timer >= 120000)
+            if (piston_timer >= 170000)
             {
                 PIS_Get_Length(&Length);
                 Volume = CTRL_calculate_volume_from_length(Length);
@@ -538,6 +538,7 @@ void module_pus_surface_float(void)
         }
         vTaskDelay(piston_period);
     }
+    vTaskDelay(xDelay180000ms);
 
     /* check Heap size */
     uint32_t size = xPortGetFreeHeapSize();
@@ -609,6 +610,7 @@ void module_pds_idle(void)
     PIS_set_piston_rate(1);
     PIS_set_volume(Volume);
     PIS_task_move_volume(&xPiston);
+    vTaskDelay(xDelay2000ms);
 
     while (piston_move)
     {
@@ -616,9 +618,9 @@ void module_pds_idle(void)
         if ( (eStatus==eRunning) || (eStatus==eBlocked)  )
         {
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task->active\n");
-            /* piston time for up to 120 seconds */
+            /* piston time for up to 170 seconds */
             piston_timer += piston_period;
-            if (piston_timer >= 120000)
+            if (piston_timer >= 170000)
             {
                 ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston time-out, task->finished\n");
                 PIS_task_delete(xPiston);
@@ -652,6 +654,7 @@ void module_pds_idle(void)
         }
         vTaskDelay(piston_period);
     }
+    vTaskDelay(xDelay180000ms);
 
 #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
     /* go faster @0.5Hz*/
@@ -1006,7 +1009,7 @@ void module_sps_move_to_park(void)
         PIS_set_piston_rate(1);
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Setting -> Piston encoder value to zero, %u profiles reached since last cal >>\n\n", pistonzero_number);
         PIS_task_move_zero(&xPiston); /*This is the piston zero reset command*/
-        vTaskDelay(xDelay180000ms);
+        vTaskDelay(xDelay2000ms);
 
             /* check on piston movement */
         while (piston_move)
@@ -1015,9 +1018,9 @@ void module_sps_move_to_park(void)
             if ( (eStatus==eRunning) || (eStatus==eBlocked) )
             {   
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->active\n");
-                /* piston time for up to 180 seconds */
+                /* piston time for up to 170 seconds */
                 piston_timer += piston_period;
-                if (piston_timer >= 180000)
+                if (piston_timer >= 170000)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero time-out, task->finished\n");
                     PIS_task_delete(xPiston);
@@ -1050,7 +1053,7 @@ void module_sps_move_to_park(void)
             }
             vTaskDelay(piston_period);
         }
-        vTaskDelay(xDelay5000ms);
+        vTaskDelay(xDelay180000ms);
         zlengthadjust = 0.0 - zlengthdrift;
 
         if( (zlengthadjust<=0.25) && (zlengthadjust>=-0.25))
@@ -1129,9 +1132,9 @@ void module_sps_move_to_park(void)
         if ( (eStatus==eRunning) || (eStatus==eBlocked) )
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->active\n");
-            /* piston time for up to 180 seconds */
+            /* piston time for up to 170 seconds */
             piston_timer += piston_period;
-            if (piston_timer >= 180000)
+            if (piston_timer >= 170000)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston time-out, task->finished\n");
                 PIS_task_delete(xPiston);
@@ -1164,6 +1167,7 @@ void module_sps_move_to_park(void)
         }
         vTaskDelay(piston_period);
     }
+    vTaskDelay(xDelay180000ms); 
 
 #endif
 
@@ -1420,7 +1424,7 @@ void module_sps_move_to_park(void)
                 if ( (eStatus==eRunning) || (eStatus==eBlocked) )
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->active\n");
-                    /* keep piston time for up to 30 seconds unless crush_depth activated use piston up to 120 seconds */
+                    /* keep piston time for up to 15 seconds unless crush_depth activated use piston up to 120 seconds */
                     piston_timer += piston_period;
 
                     if (crush_depth)
@@ -1943,7 +1947,7 @@ void module_sps_park(void)
                 if ( (eStatus==eRunning) || (eStatus==eBlocked) )
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->active\n");
-                    /* keep piston time for up to 30 seconds unless crush_depth activated use piston up to 120 seconds */
+                    /* keep piston time for up to 15 seconds unless crush_depth activated use piston up to 120 seconds */
                     piston_timer += piston_period;
                     if (crush_depth)
                     {
@@ -2261,9 +2265,9 @@ void module_sps_move_to_profile(void)
         if ( (eStatus==eRunning) || (eStatus==eBlocked) )
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->active\n");
-            /* piston time for up to 60 seconds */
+            /* piston time for up to 55 seconds */
             piston_timer += piston_period;
-            if (piston_timer >= 60000)
+            if (piston_timer >= 55000)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston time-out, task->finished\n");
                 PIS_task_delete(xPiston);
@@ -2298,6 +2302,7 @@ void module_sps_move_to_profile(void)
         }
         vTaskDelay(piston_period);
     }
+    vTaskDelay(xDelay60000ms);
 
     /** Start Sampling @2Hz or user settable in the config.h file */
     float s_rate = MOVE_TO_PROFILE_SAMPLE_RATE;
@@ -2553,7 +2558,7 @@ void module_sps_move_to_profile(void)
                 if ( (eStatus==eRunning) || (eStatus==eBlocked)  )
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->active\n");
-                    /* keep piston time for up to 30 seconds unless crush_depth activated use piston up to 120 seconds */
+                    /* keep piston time for up to 15 seconds unless crush_depth activated use piston up to 120 seconds */
                     piston_timer += piston_period;
                     if (crush_depth)
                     {
@@ -2828,9 +2833,9 @@ void module_sps_profile(void)
         if ( (eStatus==eRunning) || (eStatus==eBlocked) )
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->active\n");
-            /* piston time for up to 120 seconds */
+            /* piston time for up to 115 seconds */
             piston_timer += piston_period;
-            if (piston_timer >= 120000)
+            if (piston_timer >= 115000)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston time-out, task->finished\n");
                 PIS_task_delete(xPiston);
@@ -2862,6 +2867,7 @@ void module_sps_profile(void)
         }
         vTaskDelay(piston_period);
     }
+    vTaskDelay(xDelay120000ms);
 #endif
 
 #ifdef TEST
@@ -3512,7 +3518,7 @@ void module_sps_move_to_surface(void)
         PIS_set_piston_rate(1);
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Piston move to full, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
         PIS_task_move_full(&xPiston); /*This is the move piston full command*/
-        vTaskDelay(xDelay180000ms); 
+        vTaskDelay(xDelay2000ms); 
 
         /* check on piston movement */
         while (piston_move)
@@ -3521,9 +3527,9 @@ void module_sps_move_to_surface(void)
             if ( (eStatus==eRunning) || (eStatus==eBlocked) )
             {   
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full task->active\n");
-                /* piston time for up to 180 seconds */
+                /* piston time for up to 170 seconds */
                 piston_timer += piston_period;
-                if (piston_timer >= 180000)
+                if (piston_timer >= 170000)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full time-out, task->finished\n");
                     PIS_task_delete(xPiston);
@@ -3556,7 +3562,7 @@ void module_sps_move_to_surface(void)
             }
             vTaskDelay(piston_period);
         }
-        vTaskDelay(xDelay5000ms);
+        vTaskDelay(xDelay180000ms);
         
         lengthdrift = Length;   
         piston_timer = 0;
@@ -3564,7 +3570,7 @@ void module_sps_move_to_surface(void)
         PIS_set_piston_rate(1);
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_surface, Setting -> Piston encoder value to max, %u profiles reached since last encoder full reset >>\n\n", pistonfull_number);
         PIS_task_reset_full(&xPiston); /*This is the reset piston encoder to full command*/
-        vTaskDelay(xDelay30000ms);
+        vTaskDelay(xDelay2000ms);
 
         /* check on piston movement */
         while (piston_move)
@@ -3573,9 +3579,9 @@ void module_sps_move_to_surface(void)
             if ( (eStatus==eRunning) || (eStatus==eBlocked) )
             {   
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full task->active\n");
-                /* piston time for up to 60 seconds */
+                /* piston time for up to 25 seconds */
                 piston_timer += piston_period;
-                if (piston_timer >= 60000)
+                if (piston_timer >= 25000)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full time-out, task->finished\n");
                     PIS_task_delete(xPiston);
@@ -3608,6 +3614,7 @@ void module_sps_move_to_surface(void)
             }
             vTaskDelay(piston_period);
         }
+        vTaskDelay(xDelay30000ms);
         lengthadjust = Length - lengthdrift;
 
         if( (lengthadjust<=0.25) && (lengthadjust>=-0.25))
@@ -3639,7 +3646,7 @@ void module_sps_move_to_surface(void)
         eTaskState eStatus;
         PIS_set_piston_rate(1);
         PIS_task_move_length(&xPiston);
-        vTaskDelay(xDelay180000ms);
+        vTaskDelay(xDelay2000ms);
 
         while (piston_move)
         {
@@ -3647,9 +3654,9 @@ void module_sps_move_to_surface(void)
             if ( (eStatus==eRunning) || (eStatus==eBlocked) )
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->active\n");
-                /* piston time for up to 60 seconds */
+                /* piston time for up to 25 seconds */
                 piston_timer += piston_period;
-                if (piston_timer >= 60000)
+                if (piston_timer >= 25000)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston time-out, task->finished\n");
                     PIS_Get_Length(&Length);
@@ -3688,6 +3695,7 @@ void module_sps_move_to_surface(void)
             vTaskDelay(piston_period);
         }
     }
+    vTaskDelay(xDelay30000ms);
 
     /** Turn on the GPS */
     uint8_t s_rate = 1;

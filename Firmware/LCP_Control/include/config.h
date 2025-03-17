@@ -217,7 +217,7 @@
 #define PARK_TIME_FIRST                     ( 60.0f * 60.0f )    /* 1 hr */
 #define PARK_TIME                           ( 180.0f * 60.0f )    /* 3 hrs */
 #define PARK_DENSITY                        ( 1024.0f )
-#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 0.10f )
+#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 0.09f )
 #define PROFILE_DEPTH                       ( 165.0f ) //( 4.5f )
 #define PROFILE_DEPTH_ERR                   ( 1.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
