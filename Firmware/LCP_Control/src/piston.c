@@ -180,7 +180,7 @@ void PIS_task_delete(TaskHandle_t xHandle)
             ARTEMIS_DEBUG_PRINTF("PISTON :: Task is Suspended\n");
             vTaskDelete(xHandle);
         }
-        else if (eState==eDeleted)
+        else if ( (eState==eDeleted) || (eState==eInvalid) )
         {
             ARTEMIS_DEBUG_PRINTF("PISTON :: Task is Deleted\n");
             delete = true;
@@ -432,7 +432,7 @@ void task_move_piston_to_length(void)
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
         vTaskDelay(xDelay2000ms);
-        vTaskDelete(NULL);
+        //vTaskDelete(NULL);
     }
     vTaskDelay(xDelay50ms);
     /** Start the move */
@@ -567,7 +567,7 @@ void task_move_piston_to_volume(void)
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
         vTaskDelay(xDelay2000ms);
-        vTaskDelete(NULL);
+        //vTaskDelete(NULL);
         //return;
     }
     vTaskDelay(xDelay50ms);

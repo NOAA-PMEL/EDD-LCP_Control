@@ -436,7 +436,7 @@ void module_pus_surface_float(void)
         while (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
-            if ( (eStatus==eRunning) || (eStatus==eBlocked)  )
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
             {
                 ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->active\n");
 
@@ -455,12 +455,12 @@ void module_pus_surface_float(void)
                     piston_timer = 0;
                 }
             }
-            else if (eStatus==eReady)
-            {
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
-                piston_move = false;
-                piston_timer = 0;
-            }
+            // else if (eStatus==eReady)
+            // {
+            //     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+            //     piston_move = false;
+            //     piston_timer = 0;
+            // }
             else if (eStatus==eSuspended)
             {
                 ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->suspended\n");
@@ -468,7 +468,7 @@ void module_pus_surface_float(void)
                 //piston_move = false;
                 piston_timer = 0;
             }
-            else if (eStatus==eDeleted)
+            else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
             {
                 PIS_Get_Length(&Length);
                 Volume = CTRL_calculate_volume_from_length(Length);
@@ -492,7 +492,7 @@ void module_pus_surface_float(void)
     while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
-        if ( (eStatus==eRunning) || (eStatus==eBlocked) )
+        if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
         {
             ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->active\n");
 
@@ -512,12 +512,12 @@ void module_pus_surface_float(void)
                 pusEvent = MODE_DONE;
             }
         }
-        else if (eStatus==eReady)
-        {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
-            piston_move = false;
-            piston_timer = 0;
-        }
+        // else if (eStatus==eReady)
+        // {
+        //     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+        //     piston_move = false;
+        //     piston_timer = 0;
+        // }
         else if (eStatus==eSuspended)
         {
             ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->suspended\n");
@@ -525,7 +525,7 @@ void module_pus_surface_float(void)
             //piston_move = false;
             piston_timer = 0;
         }
-        else if (eStatus==eDeleted)
+        else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
         {
             PIS_Get_Length(&Length);
             Volume = CTRL_calculate_volume_from_length(Length);
@@ -615,7 +615,7 @@ void module_pds_idle(void)
     while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
-        if ( (eStatus==eRunning) || (eStatus==eBlocked)  )
+        if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
         {
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task->active\n");
             /* piston time for up to 170 seconds */
@@ -628,12 +628,12 @@ void module_pds_idle(void)
                 PIS_Reset();
                 piston_timer = 0;
             }
-            else if (eStatus==eReady)
-            {
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
-                piston_move = false;
-                piston_timer = 0;
-            }
+            // else if (eStatus==eReady)
+            // {
+            //     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+            //     piston_move = false;
+            //     piston_timer = 0;
+            // }
         }
         else if (eStatus==eSuspended)
         {
@@ -642,7 +642,7 @@ void module_pds_idle(void)
             //piston_move = false;
             piston_timer = 0;
         }
-        else if (eStatus==eDeleted)
+        else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
         {
             PIS_Get_Volume(&Volume);
             Length = CTRL_calculate_length_from_volume(Volume);
@@ -768,7 +768,7 @@ void module_pds_systemcheck(void)
                 ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS task->suspended\n");
                 vTaskDelete(xGps);
             }
-            else if (eStatus==eDeleted)
+            else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
             {
                 /* check, if it got at least two to three fixes */
                 if (fix >= 2)
@@ -1015,7 +1015,7 @@ void module_sps_move_to_park(void)
         while (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
-            if ( (eStatus==eRunning) || (eStatus==eBlocked) )
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
             {   
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->active\n");
                 /* piston time for up to 170 seconds */
@@ -1029,19 +1029,19 @@ void module_sps_move_to_park(void)
                     piston_timer = 0;
                 }
             }
-            else if (eStatus==eReady)
-            {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->Ready\n");
-                    piston_move = false;
-                    piston_timer = 0;
-            }
+            // else if (eStatus==eReady)
+            // {
+            //         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->Ready\n");
+            //         piston_move = false;
+            //         piston_timer = 0;
+            // }
             else if (eStatus==eSuspended)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->suspended\n");
                 PIS_task_delete(xPiston);
                 piston_timer = 0;
             }
-            else if (eStatus==eDeleted)
+            else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
             {
                 vTaskDelay(piston_period);
                 PIS_Get_Length(&zlengthdrift);
@@ -1129,7 +1129,7 @@ void module_sps_move_to_park(void)
     while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
-        if ( (eStatus==eRunning) || (eStatus==eBlocked) )
+        if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->active\n");
             /* piston time for up to 170 seconds */
@@ -1143,19 +1143,19 @@ void module_sps_move_to_park(void)
                 piston_timer = 0;
             }
         }
-        else if (eStatus==eReady)
-        {
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
-                piston_move = false;
-                piston_timer = 0;
-        }
+        // else if (eStatus==eReady)
+        // {
+        //         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+        //         piston_move = false;
+        //         piston_timer = 0;
+        // }
         else if (eStatus==eSuspended)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->suspended\n");
             PIS_task_delete(xPiston);
             piston_timer = 0;
         }
-        else if (eStatus==eDeleted)
+        else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
         {
             PIS_Get_Length(&Length);
             Volume = CTRL_calculate_volume_from_length(Length);
@@ -1421,7 +1421,7 @@ void module_sps_move_to_park(void)
             do
             {
                 eStatus = eTaskGetState( xPiston );
-                if ( (eStatus==eRunning) || (eStatus==eBlocked) )
+                if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->active\n");
                     /* keep piston time for up to 15 seconds unless crush_depth activated use piston up to 120 seconds */
@@ -1467,32 +1467,32 @@ void module_sps_move_to_park(void)
                         }
                     }
                 }
-                else if (eStatus==eReady)
-                {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
-                    piston_move = false;
-                    piston_timer = 0;
+                // else if (eStatus==eReady)
+                // {
+                //     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+                //     piston_move = false;
+                //     piston_timer = 0;
 
-                    if (crush_depth)
-                    {
-                        /* piston task delay 1000ms */
-                        if (period >= xDelay10000ms)
-                        {
-                            /* sensor task is already deleted */
-                        }
-                        else
-                        {
-                            /* stop here, in case of emergency blow */
-                            SENS_task_delete(xDepth);
-                            SENS_sensor_depth_off();
-                        }
+                //     if (crush_depth)
+                //     {
+                //         /* piston task delay 1000ms */
+                //         if (period >= xDelay10000ms)
+                //         {
+                //             /* sensor task is already deleted */
+                //         }
+                //         else
+                //         {
+                //             /* stop here, in case of emergency blow */
+                //             SENS_task_delete(xDepth);
+                //             SENS_sensor_depth_off();
+                //         }
 
-                        spsEvent = MODE_CRUSH_TO_PROFILE;
-                        vTaskDelay(piston_period);
-                        run = false;
-                        break;
-                    }
-                }
+                //         spsEvent = MODE_CRUSH_TO_PROFILE;
+                //         vTaskDelay(piston_period);
+                //         run = false;
+                //         break;
+                //     }
+                // }
                 else if (eStatus==eSuspended)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->suspended\n");
@@ -1519,7 +1519,7 @@ void module_sps_move_to_park(void)
                         break;
                     }
                 }
-                else if (eStatus==eDeleted)
+                else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
                 {
                     PIS_Get_Length(&Length);
                     Volume = CTRL_calculate_volume_from_length(Length);
@@ -1944,7 +1944,7 @@ void module_sps_park(void)
             do
             {
                 eStatus = eTaskGetState( xPiston );
-                if ( (eStatus==eRunning) || (eStatus==eBlocked) )
+                if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->active\n");
                     /* keep piston time for up to 15 seconds unless crush_depth activated use piston up to 120 seconds */
@@ -1990,33 +1990,33 @@ void module_sps_park(void)
                         }
                     }
                 }
-                else if (eStatus==eReady)
-                {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->Ready\n");
-                    piston_move = false;
-                    piston_timer = 0;
+                // else if (eStatus==eReady)
+                // {
+                //     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->Ready\n");
+                //     piston_move = false;
+                //     piston_timer = 0;
                     
-                    if (crush_depth)
-                    {
-                        /* stop here, in case of emergency blow */
-                        if (park_period >= xDelay10000ms)
-                        {
-                            /* do nothing, tasks are already deleted and sensors are turned off */
-                        }
-                        else
-                        {
-                            SENS_task_delete(xTemp);
-                            SENS_sensor_temperature_off();
-                            SENS_task_delete(xDepth);
-                            SENS_sensor_depth_off();
-                        }
+                //     if (crush_depth)
+                //     {
+                //         /* stop here, in case of emergency blow */
+                //         if (park_period >= xDelay10000ms)
+                //         {
+                //             /* do nothing, tasks are already deleted and sensors are turned off */
+                //         }
+                //         else
+                //         {
+                //             SENS_task_delete(xTemp);
+                //             SENS_sensor_temperature_off();
+                //             SENS_task_delete(xDepth);
+                //             SENS_sensor_depth_off();
+                //         }
 
-                        spsEvent = MODE_CRUSH_TO_PROFILE;
-                        vTaskDelay(piston_period);
-                        run = false;
-                        break;
-                    }
-                }
+                //         spsEvent = MODE_CRUSH_TO_PROFILE;
+                //         vTaskDelay(piston_period);
+                //         run = false;
+                //         break;
+                //     }
+                // }
                 else if (eStatus==eSuspended)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->suspended\n");
@@ -2044,7 +2044,7 @@ void module_sps_park(void)
                         break;
                     }
                 }
-                else if (eStatus==eDeleted)
+                else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
                 {
                     PIS_Get_Length(&Length);
                     Volume = CTRL_calculate_volume_from_length(Length);
@@ -2262,7 +2262,7 @@ void module_sps_move_to_profile(void)
     while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
-        if ( (eStatus==eRunning) || (eStatus==eBlocked) )
+        if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->active\n");
             /* piston time for up to 55 seconds */
@@ -2276,13 +2276,13 @@ void module_sps_move_to_profile(void)
                 //piston_move = false;
                 piston_timer = 0;
             }
-        }
-        else if (eStatus==eReady)
-        {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
-            piston_move = false;
-            piston_timer = 0;
-        }
+        // }
+        // else if (eStatus==eReady)
+        // {
+        //     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+        //     piston_move = false;
+        //     piston_timer = 0;
+        // }
         else if (eStatus==eSuspended)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->suspended\n");
@@ -2290,7 +2290,7 @@ void module_sps_move_to_profile(void)
             //piston_move = false;
             piston_timer = 0;
         }
-        else if (eStatus==eDeleted)
+        else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
         {
             PIS_Get_Length(&Length);
             Volume = CTRL_calculate_volume_from_length(Length);
@@ -2555,7 +2555,7 @@ void module_sps_move_to_profile(void)
             do
             {
                 eStatus = eTaskGetState( xPiston );
-                if ( (eStatus==eRunning) || (eStatus==eBlocked)  )
+                if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->active\n");
                     /* keep piston time for up to 15 seconds unless crush_depth activated use piston up to 120 seconds */
@@ -2599,33 +2599,33 @@ void module_sps_move_to_profile(void)
                         }
                     }
                 }
-                else if (eStatus==eReady)
-                {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->ready\n");
-                    piston_move = false;
-                    piston_timer = 0;
+                // else if (eStatus==eReady)
+                // {
+                //     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->ready\n");
+                //     piston_move = false;
+                //     piston_timer = 0;
                     
-                    if (crush_depth)
-                    {
-                        /* piston task delay 1000ms */
-                        if (period >= xDelay10000ms)
-                        {
-                            /* sensor task is already deleted */
-                        }
-                        else
-                        {
-                            /* stop here, in case of emergency blow */
-                            SENS_task_delete(xDepth);
-                            SENS_sensor_depth_off();
-                        }
+                //     if (crush_depth)
+                //     {
+                //         /* piston task delay 1000ms */
+                //         if (period >= xDelay10000ms)
+                //         {
+                //             /* sensor task is already deleted */
+                //         }
+                //         else
+                //         {
+                //             /* stop here, in case of emergency blow */
+                //             SENS_task_delete(xDepth);
+                //             SENS_sensor_depth_off();
+                //         }
 
-                        /* stop here, in case of emergency blow */
-                        spsEvent = MODE_CRUSH_TO_PROFILE;
-                        vTaskDelay(piston_period);
-                        run = false;
-                        break;
-                    }
-                }
+                //         /* stop here, in case of emergency blow */
+                //         spsEvent = MODE_CRUSH_TO_PROFILE;
+                //         vTaskDelay(piston_period);
+                //         run = false;
+                //         break;
+                //     }
+                // }
                 else if (eStatus==eSuspended)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->suspended\n");
@@ -2653,7 +2653,7 @@ void module_sps_move_to_profile(void)
                         break;
                     }
                 }
-                else if (eStatus==eDeleted)
+                else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
                 {
                     PIS_Get_Length(&Length);
                     Volume = CTRL_calculate_volume_from_length(Length);
@@ -2830,7 +2830,7 @@ void module_sps_profile(void)
     while (piston_move)
     {
         eStatus = eTaskGetState( xPiston );
-        if ( (eStatus==eRunning) || (eStatus==eBlocked) )
+        if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->active\n");
             /* piston time for up to 115 seconds */
@@ -2843,19 +2843,19 @@ void module_sps_profile(void)
                 piston_timer = 0;
             }
         }
-        else if (eStatus==eReady)
-        {
-            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
-            piston_move = false;
-            piston_timer = 0;
-        }
+        // else if (eStatus==eReady)
+        // {
+        //     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");
+        //     piston_move = false;
+        //     piston_timer = 0;
+        // }
         else if (eStatus==eSuspended)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->suspended\n");
             PIS_task_delete(xPiston);
             piston_timer = 0;
         }
-        else if (eStatus==eDeleted)
+        else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->finished\n");
             PIS_Get_Length(&Length);
@@ -3335,7 +3335,7 @@ void module_sps_profile(void)
         if (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
-            if ( (eStatus==eRunning) || (eStatus==eBlocked) )
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->active\n");
                 /* keep piston time for up to 15 seconds unless crush_depth activated or at the surface use piston up to 180 seconds */
@@ -3362,20 +3362,20 @@ void module_sps_profile(void)
                     }
                 }
             }
-            else if (eStatus==eReady)
-            {
-                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->ready\n");
-                //PIS_task_delete(xPiston);
-                piston_move = false;
-                piston_timer = 0;
-            }
+            // else if (eStatus==eReady)
+            // {
+            //     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->ready\n");
+            //     //PIS_task_delete(xPiston);
+            //     piston_move = false;
+            //     piston_timer = 0;
+            // }
             else if (eStatus==eSuspended)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->suspended\n");
                 PIS_task_delete(xPiston);
                 piston_timer = 0;
             }
-            else if (eStatus==eDeleted)
+            else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
             {
                 PIS_Get_Length(&Length);
                 Volume = CTRL_calculate_volume_from_length(Length);
@@ -3524,7 +3524,7 @@ void module_sps_move_to_surface(void)
         while (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
-            if ( (eStatus==eRunning) || (eStatus==eBlocked) )
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
             {   
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full task->active\n");
                 /* piston time for up to 170 seconds */
@@ -3538,19 +3538,19 @@ void module_sps_move_to_surface(void)
                     piston_timer = 0;
                 }
             }
-            else if (eStatus==eReady)
-            {
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->Ready\n");
-                piston_move = false;
-                piston_timer = 0;
-            }
+            // else if (eStatus==eReady)
+            // {
+            //     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->Ready\n");
+            //     piston_move = false;
+            //     piston_timer = 0;
+            // }
             else if (eStatus==eSuspended)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full task->suspended\n");
                 PIS_task_delete(xPiston);
                 piston_timer = 0;
             }
-            else if (eStatus==eDeleted)
+            else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
             {
                 vTaskDelay(piston_period);
                 PIS_Get_Length(&Length);
@@ -3576,7 +3576,7 @@ void module_sps_move_to_surface(void)
         while (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
-            if ( (eStatus==eRunning) || (eStatus==eBlocked) )
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
             {   
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full task->active\n");
                 /* piston time for up to 25 seconds */
@@ -3590,19 +3590,19 @@ void module_sps_move_to_surface(void)
                     piston_timer = 0;
                 }
             }
-            else if (eStatus==eReady)
-            {
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->Ready\n");
-                piston_move = false;
-                piston_timer = 0;
-            }
+            // else if (eStatus==eReady)
+            // {
+            //     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->Ready\n");
+            //     piston_move = false;
+            //     piston_timer = 0;
+            // }
             else if (eStatus==eSuspended)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full task->suspended\n");
                 PIS_task_delete(xPiston);
                 piston_timer = 0;
             }
-            else if (eStatus==eDeleted)
+            else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
             {
                 vTaskDelay(piston_period);
                 PIS_Get_Length(&Length);
@@ -3651,7 +3651,7 @@ void module_sps_move_to_surface(void)
         while (piston_move)
         {
             eStatus = eTaskGetState( xPiston );
-            if ( (eStatus==eRunning) || (eStatus==eBlocked) )
+            if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->active\n");
                 /* piston time for up to 25 seconds */
@@ -3669,12 +3669,12 @@ void module_sps_move_to_surface(void)
                     piston_timer = 0;
                 }
             }
-            else if (eStatus==eReady)
-            {
-                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->Ready\n");
-                piston_move = false;
-                piston_timer = 0;
-            }
+            // else if (eStatus==eReady)
+            // {
+            //     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->Ready\n");
+            //     piston_move = false;
+            //     piston_timer = 0;
+            // }
             else if (eStatus==eSuspended)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->suspended\n");
@@ -3682,7 +3682,7 @@ void module_sps_move_to_surface(void)
                 //piston_move = false;
                 piston_timer = 0;
             }
-            else if (eStatus==eDeleted)
+            else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
             {
                 PIS_Get_Length(&Length);
                 Volume = CTRL_calculate_volume_from_length(Length);
@@ -3754,7 +3754,7 @@ void module_sps_move_to_surface(void)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS task->suspended\n");
         }
-        else if (eStatus==eDeleted)
+        else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
         {
             /* check, if it got at least two to three fixes */
             if (fix >= 2)
@@ -3897,7 +3897,7 @@ void module_sps_tx(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, Satellite, task->suspended\n");
                 }
-                else if (eStatus==eDeleted)
+                else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
                 {
                     satellite_tries++;
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, Satellite task->finished\n");
@@ -3976,7 +3976,7 @@ void module_sps_tx(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park task->suspended\n");
                     }
-                    else if (eStatus==eDeleted)
+                    else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park task->finished\n");
                         vTaskDelay(xDelay500ms);
@@ -4158,7 +4158,7 @@ void module_sps_tx(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, Satellite, task->suspended\n");
                 }
-                else if (eStatus==eDeleted)
+                else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
                 {
                     satellite_tries++;
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, Satellite, task->finished\n");
@@ -4237,7 +4237,7 @@ void module_sps_tx(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile task->suspended\n");
                     }
-                    else if (eStatus==eDeleted)
+                    else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile task->finished\n");
                         vTaskDelay(xDelay1000ms);

@@ -251,7 +251,7 @@ void SENS_task_delete(TaskHandle_t xHandle)
         {
             ARTEMIS_DEBUG_PRINTF("SENSORS :: %s in eRunning state, wait\n", task_name);
         }
-        else if (eState==eDeleted)
+        else if ( (eState==eDeleted) || (eState==eInvalid) )
         {
             ARTEMIS_DEBUG_PRINTF("SENSORS :: %s->Deleted\n", task_name);
             if(xSemaphoreTake(xTDSemaphore, xDelay10ms) == pdTRUE)
