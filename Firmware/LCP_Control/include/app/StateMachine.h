@@ -29,7 +29,7 @@
 #define DATA_PROFILE_DEPTH_MAX                  ( 220 )     /**< Maximum depth (m) */
 #define DATA_PROFILE_OVERAGE_MAX                ( 5 )       /**< Percent extra in buffer */
 //#define DATA_PROFILE_SAMPLES_MAX              ( ( (DATA_PROFILE_DEPTH_MAX / DATA_PROFILE_VELOCITY_MIN) / DATA_PROFILE_SAMPLE_FREQ ) * (100 + DATA_PROFILE_OVERAGE_MAX) / 100)
-#define DATA_PROFILE_SAMPLES_MAX                ( 230 * SYSTEM_PROFILE_NUMBER ) //( 2310 )
+#define DATA_PROFILE_SAMPLES_MAX                ( 300 * SYSTEM_PROFILE_NUMBER ) //( 2310 )
 
 #define DATA_PARK_SAMPLE_FREQ                   ( 1.0 / 60.0 )  /**< Sample every Minute */
 #define DATA_PARK_PARK_MAX_DURATION_HOURS       ( 24 )
