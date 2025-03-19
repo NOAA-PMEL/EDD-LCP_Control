@@ -2276,7 +2276,7 @@ void module_sps_move_to_profile(void)
                 //piston_move = false;
                 piston_timer = 0;
             }
-        // }
+        }
         // else if (eStatus==eReady)
         // {
         //     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->Ready\n");

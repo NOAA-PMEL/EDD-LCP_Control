@@ -447,6 +447,10 @@ void task_move_piston_to_length(void)
     pistonRun = true;
     uint8_t count_reset = 0;
 
+    static uint8_t stall_count = 0;
+    static uint8_t stall_count_max = 10;
+    static float last_length = -1.0;
+
     while(pistonRun)
     {
         /** Read the piston memory to see if we're done moving and at volume */
@@ -492,6 +496,28 @@ void task_move_piston_to_length(void)
                 taskENTER_CRITICAL();
                 piston.length = length;
                 taskEXIT_CRITICAL();
+
+                if (isnan(last_length) || isinf(last_length) 
+                    || isnan(length)   || isinf(length) 
+                    || fabs(length - last_length) < 0.001) { // check for stall condition: Invalid Float for length/last_length or no movement
+                    stall_count++; // increment stall count
+                    if (isnan(length) || isinf(length)) {
+                        ARTEMIS_DEBUG_PRINTF("PISTON :: Invalid length value detected\n");
+                    }
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count = %d/%d\n", stall_count, stall_count_max);
+                    if (stall_count > stall_count_max) {
+                        ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
+                        ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
+                        PIS_Reset();            // reset the board
+                        vTaskDelay(period);     // wait for reset to complete
+                        pistonRun = false;      // exit the loop
+                        stall_count = 0;        // reset stall count
+                    }
+
+                } else {
+                    stall_count = 0;            // reset stall count
+                }
+                last_length = length;           // update last length
             }
             //xSemaphoreGive(piston.rtos.semaphore);
         //}
