@@ -1771,6 +1771,9 @@ void module_sps_park(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: park, sending measurements = %u\n", read);
 #else
             datalogger_park_mode(filename, avg_p, avg_t, &time);
+            // Power off datalogger after logging data until next collection
+            datalogger_power_off();
+            
 #endif
             /* just for testing */
         }
@@ -1791,9 +1794,13 @@ void module_sps_park(void)
         {
             /* do nothing */
             //ARTEMIS_DEBUG_PRINTF("SPS :: park, within PARK_DEPTH_ERR range, do nothing\n");
+            datalogger_power_off();
         }
         else
         {
+            // When leaving the target depth range, turn datalogger back on
+            datalogger_power_on();
+            
             /* collect up to PARK_DEPTH_RATE_COUNTER measurements */
             rate_avg += Rate;
             rate_count++;
@@ -2113,6 +2120,9 @@ void module_sps_park(void)
         /* check on Maximum park depth = ? */
         if (Depth >= PARK_DEPTH_MAX && !crush_depth)
         {
+            // Ensure datalogger is on for maximum depth event
+            datalogger_power_on();
+            
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
             {
@@ -2149,6 +2159,9 @@ void module_sps_park(void)
         if (wait_time >= park_time && !crush_depth)
         {
             ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Timer out %f mins >>\n\n", (float) (wait_time/(60.0*xDelay1000ms)));
+            
+            // Ensure datalogger is powered on before exiting
+            datalogger_power_on();
 
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
@@ -2697,6 +2710,10 @@ void module_sps_move_to_profile(void)
         /* keep checking for crush depth */
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {
+            
+            // Ensure datalogger is on for emergency events
+            datalogger_power_on();
+            
             /*add a CRUSH DEPTH FOS to the saved move-to-profile piston length for next profile*/
             to_prof_piston_length = length_update + 0.5;
 
