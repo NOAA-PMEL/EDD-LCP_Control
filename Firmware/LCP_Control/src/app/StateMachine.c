@@ -3646,6 +3646,7 @@ void module_sps_move_to_surface(void)
         eTaskState eStatus;
         PIS_set_piston_rate(1);
         PIS_task_move_length(&xPiston);
+        piston_move = true;
         vTaskDelay(xDelay5000ms);
 
         while (piston_move)
