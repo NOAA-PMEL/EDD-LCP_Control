@@ -23,15 +23,9 @@
 //
 //*****************************************************************************
 #include "depth.h"
-//#include "artemis_pa9ld.h"
-#include "artemis_max14830.h"
-#include "K9lx_pressure.h"
-#include "artemis_debug.h"
+#include "artemis_pa9ld.h"
 #include "am_bsp_pins.h"
-#include "MAX14830.h"
 
-/* datalogger read pressure profile */
-#include "datalogger.h"
 
 //*****************************************************************************
 //
@@ -42,23 +36,15 @@
  * This static struct holds all configuration
  * information for the pressure sensor selected.
  */
-static sDepth_t module = {
-    .sensor = DEPTH_Keller_PR9LX,
-    //.uart.uart = MAX14830_COM_PORT3,
-    //.i2c = {0},
-    //.device.manufacturer = {0},
-    //.device.scaling = {0},
-    .conversion.density = TYPICAL_DENSITY_OF_SALTWATER,
+static sDepth_t module ={
+    .sensor = DEPTH_Keller_Not_Configured,
+    .uart = {BSP_UART_NONE},
+    .i2c = {0},
+    .device.manufacturer = {0},
+    .device.scaling = {0},
+    .conversion.density = TYPICAL_DENSITY_OF_SALTWATER
 };
 
-static K9lx_init_param kParam = {
-    .port       =   MAX14830_COM_PORT3,
-    .baudrate   =   MAX14830_COM_BAUDRATE_9600,
-    .pin_config =   &g_AM_BSP_GPIO_COM3_POWER_PIN,
-    .pin_number =   AM_BSP_GPIO_COM3_POWER_PIN
-};
-
-static K9lx_init_param *pK;
 
 //*****************************************************************************
 //
@@ -100,37 +86,22 @@ static float module_DEPTH_Convert_Pressure_to_Depth(float pressure);
 * @see DEPTH_initialize
 * @see DEPTH_Power_ON
 *******************************************************************************/
-bool DEPTH_initialize(eDEPTH_Sensor_t sensor)
+void DEPTH_initialize(eDEPTH_Sensor_t sensor)
 {
     module.sensor = sensor;
     switch(sensor)
     {
         case DEPTH_Keller_PA9LD:
-            //module.i2c.i2c = 4;
-            //artemis_pa9ld_initialize(&g_AM_BSP_GPIO_PRES_ON, AM_BSP_GPIO_PRES_ON);
-            //artemis_pa9ld_get_calibration(&module.device.manufacturer, &module.device.scaling);
+            module.i2c.i2c = 4;
+            artemis_pa9ld_initialize(&g_AM_BSP_GPIO_PRES_ON, AM_BSP_GPIO_PRES_ON);
+            artemis_pa9ld_get_calibration(&module.device.manufacturer, &module.device.scaling);
             break;
         case DEPTH_Keller_PR9LX:
-            pK = &kParam;
-            K9lx_init(pK);
+
             break;
         default:
             break;
     }
-
-    return true;
-}
-
-void DEPTH_initialize_RTOS(void)
-{
-    MAX14830_port_enable((eMAX18430_ComPort_t) kParam.port);
-    MAX14830_Set_baudrate((eMAX18430_ComPort_t) kParam.port, kParam.baudrate);
-}
-
-void DEPTH_uninitialize_RTOS(void)
-{
-    DEPTH_Power_OFF();
-    MAX14830_port_disable((eMAX18430_ComPort_t) kParam.port);
 }
 
 /**
@@ -139,15 +110,14 @@ void DEPTH_uninitialize_RTOS(void)
  */
 void DEPTH_Power_ON(void)
 {   
-    //switch(module.sensor)
-    //{
-    //    default:
-    //        break;
-    //
-    //}
+    switch(module.sensor)
+    {
+        default:
+            break;
+      
+    }
 
-    K9lx_power_on();
-    //artemis_pa9ld_power_on();
+    artemis_pa9ld_power_on();
 }
 
 /**
@@ -156,8 +126,7 @@ void DEPTH_Power_ON(void)
  */
 void DEPTH_Power_OFF(void)
 {
-    K9lx_power_off();
-    //artemis_pa9ld_power_off();
+    artemis_pa9ld_power_off();
 }
 
 /**
@@ -168,30 +137,11 @@ void DEPTH_Power_OFF(void)
 void DEPTH_Read(sDepth_Measurement_t *data)
 {
     float pressure;
-    //artemis_pa9ld_read(&pressure, &temperature);
-
-#if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
-
-    /* read pressure test profile */
-    datalogger_pressure(&pressure);
+    float temperature;
+    artemis_pa9ld_read(&pressure, &temperature);
     data->Pressure = pressure;
+    data->Temperature = temperature;
     data->Depth = module_DEPTH_Convert_Pressure_to_Depth(pressure);
-
-#else
-
-    K9lx_read_P(&pressure);
-    //ARTEMIS_DEBUG_PRINTF("Pressure = %f\n", pressure);
-    data->Pressure = pressure;
-    data->Depth = module_DEPTH_Convert_Pressure_to_Depth(pressure);
-
-#endif
-
-    //float temperature;
-    ////artemis_pa9ld_read(&pressure, &temperature);
-    //K9lx_read_PT(&pressure, &temperature);
-    //data->Pressure = pressure;
-    //data->Temperature = temperature;
-    //data->Depth = module_DEPTH_Convert_Pressure_to_Depth(pressure);
 }
 
 /**

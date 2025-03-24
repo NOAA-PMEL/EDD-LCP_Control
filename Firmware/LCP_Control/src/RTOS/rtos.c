@@ -53,7 +53,6 @@
 
 #include "am_mcu_apollo.h"
 #include "am_bsp.h"
-#include "artemis_debug.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -62,31 +61,52 @@
 #include "portable.h"
 #include "main.h"
 #include "assert.h"
-#include "LED.h"
 
 #define STACK_SIZE  ( 200 )
 
+typedef enum {
+  STATE_IDLE                    = 0,
+  STATE_GREEN_FAST_BLUE_SLOW    = 1,
+  STATE_BLUE_FAST_GREEN_SLOW    = 2,
+  STATE_GREEN_FAST_BLUE_FAST    = 3,
+  STATE_GREEN_SLOW_BLUE_SLOW    = 4
+}eState_t;
+
+
+//*****************************************************************************
+//
+// Task handle for the initial setup task.
+//
+//*****************************************************************************
+TaskHandle_t xSetupTask;
+TaskHandle_t xStateTask;
+StaticTask_t xTaskBuffer;
+StackType_t xStack[ STACK_SIZE ];
+
+TaskHandle_t xBlueLedHandle = NULL;
+TaskHandle_t xGreenLedHandle = NULL;
+TaskHandle_t xNothingHandle = NULL;
 //*****************************************************************************
 //
 // Interrupt handler for the CTIMER module.
 //
 //*****************************************************************************
-//void
-//am_ctimer_isr(void)
-//{
-//    uint32_t ui32Status;
-//
-//    //
-//    // Check the timer interrupt status.
-//    //
-//    ui32Status = am_hal_ctimer_int_status_get(false);
-//    am_hal_ctimer_int_clear(ui32Status);
-//
-//    //
-//    // Run handlers for the various possible timer events.
-//    //
-//    am_hal_ctimer_int_service(ui32Status);
-//}
+void
+am_ctimer_isr(void)
+{
+    uint32_t ui32Status;
+
+    //
+    // Check the timer interrupt status.
+    //
+    ui32Status = am_hal_ctimer_int_status_get(false);
+    am_hal_ctimer_int_clear(ui32Status);
+
+    //
+    // Run handlers for the various possible timer events.
+    //
+    am_hal_ctimer_int_service(ui32Status);
+}
 
 //*****************************************************************************
 //
@@ -113,32 +133,6 @@ void am_freertos_wakeup(uint32_t idleTime)
     return;
 }
 
-void vApplicationIdleHook( void )
-{
-
-	//am_hal_gpio_output_set(AM_BSP_GPIO_LED_RED);
-    ARTEMIS_DEBUG_PRINTF ("\nIDLE Tasking ..\n");
-    //am_bsp_low_power_init();
-    //MAX14830_port_disable(0);
-    //MAX14830_port_disable(1);
-    //MAX14830_port_disable(2);
-    //MAX14830_port_disable(3);
-    //TEMP_Power_OFF();
-
-    //am_freertos_sleep(0xFFFF);
-
-    //am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_RED);
-    //am_hal_gpio_output_set(AM_BSP_GPIO_LED_RED);
-    //while (1)
-    //{
-    //    //ARTEMIS_DEBUG_PRINTF ("\nIDLE Tasking, going to sleep ..\n");
-    //    //am_hal_gpio_output_set(AM_BSP_GPIO_LED_RED);
-    //    //am_hal_gpio_output_set(AM_BSP_GPIO_LED_BLUE);
-    //    //am_hal_gpio_output_set(AM_BSP_GPIO_LED_GREEN);
-    //    am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_DEEP);
-    //}
-
-}
 
 //*****************************************************************************
 //
@@ -155,8 +149,6 @@ vApplicationMallocFailedHook(void)
     // timers, and semaphores.  The size of the FreeRTOS heap is set by the
     // configTOTAL_HEAP_SIZE configuration constant in FreeRTOSConfig.h.
     //
-    ARTEMIS_DEBUG_PRINTF ("\nStack insufficient free memory\n");
-	am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
     while (1);
 }
 
@@ -166,8 +158,6 @@ vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName)
     (void) pcTaskName;
     (void) pxTask;
 
-    ARTEMIS_DEBUG_PRINTF ("\nStack overflow\n");
-	am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
     //
     // Run time stack overflow checking is performed if
     // configconfigCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2.  This hook
@@ -179,3 +169,94 @@ vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName)
     }
 }
 
+
+//*****************************************************************************
+//
+// Example state task that switches between state setups.
+//
+//*****************************************************************************
+void 
+test_state_led_tasks(void *pvParameters)
+{
+  static eState_t volatile next_state = STATE_GREEN_FAST_BLUE_SLOW;
+  printf("Setting up state_tasks\r\n");
+  /** Get the current time */
+  TickType_t xLastWakeTime;
+  xLastWakeTime = xTaskGetTickCount();
+  
+  while(true) 
+  {
+    
+    /** Delay*/
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(4000UL));
+    
+    /** Kill the current tasks */
+    if((green_led_task_handle != NULL) && 
+       (blue_led_task_handle != NULL))
+    {
+        vTaskSuspend(green_led_task_handle);
+        vTaskSuspend(blue_led_task_handle); 
+        vTaskDelete(green_led_task_handle);
+        vTaskDelete(blue_led_task_handle);
+        green_led_task_handle = NULL;
+        blue_led_task_handle = NULL;
+    }else{
+      LED_Toggle(LED_GREEN);
+    }
+    /** LEDs OFF */
+    LED_Off(LED_GREEN);
+    LED_Off(LED_BLUE);
+    
+    
+    switch(next_state)
+    {
+      case STATE_IDLE:
+        next_state = STATE_GREEN_FAST_BLUE_SLOW;
+        break;
+      case STATE_GREEN_FAST_BLUE_SLOW:
+        xTaskCreate(GreenLedTask, "Green LED", STACK_SIZE, (void*)100UL, tskIDLE_PRIORITY + 5, &green_led_task_handle);
+        xTaskCreate(BlueLedTask, "Blue LED", STACK_SIZE, (void*)500UL, tskIDLE_PRIORITY + 4, &blue_led_task_handle);
+        next_state = STATE_BLUE_FAST_GREEN_SLOW;
+        break;
+      case STATE_BLUE_FAST_GREEN_SLOW:
+        xTaskCreate(GreenLedTask, "Green LED", STACK_SIZE, (void*)500UL, tskIDLE_PRIORITY + 5, &green_led_task_handle);
+        xTaskCreate(BlueLedTask, "Blue LED", STACK_SIZE, (void*)100UL, tskIDLE_PRIORITY + 4, &blue_led_task_handle);
+        next_state = STATE_GREEN_FAST_BLUE_FAST;
+        break;
+      case STATE_GREEN_FAST_BLUE_FAST:
+        xTaskCreate(GreenLedTask, "Green LED", STACK_SIZE, (void*)100UL, tskIDLE_PRIORITY + 5, &green_led_task_handle);
+        xTaskCreate(BlueLedTask, "Blue LED", STACK_SIZE, (void*)100UL, tskIDLE_PRIORITY + 4, &blue_led_task_handle);
+        next_state = STATE_GREEN_SLOW_BLUE_SLOW;
+        break;
+      case STATE_GREEN_SLOW_BLUE_SLOW:
+        xTaskCreate(GreenLedTask, "Green LED", STACK_SIZE, (void*)500UL, tskIDLE_PRIORITY + 5, &green_led_task_handle);
+        xTaskCreate(BlueLedTask, "Blue LED", STACK_SIZE, (void*)500UL, tskIDLE_PRIORITY + 4, &blue_led_task_handle);
+        next_state = STATE_IDLE;
+        break;
+      default:
+        break;
+    }
+  }  
+}
+//*****************************************************************************
+//
+// Initializes all tasks
+//
+//*****************************************************************************
+void
+run_tasks(void)
+{
+    /** Setup the LEDs */
+    LED_Init();
+    
+    /** Disable print interface*/
+    disable_print_interface();
+    
+    // Create the functional tasks
+    xTaskCreate(test_state_led_tasks, "System State", STACK_SIZE, NULL, tskIDLE_PRIORITY + 5, &xStateTask);
+    
+    //
+    // Start the scheduler.
+    //
+    vTaskStartScheduler();
+}

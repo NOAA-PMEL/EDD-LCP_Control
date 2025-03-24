@@ -11,6 +11,9 @@
 #include <string.h>
 #include "sysinfo.h"
 
+
+#include <stdio.h>
+
 /************************************************************************
 *					STRUCTS & ENUMS
 ************************************************************************/
@@ -42,14 +45,12 @@ static DF_profile_t park;
 /************************************************************************
 *					STATIC FUNCTION PROTOTYPES 
 ************************************************************************/
-
 STATIC uint16_t module_create_crc(uint8_t *data, uint8_t len);
 STATIC uint16_t module_convert_depth_to_uint16_t(float depth);
 STATIC uint16_t module_convert_temperature_to_uint16_t(float temp);
-STATIC int32_t module_convert_latitude_to_int32_t(float latitude);
-STATIC int32_t module_convert_longitude_to_int32_t(float longitude);
+STATIC uint64_t module_convert_latitude_to_uint64_t(float latitude);
+STATIC uint64_t module_convert_longitude_to_uint64_t(float longitude);
 
-STATIC void DF_create_generic_header(uint8_t *df, float lat, float lon);
 STATIC uint16_t DF_create_profile_page( uint8_t *df,
                             uint32_t time, uint16_t len, 
                             float lat, float lon, 
@@ -347,64 +348,6 @@ STATIC uint16_t DF_create_park_page( uint8_t *df, uint16_t len, float lat,  floa
     DF_create_generic_dataframe(df, LCP_MODE_PARK, startTime, idx, data, lat, lon, page, last);
 }
 
-/**
- * @brief Create a generic dataframe header before the payload
- *
- * @param df Pointer to datafram
- * @param lat Last know latitude
- * @param lon Last know longitude
- * @
- */
-
-STATIC void DF_create_generic_header(uint8_t *df, float lat, float lon)
-{
-    uint8_t buf[17] = {0};
-
-    /** collect 17 bytes for a 14 bytes header and 3 bytes serial number
-        which will be attached ahead of payload data and other parameters
-    **/
-
-    /*  1. System ID */
-    buf[0] = SYS_get_system_id();
-
-    /*  2. Firmware Version */
-    buf[1] = SYS_get_firmware() >> 8 ;
-    buf[2] = SYS_get_firmware() & 0xFF;
-
-    /*  3. Build Year_Date */
-    buf[3] = SYS_get_build_year_date() >> 8 ;
-    buf[4] = SYS_get_build_year_date() & 0xFF;
-
-    /*  4. Latitude  */
-    int32_t latitude = module_convert_latitude_to_int32_t(lat);
-    buf[5] = latitude >> 24;
-    buf[6] = latitude >> 16;
-    buf[7] = latitude >> 8;
-    buf[8] = latitude & 0xFF;
-
-    /*  5. Longitude  */
-    int32_t longitude = module_convert_longitude_to_int32_t(lon);
-    buf[9]  = longitude  >> 24;
-    buf[10] = longitude  >> 16;
-    buf[11] = longitude  >> 8;
-    buf[12] = longitude  & 0xFF;
-
-    /*  6. LCP Variant */
-    buf[13] = SYS_get_lcp_variant();
-
-    /*  7. Serial Number */
-    uint32_t ser = SYS_get_serial_num();
-    buf[14] = ser >> 16 & 0xFF;
-    buf[15] = ser >> 8 & 0xFF;
-    buf[16] = ser & 0xFF;
-
-    /* copy buff to *df pointer */
-    for (uint8_t i=0; i<17; i++)
-    {
-        df[i] = buf[i];
-    }
-}
-
 
 /**
  * @brief Create a generic dataframe for LCP transmission
@@ -432,7 +375,7 @@ STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t 
     /** depth > uint16_t > 2 Bytes */
     /** temp > uint16_t > 2 Bytes */
     
-    if(len > MAX_DATAFRAME_OUT)
+    if(len > MAX_DATAFRAME_DATA_LEN)
     {
         /** ERROR */
         printf("ERROR");
@@ -457,7 +400,7 @@ STATIC uint16_t DF_create_generic_dataframe(uint8_t *df, uint8_t mode, uint32_t 
 
     /** Firmware Version */
     uint8_t major, minor, build[6];
-    //SYS_get_firmware(&major, &minor, build);
+    SYS_get_firmware(&major, &minor, build);
     *df++ = major;
     *df++ = minor;
 
@@ -541,6 +484,7 @@ uint16_t module_create_crc(uint8_t *data, uint8_t len)
     return crc;
 }
 
+
 /**
  * @brief Convert depth to uint16_t
  * 
@@ -551,51 +495,56 @@ uint16_t module_create_crc(uint8_t *data, uint8_t len)
  * @param depth Depth
  * @return uint16_t Converted value
  */
-
 STATIC uint16_t module_convert_depth_to_uint16_t(float depth)
 {
     return (uint16_t) depth * 10.0f;
 }
 
 /**
- * @brief Convert temperature to int16_t
+ * @brief Convert temperature to uint16_t
  * 
- * Converts the S9 OEM Temperature value to fit in a signed 16-bit int.
+ * Converts the S9 OEM Temperature value to fit in a unsigned 16-bit int.
  * 
  * temp (uint16_t) = (temp (float) + 5.0) * 1000
  * 
  * @param temp Temperature
  * @return uint16_t Converted value;
  */
-
-STATIC int16_t module_convert_temperature_to_int16_t(float temp)
+STATIC uint16_t module_convert_temperature_to_uint16_t(float temp)
 {
-    int16_t temperature = temp * 100;
-    return temperature;
+    temp += 5.0f;
+    temp *= 1000;
+
+    return (uint16_t) temp;
 }
 
 /**
- * @brief Convert latitude into signed 32-bit integer
+ * @brief Convert latitude into unsigned 64-bit integer
  * 
  * @param latitude Latitude to convert
- * @return int32_t Converted value
+ * @return uint64_t Converted value
  */
-
-STATIC int32_t module_convert_latitude_to_int32_t(float latitude)
+STATIC uint64_t module_convert_latitude_to_uint64_t(float latitude)
 {
-    int32_t lat = latitude * 1000000;
-    return lat;
+    latitude += 180.0f;
+    latitude *= 1000.0f;
+    return (uint32_t) latitude;
+
 }
 
 /**
- * @brief Convert longitude into signed 32-bit integer
+ * @brief Convert longitude into unsigned 64-bit integer
  * 
  * @param longitude Longitude to convert
- * @return int32_t Converted value
+ * @return uint64_t Converted value
  */
-
-STATIC int32_t module_convert_longitude_to_int32_t(float longitude)
+STATIC uint64_t module_convert_longitude_to_uint64_t(float longitude)
 {
-    int32_t lon = longitude * 1000000;
-    return lon;
+    if(longitude < 0.0f)
+    {
+        longitude += 360.0f;
+    }
+    longitude *= 1000.0;
+
+    return (uint32_t) longitude;
 }

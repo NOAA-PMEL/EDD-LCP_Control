@@ -1,0 +1,17 @@
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\arm\bin\armproc.dll" 
+
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\arm\bin\armJET.dll" 
+
+"C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\freertos_lowpower.out" 
+
+--plugin="C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\arm\bin\armbat.dll" 
+
+--device_macro="C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\arm\config\debugger\AmbiqMicro\apollo3.dmac" 
+
+--macro_param="_SWO_route=0" 
+
+--flash_loader="C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.4\arm\config\flashloader\AmbiqMicro\FlashApollo3_1024.board" 
+
+
+
+

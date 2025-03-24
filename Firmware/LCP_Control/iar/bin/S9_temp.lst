@@ -1,0 +1,474 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.50.9.278/W32 for ARM         20/Oct/2021  11:48:48
+# Copyright 1999-2020 IAR Systems AB.
+#
+#    Cpu mode                        
+#    Endian                       =  little
+#    Source file                  =
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\S9_temp.c
+#    Command line                 =
+#        -f C:\Users\casari\AppData\Local\Temp\2\EWFB8B.tmp
+#        (C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\S9_temp.c
+#        -D iar -D AM_PART_APOLLO3 -D AM_PACKAGE_BGA -D AM_FREERTOS -D
+#        AM_DEBUG_PRINTF -D AM_UTIL_FAULTISR_PRINT -lcN
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin
+#        --diag_suppress Pa050 -o
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 --no_path_in_file_macros -e --fpu=VFPv4_sp
+#        --dlib_config "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.4\arm\inc\c\DLib_Config_Normal.h" -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\include\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\AmbiqMicro\Include\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\third_party\FreeRTOSv10.1.1\Source\portable\IAR\AMapollo2\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\devices\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\utils\\ -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\\
+#        -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\RTOS\\
+#        -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\artemis\\
+#        -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\..\src\bsp\\
+#        -I C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\CMSIS\ARM\Include\\ -I
+#        $PROJ_DIR\src\RTOS\\ -I
+#        C:\Tools\Ambiq\AmbiqSuite-R2.5.1\mcu\apollo3\hal\\ -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\app\\ -I
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\sys\\ -Ol)
+#    Locale                       =  C
+#    List file                    =
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\S9_temp.lst
+#    Object file                  =
+#        C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\iar\bin\S9_temp.o
+#    Runtime model:                  
+#      __SystemLibrary            =  DLib
+#      __dlib_full_locale_support =  0
+#      __dlib_version             =  6
+#
+###############################################################################
+
+C:\version-control\EDD-LCP_Control\Firmware\LCP_Control\src\S9_temp.c
+      1          /** @file S9_temp.c
+      2           *  @brief SoundNine OEM Temperature Sensor
+      3           *
+      4           *  @author Matt Casari, matthew.casari@noaa.gov
+      5           *  @date September 30, 2020
+      6           *  @version 0.0.1
+      7           *
+      8           *  @copyright National Oceanic and Atmospheric Administration
+      9           *  @copyright Pacific Marine Environmental Lab
+     10           *  @copyright Environmental Development Division
+     11           *
+     12           *  @note
+     13           *
+     14           *  @bug  No known bugs
+     15           */
+     16          #include "S9_temp.h"
+     17          #include "bsp_uart.h"
+     18          //*****************************************************************************
+     19          //
+     20          // Required built-ins.
+     21          //
+     22          //*****************************************************************************
+     23          #include <stdint.h>
+     24          #include <stdbool.h>
+     25          #include <string.h>
+     26          #include <stdlib.h>
+     27          #include <assert.h>
+     28          
+     29          //*****************************************************************************
+     30          //
+     31          // Standard AmbiqSuite includes.
+     32          //
+     33          //*****************************************************************************
+     34          #include "am_mcu_apollo.h"
+     35          #include "am_bsp.h"
+     36          #include "am_util.h"
+     37          
+     38          //*****************************************************************************
+     39          //
+     40          // FreeRTOS include files.
+     41          //
+     42          //*****************************************************************************
+     43          #include "FreeRTOS.h"
+     44          #include "task.h"
+     45          #include "event_groups.h"
+     46          #include "semphr.h"
+     47          
+     48          
+     49          //*****************************************************************************
+     50          //
+     51          // Project Files
+     52          //
+     53          //*****************************************************************************
+     54          #include "am_bsp_pins.h"
+     55          #include "bsp_uart.h"
+     56          //#include "MAX14830.h"
+     57          
+     58          static sS9_t s9;
+     59          static sS9_t *pS9 = &s9;
+     60          
+     61          
+     62          
+     63          STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p);
+     64          
+     65          
+     66          void S9T_init( const e_uart_t port, const am_hal_gpio_pincfg_t *power, const uint32_t power_pin)
+     67          {
+     68          
+     69            assert(
+     70                    (port == BSP_UART_COM0) ||
+     71                    (port == BSP_UART_COM1) ||
+     72                    (port == BSP_UART_COM2) ||
+     73                    (port == BSP_UART_COM3)
+     74                      
+     75                   );
+     76          
+     77            /** Default Buadrate */
+     78            pS9->device.uart.baudrate = 9600;
+     79            
+     80            /** Attach values to struct */
+     81            pS9->device.power.pin = (am_hal_gpio_pincfg_t*)power;
+     82            pS9->device.power.pin_number = (uint32_t)power_pin;
+     83          
+     84            pS9->device.uart.port = port;
+     85          
+     86            /** Initialize the COM Port Power Pin */
+     87            am_hal_gpio_pinconfig(pS9->device.power.pin_number, *pS9->device.power.pin);// g_LCP_BSP_COM0_POWER_ON);
+     88            S9T_OFF();
+     89            S9T_ON();
+     90            am_hal_systick_delay_us(500000);
+     91            
+     92            /** Initialize the COM Port UART */
+     93            bsp_uart_init();
+     94            bsp_uart_set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
+     95            bsp_uart_puts(pS9->device.uart.port, "\r", 1);
+     96            bsp_uart_puts(pS9->device.uart.port, "\r", 1);
+     97            bsp_uart_puts(pS9->device.uart.port, "stop\r", 5);
+     98          //  bsp_uart_puts(pS9->device.uart.port, "STOP\r", 5);
+     99            
+    100            
+    101          }
+    102          
+    103          void S9T_enable(void)
+    104          {
+    105            /** Enable the Power Pin */
+    106            S9T_ON();
+    107            
+    108          }
+    109          
+    110          void S9T_disable(void)
+    111          {
+    112            /** Disable the Power Pin */
+    113            S9T_OFF();
+    114            
+    115          }
+    116          
+    117          
+    118          void S9T_ON(void)
+    119          {
+    120            am_hal_gpio_output_clear(pS9->device.power.pin_number);
+    121          }
+    122          
+    123          
+    124          void S9T_OFF(void)
+    125          {
+    126            am_hal_gpio_output_set(pS9->device.power.pin_number);
+    127          }
+    128          
+    129          
+    130          float S9T_Read_T(void)
+    131          {
+    132            float t;
+    133            S9T_Read(&t, NULL);
+    134            return t;
+    135          }
+    136          
+    137          
+    138          float S9T_Read_R(void)
+    139          {
+    140            float r;
+    141            S9T_Read(NULL, &r);
+    142            return r;
+    143          }
+    144          
+    145          float S9T_Read(float *t, float *r)
+    146          {
+    147            bsp_uart_puts(pS9->device.uart.port, "sample\r", 7);
+    148            am_hal_systick_delay_us(750000);
+    149            char sampleStr[256];
+    150            bsp_uart_gets(pS9->device.uart.port, sampleStr, 256);
+    151            
+    152            
+    153            /** Find values */
+    154            uint8_t *pStr = strstr(sampleStr, "sample\r\n");
+    155            if(pStr != NULL)
+    156            {
+    157                pStr += 8;
+    158                uint8_t len = strlen(pStr);
+    159                module_s9_parse_msg(pStr, len, pS9);
+    160                *t = pS9->temperature;
+    161                *r = pS9->resistance;
+    162            } else {
+    163              *t = NAN;
+    164              *r = NAN;
+    165            }
+    166            return 0;
+    167          }
+    168          
+    169          /** @brief Parse S9 Temperature response
+    170           * 
+    171           * The S9 Temperature sensor returns a data string 
+    172           * in the format:
+    173           * RRRR.RRRR, TT.TTTT\r
+    174           * 
+    175           * Where RRRR.RRRR is the thermistor resistance in Ohms
+    176           * and TT.TTTT is the calculated temperature in degC
+    177           * 
+    178           * @param *data Pointer to data string
+    179           * @param len length of string
+    180           * @param *p Pointer to S9 Temperature structure
+    181           */
+    182          STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p)
+    183          {
+    184              uint8_t comma, end;
+    185              uint8_t i;
+    186              
+    187              if(len <= 4)
+    188              {
+    189                p->temperature = NAN;
+    190                p->resistance = NAN;
+    191                return;
+    192              }
+    193              
+    194          
+    195              for(i=0;i<len;i++)
+    196              {
+    197                  if(data[i] == ',')
+    198                  {
+    199                      comma = i;
+    200                  }
+    201                  else if(data[i] == '\r')
+    202                  {
+    203                      end = i;
+    204                  }
+    205              }
+    206          
+    207              if(end <= comma)
+    208              {
+    209                  p->temperature = NAN;
+    210                  p->resistance = NAN;
+    211                  return;
+    212              }
+    213          
+    214              /* Copy Resistance */
+    215              char temp[32];
+    216              strncpy(temp, &data[0],comma);
+    217              p->resistance = atof(temp);
+    218          
+    219              /* Copy Temperature */
+    220              strncpy(temp, &data[comma+1], end-comma);
+    221              p->temperature = atof(temp);
+    222          
+    223          }
+    224          
+    225          
+    226          /** @brief Parse version info
+    227           * 
+    228           * When the S9 Temp is sent the "ver" command, 
+    229           * the following response is sent:
+    230           * S9>ver
+    231           * MID=T003
+    232           * C0=0.000855
+    233           * C1=0.000293
+    234           * C2=0.000000
+    235           * C3=0.000000
+    236           * R0=10000.000
+    237           * UID=000000000F0F1A08535722E74FBC90B1
+    238           * S9T0 V0.45
+    239           * OK
+    240           * 
+    241           * This function parses for each individual structure
+    242           * variable and returns.
+    243           * 
+    244           * @param *data Pointer to response string
+    245           * @param *p Pointer to S9 temperature structure
+    246           * 
+    247           */
+    248          STATIC void _parse_version(char *data, sS9_t *p )
+    249          {
+    250              uint8_t i;
+    251              char temp[255];
+    252              float temp_f; 
+    253          
+    254              strcpy(temp,data);
+    255              // printf("%s\n", temp);
+    256              char *tok;
+    257          
+    258              /** @todo strtok needs RTOS case!!! */
+    259              /* Find MID */
+    260              tok = strtok(temp,"=");
+    261              tok = strtok(NULL, "\r");
+    262              strcpy(p->info.MID, tok);
+    263          
+    264              /* Find C0 */
+    265              tok = strtok(NULL, "=");
+    266              tok = strtok(NULL, "\r");
+    267              temp_f = atof(tok);
+    268              p->info.C0 = temp_f;
+    269          
+    270              /* Find C1 */
+    271              tok = strtok(NULL, "=");
+    272              tok = strtok(NULL, "\r");
+    273              p->info.C1 = atof(tok);
+    274          
+    275              /* Find C2 */
+    276              tok = strtok(NULL, "=");
+    277              tok = strtok(NULL, "\r");
+    278              p->info.C2 = atof(tok);
+    279          
+    280              /* Find C3 */
+    281              tok = strtok(NULL, "=");
+    282              tok = strtok(NULL, "\r");
+    283              p->info.C3 = atof(tok);
+    284          
+    285              /* Find R0 */
+    286              tok = strtok(NULL, "=");
+    287              tok = strtok(NULL, "\r");
+    288              p->info.R0 = atof(tok);
+    289          
+    290              /* Find UID */
+    291              tok = strtok(NULL, "=");
+    292              tok = strtok(NULL, "\r");
+    293              
+    294              uint8_t len = strlen(tok);
+    295          //    uint8_t sub_val = 0;
+    296              uint8_t temp_hex[32];
+    297              memset(temp,0,32);
+    298          
+    299              for(i=0;i<len;i++)
+    300              {
+    301                  if( (tok[i] >= '0') && (tok[i] <= '9'))
+    302                  {
+    303                      temp_hex[i] = tok[i] - '0';
+    304                  } else if ( (tok[i] >= 'A') && (tok[i] <= 'F'))
+    305                  {
+    306                      temp_hex[i] = tok[i] -'A' + 10;
+    307                  } else {
+    308                      /** @todo - Error condition */
+    309                  }
+    310              }
+    311              i=0;
+    312              uint8_t cnt =0;
+    313              while(i < 32)
+    314              {
+    315                  p->info.UID[cnt] = temp_hex[i++] << 4;
+    316                  p->info.UID[cnt] |= temp_hex[i++];
+    317                  cnt++;
+    318              }
+    319              
+    320              /* Find Sensor */
+    321              tok = strtok(NULL, " ");
+    322              strcpy(p->info.sensor, tok);
+    323          
+    324              /** Find Firmware Major Version */
+    325              tok = strtok(NULL, ".");
+    326              p->info.firmware.major = (uint8_t) atoi(tok);
+    327          
+    328              /** Find Firmware Minor Version */
+    329              tok = strtok(NULL, "\r");
+    330              p->info.firmware.minor = (uint8_t) atoi(tok);
+    331          
+    332              /** Find Status */
+    333              tok = strtok(NULL, "\r");
+    334              strcpy(p->info.status, tok);
+    335          }
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       0   S9T_OFF
+       0   S9T_ON
+     280   S9T_Read
+       280   -> am_hal_systick_delay_us
+       280   -> bsp_uart_gets
+       280   -> bsp_uart_puts
+       280   -> module_s9_parse_msg
+       280   -> strlen
+       280   -> strstr
+       8   S9T_Read_R
+         8   -> S9T_Read
+       8   S9T_Read_T
+         8   -> S9T_Read
+       8   S9T_disable
+         8   -> S9T_OFF
+       8   S9T_enable
+         8   -> S9T_ON
+      24   S9T_init
+        24   -> S9T_OFF
+        24   -> S9T_ON
+        24   -> __aeabi_assert
+        24   -> __iar_EmptyStepPoint
+        24   -> am_hal_gpio_pinconfig
+        24   -> am_hal_systick_delay_us
+        24   -> bsp_uart_init
+        24   -> bsp_uart_puts
+        24   -> bsp_uart_set_baudrate
+      56   module_s9_parse_msg
+        56   -> __aeabi_d2f
+        56   -> atof
+        56   -> strncpy
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable4
+       4  ??DataTable4_1
+       4  ??DataTable4_10
+       4  ??DataTable4_11
+       4  ??DataTable4_12
+       4  ??DataTable4_2
+       4  ??DataTable4_3
+       4  ??DataTable4_4
+       4  ??DataTable4_5
+       4  ??DataTable4_6
+       4  ??DataTable4_7
+       4  ??DataTable4_8
+       4  ??DataTable4_9
+     108  ?_0
+      12  ?_1
+       2  ?_2
+       8  ?_3
+       8  ?_4
+      12  ?_5
+      34  S9T_OFF
+      34  S9T_ON
+     114  S9T_Read
+      16  S9T_Read_R
+      16  S9T_Read_T
+       8  S9T_disable
+       8  S9T_enable
+     170  S9T_init
+     168  module_s9_parse_msg
+       4  pS9
+      96  s9
+
+ 
+  96 bytes in section .bss
+   4 bytes in section .data
+ 150 bytes in section .rodata
+ 620 bytes in section .text
+ 
+ 620 bytes of CODE  memory
+ 150 bytes of CONST memory
+ 100 bytes of DATA  memory
+
+Errors: none
+Warnings: 4

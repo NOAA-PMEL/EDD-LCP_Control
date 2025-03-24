@@ -106,8 +106,7 @@ static const am_hal_uart_config_t g_sBspUartConfig =
     //
     // Standard UART settings: 115200-8-N-1
     //
-    //.ui32BaudRate = 115200,
-    .ui32BaudRate = 921600,
+    .ui32BaudRate = 115200,
     .ui32DataBits = AM_HAL_UART_DATA_BITS_8,
     .ui32Parity = AM_HAL_UART_PARITY_NONE,
     .ui32StopBits = AM_HAL_UART_ONE_STOP_BIT,
@@ -116,8 +115,8 @@ static const am_hal_uart_config_t g_sBspUartConfig =
     //
     // Set TX and RX FIFOs to interrupt at half-full.
     //
-    .ui32FifoLevels = (AM_HAL_UART_TX_FIFO_7_8 |
-                       AM_HAL_UART_RX_FIFO_7_8),
+    .ui32FifoLevels = (AM_HAL_UART_TX_FIFO_1_2 |
+                       AM_HAL_UART_RX_FIFO_1_2),
 
     //
     // The default interface will just use polling instead of buffers.
@@ -134,7 +133,7 @@ static const am_hal_uart_config_t g_sBspUartConfig =
 // Default UART configuration settings if using buffers.
 //
 //*****************************************************************************
-#define AM_BSP_UART_BUFFER_SIZE     2048
+#define AM_BSP_UART_BUFFER_SIZE     1024
 static uint8_t pui8UartTxBuffer[AM_BSP_UART_BUFFER_SIZE];
 static uint8_t pui8UartRxBuffer[AM_BSP_UART_BUFFER_SIZE];
 
@@ -143,8 +142,7 @@ static am_hal_uart_config_t g_sBspUartBufferedConfig =
     //
     // Standard UART settings: 115200-8-N-1
     //
-    //.ui32BaudRate = 115200,
-    .ui32BaudRate = 921600,
+    .ui32BaudRate = 115200,
     .ui32DataBits = AM_HAL_UART_DATA_BITS_8,
     .ui32Parity = AM_HAL_UART_PARITY_NONE,
     .ui32StopBits = AM_HAL_UART_ONE_STOP_BIT,
@@ -153,10 +151,8 @@ static am_hal_uart_config_t g_sBspUartBufferedConfig =
     //
     // Set TX and RX FIFOs to interrupt at half-full.
     //
-    .ui32FifoLevels = (AM_HAL_UART_TX_FIFO_7_8 |
-                       AM_HAL_UART_RX_FIFO_7_8),
-    //.ui32FifoLevels = (AM_HAL_UART_TX_FIFO_1_2 |
-    //                   AM_HAL_UART_RX_FIFO_1_2),
+    .ui32FifoLevels = (AM_HAL_UART_TX_FIFO_1_2 |
+                       AM_HAL_UART_RX_FIFO_1_2),
 
     //
     // The default interface will just use polling instead of buffers.
@@ -313,7 +309,7 @@ am_bsp_itm_printf_enable(uint32_t ui32Pin, am_hal_gpio_pincfg_t sPincfg)
     // Enable the ITM and TPIU
     // Set the BAUD clock for 1M
     //
-    TPIUcfg.ui32SetItmBaud = AM_HAL_TPIU_BAUD_1M;
+    TPIUcfg.ui32SetItmBaud = AM_HAL_TPIU_BAUD_2M;
     am_hal_tpiu_enable(&TPIUcfg);
     #ifdef AM_BSP_GPIO_ITM_SWO
     am_hal_gpio_pinconfig(AM_BSP_GPIO_ITM_SWO, g_AM_BSP_GPIO_ITM_SWO);
@@ -592,82 +588,82 @@ am_bsp_mspi_pins_enable(am_hal_mspi_device_e eMSPIDevice)
     switch ( eMSPIDevice )
     {
         case AM_HAL_MSPI_FLASH_SERIAL_CE0:
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_BSP_GPIO_MSPI_CE0);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_BSP_GPIO_MSPI_D0);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_BSP_GPIO_MSPI_D1);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_BSP_GPIO_MSPI_CE0);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_BSP_GPIO_MSPI_D0);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_BSP_GPIO_MSPI_D1);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
             break;
         case AM_HAL_MSPI_FLASH_SERIAL_CE1:
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_BSP_GPIO_MSPI_CE1);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_BSP_GPIO_MSPI_D4);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_BSP_GPIO_MSPI_D5);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_BSP_GPIO_MSPI_CE1);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_BSP_GPIO_MSPI_D4);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_BSP_GPIO_MSPI_D5);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
             break;
         case AM_HAL_MSPI_FLASH_DUAL_CE0:
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_BSP_GPIO_MSPI_CE0);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_BSP_GPIO_MSPI_D0);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_BSP_GPIO_MSPI_D1);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_BSP_GPIO_MSPI_CE0);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_BSP_GPIO_MSPI_D0);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_BSP_GPIO_MSPI_D1);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
             break;
         case AM_HAL_MSPI_FLASH_DUAL_CE1:
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_BSP_GPIO_MSPI_CE1);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_BSP_GPIO_MSPI_D4);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_BSP_GPIO_MSPI_D5);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_BSP_GPIO_MSPI_CE1);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_BSP_GPIO_MSPI_D4);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_BSP_GPIO_MSPI_D5);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
             break;
         case AM_HAL_MSPI_FLASH_QUAD_CE0:
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_BSP_GPIO_MSPI_CE0);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_BSP_GPIO_MSPI_D0);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_BSP_GPIO_MSPI_D1);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_BSP_GPIO_MSPI_D2);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_BSP_GPIO_MSPI_D3);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_BSP_GPIO_MSPI_CE0);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_BSP_GPIO_MSPI_D0);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_BSP_GPIO_MSPI_D1);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_BSP_GPIO_MSPI_D2);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_BSP_GPIO_MSPI_D3);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
             break;
         case AM_HAL_MSPI_FLASH_QUAD_CE1:
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_BSP_GPIO_MSPI_CE1);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_BSP_GPIO_MSPI_D4);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_BSP_GPIO_MSPI_D5);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_BSP_GPIO_MSPI_D6);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_BSP_GPIO_MSPI_D7);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_BSP_GPIO_MSPI_CE1);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_BSP_GPIO_MSPI_D4);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_BSP_GPIO_MSPI_D5);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_BSP_GPIO_MSPI_D6);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_BSP_GPIO_MSPI_D7);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
             break;
         case AM_HAL_MSPI_FLASH_OCTAL_CE0:
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_BSP_GPIO_MSPI_CE0);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_BSP_GPIO_MSPI_D0);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_BSP_GPIO_MSPI_D1);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_BSP_GPIO_MSPI_D2);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_BSP_GPIO_MSPI_D3);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_BSP_GPIO_MSPI_D4);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_BSP_GPIO_MSPI_D5);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_BSP_GPIO_MSPI_D6);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_BSP_GPIO_MSPI_D7);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_BSP_GPIO_MSPI_CE0);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_BSP_GPIO_MSPI_D0);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_BSP_GPIO_MSPI_D1);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_BSP_GPIO_MSPI_D2);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_BSP_GPIO_MSPI_D3);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_BSP_GPIO_MSPI_D4);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_BSP_GPIO_MSPI_D5);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_BSP_GPIO_MSPI_D6);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_BSP_GPIO_MSPI_D7);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
             break;
         case AM_HAL_MSPI_FLASH_OCTAL_CE1:
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_BSP_GPIO_MSPI_CE1);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_BSP_GPIO_MSPI_D0);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_BSP_GPIO_MSPI_D1);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_BSP_GPIO_MSPI_D2);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_BSP_GPIO_MSPI_D3);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_BSP_GPIO_MSPI_D4);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_BSP_GPIO_MSPI_D5);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_BSP_GPIO_MSPI_D6);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_BSP_GPIO_MSPI_D7);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_BSP_GPIO_MSPI_CE1);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_BSP_GPIO_MSPI_D0);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_BSP_GPIO_MSPI_D1);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_BSP_GPIO_MSPI_D2);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_BSP_GPIO_MSPI_D3);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_BSP_GPIO_MSPI_D4);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_BSP_GPIO_MSPI_D5);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_BSP_GPIO_MSPI_D6);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_BSP_GPIO_MSPI_D7);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
             break;
         case AM_HAL_MSPI_FLASH_QUADPAIRED:
         case AM_HAL_MSPI_FLASH_QUADPAIRED_SERIAL:
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_BSP_GPIO_MSPI_CE0);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_BSP_GPIO_MSPI_CE1);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_BSP_GPIO_MSPI_D0);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_BSP_GPIO_MSPI_D1);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_BSP_GPIO_MSPI_D2);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_BSP_GPIO_MSPI_D3);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_BSP_GPIO_MSPI_D4);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_BSP_GPIO_MSPI_D5);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_BSP_GPIO_MSPI_D6);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_BSP_GPIO_MSPI_D7);
-            //am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_BSP_GPIO_MSPI_CE0);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_BSP_GPIO_MSPI_CE1);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_BSP_GPIO_MSPI_D0);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_BSP_GPIO_MSPI_D1);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_BSP_GPIO_MSPI_D2);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_BSP_GPIO_MSPI_D3);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_BSP_GPIO_MSPI_D4);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_BSP_GPIO_MSPI_D5);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_BSP_GPIO_MSPI_D6);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_BSP_GPIO_MSPI_D7);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_BSP_GPIO_MSPI_SCK);
             break;
     }
 } // am_bsp_mspi_pins_enable()
@@ -682,91 +678,91 @@ am_bsp_mspi_pins_enable(am_hal_mspi_device_e eMSPIDevice)
 //! @return None.
 //
 //*****************************************************************************
-//void
-//am_bsp_mspi_pins_disable(am_hal_mspi_device_e eMSPIDevice)
-//{
-//    switch ( eMSPIDevice )
-//    {
-//        case AM_HAL_MSPI_FLASH_SERIAL_CE0:
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
-//            break;
-//        case AM_HAL_MSPI_FLASH_SERIAL_CE1:
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
-//            break;
-//        case AM_HAL_MSPI_FLASH_DUAL_CE0:
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
-//            break;
-//        case AM_HAL_MSPI_FLASH_DUAL_CE1:
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
-//            break;
-//        case AM_HAL_MSPI_FLASH_QUAD_CE0:
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
-//            break;
-//        case AM_HAL_MSPI_FLASH_QUAD_CE1:
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
-//            break;
-//        case AM_HAL_MSPI_FLASH_OCTAL_CE0:
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
-//            break;
-//        case AM_HAL_MSPI_FLASH_OCTAL_CE1:
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
-//            break;
-//        case AM_HAL_MSPI_FLASH_QUADPAIRED:
-//        case AM_HAL_MSPI_FLASH_QUADPAIRED_SERIAL:
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_HAL_GPIO_DISABLE);
-//            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
-//            break;
-//    }
-//} // am_bsp_mspi_pins_disable()
+void
+am_bsp_mspi_pins_disable(am_hal_mspi_device_e eMSPIDevice)
+{
+    switch ( eMSPIDevice )
+    {
+        case AM_HAL_MSPI_FLASH_SERIAL_CE0:
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
+            break;
+        case AM_HAL_MSPI_FLASH_SERIAL_CE1:
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
+            break;
+        case AM_HAL_MSPI_FLASH_DUAL_CE0:
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
+            break;
+        case AM_HAL_MSPI_FLASH_DUAL_CE1:
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
+            break;
+        case AM_HAL_MSPI_FLASH_QUAD_CE0:
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
+            break;
+        case AM_HAL_MSPI_FLASH_QUAD_CE1:
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
+            break;
+        case AM_HAL_MSPI_FLASH_OCTAL_CE0:
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
+            break;
+        case AM_HAL_MSPI_FLASH_OCTAL_CE1:
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
+            break;
+        case AM_HAL_MSPI_FLASH_QUADPAIRED:
+        case AM_HAL_MSPI_FLASH_QUADPAIRED_SERIAL:
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE0, g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_CE1, g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D0,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D1,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D2,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D3,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D4,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D5,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D6,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_D7,  g_AM_HAL_GPIO_DISABLE);
+            am_hal_gpio_pinconfig(AM_BSP_GPIO_MSPI_SCK, g_AM_HAL_GPIO_DISABLE);
+            break;
+    }
+} // am_bsp_mspi_pins_disable()
 
 //*****************************************************************************
 //
