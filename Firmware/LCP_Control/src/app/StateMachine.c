@@ -1705,6 +1705,7 @@ void module_sps_park(void)
         {
             /* turn on the sensors */
             //SENS_task_temperature_on(&xTemp);
+            datalogger_power_on();
             SENS_sensor_temperature_on();
             SENS_sensor_depth_on();
             vTaskDelay(xDelay10ms);
@@ -1718,6 +1719,7 @@ void module_sps_park(void)
             /* turn off the sensors */
             SENS_sensor_temperature_off();
             SENS_sensor_depth_off();
+            datalogger_power_off();
         }
         else
         {
@@ -1756,6 +1758,7 @@ void module_sps_park(void)
         if (samples > 9)
 #endif
         {
+            datalogger_power_on();
             float var, avg_p, avg_t;
             float std = std_div(samples_p, samples, &var, &avg_p);
             ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
