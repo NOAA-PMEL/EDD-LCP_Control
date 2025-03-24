@@ -447,9 +447,9 @@ void task_move_piston_to_length(void)
     pistonRun = true;
     uint8_t count_reset = 0;
 
-    static uint8_t stall_count = 0;
-    static uint8_t stall_count_max = 10;
-    static float last_length = -1.0;
+    uint8_t stall_count = 0;
+    uint8_t stall_count_max = 10;
+    float last_length = -1.0;
 
     while(pistonRun)
     {
@@ -501,6 +501,7 @@ void task_move_piston_to_length(void)
                     || isnan(length)   || isinf(length) 
                     || fabs(length - last_length) < 0.001) { // check for stall condition: Invalid Float for length/last_length or no movement
                     stall_count++; // increment stall count
+                    vTaskDelay(xDelay500ms);
                     if (isnan(length) || isinf(length)) {
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Invalid length value detected\n");
                     }
