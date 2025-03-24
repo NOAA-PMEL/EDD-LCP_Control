@@ -25,6 +25,7 @@
 #include "ublox.h"
 #include "ublox_ubx.h"
 #include "artemis_ublox_i2c.h"
+#include "artemis_debug.h"
 
 
 //*****************************************************************************
@@ -65,7 +66,7 @@ bool module_ublox_read_ubx(
 void module_ublox_create_msg_from_packet(ubx_packet_t *packet, uint8_t *msg);
 bool module_ublox_wait_for_ack_or_nak(  uint8_t expectedClass,
                                         uint8_t expectedId,
-                                        uint8_t initial_delay_ms, 
+                                        uint16_t initial_delay_ms,
                                         uint8_t attempts  );
 
 
@@ -96,6 +97,7 @@ bool UBLOX_initialize(  UBLOX_PortType_t port,
     }
 
     uint16_t rate = 1000 / (rateHz * 4);
+    bool retVal = false;
 
     if(port == UBLOX_COM_I2C)
     {
@@ -107,7 +109,18 @@ bool UBLOX_initialize(  UBLOX_PortType_t port,
 
         /** Set the rate */
         module_cfg_port_msg(UBX_NAV_CLASS, UBX_NAV_PVT, rate);
+        retVal = true;
     }
+    return retVal;
+}
+
+/**
+ * @brief UBLOX Module unInitialize
+ *
+ */
+void UBLOX_uninitialize(void)
+{
+    artemis_ublox_i2c_uninitialize();
 }
 
 /**
@@ -122,23 +135,24 @@ bool UBLOX_initialize(  UBLOX_PortType_t port,
 bool UBLOX_read_nav(UBLOX_Nav_t *data)
 {
     bool retVal = false;
-    bool ubloxFix = false;
+    //bool ubloxFix = false;
 
     ubx_nav_pvt_t nav = {0};
 
     retVal = module_ublox_read(UBX_NAV_CLASS, UBX_NAV_PVT, &nav);
+	//am_util_stdio_printf("ublox ret is %d \n", retVal);
 
     if(retVal)
     {
+		//am_util_stdio_printf("ublox fix type %d \n", nav.fixType);
         if(nav.fixType > 2)
         {
             retVal = true;
-            
             data->fix = true;
             
             data->position.lat = nav.lat * 1e-7;
             data->position.lon = nav.lon * 1e-7;
-            data->position.alt = nav.hMSL;
+            data->position.alt = nav.hMSL* 1e-3;
             
             data->accuracy.hAcc = nav.hAcc;
             data->accuracy.vAcc = nav.vAcc;
@@ -155,7 +169,6 @@ bool UBLOX_read_nav(UBLOX_Nav_t *data)
             retVal = false;
         }
     }
-
     return retVal;
 }
 
@@ -175,11 +188,11 @@ bool UBLOX_read_config(ubx_cfg_prt_t *prt)
     /** Read UBX */
     retVal = module_ublox_read_ubx(UBX_CFG_CLASS, prt->portID, payload, 20, 0, &packet);
 
+    //if(retVal)
+    //{
+    //    retVal = UBLOX_parse_cfg_prt_packet(&packet, prt);
+    //}
 
-    if(retVal)
-    {
-        retVal = UBLOX_parse_cfg_prt_packet(&packet, prt);
-    }
     return retVal;
 }
 
@@ -199,6 +212,7 @@ bool module_ublox_i2c_initialize(void)
 {
     artemis_ublox_i2c_initialize(UBLOX_I2C_ADDR);
     artemis_ublox_i2c_power_on();
+    return true;
 }
 
 /**
@@ -212,6 +226,7 @@ bool module_ublox_send_packet(ubx_packet_t *packet)
 {
     UBX_create_msg_from_packet(packet, ubx_msg);
     artemis_ublox_i2c_send_msg(ubx_msg, packet->length + UBX_HEADER_SIZE, false);
+    return true;
 }
 
 /**
@@ -249,9 +264,8 @@ bool module_ublox_read_packet(ubx_packet_t *packet)
           
             retVal = UBX_parse_ubx_packet(pStart, len, packet);
         }
-
-        return retVal;
     }
+    return retVal;
 }
 
 /**
@@ -266,7 +280,7 @@ bool module_ublox_cfg_port_for_i2c(uint16_t inConfig, uint16_t outConfig)
 {
     bool retVal = false;
     ubx_packet_t txPacket = {0};
-    ubx_packet_t rxPacket = {0};
+    //ubx_packet_t rxPacket = {0};
     uint8_t payload[20] = {0};
     
     /** Set up the payload */
@@ -303,7 +317,7 @@ bool module_cfg_port_msg(uint8_t cls, uint8_t id, uint8_t rate)
 {
     bool retVal = false;
     ubx_packet_t txPacket = {0};
-    ubx_packet_t rxPacket = {0};
+    //ubx_packet_t rxPacket = {0};
     uint8_t payload[3] = {cls, id, rate};
 
     /** Create the UBX Packet */
@@ -315,7 +329,7 @@ bool module_cfg_port_msg(uint8_t cls, uint8_t id, uint8_t rate)
     /** Query for ACK-ACK or ACK-NAK */
     if(retVal)
     {
-        retVal = module_ublox_wait_for_ack_or_nak( UBX_CFG_CLASS, UBX_CFG_PRT, 500, 50);      
+        retVal = module_ublox_wait_for_ack_or_nak(UBX_CFG_CLASS, UBX_CFG_PRT, 500, 50);
     }
 
 //    /** Read buffer & parse for UBX packet */
@@ -329,7 +343,6 @@ bool module_cfg_port_msg(uint8_t cls, uint8_t id, uint8_t rate)
 //    {
 //        retVal = UBX_check_for_ack(&rxPacket, UBX_CFG_CLASS, UBX_CFG_PRT);
 //    }
-
 
     return retVal;
 }
@@ -371,40 +384,33 @@ bool module_ublox_read(eUBX_Class_t cls, uint8_t id, void *parsed)
             // case UBX_ACK_CLASS:
             //     eUBX_ACK_ID_t id = (eUBX_ACK_ID_t)*pId;
                 // UBX_parse_ack_or_nak_msg(&packet, )
-            break;
+            //break;
             case UBX_AID_CLASS:
-
-            break;
+                break;
             case UBX_CFG_CLASS:
                 UBX_parse_cfg((UBX_CFG_ID_t) id, &packet, parsed);
-            break;
+                break;
             case UBX_ESF_CLASS:
-        
-            break;
+                break;
             case UBX_HNR_CLASS:
-        
-            break;
+                break;
             case UBX_INF_CLASS:
-        
-            break;
+                break;
             case UBX_LOG_CLASS:
-        
-            break;
+                break;
             case UBX_MGA_CLASS:
-        
-            break;
+                break;
             case UBX_MON_CLASS:
-        
-            break;
+                break;
             case UBX_NAV_CLASS:
                 UBX_parse_nav((UBX_NAV_ID_t) id, &packet, parsed);
-            break;
+                break;
             case UBX_RXM_CLASS:
-        
-            break;
+                break;
             case UBX_UPD_CLASS:
-        
-            break;
+                break;
+            default:
+                break;
         }
     }
     return retVal;
@@ -422,7 +428,7 @@ bool module_ublox_read(eUBX_Class_t cls, uint8_t id, void *parsed)
  */
 bool module_read_cfg_msg(bool shortMsg, uint8_t class, uint8_t id)
 {
-    char payload[2];
+    uint8_t payload[2];
     ubx_packet_t packet = {0};
     bool retVal;
 
@@ -448,15 +454,16 @@ bool module_read_cfg_msg(bool shortMsg, uint8_t class, uint8_t id)
  */
 bool module_read_cfg_rate(ubx_cfg_rate_t *rate)
 {
-    char payload[20];
+    uint8_t payload[20];
     ubx_packet_t packet = {0};
     bool retVal = false;
 
     retVal = module_ublox_read_ubx(UBX_CFG_CLASS, UBX_CFG_RATE, payload, 20, 0, &packet);
-    if(retVal)
-    {
-        retVal = UBLOX_parse_cfg_rate_packet(&packet, rate);
-    }
+
+    //if(retVal)
+    //{
+    //    retVal = UBLOX_parse_cfg_rate_packet(&packet, rate);
+    //}
 
     return retVal;
 }
@@ -504,6 +511,12 @@ bool module_ublox_read_ubx(
 
     /** Read Buffer */
     uint16_t len = artemis_ublox_i2c_read_data(ubx_msg);
+
+	//for (uint16_t i=0; i<len; i++){
+	//	am_util_stdio_printf("%c", ubx_msg[i]);
+	//}
+	//am_util_stdio_printf("\n");
+
     if(len > 0)
     {
         /** Find start of UBX Packet */
@@ -525,13 +538,13 @@ bool module_ublox_read_ubx(
         /** Create return Packet */
         retVal = UBX_create_packet_from_msg(pStart , len, packet);
     }
+
+    return retVal;
 }
-
-
 
 bool module_ublox_wait_for_ack_or_nak(  uint8_t expectedClass,
                                         uint8_t expectedId,
-                                        uint8_t initial_delay_ms, 
+                                        uint16_t initial_delay_ms,
                                         uint8_t attempts  )
 {
     bool retVal = false;

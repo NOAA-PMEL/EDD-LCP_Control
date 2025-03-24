@@ -238,7 +238,8 @@ void UBX_parse_nav(UBX_NAV_ID_t id, ubx_packet_t *packet, void *parsed){
     switch(id)
     {
         case UBX_NAV_PVT      :
-            module_ubx_parse_nav_pvt_packet(packet, (ubx_nav_pvt_t*) parsed);
+            //module_ubx_parse_nav_pvt_packet(packet, (ubx_nav_pvt_t*) parsed);
+            module_ubx_parse_nav_pvt_packet(packet, parsed);
             break;
         case UBX_NAV_SAT      :
         case UBX_NAV_AOPSTATUS:
@@ -436,6 +437,8 @@ static ubx_ack_t module_ubx_parse_ack_or_nak_msg(ubx_packet_t *packet, uint8_t e
             }
         }
     }
+
+    return retVal;
 }
 
 /**
@@ -506,7 +509,6 @@ static void module_ubx_parse_cfg_prt_packet(ubx_packet_t *packet, ubx_cfg_prt_t 
     prt-> outProtoMask = bytes_to_u16(&payload[14]);
     prt-> flags = bytes_to_u16(&payload[16]);
     prt-> reserved3 = bytes_to_u16(&payload[18]);
-
 } 
 
 /**
@@ -587,9 +589,17 @@ static uint32_t bytes_to_u32(uint8_t *data)
  */
 static int32_t bytes_to_i32(uint8_t *data)
 {
-    u32_to_i32_t val;
-    val.u32 = bytes_to_u32(data);
-    return val.i32;
+	int32_t value = 0;
+	for(uint8_t i=0;i<4;i++)
+	{
+		value |= data[3-i] << (8*(3-i));
+	}
+
+	return value;
+
+	//u32_to_i32_t val;
+	//val.u32 = bytes_to_u32(data);
+	//return val.i32;
 }
 
 /**
@@ -600,7 +610,7 @@ static int32_t bytes_to_i32(uint8_t *data)
  */
 static uint16_t bytes_to_u16(uint8_t *data)
 {
-    uint16_t value;
+    //uint16_t value;
     return (data[1]<<8 | data[0]);
 }
 
@@ -628,7 +638,7 @@ static int16_t bytes_to_i16(uint8_t *data)
  */
 static void rmemcpy(uint8_t *dst, void *src, size_t n)
 {
-    char *d = dst;
+    char *d = (char *)dst;
     const char *s = src;
     for(size_t i=0; i<n; i++)
     {

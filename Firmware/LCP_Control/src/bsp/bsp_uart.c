@@ -1,6 +1,6 @@
 #include "am_bsp.h"
 #include "am_util.h"
-//#include "MAX14830.h"
+#include "MAX14830.h"
 
 #include "bsp_uart.h"
 #include "artemis_max14830.h"
@@ -291,16 +291,16 @@ uint32_t bsp_uart_gets(e_uart_t port, char *pStr, uint32_t len)
     switch(port)
     {
         case BSP_UART_COM0:
-            rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
+            artemis_max14830_UART_Read(MAX14830_COM_PORT0, pStr, len);
             break;
         case BSP_UART_COM1:
-            rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT1, pStr, len);
+            artemis_max14830_UART_Read(MAX14830_COM_PORT1, pStr, len);
             break;
         case BSP_UART_COM2:
-            rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT2, pStr, len);
+            artemis_max14830_UART_Read(MAX14830_COM_PORT2, pStr, len);
             break;
         case BSP_UART_COM3:
-            rxLen = artemis_max14830_UART_Read(MAX14830_COM_PORT3, pStr, len);
+            artemis_max14830_UART_Read(MAX14830_COM_PORT3, pStr, len);
             break;
         case BSP_UART_LOG:
             

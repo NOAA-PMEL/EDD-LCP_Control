@@ -1,0 +1,827 @@
+/**! @file OpenLog Datalogger Qwiic i2c interface
+ * @brief Sparkfuns openlog datalogger
+ *
+ * @author Basharat Martin basharat.martin@noaa.gov
+ * @date October 12, 2023
+ * @version 1.0.0
+ *
+ * Note : followed the source files provided by joseph Kurina - NOAA Affiliate <joseph.kurina@noaa.gov>
+ *
+ * @copyright National Oceanic and Atmospheric Administration
+ * @copyright Pacific Marine Environmental Lab
+ * @copyright Environmental Development Division
+ *
+ * @note interfaces with i2c protocol, can be connected with either I2C_1 or I2C_4 (debug)
+ * 
+ *
+ **/
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdarg.h>
+
+#include "datalogger.h"
+#include "buffer_c.h"
+#include "artemis_debug.h"
+
+static void datalogger_i2c_read(uint8_t offset, uint8_t offsetlen,
+                                uint8_t *pBuf, uint16_t size);
+static void datalogger_i2c_write(uint8_t offset, uint8_t offsetlen,
+                                uint8_t *pBuf, uint16_t size);
+static void datalogger_i2c_write_sbd(uint8_t offset, uint8_t offsetlen,
+                                 uint8_t *pBuf, uint16_t size);
+static void datalogger_write_sync(void);
+
+typedef uint8_t module_buffer_t[LOGGER_BUFFER_SIZE];
+typedef struct s_module_d
+{
+	artemis_i2c_t i2c;
+	module_buffer_t txbuffer;
+    module_buffer_t rxbuffer;
+
+	struct {
+		uint32_t pin;
+		am_hal_gpio_pincfg_t *pinConfig;
+	}power;
+} module_d;
+
+static module_d module;
+static uint16_t sps_count = 0;
+static uint16_t park_count = 0;
+static char lcp_log[256];
+static char lcp_file[17];
+
+/* for testing profile pressure */
+static char test_buf[40000];
+static char *test_buffer = test_buf;
+
+/* sbd messages transfer test */
+uint16_t message_nr = 0;
+
+bool datalogger_init(uint8_t iomNo)
+{
+    artemis_i2c_t *i2c = &module.i2c;
+    bool success = false;
+
+    i2c->address = LOGGER_I2C_ADDRESS;
+    i2c->iom.config.eInterfaceMode = AM_HAL_IOM_I2C_MODE;
+    i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_400KHZ;
+    i2c->iom.config.pNBTxnBuf = NULL;
+    i2c->iom.config.ui32NBTxnBufLength = 0;
+    i2c->iom.module = iomNo;
+    artemis_iom_initialize(&i2c->iom);
+
+    if (iomNo == 1)
+    {
+        module.power.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_I2C_1_PWR;
+        module.power.pin = AM_BSP_GPIO_I2C_1_PWR;
+        ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM1_SCL, g_AM_BSP_GPIO_IOM1_SCL));
+        ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM1_SDA, g_AM_BSP_GPIO_IOM1_SDA));
+    }
+    else if (iomNo == 4)
+    {
+        module.power.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_PRES_ON;
+        module.power.pin = AM_BSP_GPIO_PRES_ON;
+        ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM4_SCL, g_AM_BSP_GPIO_IOM4_SCL));
+        ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM4_SDA, g_AM_BSP_GPIO_IOM4_SDA));
+    }
+    else
+    {
+        am_util_stdio_printf("DATALOGGER :: ERROR : init -> Select the iom number (1, 4)\n");
+        success = false;
+    }
+
+    ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
+    datalogger_power_on();
+
+    /* wait for SD card to be initiated */
+    uint8_t ret = 0;
+    uint8_t delay = 0;
+    do {
+        am_hal_systick_delay_us(100000);
+        ret = datalogger_status();
+        delay++;
+    } while ( ! (ret&0x01) && delay < 20);
+
+    /* print device information */
+    success = datalogger_device_info();
+    datalogger_power_off();
+
+    return success;
+}
+
+void datalogger_deinit(uint8_t iomNo)
+{
+    artemis_i2c_t *i2c = &module.i2c;
+    i2c->iom.module = iomNo;
+    artemis_iom_uninitialize(&i2c->iom);
+}
+
+/* for Reading test pressure profile */
+void datalogger_pressure(float *pressure)
+{
+    char p[9] = {0};
+    uint8_t i=0;
+
+    while (*test_buffer != '\n')
+    {
+        p[i] = *test_buffer++;
+        i++;
+    }
+    test_buffer++;
+
+    *pressure = strtof (p, NULL);
+}
+
+void datalogger_read_test_profile(bool reset)
+{
+    if (reset)
+    {
+        ARTEMIS_DEBUG_PRINTF("DATALOGGER :: Resetting test profile pressure\n");
+        test_buffer = &test_buf[0];
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("DATALOGGER :: Reading test profile pressure wait please\n");
+        uint16_t size = 0;
+        char *filename;
+
+#if defined(__TEST_PROFILE_1__)
+        filename = "test_profile.txt";
+        /* read file*/
+        size = datalogger_filesize(filename);
+#elif defined(__TEST_PROFILE_2__)
+        filename = "test_profile2.txt";
+        /* read file*/
+        size = datalogger_filesize(filename);
+#else
+    #warning "WARNING:: DATALOGGER : No Test_Profile text file was selected"
+#endif
+        if (size <= 0)
+        {
+            ARTEMIS_DEBUG_PRINTF("DATALOGGER :: ERROR : file size = %u\n", size);
+            return;
+        }
+        ARTEMIS_DEBUG_PRINTF("DATALOGGER :: file size = %u\n", size);
+        datalogger_readfile(filename, test_buf , size);
+        ARTEMIS_DEBUG_PRINTF("DATALOGGER :: Reading test profile pressure DONE\n");
+    }
+}
+
+bool datalogger_device_info(void)
+{
+    bool success = false;
+
+    am_util_stdio_printf("\nDatalogger Qwiic Device Info\n");
+    am_util_stdio_printf("*******************************\n");
+
+    uint8_t id = datalogger_get_id();
+    am_util_stdio_printf("Device Unique ID\t: ");
+    am_util_stdio_printf("0x%02X", id);
+    am_util_stdio_printf("\n");
+
+    uint16_t fw = datalogger_fw_version();
+    am_util_stdio_printf("Device FW Version\t: ");
+    am_util_stdio_printf("%u.%u", fw>>8&0xff, fw&0xff);
+    am_util_stdio_printf("\n");
+
+    uint8_t status = datalogger_status();
+    am_util_stdio_printf("Device Status Info\t: ");
+    if (status & 0x01)
+    {
+        am_util_stdio_printf("SD init Good");
+        am_util_stdio_printf("\n");
+        success = true;
+    }
+    else
+    {
+        am_util_stdio_printf("SD init Not Good");
+        am_util_stdio_printf("\n");
+        success = false;
+    }
+
+    return success;
+}
+
+void datalogger_log_debug_init(void)
+{
+    datalogger_cd("..");
+    char lFile[17];
+    char ext[5] = ".txt";
+    uint16_t fileNr = 0;
+    int32_t size = 0;
+
+    /* read file*/
+    do
+    {
+        am_util_stdio_sprintf(lFile,"%s%04d", "LCP_LOG_", fileNr);
+        strcat(lFile, ext);
+        size = datalogger_filesize(lFile);
+
+        if (size < 0)
+        {
+            for (uint8_t i=0; i<17; i++)
+            {
+                lcp_file[i] = lFile[i];
+            }
+            am_util_stdio_printf("\n<< LCP Log file %s being created >>\n", lcp_file);
+
+            /* create a new log file */
+            datalogger_createfile(lcp_file);
+            datalogger_write_sync();
+            break;
+        }
+        else
+        {
+            fileNr++;
+        }
+
+    } while (size >= 0);
+}
+
+void datalogger_log_debug(const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    datalogger_cd("..");
+
+    datalogger_openfile(lcp_file);
+    am_util_stdio_vsprintf(lcp_log, fmt, args);
+    datalogger_writefile(lcp_log);
+    datalogger_write_sync();
+    va_end(args);
+}
+
+void datalogger_predeploy_mode(SensorGps_t *gps, bool check)
+{
+    char *dirname = "pre-deploy_mode";
+    rtc_time time;
+
+    //int32_t lat = (int32_t) (gps->latitude * 10000000);
+    //int32_t lon = (int32_t) (gps->longitude * 10000000);
+    //int32_t alt = (int32_t) (gps->altitude * 10000000);
+
+    /* if initialize is true, then create a directory and files*/
+    datalogger_cd("..");
+    datalogger_mkdir(dirname);
+    datalogger_cd(dirname);
+
+    /* get time-stamp */
+    bool utc = artemis_rtc_get_time(&time);
+    char filename[64] = {0};
+    sprintf (filename, "pds_%02d.%02d.20%02d.txt", time.month, time.day, time.year);
+
+    datalogger_createfile(filename);
+    datalogger_openfile(filename);
+
+    char data[128] = {0};
+    datalogger_writefile("\n******************************\n");
+    datalogger_writefile("LCP System Check information\n");
+    datalogger_writefile("******************************\n");
+
+    am_util_stdio_sprintf(data, "Check : %s\nTime : %02d:%02d:%02d (%s)\nDate : %02d.%02d.20%02d\nLatitude : %.7f\nLongitude : %.7f\nAltitude : %.7f\n\n\n",
+                                check == true ? "OK" : "Failed", time.hour, time.min, time.sec, utc == true ? "UTC" : "local", time.month, time.day, time.year,
+                                gps->latitude, gps->longitude, gps->altitude);
+
+    datalogger_writefile(data);
+    datalogger_write_sync();
+
+    ///* read file*/
+    uint32_t size = datalogger_filesize(filename);
+    ARTEMIS_DEBUG_PRINTF("file size = %u\n", size);
+
+    if (size == 0)
+    {
+        datalogger_write_sync();
+    }
+
+    //char buf[512];
+    //datalogger_readfile(filename, buf, size);
+
+    //for (uint32_t i=0; i<size; i++)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("%c", buf[i]);
+    //}
+    //ARTEMIS_DEBUG_PRINTF("\n");
+
+    for (uint16_t i=0; i< strlen(data); i++)
+    {
+        ARTEMIS_DEBUG_PRINTF("%c", data[i]);
+    }
+
+}
+
+char *datalogger_profile_create_file(uint16_t sps_nr)
+{
+    char *dirname = "profile_mode";
+    rtc_time time;
+
+    /* if initialize is true, then create a directory and files*/
+    datalogger_cd("..");
+    datalogger_mkdir(dirname);
+    datalogger_cd(dirname);
+
+    /* get time-stamp */
+    artemis_rtc_get_time(&time);
+
+    static char filename[64] = {0};
+
+    sprintf (filename, "%d_sps_%02d.%02d.20%02d.txt", sps_nr, time.month, time.day, time.year);
+    datalogger_createfile(filename);
+    datalogger_openfile(filename);
+    datalogger_writefile("\nS.No.\t| Pressure(bar) | Temperature(°C) | Time-stamp\t\n");
+    datalogger_writefile("=============================================================\n\n");
+    datalogger_write_sync();
+    ARTEMIS_DEBUG_PRINTF("%s file created\n", filename);
+    sps_count = 0;
+
+    return filename;
+}
+
+void datalogger_profile_mode(char *filename, float pressure, float temp, rtc_time *time)
+{
+    char *dirname = "profile_mode";
+    //rtc_time time;
+
+    /* if initialize is true, then create a directory and files*/
+    datalogger_cd("..");
+    //datalogger_mkdir(dirname);
+    datalogger_cd(dirname);
+
+    ///* get time-stamp */
+    //artemis_rtc_get_time(&time);
+
+    sps_count++;
+    datalogger_openfile(filename);
+
+    char data[128] = {0};
+    am_util_stdio_sprintf(  data, "%u\t  %.4f\t  %.4f\t\t %02d:%02d:%02d\n",
+                            sps_count, pressure, temp, time->hour, time->min, time->sec);
+
+    datalogger_writefile(data);
+    datalogger_write_sync();
+}
+
+char *datalogger_park_create_file(uint16_t park_nr)
+{
+    char *dirname = "park_mode";
+    rtc_time time;
+
+    /* if initialize is true, then create a directory and files*/
+    datalogger_cd("..");
+    datalogger_mkdir(dirname);
+    datalogger_cd(dirname);
+
+    /* get time-stamp */
+    artemis_rtc_get_time(&time);
+
+    static char filename[64] = {0};
+
+    sprintf (filename, "%d_park_%02d.%02d.20%02d.txt", park_nr, time.month, time.day, time.year);
+    datalogger_createfile(filename);
+    datalogger_openfile(filename);
+    datalogger_writefile("\nS.No.\t| Pressure(bar) | Temperature(°C) | Time-stamp\t\n");
+    datalogger_writefile("=========================================================\n\n");
+    datalogger_write_sync();
+    ARTEMIS_DEBUG_PRINTF("%s file created\n", filename);
+    park_count = 0;
+
+    return filename;
+}
+
+void datalogger_park_mode(char *filename, float pressure, float temp, rtc_time *time)
+{
+    char *dirname = "park_mode";
+    //rtc_time time;
+
+    /* if initialize is true, then create a directory and files*/
+    datalogger_cd("..");
+    datalogger_cd(dirname);
+
+    ///* get time-stamp */
+    //artemis_rtc_get_time(&time);
+
+    park_count++;
+    datalogger_openfile(filename);
+
+    char data[64] = {0};
+    am_util_stdio_sprintf(  data, "%u\t  %.4f\t  %.4f\t\t %02d:%02d:%02d\n",
+                            park_count, pressure, temp, time->hour, time->min, time->sec);
+
+    datalogger_writefile(data);
+    datalogger_write_sync();
+
+}
+
+void datalogger_test_sbd_messages_init(void)
+{
+    char *dirname = "sbd_messages";
+    message_nr=0;
+    datalogger_cd("..");
+    datalogger_rmdir(dirname);
+    datalogger_mkdir(dirname);
+    datalogger_write_sync();
+}
+
+void datalogger_test_sbd_messages(char *filename, uint8_t *tData, uint16_t length)
+{
+    char *dirname = "sbd_messages";
+    datalogger_cd("..");
+    datalogger_cd(dirname);
+
+    char number[7] = {0};
+    char Filename[16];
+    char fileName[5] = {0};
+    for (uint8_t i=0; i<4; i++)
+    {
+        fileName[i] = filename[11+i];
+    }
+
+    strcpy(Filename, fileName);
+    strcat(Filename, "_");
+    sprintf(number, "%06d", message_nr);
+    strcat(Filename, number);
+    strcat(Filename, ".BIN");
+    ARTEMIS_DEBUG_PRINTF("\nDATA :: SBD : writing (%s) file\n\n", Filename);
+
+    datalogger_createfile(Filename);
+    datalogger_openfile(Filename);
+
+    //for (uint16_t i=0; i<length; i++)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("DATA :: SBD : writing bytes tData[%u]=0x%02X \n", i, tData[i]);
+    //}
+    //ARTEMIS_DEBUG_PRINTF("\n\n");
+
+    //char lBuf[length];
+    //am_util_stdio_sprintf(lBuf, "%s", (char *)tData);
+
+    //ARTEMIS_DEBUG_PRINTF("DATA :: SBD : Reading \n");
+    //for (uint32_t i=0; i<length; i++)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("%c", (char)lBuf[i]);
+    //}
+    //ARTEMIS_DEBUG_PRINTF("\n");
+
+    message_nr++;
+    datalogger_writefile_length(tData, length);
+    datalogger_write_sync();
+
+    ///* put some delay */
+    //am_hal_systick_delay_us(1000000);
+
+    //uint16_t size = 0;
+    //size = datalogger_filesize(Filename);
+    //ARTEMIS_DEBUG_PRINTF("\nDATA :: SBD : FILE_SIZE, (%s) file size = %u\n\n", Filename, size);
+
+    //uint8_t buf[340];
+    //datalogger_readfile(Filename, buf, length);
+
+    //for (uint32_t i=0; i<length; i++)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("DATA :: SBD : Reading 0x%02X, %c \n", buf[i], (char)buf[i]);
+    //}
+    //ARTEMIS_DEBUG_PRINTF("\n");
+}
+
+void datalogger_surface_mode(float temp, float depth);
+
+void datalogger_log_init(void)
+{
+    uint8_t cmd = LOGGER_INIT_LOG;
+    uint8_t initlog = 0x00;
+    datalogger_i2c_write(cmd, 1, &initlog, 1);
+}
+
+void datalogger_mkdir(char *dirname)
+{
+    uint8_t cmd = LOGGER_MKDIR;
+    uint8_t len = strlen(dirname);
+    datalogger_i2c_write(cmd, 1, (uint8_t *)dirname, len);
+}
+
+void datalogger_cd(char *dirname)
+{
+    uint8_t cmd = LOGGER_CD;
+    uint8_t len = strlen(dirname);
+    datalogger_i2c_write(cmd, 1, (uint8_t *)dirname, len);
+}
+
+void datalogger_createfile(char *filename)
+{
+    uint8_t cmd = LOGGER_CREATE_FILE;
+    uint8_t len = strlen(filename);
+    datalogger_i2c_write(cmd, 1, (uint8_t *)filename, len);
+}
+
+void datalogger_openfile(char *filename)
+{
+    uint8_t cmd = LOGGER_OPEN_FILE;
+    uint8_t len = strlen (filename);
+    datalogger_i2c_write(cmd, 1, (uint8_t *)filename, len);
+}
+
+int32_t datalogger_filesize(char *filename)
+{
+    int32_t size = 0;
+    uint8_t bytes[4] = {0};
+
+    uint8_t cmd = LOGGER_FILE_SIZE;
+    uint8_t len = strlen (filename);
+    datalogger_i2c_write(cmd, 1, (uint8_t *)filename, len);
+
+    /* read 4 bytes for file size */
+    datalogger_i2c_read(0, 0, bytes, 4);
+    size |= bytes[0]<<24 | bytes [1]<<16 | bytes[2]<<8 | bytes[3] ;
+    return size;
+}
+
+void datalogger_writefile_length(uint8_t *contents, uint16_t length)
+{
+    uint8_t cmd = LOGGER_WRITE_FILE;
+    uint32_t len = (uint32_t)length;
+
+    ARTEMIS_DEBUG_PRINTF("DATA :: WRITE_FILE : len = %u\n", len);
+
+    uint32_t i = 0;
+    uint32_t j = 0;
+
+    if (len > 31)
+    {
+        while (len >0)
+        {
+            for (i=0; i<LOGGER_BUFFER_SIZE-1; i++)
+            {
+                module.txbuffer[i] = contents[i+j];
+                //ARTEMIS_DEBUG_PRINTF("DATA :: Writing :  0x%02X\n", module.txbuffer[i]);
+                len--;
+                if (len == 0)
+                {
+                    i++;
+                    break;
+                }
+            }
+            // send 31 bytes to the SD-card
+            ARTEMIS_DEBUG_PRINTF("DATA :: Writing : %u bytes\n", i);
+            datalogger_i2c_write_sbd(cmd, 1, module.txbuffer, i);
+            //datalogger_write_sync();
+            j += i;
+        }
+    }
+    else if (len < 32 && len > 0)
+    {
+        ARTEMIS_DEBUG_PRINTF("DATA :: Writing : %u bytes (len < 32 && len > 0)\n", len);
+        datalogger_i2c_write_sbd(cmd, 1, contents, len);
+        //datalogger_write_sync();
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("ERROR:: writing file content is 0\n");
+    }
+}
+
+void datalogger_writefile(char *contents)
+{
+    uint8_t cmd = LOGGER_WRITE_FILE;
+    uint32_t len = strlen (contents)+1;
+
+    uint8_t i = 0;
+    uint32_t j = 0;
+
+    if (len > 31)
+    {
+        while (len >0)
+        {
+            for (i=0; i<LOGGER_BUFFER_SIZE-1; i++)
+            {
+                module.txbuffer[i] = contents[i+j];
+                len--;
+                if (len == 0)
+                {
+                    break;
+                }
+            }
+            // send 31 bytes to the SD-card
+            datalogger_i2c_write(cmd, 1, module.txbuffer, i);
+            j += i;
+        } 
+    }
+    else if (len < 32 && len > 0)
+    {
+        datalogger_i2c_write(cmd, 1, (uint8_t *)contents, len);
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("ERROR:: writing file content is 0\n");
+    }
+}
+
+void datalogger_readfile(char *filename, char *contents, uint32_t size)
+{
+    uint8_t cmd = LOGGER_READ_FILE;
+    uint8_t len = strlen (filename);
+
+    datalogger_i2c_write(cmd, 1, (uint8_t *)filename, len);
+
+    uint32_t bytes = size;
+    uint32_t j = 0;
+    uint8_t i = 0;
+
+    while (bytes > 0)
+    {
+        /* read 32 bytes from the SD card at a time */
+        datalogger_i2c_read(0, 0, module.rxbuffer, LOGGER_BUFFER_SIZE);
+        for (i=0; i<LOGGER_BUFFER_SIZE; i++)
+        {
+            contents[i+j] = (char) module.rxbuffer[i];
+            bytes--;
+            if (bytes == 0)
+            {
+                break;
+            }
+        }
+        j += i;
+    }
+}
+
+uint32_t datalogger_rmdir(char *dirname)
+{
+    uint32_t nr_files = datalogger_rmfile(dirname, true);
+    return nr_files;
+}
+
+uint32_t datalogger_rmfile(char *filename, bool recursive)
+{
+    uint32_t nr_files = 0;
+    uint8_t bytes[4] = {0};
+
+    if (recursive == true)
+    {
+        uint8_t cmd = LOGGER_RM_RECUR;
+        uint8_t len = strlen (filename);
+        datalogger_i2c_write(cmd, 1, (uint8_t *)filename, len);
+
+        /* read 4 bytes for file size */
+        datalogger_i2c_read(0, 0, bytes, 4);
+        nr_files |= bytes[0]<<24 | bytes [1]<<16 | bytes[2]<<8 | bytes[3] ;
+        return nr_files;
+    }
+    else
+    {
+        uint8_t cmd = LOGGER_RM;
+        uint8_t len = strlen (filename);
+        datalogger_i2c_write(cmd, 1, (uint8_t *)filename, len);
+
+        /* read 4 bytes for file size */
+        datalogger_i2c_read(0, 0, bytes, 4);
+        nr_files |= bytes[0]<<24 | bytes [1]<<16 | bytes[2]<<8 | bytes[3] ;
+        return nr_files;
+    }
+}
+
+uint8_t datalogger_get_id(void)
+{
+    uint8_t cmd = LOGGER_ID;
+    uint8_t unique_id;
+
+    datalogger_i2c_read(cmd, 1, &unique_id, 1);
+    return unique_id;
+}
+
+uint8_t datalogger_status(void)
+{
+    uint8_t cmd = LOGGER_STATUS;
+    uint8_t ret = 0x00;
+
+    //datalogger_i2c_write(cmd, 1, &ret, 1);
+    datalogger_i2c_read(cmd, 1, &ret, 1);
+    return ret;
+}
+
+uint16_t datalogger_fw_version(void)
+{
+    uint16_t fw = 0x0000;
+    uint8_t cmd = LOGGER_FW_MAJ;
+    uint8_t data;
+
+    datalogger_i2c_read(cmd, 1, &data, 1);
+    fw |= (data&0xFF) << 8 ;
+    cmd = LOGGER_FW_MIN;
+    datalogger_i2c_read(cmd, 1, &data, 1);
+    fw |= (data&0xFF) ;
+
+    return fw;
+}
+
+/**
+ * @brief Power Up the Datalogger Module
+ * 
+ */
+void datalogger_power_on(void)
+{
+	am_hal_gpio_output_clear(module.power.pin);
+
+    ///* wait for SD card to be initiated */
+    //uint8_t ret = 0;
+    //uint8_t delay = 0;
+    //do {
+    //    am_hal_systick_delay_us(100000);
+    //    ret = datalogger_status();
+    //    delay++;
+    //} while ( ! (ret&0x01) && delay < 20);
+}
+
+/**
+ * @brief Power Down the Datalogger Module
+ * 
+ */
+void datalogger_power_off(void)
+{
+	am_hal_gpio_output_set(module.power.pin);
+}
+
+static void datalogger_write_sync(void)
+{
+    uint8_t cmd = LOGGER_SYNC_FILE;
+    uint8_t data = 0x00;
+    datalogger_i2c_write(cmd, 1, &data, 1);
+}
+
+static void datalogger_i2c_read(uint8_t offset, uint8_t offsetlen,
+                                uint8_t *pBuf, uint16_t size)
+{
+    //am_hal_status_e status = AM_HAL_STATUS_SUCCESS;
+    am_hal_iom_transfer_t transfer;
+
+    transfer.uPeerInfo.ui32I2CDevAddr = LOGGER_I2C_ADDRESS;
+    transfer.ui32InstrLen    = offsetlen;
+    transfer.ui32Instr       = offset;
+    transfer.eDirection      = AM_HAL_IOM_RX;
+    transfer.ui32NumBytes    = size;
+    transfer.pui32RxBuffer   = (uint32_t*)pBuf;
+    transfer.bContinue       = false;
+    transfer.ui8RepeatCount  = 0;
+    transfer.ui32PauseCondition = 0;
+    transfer.ui32StatusSetClr = 0;
+
+    //ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer));
+    am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
+    //status = am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
+    //if (status != AM_HAL_STATUS_SUCCESS)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("DATALOGGER:: READ I2C ERROR\n");
+    //}
+}
+
+static void datalogger_i2c_write(uint8_t offset, uint8_t offsetlen,
+                                 uint8_t *pBuf, uint16_t size)
+{
+    //am_hal_status_e status = AM_HAL_STATUS_SUCCESS;
+    am_hal_iom_transfer_t transfer;
+
+    transfer.uPeerInfo.ui32I2CDevAddr = LOGGER_I2C_ADDRESS;
+    transfer.ui32InstrLen    = offsetlen;
+    transfer.ui32Instr       = offset;
+    transfer.eDirection      = AM_HAL_IOM_TX;
+    transfer.ui32NumBytes    = size;
+    transfer.pui32TxBuffer   = (uint32_t*)pBuf;
+    transfer.bContinue       = false;
+    transfer.ui8RepeatCount  = 0;
+    transfer.ui32PauseCondition = 0;
+    transfer.ui32StatusSetClr = 0;
+
+    //ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer));
+    am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
+    //status = am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
+    //if (status != AM_HAL_STATUS_SUCCESS)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("DATALOGGER:: WRITE I2C ERROR\n");
+    //}
+}
+
+static void datalogger_i2c_write_sbd(uint8_t offset, uint8_t offsetlen,
+                                 uint8_t *pBuf, uint16_t size)
+{
+    //am_hal_status_e status = AM_HAL_STATUS_SUCCESS;
+    am_hal_iom_transfer_t transfer;
+
+    transfer.uPeerInfo.ui32I2CDevAddr = LOGGER_I2C_ADDRESS;
+    transfer.ui32InstrLen    = offsetlen;
+    transfer.ui32Instr       = offset;
+    transfer.eDirection      = AM_HAL_IOM_TX;
+    transfer.ui32NumBytes    = (uint32_t)size;
+    transfer.pui32TxBuffer   = (uint32_t*)pBuf;
+    transfer.bContinue       = false;
+    transfer.ui8RepeatCount  = 0;
+    transfer.ui32PauseCondition = 0;
+    transfer.ui32StatusSetClr = 0;
+
+    //ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer));
+    am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
+    //status = am_hal_iom_blocking_transfer(module.i2c.iom.handle, &transfer);
+    //if (status != AM_HAL_STATUS_SUCCESS)
+    //{
+    //    ARTEMIS_DEBUG_PRINTF("DATALOGGER:: WRITE I2C ERROR\n");
+    //}
+}

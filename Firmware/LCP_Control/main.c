@@ -1,111 +1,99 @@
-///
-/// @file artemis_main.c
-///
+/* @file main.c
+ *
+ *  @brief LCP Control-board main file
+ *
+ *  @author Matt Casari, matthew.casari@noaa.gov
+ *  @date September 30, 2020
+ *  @version 0.0.1
+ *
+ *  @co-author Basharat Martin, basharat.martin@noaa.gov
+ *
+ *  @copyright National Oceanic and Atmospheric Administration
+ *  @copyright Pacific Marine Environmental Lab
+ *  @copyright Environmental Development Division
+ *
+ *  @note
+ *
+ *  @bug  No known bugs
+ */
 
 #include "main.h"
-#include "S9_temp.h"
-#include "bsp_uart.h"
-
-#include "artemis_debug.h"
-#include "artemis_mcu.h"
-//#include "artemis_scheduler.h"
-//#include "artemis_time.h"
-//#include "artemis_pa9ld.h"
-//#include "artemis_ublox_i2c.h"
-#include "artemis_supercap.h"
-#include "ublox.h"
-
-#include "control.h"
-#include "piston.h"
 #include "sensors.h"
-#include <stdlib.h>
+#include "StateMachine.h"
 
-//#define TEST_UBLOX  true
-//#define TEST_SUPERCAP true
-#define TEST_S9 true
+#define LCP_FREE_RTOS
+//#define SENSORS_Test
 
 int main(void)
 {
-    // initialize mcu features
+    /** initialize mcu features */
     artemis_mcu_initialize();
 
-    // initialize debug features
+    /** initialize debug features */
     artemis_debug_initialize();
 
-    // initialize time functions
+    /** 1 second delay */
+    am_util_delay_ms(1000);
+
+    /* clear the screen output, if wanted */
+    //am_util_stdio_terminal_clear();
+
+    /** Test the Debug output */
+    ARTEMIS_DEBUG_PRINTF("\n*****************************\n");
+    ARTEMIS_DEBUG_PRINTF("DEBUG :: LCP Controlboard");
+    ARTEMIS_DEBUG_PRINTF("\n*****************************\n");
+
+    /** initialize time functions */
     artemis_time_initialize();
 
-    // initialize the scheduler
-//    artemis_scheduler_initialize();
+    /** LEDS just for testing */
+	am_hal_gpio_pinconfig(AM_BSP_GPIO_LED_GREEN, g_AM_BSP_GPIO_LED_GREEN);
+	am_hal_gpio_pinconfig(AM_BSP_GPIO_LED_RED, g_AM_BSP_GPIO_LED_RED);
+	am_hal_gpio_pinconfig(AM_BSP_GPIO_LED_BLUE, g_AM_BSP_GPIO_LED_BLUE);
+	am_hal_gpio_output_set(AM_BSP_GPIO_LED_GREEN);
+	am_hal_gpio_output_set(AM_BSP_GPIO_LED_RED);
+	am_hal_gpio_output_set(AM_BSP_GPIO_LED_BLUE);
+	//am_hal_gpio_output_clear(AM_BSP_GPIO_LED_GREEN);
+	//am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
+	//am_hal_gpio_output_clear(AM_BSP_GPIO_LED_BLUE);
 
-    // run the application
-//    artemis_scheduler_run();
-    
-    // initialize the piston 
-//    PIS_initialize();
-    
-//#ifdef TEST_S9
-//    /** Init Soundnine Temperature Sensor */
-//    S9T_init(BSP_UART_COM1, &g_AM_BSP_GPIO_COM1_POWER_PIN, AM_BSP_GPIO_COM1_POWER_PIN);
-//    S9T_enable();
-//    float p, r, t;
-//#endif
-    
-    
-//#ifdef TEST_UBLOX
-//    /** Init GPS */
-//    UBLOX_initialize(UBLOX_COM_I2C, UBLOX_MSG_UBX, UBLOX_MSG_UBX, 1);
-//    UBLOX_Nav_t gps = {0};
-//#endif
-//    
-//#ifdef TEST_SUPERCAP
-//    artemis_sc_initialize();
-//    
-//    if(artemis_sc_power_startup())
-//    {
-//      printf("Success in starting supercap charging!\n");
-//    } else {
-//      printf("Failed to start supercap charge\n");
-//    }
-//#endif
-//    PIS_retract();
-//    PIS_extend();
-//    am_hal_systick_delay_us(2500000);
-//    PIS_stop();
-//    am_hal_systick_delay_us(2500000);
-//    PIS_retract();
-//    while(true)
-//    {
-//#ifdef TEST_UBLOX
-//      UBLOX_read_nav(&gps);
-//      printf("GPS Fix = %u\n", gps.fix);
-//
-//      if(gps.fix)
-//      {
-//        printf("Lat=%.7f, Lon=%.7f, Alt=%.3f\n", gps.position.lat, gps.position.lon, gps.position.alt);
-//      }
-//#endif
-//      
-//#ifdef TEST_S9
-//    S9T_Read(&t, &r);
-//    printf("t=%.3f, r=%.3f\n", t, r); 
-//#endif
-//    
-//
-//    }
-    SENS_initialize();
-    TaskHandle_t xDepthHandle = NULL;
-    xTaskCreate((TaskFunction_t) task_depth, "depth", 128, NULL, 1, &xDepthHandle);
+#ifdef LCP_FREE_RTOS
+
+    /** initialize sensors */
+    STATE_initialize(SYSST_SimpleProfiler_mode);
+
+    /** create tasks for PreDeploy_mode, Profile_mode, Popup_mode */
+    configASSERT(xTaskCreate( (TaskFunction_t) STATE_Predeploy, "PreDeploy_task", 512, NULL, tskIDLE_PRIORITY + 4UL, NULL) == pdPASS);
+    configASSERT(xTaskCreate( (TaskFunction_t) STATE_Profiler, "Profiler_task", 512, NULL, tskIDLE_PRIORITY + 4UL, NULL) == pdPASS);
+    configASSERT(xTaskCreate( (TaskFunction_t) STATE_Popup, "Popup_task", 256, NULL, tskIDLE_PRIORITY + 3UL, NULL) == pdPASS);
+
+    ARTEMIS_DEBUG_PRINTF("\n*****************************\n");
+    ARTEMIS_DEBUG_PRINTF("FreeRTOS here\n");
+    ARTEMIS_DEBUG_PRINTF("schedular is going to start\n");
+    ARTEMIS_DEBUG_PRINTF("*****************************\n\n");
     vTaskStartScheduler();
-    float d, r;
-    while(1)
+    ARTEMIS_DEBUG_PRINTF("Do not get here\n");
+
+#endif
+
+#ifdef SENSORS_Test
+    /** initialize sensors */
+    STATE_initialize(SYSST_SimpleProfiler_mode);
+    configASSERT(xTaskCreate( (TaskFunction_t) SENS_Test, "Sensor_Test_Task", 256, NULL, tskIDLE_PRIORITY + 3UL, NULL) == pdPASS);
+#endif
+
+    ARTEMIS_DEBUG_PRINTF("\n*****************************\n");
+    ARTEMIS_DEBUG_PRINTF("FreeRTOS here\n");
+    ARTEMIS_DEBUG_PRINTF("schedular is going to start\n");
+    ARTEMIS_DEBUG_PRINTF("*****************************\n\n");
+    vTaskStartScheduler();
+    ARTEMIS_DEBUG_PRINTF("Do not get here\n");
+
+    am_util_delay_ms(500);
+    while (1)
     {
-      
-      SENS_get_depth(&d, &r);
-      printf("d=%0.3f\n", d);
+        ARTEMIS_DEBUG_PRINTF("do not get here in case of RTOS\n");
+        am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_DEEP);
+        am_util_delay_ms(1000);
     }
-    
-    
-    
-    return(EXIT_SUCCESS);
 }

@@ -1,0 +1,12 @@
+
+* Please run the run_script.sh with sudo permission
+* sudo ./run_script.sh
+
+* source ~/.bashrc
+* cd Firmware/LCP_Control/
+
+### to compile the Software package
+* make 
+
+### to flash the binary into the LCP Controlboard
+* make bootload_asb COM_PORT=/dev/ttyUSBx    ** pick x a number where the USB-TTL serial is connected as ttyUSB0/1/2
