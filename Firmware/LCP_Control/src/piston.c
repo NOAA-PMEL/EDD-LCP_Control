@@ -180,7 +180,7 @@ void PIS_task_delete(TaskHandle_t xHandle)
             ARTEMIS_DEBUG_PRINTF("PISTON :: Task is Suspended\n");
             vTaskDelete(xHandle);
         }
-        else if ( (eState==eDeleted) || (eState==eInvalid) )
+        else if ( (eState==eDeleted)|| (eState==eInvalid) )
         {
             ARTEMIS_DEBUG_PRINTF("PISTON :: Task is Deleted\n");
             delete = true;
@@ -265,6 +265,7 @@ void task_move_piston_to_zero(void)
 
     vTaskDelay(xDelay100ms);
     vTaskDelete(NULL);
+    vTaskDelay(xDelay1000ms);
 }
 
 void task_move_piston_to_full(void)
@@ -341,6 +342,7 @@ void task_move_piston_to_full(void)
 
     vTaskDelay(xDelay100ms);
     vTaskDelete(NULL);
+    vTaskDelay(xDelay1000ms);
 }
 
 void task_reset_piston_to_full(void)
@@ -417,6 +419,7 @@ void task_reset_piston_to_full(void)
 
     vTaskDelay(xDelay100ms);
     vTaskDelete(NULL);
+    vTaskDelay(xDelay1000ms);
 }
 
 void task_move_piston_to_length(void)
@@ -448,7 +451,7 @@ void task_move_piston_to_length(void)
     uint8_t count_reset = 0;
 
     uint8_t stall_count = 0;
-    uint8_t stall_count_max = 10;
+    uint8_t stall_count_max = 20;
     float last_length = -1.0;
 
     while(pistonRun)
@@ -559,6 +562,7 @@ void task_move_piston_to_length(void)
 
     vTaskDelay(xDelay100ms);
     vTaskDelete(NULL);
+    vTaskDelay(xDelay1000ms);
 }
 
 bool PIS_Get_Volume(float *volume)
@@ -686,6 +690,7 @@ void task_move_piston_to_volume(void)
     }
     vTaskDelay(xDelay100ms);
     vTaskDelete(NULL);
+    vTaskDelay(xDelay1000ms);
 }
 
 void PIS_set_piston_rate(uint8_t rate)
