@@ -118,7 +118,7 @@ static void module_pis_information(void)
 void PIS_task_move_length(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_length,
-                                "Piston_Task_move_length", 256, NULL,
+                                "Piston_Task_move_length", 512, NULL,
                                 tskIDLE_PRIORITY + 3UL,
                                 xPiston) == pdPASS );
 }
@@ -447,9 +447,9 @@ void task_move_piston_to_length(void)
     pistonRun = true;
     uint8_t count_reset = 0;
 
-    static uint8_t stall_count = 0;
-    static uint8_t stall_count_max = 10;
-    static float last_length = -1.0;
+    uint8_t stall_count = 0;
+    uint8_t stall_count_max = 10;
+    float last_length = -1.0;
 
     while(pistonRun)
     {

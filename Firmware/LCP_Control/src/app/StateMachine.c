@@ -450,7 +450,7 @@ void module_pus_surface_float(void)
                     ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Density=%.3fkg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                     ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston time-out, task->finished\n");
                     PIS_task_delete(xPiston);
-                    vTaskDelay(piston_period);
+                    vTaskDelay(xDelay5000ms);
                     PIS_Reset();
                     piston_timer = 0;
                 }
@@ -465,6 +465,7 @@ void module_pus_surface_float(void)
             {
                 ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->suspended\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 //piston_move = false;
                 piston_timer = 0;
             }
@@ -506,7 +507,7 @@ void module_pus_surface_float(void)
                 ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Density=%.3fkg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                 ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston time-out, task->finished\n");
                 PIS_task_delete(xPiston);
-                vTaskDelay(piston_period);
+                vTaskDelay(xDelay5000ms);
                 PIS_Reset();
                 piston_timer = 0;
                 pusEvent = MODE_DONE;
@@ -522,6 +523,7 @@ void module_pus_surface_float(void)
         {
             ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->suspended\n");
             PIS_task_delete(xPiston);
+            vTaskDelay(xDelay5000ms);
             //piston_move = false;
             piston_timer = 0;
         }
@@ -624,7 +626,7 @@ void module_pds_idle(void)
             {
                 ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston time-out, task->finished\n");
                 PIS_task_delete(xPiston);
-                vTaskDelay(piston_period);
+                vTaskDelay(xDelay5000ms);
                 PIS_Reset();
                 piston_timer = 0;
             }
@@ -639,6 +641,7 @@ void module_pds_idle(void)
         {
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task->suspended\n");
             PIS_task_delete(xPiston);
+            vTaskDelay(xDelay5000ms);
             //piston_move = false;
             piston_timer = 0;
         }
@@ -1024,7 +1027,7 @@ void module_sps_move_to_park(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero time-out, task->finished\n");
                     PIS_task_delete(xPiston);
-                    vTaskDelay(piston_period);
+                    vTaskDelay(xDelay5000ms);
                     PIS_Reset();
                     piston_timer = 0;
                 }
@@ -1039,6 +1042,7 @@ void module_sps_move_to_park(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->suspended\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 piston_timer = 0;
             }
             else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
@@ -1138,7 +1142,7 @@ void module_sps_move_to_park(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston time-out, task->finished\n");
                 PIS_task_delete(xPiston);
-                vTaskDelay(piston_period);
+                vTaskDelay(xDelay5000ms);
                 PIS_Reset();
                 piston_timer = 0;
             }
@@ -1153,6 +1157,7 @@ void module_sps_move_to_park(void)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->suspended\n");
             PIS_task_delete(xPiston);
+            vTaskDelay(xDelay5000ms);
             piston_timer = 0;
         }
         else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
@@ -1393,6 +1398,7 @@ void module_sps_move_to_park(void)
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, deliberately stopping the Piston\n");
                 /* stop the piston */
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 PIS_stop();
                 vTaskDelay(piston_period);
                 piston_move = false;
@@ -1433,7 +1439,7 @@ void module_sps_move_to_park(void)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston CRUSH_DEPTH time-out, task->finished\n");
                             PIS_task_delete(xPiston);
-                            vTaskDelay(piston_period);
+                            vTaskDelay(xDelay5000ms);
                             PIS_Reset();
                             piston_timer = 0;
 
@@ -1461,7 +1467,7 @@ void module_sps_move_to_park(void)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston time-out, task->finished\n");
                             PIS_task_delete(xPiston);
-                            vTaskDelay(piston_period);
+                            vTaskDelay(xDelay5000ms);
                             PIS_Reset();
                             piston_timer = 0;
                         }
@@ -1497,6 +1503,7 @@ void module_sps_move_to_park(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->suspended\n");
                     PIS_task_delete(xPiston);
+                    vTaskDelay(xDelay5000ms);
                     piston_timer = 0;
 
                     if (crush_depth)
@@ -1570,6 +1577,7 @@ void module_sps_move_to_park(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 /* stop the piston */
                 PIS_stop();
                 piston_timer = 0;
@@ -1955,7 +1963,7 @@ void module_sps_park(void)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston CRUSH_DEPTH time-out, task->finished\n");
                             PIS_task_delete(xPiston);
-                            vTaskDelay(piston_period);
+                            vTaskDelay(xDelay5000ms);
                             PIS_Reset();
                             piston_timer = 0;
 
@@ -1984,7 +1992,7 @@ void module_sps_park(void)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston time-out, task->finished\n");
                             PIS_task_delete(xPiston);
-                            vTaskDelay(piston_period);
+                            vTaskDelay(xDelay5000ms);
                             PIS_Reset();
                             piston_timer = 0;
                         }
@@ -2021,6 +2029,7 @@ void module_sps_park(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->suspended\n");
                     PIS_task_delete(xPiston);
+                    vTaskDelay(xDelay5000ms);
                     piston_timer = 0;
 
                     if (crush_depth)
@@ -2096,6 +2105,7 @@ void module_sps_park(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: park, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 /* stop the piston */
                 PIS_stop();
                 piston_timer = 0;
@@ -2118,6 +2128,7 @@ void module_sps_park(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: park, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 /* stop the piston */
                 PIS_stop();
                 vTaskDelay(piston_period);
@@ -2155,6 +2166,7 @@ void module_sps_park(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: park, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 /* stop the piston */
                 PIS_stop();
                 vTaskDelay(piston_period);
@@ -2271,7 +2283,7 @@ void module_sps_move_to_profile(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston time-out, task->finished\n");
                 PIS_task_delete(xPiston);
-                vTaskDelay(piston_period);
+                vTaskDelay(xDelay5000ms);
                 PIS_Reset();
                 //piston_move = false;
                 piston_timer = 0;
@@ -2287,6 +2299,7 @@ void module_sps_move_to_profile(void)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->suspended\n");
             PIS_task_delete(xPiston);
+            vTaskDelay(xDelay5000ms);
             //piston_move = false;
             piston_timer = 0;
         }
@@ -2526,6 +2539,7 @@ void module_sps_move_to_profile(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 /* stop the piston */
                 PIS_stop();
                 piston_move = false;
@@ -2566,6 +2580,7 @@ void module_sps_move_to_profile(void)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston CRUSH_DEPTH time-out, task->finished\n");
                             PIS_task_delete(xPiston);
+                            vTaskDelay(xDelay5000ms);
                             PIS_Reset();
                             piston_timer = 0;
                             
@@ -2594,6 +2609,7 @@ void module_sps_move_to_profile(void)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston time-out, task->finished\n");
                             PIS_task_delete(xPiston);
+                            vTaskDelay(xDelay5000ms);
                             PIS_Reset();
                             piston_timer = 0;
                         }
@@ -2630,6 +2646,7 @@ void module_sps_move_to_profile(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->suspended\n");
                     PIS_task_delete(xPiston);
+                    vTaskDelay(xDelay5000ms);
                     piston_timer = 0;
 
                     if (crush_depth)
@@ -2705,6 +2722,7 @@ void module_sps_move_to_profile(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 /* stop the piston */
                 PIS_stop();
             }
@@ -2839,6 +2857,7 @@ void module_sps_profile(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston time-out, task->finished\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 PIS_Reset();
                 piston_timer = 0;
             }
@@ -2853,6 +2872,7 @@ void module_sps_profile(void)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->suspended\n");
             PIS_task_delete(xPiston);
+            vTaskDelay(xDelay5000ms);
             piston_timer = 0;
         }
         else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
@@ -3347,6 +3367,7 @@ void module_sps_profile(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston CRUSH or SURFACE time-out, task->finished\n");
                         PIS_task_delete(xPiston);
+                        vTaskDelay(xDelay5000ms);
                         PIS_Reset();
                         piston_timer = 0;
                     }
@@ -3357,6 +3378,7 @@ void module_sps_profile(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston time-out, task->finished\n");
                         PIS_task_delete(xPiston);
+                        vTaskDelay(xDelay5000ms);
                         PIS_Reset();
                         piston_timer = 0;
                     }
@@ -3373,6 +3395,7 @@ void module_sps_profile(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->suspended\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 piston_timer = 0;
             }
             else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
@@ -3397,6 +3420,7 @@ void module_sps_profile(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 /* try to stop first*/
                 PIS_stop();
                 piston_timer = 0;
@@ -3451,6 +3475,7 @@ void module_sps_profile(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 /* try to stop first*/
                 PIS_stop();
                 piston_move = false;   
@@ -3533,7 +3558,7 @@ void module_sps_move_to_surface(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full time-out, task->finished\n");
                     PIS_task_delete(xPiston);
-                    vTaskDelay(piston_period);
+                    vvTaskDelay(xDelay5000ms);
                     PIS_Reset();
                     piston_timer = 0;
                 }
@@ -3548,6 +3573,7 @@ void module_sps_move_to_surface(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full task->suspended\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 piston_timer = 0;
             }
             else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
@@ -3585,7 +3611,7 @@ void module_sps_move_to_surface(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full time-out, task->finished\n");
                     PIS_task_delete(xPiston);
-                    vTaskDelay(piston_period);
+                    vvTaskDelay(xDelay5000ms);
                     PIS_Reset();
                     piston_timer = 0;
                 }
@@ -3600,6 +3626,7 @@ void module_sps_move_to_surface(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full task->suspended\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 piston_timer = 0;
             }
             else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
@@ -3665,7 +3692,7 @@ void module_sps_move_to_surface(void)
                     Density = CTRL_calculate_lcp_density(Volume);
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                     PIS_task_delete(xPiston);
-                    vTaskDelay(piston_period);
+                    vTaskDelay(xDelay5000ms);
                     PIS_Reset();
                     piston_timer = 0;
                 }
@@ -3680,6 +3707,7 @@ void module_sps_move_to_surface(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->suspended\n");
                 PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
                 //piston_move = false;
                 piston_timer = 0;
             }

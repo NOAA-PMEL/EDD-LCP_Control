@@ -286,7 +286,7 @@ void SENS_task_delete(TaskHandle_t xHandle)
 void SENS_task_temperature_on(TaskHandle_t *xTemp)
 {
     configASSERT(xTaskCreate((TaskFunction_t)task_temperature_on,
-                                "Temperature_Task_On", 256, NULL,
+                                "Temperature_Task_On", 512, NULL,
                                 tskIDLE_PRIORITY + 5UL,
                                 xTemp) == pdPASS );
 }
@@ -299,7 +299,7 @@ void SENS_task_profile_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp)
                                 xDepth) == pdPASS );
 
     configASSERT(xTaskCreate((TaskFunction_t)task_temperature,
-                                "Temperature_Task", 512, NULL,
+                                "Temperature_Task", 1024, NULL,
                                 tskIDLE_PRIORITY + 3UL,
                                 xTemp) == pdPASS );
 }
@@ -312,7 +312,7 @@ void SENS_task_park_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp)
                                 xDepth) == pdPASS );
 
     configASSERT(xTaskCreate((TaskFunction_t)task_temperature,
-                                "Temperature_Task", 512, NULL,
+                                "Temperature_Task", 1024, NULL,
                                 tskIDLE_PRIORITY + 3UL,
                                 xTemp) == pdPASS );
 }

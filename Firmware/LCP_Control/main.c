@@ -64,7 +64,7 @@ int main(void)
 
     /** create tasks for PreDeploy_mode, Profile_mode, Popup_mode */
     configASSERT(xTaskCreate( (TaskFunction_t) STATE_Predeploy, "PreDeploy_task", 512, NULL, tskIDLE_PRIORITY + 4UL, NULL) == pdPASS);
-    configASSERT(xTaskCreate( (TaskFunction_t) STATE_Profiler, "Profiler_task", 512, NULL, tskIDLE_PRIORITY + 4UL, NULL) == pdPASS);
+    configASSERT(xTaskCreate( (TaskFunction_t) STATE_Profiler, "Profiler_task", 1024, NULL, tskIDLE_PRIORITY + 4UL, NULL) == pdPASS);
     configASSERT(xTaskCreate( (TaskFunction_t) STATE_Popup, "Popup_task", 256, NULL, tskIDLE_PRIORITY + 3UL, NULL) == pdPASS);
 
     ARTEMIS_DEBUG_PRINTF("\n*****************************\n");
