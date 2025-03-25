@@ -3584,7 +3584,7 @@ void module_sps_move_to_surface(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full time-out, task->finished\n");
                     PIS_task_delete(xPiston);
-                    vvTaskDelay(xDelay5000ms);
+                    vTaskDelay(xDelay5000ms);
                     PIS_Reset();
                     piston_timer = 0;
                 }
@@ -3637,7 +3637,7 @@ void module_sps_move_to_surface(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full time-out, task->finished\n");
                     PIS_task_delete(xPiston);
-                    vvTaskDelay(xDelay5000ms);
+                    vTaskDelay(xDelay5000ms);
                     PIS_Reset();
                     piston_timer = 0;
                 }
