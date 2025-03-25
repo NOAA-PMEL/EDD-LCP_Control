@@ -1713,6 +1713,8 @@ void module_sps_park(void)
         {
             /* turn on the sensors */
             //SENS_task_temperature_on(&xTemp);
+            datalogger_power_on();
+            vTaskDelay(xDelay500ms);
             SENS_sensor_temperature_on();
             SENS_sensor_depth_on();
             vTaskDelay(xDelay10ms);
@@ -1726,6 +1728,7 @@ void module_sps_park(void)
             /* turn off the sensors */
             SENS_sensor_temperature_off();
             SENS_sensor_depth_off();
+            datalogger_power_off();
         }
         else
         {
@@ -1764,6 +1767,8 @@ void module_sps_park(void)
         if (samples > 9)
 #endif
         {
+            datalogger_power_on();
+            vTaskDelay(xDelay500ms);
             float var, avg_p, avg_t;
             float std = std_div(samples_p, samples, &var, &avg_p);
             ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
@@ -1779,6 +1784,9 @@ void module_sps_park(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: park, sending measurements = %u\n", read);
 #else
             datalogger_park_mode(filename, avg_p, avg_t, &time);
+            // Power off datalogger after logging data until next collection
+            //datalogger_power_off();
+            
 #endif
             /* just for testing */
         }
@@ -1799,9 +1807,14 @@ void module_sps_park(void)
         {
             /* do nothing */
             //ARTEMIS_DEBUG_PRINTF("SPS :: park, within PARK_DEPTH_ERR range, do nothing\n");
+            //datalogger_power_off();
         }
         else
         {
+            // When leaving the target depth range, turn datalogger back on
+            datalogger_power_on();
+            vTaskDelay(xDelay500ms);
+            
             /* collect up to PARK_DEPTH_RATE_COUNTER measurements */
             rate_avg += Rate;
             rate_count++;
@@ -2123,6 +2136,10 @@ void module_sps_park(void)
         /* check on Maximum park depth = ? */
         if (Depth >= PARK_DEPTH_MAX && !crush_depth)
         {
+            // Ensure datalogger is on for maximum depth event
+            datalogger_power_on();
+            vTaskDelay(xDelay500ms);
+            
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
             {
@@ -2160,6 +2177,10 @@ void module_sps_park(void)
         if (wait_time >= park_time && !crush_depth)
         {
             ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Timer out %f mins >>\n\n", (float) (wait_time/(60.0*xDelay1000ms)));
+            
+            // Ensure datalogger is powered on before exiting
+            datalogger_power_on();
+            vTaskDelay(xDelay500ms);
 
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
@@ -2714,6 +2735,11 @@ void module_sps_move_to_profile(void)
         /* keep checking for crush depth */
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {
+            
+            // Ensure datalogger is on for emergency events
+            datalogger_power_on();
+            vTaskDelay(xDelay500ms);
+            
             /*add a CRUSH DEPTH FOS to the saved move-to-profile piston length for next profile*/
             to_prof_piston_length = length_update + 0.5;
 
@@ -3673,8 +3699,11 @@ void module_sps_move_to_surface(void)
         eTaskState eStatus;
         PIS_set_piston_rate(1);
         PIS_task_move_length(&xPiston);
+
         piston_move = true;
+
         vTaskDelay(xDelay5000ms);
+        
 
         while (piston_move)
         {
