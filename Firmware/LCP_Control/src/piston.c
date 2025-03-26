@@ -451,7 +451,7 @@ void task_move_piston_to_length(void)
     uint8_t count_reset = 0;
 
     uint8_t stall_count = 0;
-    uint8_t stall_count_max = 20;
+    uint8_t stall_count_max = 38;
     float last_length = -1.0;
 
     while(pistonRun)

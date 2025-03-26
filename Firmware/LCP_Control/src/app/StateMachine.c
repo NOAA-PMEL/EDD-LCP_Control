@@ -3465,7 +3465,17 @@ void module_sps_profile(void)
         {
             if (!surface_piston)
             {
-                 /* check Heap size */
+                /* check if piston is still moving then reset it and stop */
+                if (piston_move)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
+                    PIS_task_delete(xPiston);
+                    vTaskDelay(xDelay5000ms);
+                    /* try to stop first*/
+                    PIS_stop();
+                    piston_move = false;   
+                } 
+                /* check Heap size */
                 uint32_t sizeA = xPortGetFreeHeapSize();
                 ARTEMIS_DEBUG_PRINTF("\nSPS :: profile, FreeRTOS HEAP SIZE A = %u Bytes\n\n", sizeA);
                 
