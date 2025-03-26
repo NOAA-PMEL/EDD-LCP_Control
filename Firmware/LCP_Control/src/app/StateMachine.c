@@ -61,7 +61,7 @@ static Data_t prof;         /**< Profile mode data */
 
 // Pointers used for dynamic memory allocation
 //static Data_t *park = NULL;  /**< Park mode Data */
-/static Data_t *prof = NULL;  /**< Profile mode data */
+//static Data_t *prof = NULL;  /**< Profile mode data */
 
 static sData sPark;         /**< Park mode measurement - StateMachine */
 static sData sProf;         /**< Profile mode measurement - StateMachine */
