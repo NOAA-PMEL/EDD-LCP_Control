@@ -48,20 +48,20 @@
 //*****************************************************************************
 
 /* park numbers and measurements */
-static pData pPark[SYSTEM_PROFILE_NUMBER];
-static float park_temp[DATA_PARK_SAMPLES_MAX];
-static float park_pressure[DATA_PARK_SAMPLES_MAX];
+//static pData pPark[SYSTEM_PROFILE_NUMBER];
+//static float park_temp[DATA_PARK_SAMPLES_MAX];
+//static float park_pressure[DATA_PARK_SAMPLES_MAX];
 /* profile numbers and measurements */
-static pData pProf[SYSTEM_PROFILE_NUMBER];
-static float prof_temp[DATA_PROFILE_SAMPLES_MAX];
-static float prof_pressure[DATA_PROFILE_SAMPLES_MAX];
+//static pData pProf[SYSTEM_PROFILE_NUMBER];
+//static float prof_temp[DATA_PROFILE_SAMPLES_MAX];
+//static float prof_pressure[DATA_PROFILE_SAMPLES_MAX];
 
-static Data_t park;         /**< Park mode Data */
-static Data_t prof;         /**< Profile mode data */
+//static Data_t park;         /**< Park mode Data */
+//static Data_t prof;         /**< Profile mode data */
 
 // Pointers used for dynamic memory allocation
-//static Data_t *park = NULL;  /**< Park mode Data */
-//static Data_t *prof = NULL;  /**< Profile mode data */
+static Data_t *park = NULL;  /**< Park mode Data */
+static Data_t *prof = NULL;  /**< Profile mode data */
 
 static sData sPark;         /**< Park mode measurement - StateMachine */
 static sData sProf;         /**< Profile mode measurement - StateMachine */
@@ -190,8 +190,8 @@ void STATE_initialize(SystemMode_t mode)
             break;
 
         case SYSST_SimpleProfiler_mode:
-            DATA_setbuffer(&park, pPark, park_pressure, park_temp, DATA_PARK_SAMPLES_MAX);
-            DATA_setbuffer(&prof, pProf, prof_pressure, prof_temp, DATA_PROFILE_SAMPLES_MAX);
+            //DATA_setbuffer(&park, pPark, park_pressure, park_temp, DATA_PARK_SAMPLES_MAX);
+            //DATA_setbuffer(&prof, pProf, prof_pressure, prof_temp, DATA_PROFILE_SAMPLES_MAX);
 
             break;
 
@@ -1615,6 +1615,19 @@ void module_sps_park(void)
     /* set crush depth to false */
     crush_depth = false;
 
+    // Allocate memory for park data if not already allocated
+    if (park == NULL) {
+        park = DATA_alloc(1, DATA_PARK_SAMPLES_MAX);
+        if (park == NULL) {
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, ERROR: Failed to allocate park data memory\n");
+            // Handle allocation failure - perhaps light an LED or reset
+            am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
+            // Return or take other appropriate action
+            return;
+        }
+        ARTEMIS_DEBUG_PRINTF("SPS :: park, Successfully allocated park data memory\n");
+    }
+
 #ifdef TEST
     /** Sample at 9Hz */
     float s_rate = 9.0;
@@ -2783,6 +2796,19 @@ void module_sps_move_to_profile(void)
 
 void module_sps_profile(void)
 {
+    // Allocate memory for profile data if not already allocated
+    if (prof == NULL) {
+        prof = DATA_alloc(1, DATA_PROFILE_SAMPLES_MAX);
+        if (prof == NULL) {
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, ERROR: Failed to allocate profile data memory\n");
+            // Handle allocation failure
+            am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
+            // Return or take other appropriate action
+            return;
+        }
+        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Successfully allocated profile data memory\n");
+    }
+    
     float Volume = 0.0;
     float Density = 0.0;
     float Length = 0.0;
