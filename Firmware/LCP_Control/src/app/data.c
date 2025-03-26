@@ -4,10 +4,7 @@
  * @brief 
  * @version 0.1
  * @date 2021-10-15
- * 
- * 
  */
-
 #include <string.h>
 #include <math.h>
 #include "data.h"
@@ -30,28 +27,11 @@ STATIC uint16_t module_convert_temperature_to_uint16_t(float temp);
 STATIC int32_t module_convert_latitude_to_int32_t(float latitude);
 STATIC int32_t module_convert_longitude_to_int32_t(float longitude);
 
-//static uint8_t header[27];
-
 //*****************************************************************************
 //
 // Global Functions
 //
 //*****************************************************************************
-
-//void DATA_setbuffer(Data_t *p, uint32_t *pStart, uint32_t *pStop,
-//                            float *pPressure, float *pTemp, size_t length)
-//{
-//    p->cbuf.length = length;
-//    p->cbuf.read = 0;
-//    p->cbuf.written = 0;
-//    p->data.pNumber = 0;
-//
-//    //p->data.pTimeOffset = pTime;
-//    p->data.pStateTime = pStart;
-//    p->data.pStopTime = pStop
-//    p->data.pPressure = pPressure;
-//    p->data.pTemperature = pTemp;
-//}
 
 void DATA_setbuffer(Data_t *buf, pData *P, float *pressure, float *temperature, uint32_t length)
 {
@@ -76,9 +56,6 @@ void DATA_setbuffer(Data_t *buf, pData *P, float *pressure, float *temperature, 
 
 void DATA_reset(Data_t *buf)
 {
-    //buf->cbuf.read = 0;
-    //buf->cbuf.written = 0;
-    //buf->data.start_time = 0;
     buf->cbuf.read = 0;
     buf->cbuf.written = 0;
     buf->pNumber = 0;
@@ -94,7 +71,6 @@ void DATA_add_gps(Data_t *buf, float latitude, float longitude, uint8_t pNumber)
                             pNumber, buf->p[pNumber].pLatitude, buf->p[pNumber].pLongitude);
 }
 
-//size_t DATA_add(Data_t *buf, uint32_t time, float pressure, float temp, uint16_t prof_nr, bool finish)
 void DATA_add(Data_t *buf, uint32_t time, float pressure, float temperature, uint8_t pNumber)
 {
     if (buf->cbuf.written == 0)
@@ -125,9 +101,6 @@ void DATA_add(Data_t *buf, uint32_t time, float pressure, float temperature, uin
         buf->data.temperature[buf->cbuf.written] = temperature;
         buf->data.pressure[buf->cbuf.written] = pressure;
         buf->p[buf->pNumber].pStop = time;
-
-        //ARTEMIS_DEBUG_PRINTF("DATA :: ADD, Temperature = %.2f, Pressure = %.2f\n", buf->data.temperature[buf->cbuf.written], buf->data.pressure[buf->cbuf.written]);
-
         buf->wLength++;
         buf->cbuf.written++;
         buf->p[buf->pNumber].pLength = buf->wLength;
@@ -137,21 +110,6 @@ void DATA_add(Data_t *buf, uint32_t time, float pressure, float temperature, uin
         ARTEMIS_DEBUG_PRINTF("DATA :: ERROR, Maximum length overflows\n");
     }
 
-    //if(buf->cbuf.written == 0)
-    //{
-    //    buf->data.start_time = time;
-    //}
-
-    //if(buf->cbuf.written < buf->cbuf.length)
-    //{
-    //    buf->data.pPressure[buf->cbuf.written] = pressure;
-    //    buf->data.pTemperature[buf->cbuf.written] = temp;
-    //    //buf->data.pTimeOffset[buf->cbuf.written] = time - buf->data.start_time;
-    //    buf->data.pTimeOffset[buf->cbuf.written] = time;
-    //    buf->cbuf.written++;
-    //    return(1);
-    //}
-    //return(0);
 }
 
 // Delete the data after successfull transmission and consolidate remaining measurements into a contiguous block
@@ -336,35 +294,6 @@ void DATA_get_converted(Data_t *buf, pData *P, uint16_t *pressure, uint16_t *tem
     }
 }
 
-//size_t DATA_get_original(Data_t *buf, uint32_t *time, float *pressure, float *temp)
-//{
-//    if( buf->cbuf.read < buf->cbuf.written)
-//    {
-//        *time = buf->data.pTimeOffset[buf->cbuf.read] + buf->data.start_time;
-//        *pressure = buf->data.pPressure[buf->cbuf.read];
-//        *temp = buf->data.pTemperature[buf->cbuf.read];
-//        buf->cbuf.read++;
-//        return (1);
-//    }
-//    return (0);
-//}
-//
-//size_t DATA_get_converted(Data_t *p, uint32_t *start, uint32_t *offset, uint8_t *pressure, int16_t *temp)
-//{
-//    //ARTEMIS_DEBUG_PRINTF("read = %u, written = %u\n", p->cbuf.read, p->cbuf.written);
-//
-//    if( p->cbuf.read < p->cbuf.written)
-//    {
-//        *start = p->data.start_time;
-//        *offset = p->data.pTimeOffset[p->cbuf.read];
-//        *pressure = module_convert_pressure_to_uint8_t( p->data.pPressure[p->cbuf.read] );
-//        *temp = module_convert_temperature_to_int16_t( p->data.pTemperature[p->cbuf.read] );
-//        p->cbuf.read++;
-//        return (1);
-//    }
-//    return (0);
-//}
-
 uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec)
 {
     year = year + 2000;
@@ -377,8 +306,88 @@ uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour,
     {
         epoch -= 86400;
     }
-
     return epoch;
+}
+
+// Dynamic Allocation -- Allocates the requested number of profiles with the requested number
+// of measurements per profile. Returns a pointer to the allocated Data_t struct.
+Data_t* DATA_alloc(uint32_t numProfiles, uint32_t numMeasurements)
+{
+    // Allocate memory for the main Data_t structure using FreeRTOS's memory manager.
+    // This will contain pointers to our sensor data arrays and profile information.
+    Data_t *buf = (Data_t *)pvPortMalloc(sizeof(Data_t));
+    // Failure check for Data_t allocation
+    if (buf == NULL) {
+        ARTEMIS_DEBUG_PRINTF("DATA_alloc: Failed to allocate Data_t\n");
+        return NULL;
+    }
+    
+    // Zero initialize the entire Data_t structure to ensure all fields are 0.
+    memset(buf, 0, sizeof(Data_t));
+    
+    // Set the buffer capacity to the number of measurements
+    buf->cbuf.length = numMeasurements;
+    
+    // Allocate memory for the pressure measurement array using FreeRTOS's memory manager.
+    buf->data.pressure = (float *)pvPortMalloc(numMeasurements * sizeof(float));
+    // Failure check for pressure measurement allocation
+    if (buf->data.pressure == NULL) {
+        ARTEMIS_DEBUG_PRINTF("DATA_alloc: Failed to allocate pressure array\n");
+        vPortFree(buf);
+        return NULL;
+    }
+    
+    // Allocate memory for the temperature measurement array using FreeRTOS's memory manager.
+    buf->data.temperature = (float *)pvPortMalloc(numMeasurements * sizeof(float));
+    // Failure check for temperature measurement allocation
+    if (buf->data.temperature == NULL) {
+        ARTEMIS_DEBUG_PRINTF("DATA_alloc: Failed to allocate temperature array\n");
+        vPortFree(buf->data.pressure);
+        vPortFree(buf);
+        return NULL;
+    }
+    
+    // Allocate memory for the profile data using FreeRTOS's memory manager.
+    buf->p = (pData *)pvPortMalloc(numProfiles * sizeof(pData));
+    // Failure check for pData Struct allocation 
+    if (buf->p == NULL) {
+        ARTEMIS_DEBUG_PRINTF("DATA_alloc: Failed to allocate profiles array\n");
+        vPortFree(buf->data.pressure);
+        vPortFree(buf->data.temperature);
+        vPortFree(buf);
+        return NULL;
+    }
+    
+    /* Initialize counters */
+    buf->cbuf.written = 0;
+    buf->cbuf.read = 0;
+    buf->pNumber = 0;
+    buf->wLength = 0;
+    buf->rLength = 0;
+    
+    ARTEMIS_DEBUG_PRINTF("DATA_alloc: Successfully allocated Data_t (%u measurements, %u profiles)\n", numMeasurements, numProfiles);
+    
+    // Return the pointer to the allocated Data_t structure
+    return buf;
+}
+
+// Free the memory allocated for the Data_t structure
+void DATA_free(Data_t *buf)
+{
+    // If data is present at the pointer passed in, memory in each part of the struct is freed
+    if (buf) {
+        if (buf->data.pressure) {
+            vPortFree(buf->data.pressure);
+        }
+        if (buf->data.temperature) {
+            vPortFree(buf->data.temperature);
+        }
+        if (buf->p) {
+            vPortFree(buf->p);
+        }
+        vPortFree(buf); // Frees the struct itself
+        ARTEMIS_DEBUG_PRINTF("DATA_free: Data_t memory freed\n");
+    }
 }
 
 
@@ -526,7 +535,6 @@ void create_header_irid(uint8_t *df, pData *P, sData *S)
     for (uint8_t i=0; i<IRID_HEADER_LENGTH; i++)
     {
         df[i] = buf[i];
-        //ARTEMIS_DEBUG_PRINTF("0x%02X, 0x%02X \n", df[i], buf[i]);
     }
 }
 
@@ -581,7 +589,6 @@ void create_header_irid_ext(uint8_t *df, pData *P, sData *S)
     for (uint8_t i=0; i<IRID_HEADER_LENGTH_EXT; i++)
     {
         df[i] = buf[i];
-        //ARTEMIS_DEBUG_PRINTF("0x%02X, 0x%02X \n", df[i], buf[i]);
     }
 }
 

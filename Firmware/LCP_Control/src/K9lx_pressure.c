@@ -233,7 +233,7 @@ void K9lx_init(K9lx_init_param *p)
     K9lx_power_on();
 
     /* wait for device to get initialized*/
-    am_util_delay_ms(5000);
+    am_util_delay_ms(1000);
 
     /** Read the module Firmware version, P-Mode, serial number, Active channels */
     module_k9lx_device_info(pK9lx->device.uart.port);

@@ -4,8 +4,6 @@
  * @brief 
  * @version 0.1
  * @date 2021-10-15
- * 
- * 
  */
 #ifndef DATA_H
 #define DATA_H
@@ -66,10 +64,6 @@
 /**********************************************************************************
  * Typdefs
  *********************************************************************************/
-// typedef struct sProfileData_t
-// {   
-    
-// }ProfileData_t;
 
 typedef struct __attribute__((packed))
 {
@@ -97,7 +91,6 @@ typedef struct __attribute__((packed))
         uint32_t written;
         uint32_t read;
     } cbuf;
-
     /* measurements struct */
     struct
     {
@@ -105,35 +98,14 @@ typedef struct __attribute__((packed))
         float *temperature;
         /* add more measurement variables */
     } data;
-
     /* local length and profile numbers manipulation */
     uint8_t pNumber;
     uint16_t wLength;
     uint16_t rLength;
-
     /* this holds the nr. of profiles data */
     pData *p;
 
 } Data_t;
-
-//typedef struct sData_t
-//{
-//    struct
-//    {
-//        size_t length;
-//        size_t written;
-//        size_t read;
-//    } cbuf;
-//    struct
-//    {
-//        uint32_t *pStartTime;
-//        //uint32_t *pTimeOffset;
-//        uint32_t *pStopTime;
-//        float *pPressure;
-//        float *pTemperature;
-//        uint16_t pNumber;
-//    } data;
-//}Data_t;
 
 typedef struct cData_t
 {
@@ -145,51 +117,39 @@ typedef struct cData_t
 /**********************************************************************************
  * Function Prototypes
  *********************************************************************************/
-#ifdef __cplusplus
+
+ #ifdef __cplusplus
 extern "C"{
 #endif
-
-//size_t DATA_add(Data_t *buf, uint32_t time, float pressure, float temp);
-//void DATA_setbuffer(Data_t *p, uint32_t *pTime, float *pPressure, float*pTemp, size_t length);
-
 void DATA_reset(Data_t *p);
 void DATA_setbuffer(Data_t *buf, pData *P, float *pressure, float *temperature, uint32_t length);
 void DATA_add(Data_t *buf, uint32_t time, float pressure, float temperature, uint8_t pNumber);
 bool DATA_clear(Data_t *buf, uint8_t pNumber);
 bool DATA_clear_partial(Data_t *buf, uint8_t pNumber, uint32_t startOffset, uint32_t length);
 void DATA_add_gps(Data_t *buf, float latitude, float longitude, uint8_t pNumber);
-//void DATA_get_original(Data_t *buf, pData *P, float *pressure, float *temperature, uint8_t pNumber);
-
-//size_t DATA_get_original(Data_t *p, uint32_t *time, float *pressure, float *temp);
-//size_t DATA_get_converted(Data_t *p, uint32_t *start, uint32_t *offset, uint8_t *pressure, int16_t *temp);
-
 void DATA_get_original(Data_t *buf, pData *P, float *pressure, float *temperature, uint8_t pNumber);
 void DATA_get_converted(Data_t *buf, pData *P, uint16_t *pressure, uint16_t *temperature, uint8_t pNumber);
-
 uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec);
 void create_header(uint8_t *df, uint32_t start, uint32_t stop, float lat, float lon, uint8_t mode_type, uint8_t page);
-
 void create_header_irid(uint8_t *df, pData *P, sData *S);
 void create_header_irid_ext(uint8_t *df, pData *P, sData *S);
 uint16_t pack_measurements_irid(Data_t *buf, pData *P, sData *S, uint8_t *rBuf);
 uint16_t pack_measurements_irid_ext(Data_t *buf, pData *P, sData *S, uint8_t *rBuf);
-
 float std_div(float *value, uint16_t len, float *var, float *avg);
 float average(float *value, uint16_t len);
+
+/* New functions for dynamic memory allocation */
+Data_t* DATA_alloc(uint32_t numProfiles, uint32_t numMeasurements);
+void DATA_free(Data_t *buf);
 
 /**********************************************************************************
  * Unit Test Variables & Static Prototpyes
  *********************************************************************************/
 #ifdef TEST
 #ifdef DOXYGEN_IGNORE_THIS
-
-
 #endif // DOXYGEN_IGNORE_THIS
 #endif
-
-
 #ifdef __cplusplus
 } // extern "C"
 #endif 
-
 #endif // DATA_H

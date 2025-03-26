@@ -59,6 +59,10 @@ static float prof_pressure[DATA_PROFILE_SAMPLES_MAX];
 static Data_t park;         /**< Park mode Data */
 static Data_t prof;         /**< Profile mode data */
 
+// Pointers used for dynamic memory allocation
+//static Data_t *park = NULL;  /**< Park mode Data */
+/static Data_t *prof = NULL;  /**< Profile mode data */
+
 static sData sPark;         /**< Park mode measurement - StateMachine */
 static sData sProf;         /**< Profile mode measurement - StateMachine */
 //static sData sPark_ext;     /**< Park mode measurement extended - StateMachine */
@@ -188,6 +192,7 @@ void STATE_initialize(SystemMode_t mode)
         case SYSST_SimpleProfiler_mode:
             DATA_setbuffer(&park, pPark, park_pressure, park_temp, DATA_PARK_SAMPLES_MAX);
             DATA_setbuffer(&prof, pProf, prof_pressure, prof_temp, DATA_PROFILE_SAMPLES_MAX);
+
             break;
 
         case SYSST_Moored_mode:
@@ -3584,7 +3589,7 @@ void module_sps_move_to_surface(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full time-out, task->finished\n");
                     PIS_task_delete(xPiston);
-                    vvTaskDelay(xDelay5000ms);
+                    vTaskDelay(xDelay5000ms);
                     PIS_Reset();
                     piston_timer = 0;
                 }
@@ -3637,7 +3642,7 @@ void module_sps_move_to_surface(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full time-out, task->finished\n");
                     PIS_task_delete(xPiston);
-                    vvTaskDelay(xDelay5000ms);
+                    vTaskDelay(xDelay5000ms);
                     PIS_Reset();
                     piston_timer = 0;
                 }
