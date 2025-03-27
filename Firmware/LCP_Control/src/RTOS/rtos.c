@@ -155,7 +155,7 @@ vApplicationMallocFailedHook(void)
     // timers, and semaphores.  The size of the FreeRTOS heap is set by the
     // configTOTAL_HEAP_SIZE configuration constant in FreeRTOSConfig.h.
     //
-    ARTEMIS_DEBUG_PRINTF ("\nStack insufficient free memory\n");
+    ARTEMIS_DEBUG_PRINTF ("\nHeap insufficient free memory\n");
 	am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
     while (1);
 }
