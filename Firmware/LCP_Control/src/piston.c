@@ -118,7 +118,7 @@ static void module_pis_information(void)
 void PIS_task_move_length(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_length,
-                                "Piston_Task_move_length", 512, NULL,
+                                "Piston_Task_move_length", 256, NULL,
                                 tskIDLE_PRIORITY + 3UL,
                                 xPiston) == pdPASS );
 }
@@ -201,7 +201,7 @@ void task_move_piston_to_zero(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(xDelay2000ms);
+        vTaskDelay(xDelay5000ms);
         //vTaskDelete(NULL);
     }
 
@@ -278,7 +278,7 @@ void task_move_piston_to_full(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(xDelay2000ms);
+        vTaskDelay(xDelay5000ms);
         //vTaskDelete(NULL);
         //return;
     }
@@ -355,7 +355,7 @@ void task_reset_piston_to_full(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(xDelay2000ms);
+        vTaskDelay(xDelay5000ms);
         //vTaskDelete(NULL);
         //return;
     }
@@ -434,7 +434,7 @@ void task_move_piston_to_length(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(xDelay2000ms);
+        vTaskDelay(xDelay5000ms);
         //vTaskDelete(NULL);
     }
     vTaskDelay(xDelay50ms);
@@ -597,7 +597,7 @@ void task_move_piston_to_volume(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(xDelay2000ms);
+        vTaskDelay(xDelay5000ms);
         //vTaskDelete(NULL);
         //return;
     }
