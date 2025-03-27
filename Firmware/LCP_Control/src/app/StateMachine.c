@@ -692,6 +692,17 @@ void module_pds_idle(void)
         ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Epoch    = %ld\n", epoch);
         if ( Depth>BALLAST_DEPTH )
         {
+            if (piston_move)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, deliberately stopping the Piston\n");
+                /* stop the piston */
+                PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
+                PIS_stop();
+                vTaskDelay(piston_period);
+                piston_move = false;
+                piston_timer = 0;
+            }
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Pressure reached = %0.4f bar\n", Pressure);
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Depth reached    = %0.4f m\n", Depth);
             run = false;
@@ -3626,6 +3637,18 @@ void module_sps_move_to_surface(void)
         }
         vTaskDelay(xDelay5000ms);
         
+        if (piston_move)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, move to full deliberately stopping the Piston\n");
+                /* stop the piston */
+                PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
+                PIS_stop();
+                vTaskDelay(piston_period);
+                piston_move = false;
+                piston_timer = 0;
+            }
+
         lengthdrift = Length;   
         piston_timer = 0;
         piston_move = true;
@@ -3764,6 +3787,18 @@ void module_sps_move_to_surface(void)
         }
     }
     vTaskDelay(xDelay5000ms);
+
+    if (piston_move)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, deliberately stopping the Piston\n");
+                /* stop the piston */
+                PIS_task_delete(xPiston);
+                vTaskDelay(xDelay5000ms);
+                PIS_stop();
+                vTaskDelay(piston_period);
+                piston_move = false;
+                piston_timer = 0;
+            }
 
     /** Turn on the GPS */
     uint8_t s_rate = 1;
