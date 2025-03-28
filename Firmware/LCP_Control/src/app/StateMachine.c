@@ -1797,7 +1797,7 @@ void module_sps_park(void)
         /* store first sample with start time */
         if (start_time)
         {
-            DATA_add(&park, epoch, Pressure, Temperature, park_number);
+            DATA_add(park, epoch, Pressure, Temperature, park_number);
             datalogger_park_mode(filename, Pressure, Temperature, &time);
             start_time = false;
 #ifdef TEST
@@ -1825,7 +1825,7 @@ void module_sps_park(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: park, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
 
             /* store averages data locally */
-            DATA_add(&park, epoch, avg_p, avg_t, park_number);
+            DATA_add(park, epoch, avg_p, avg_t, park_number);
             samples = 0;
 
 #ifdef TEST
@@ -3084,7 +3084,7 @@ void module_sps_profile(void)
         /* store first sample with start time */
         if (start_time == true)
         {
-            DATA_add(&prof, epoch, Pressure, Temperature, prof_number);
+            DATA_add(prof, epoch, Pressure, Temperature, prof_number);
             datalogger_profile_mode(filename, Pressure, Temperature, &time);
             start_time = false;
             bin_pressure = ceil(Pressure * 10) / 10;
@@ -3121,7 +3121,8 @@ void module_sps_profile(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
 
             /* store averaged data locally */
-            DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
+            //DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
+            DATA_add(prof, epoch, avg_p, avg_t, prof_number);
             samples = 0;
             samples_p = 0;
             samples_t = 0;
@@ -3150,7 +3151,7 @@ void module_sps_profile(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
 
             /* store averaged data locally */
-            DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
+            DATA_add(prof, epoch, avg_p, avg_t, prof_number);
             samples = 0;
             samples_p = 0;
             samples_t = 0;
@@ -3176,7 +3177,7 @@ void module_sps_profile(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
 
             /* store averaged data locally */
-            DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
+            DATA_add(prof, epoch, avg_p, avg_t, prof_number);
             samples = 0;
             samples_p = 0;
             samples_t = 0;
@@ -3205,7 +3206,8 @@ void module_sps_profile(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
 
             // store averaged data locally
-            DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
+            //DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
+            DATA_add(prof, epoch, avg_p, avg_t, prof_number);
             samples = 0;
             samples_p = 0;
             samples_t = 0;
@@ -3229,7 +3231,8 @@ void module_sps_profile(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
 
             //store averaged data locally
-            DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
+            //DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
+            DATA_add(prof, epoch, avg_p, avg_t, prof_number);
             samples = 0;
             samples_p = 0;
             samples_t = 0;
@@ -3920,8 +3923,8 @@ void module_sps_move_to_surface(void)
                 if (fix > 9)
                 {
                     /* update latitude and longitude for park and profile modes */
-                    DATA_add_gps(&park, gps.latitude, gps.longitude, park_number-1);
-                    DATA_add_gps(&prof, gps.latitude, gps.longitude, prof_number-1);
+                    DATA_add_gps(park, gps.latitude, gps.longitude, park_number-1);
+                    DATA_add_gps(prof, gps.latitude, gps.longitude, prof_number-1);
 
                     /* Calibrate the GPS UTC time into RTC */
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, RTC : <GPS Time Set>\n");
@@ -3944,8 +3947,8 @@ void module_sps_move_to_surface(void)
             if (fix >= 2)
             {
                 /* update latitude and longitude for park and profile modes */
-                DATA_add_gps(&park, gps.latitude, gps.longitude, park_number-1);
-                DATA_add_gps(&prof, gps.latitude, gps.longitude, prof_number-1);
+                DATA_add_gps(park, gps.latitude, gps.longitude, park_number-1);
+                DATA_add_gps(prof, gps.latitude, gps.longitude, prof_number-1);
 
                 /* Calibrate the GPS UTC time into RTC */
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, RTC : <GPS Time Set>\n");
@@ -4682,7 +4685,8 @@ static uint16_t create_park_page(uint8_t *ptrPark, uint8_t *readlength)
     /* check if we are sending the first page of any profile number */
     if (m_park_length == 0)
     {
-        m_park_length = pPark[m_park_number].pLength;
+        // Instead of reading from pPark array, get the actual length from the Data_t structure
+        m_park_length = park->cbuf.written;
         sPark.profNumber = m_park_number;
         sPark.pageNumber = 0;
         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, profile_number=%u, pageNumber=%u, measurement_length=%u\n", m_park_number, sPark.pageNumber, m_park_length);
@@ -4692,7 +4696,7 @@ static uint16_t create_park_page(uint8_t *ptrPark, uint8_t *readlength)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: tx, WARNING : Park, profile_number=%u exceeding (%u) length of measurements, creating pages!\n", sPark.profNumber, MEASUREMENT_MAX);
             sPark.mLength = MEASUREMENT_MAX;
-            m_park_length = pPark[m_park_number].pLength - sPark.mLength;
+            m_park_length = park->cbuf.written - sPark.mLength;
         }
         else
         {
@@ -4716,9 +4720,11 @@ static uint16_t create_park_page(uint8_t *ptrPark, uint8_t *readlength)
         }
     }
 
-    uint16_t nrBytes = pack_measurements_irid(&park, pPark, &sPark, ptrPark);
+    // Get the actual Data_t structure from the global park pointer
+    uint16_t nrBytes = pack_measurements_irid(park, NULL, &sPark, ptrPark);
     *readlength = sPark.mLength;
     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park : profile_number=%u, pageNumber=%u, m_park_number=%u, total_bytes=%u\n", sPark.profNumber, sPark.pageNumber, m_park_number, nrBytes);
+
 
     /* TODO: for extended measurements, in the future */
     ///* add extension header and payload for the next profiles */
@@ -4836,7 +4842,8 @@ static uint16_t create_profile_page(uint8_t *ptrProf, uint8_t *readlength)
     /* check if we are sending the first page of any profile number */
     if (m_prof_length == 0)
     {
-        m_prof_length = pProf[m_prof_number].pLength;
+        // Instead of reading from pProf array, get the actual length from the Data_t structure
+        m_prof_length = prof->cbuf.written;
         sProf.profNumber = m_prof_number;
         sProf.pageNumber = 0;
         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, profile_number=%u, pageNumber=%u, measurement_length=%u\n", m_prof_number, sProf.pageNumber, m_prof_length);
@@ -4846,7 +4853,7 @@ static uint16_t create_profile_page(uint8_t *ptrProf, uint8_t *readlength)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: tx, WARNING : Profile, profile_number=%u exceeding (%u) length of measurements, creating pages!\n", sProf.profNumber, MEASUREMENT_MAX);
             sProf.mLength = MEASUREMENT_MAX;
-            m_prof_length = pProf[m_prof_number].pLength - sProf.mLength;
+            m_prof_length = prof->cbuf.written - sProf.mLength;
         }
         else
         {
@@ -4870,7 +4877,8 @@ static uint16_t create_profile_page(uint8_t *ptrProf, uint8_t *readlength)
         }
     }
 
-    uint16_t nrBytes = pack_measurements_irid(&prof, pProf, &sProf, ptrProf);
+    // Get the actual Data_t structure from the global prof pointer
+    uint16_t nrBytes = pack_measurements_irid(prof, NULL, &sProf, ptrProf);
     *readlength = sProf.mLength;
     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile : profile_number=%u, pageNumber=%u, m_prof_number=%u, total_bytes=%u\n", sProf.profNumber, sProf.pageNumber, m_prof_number, nrBytes);
 
