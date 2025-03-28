@@ -311,3 +311,23 @@ void MEM_log_memory_status(const char* location,
                          location, MEM_queue_get_count(park_queue), 
                          MEM_queue_get_count(prof_queue));
 }
+
+/**
+ * @brief Reset the transmission attempt counter for the current profile in a queue
+ * 
+ * @param queue Pointer to the queue
+ * @return true if successful, false otherwise
+ */
+ bool MEM_queue_reset_attempts(TransmissionQueue_t *queue) {
+    if (queue == NULL || queue->profiles == NULL || queue->count == 0) {
+        return false;
+    }
+    
+    // Reset the attempt counter for the current head profile
+    queue->profiles[queue->head].attempt_count = 0;
+    
+    ARTEMIS_DEBUG_PRINTF("MEMORY: Reset attempt count for profile %u\n", 
+                        queue->profiles[queue->head].profile_number);
+    
+    return true;
+}

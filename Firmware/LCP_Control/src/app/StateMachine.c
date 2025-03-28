@@ -3946,9 +3946,26 @@ void module_sps_move_to_surface(void)
             /* check, if it got at least two to three fixes */
             if (fix >= 2)
             {
-                /* update latitude and longitude for park and profile modes */
-                DATA_add_gps(park, gps.latitude, gps.longitude, park_number-1);
-                DATA_add_gps(prof, gps.latitude, gps.longitude, prof_number-1);
+                /* Instead of trying to update via global pointers, get the data from the queues */
+                ProfileData_t *park_profile = MEM_queue_get_next_profile(&park_queue);
+                ProfileData_t *prof_profile = MEM_queue_get_next_profile(&prof_queue);
+                
+                /* Update latitude and longitude for park and profile modes from queues */
+                if (park_profile != NULL && park_profile->data != NULL) {
+                    DATA_add_gps(park_profile->data, gps.latitude, gps.longitude, park_number-1);
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Updated GPS for park profile %u\n", 
+                                        park_profile->profile_number);
+                } else {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, No park profile available for GPS update\n");
+                }
+                
+                if (prof_profile != NULL && prof_profile->data != NULL) {
+                    DATA_add_gps(prof_profile->data, gps.latitude, gps.longitude, prof_number-1);
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Updated GPS for profile %u\n", 
+                                        prof_profile->profile_number);
+                } else {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, No profile available for GPS update\n");
+                }
 
                 /* Calibrate the GPS UTC time into RTC */
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, RTC : <GPS Time Set>\n");
@@ -4091,8 +4108,7 @@ void module_sps_tx(void)
             m_park_length = 0; // Reset to start from the beginning
             sPark.pageNumber = 0;
             
-            // Increment attempt counter for this transmission attempt
-            MEM_queue_increment_attempt(&park_queue);
+            // Record the current attempt count for reference
             uint8_t park_tries = current_park_profile->attempt_count;
             
             /* run to see the satellites visibility */
@@ -4209,6 +4225,10 @@ void module_sps_tx(void)
                                 if (m_park_length == 0)
                                 {
                                     /* All pages for this profile have been transmitted successfully */
+                                    // Reset attempt counter since transmission was successful
+                                    // You may need to add this function to memory.c/memory.h
+                                    MEM_queue_reset_attempts(&park_queue);
+                                    
                                     MEM_queue_mark_transmitted(&park_queue);
                                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, All pages for park profile %u transmitted successfully\n", 
                                                         m_park_number);
@@ -4218,6 +4238,8 @@ void module_sps_tx(void)
                                 }
                                 else
                                 {
+                                    // Reset attempt counter for this page since transmission was successful
+                                    MEM_queue_reset_attempts(&park_queue);
                                     sPark.pageNumber++;
                                 }
                             }
@@ -4304,6 +4326,9 @@ void module_sps_tx(void)
                                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park after reset read=%u, m_park_length=%u, nr_park=%u\n\n", 
                                                     park->cbuf.read, m_park_length, nr_park);
 
+                                // Only increment attempt count on failure
+                                MEM_queue_increment_attempt(&park_queue);
+                                
                                 // Check if we've reached max transmission attempts for this profile
                                 if (MEM_queue_max_attempts_reached(&park_queue, PARK_TRANSMIT_TRIES))
                                 {
@@ -4316,7 +4341,7 @@ void module_sps_tx(void)
                                 else
                                 {
                                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park transmit <NOT Successful>, attempt %u of %u\n\n", 
-                                                        park_tries, PARK_TRANSMIT_TRIES);
+                                                        park_tries + 1, PARK_TRANSMIT_TRIES);
                                     /* turn on checking satellite visibility */
                                     task_Iridium_satellite_visibility(&xSatellite);
                                     run_satellite = true;
@@ -4367,8 +4392,7 @@ void module_sps_tx(void)
             m_prof_length = 0; // Reset to start from the beginning
             sProf.pageNumber = 0;
             
-            // Increment attempt counter for this transmission attempt
-            MEM_queue_increment_attempt(&prof_queue);
+            // Record the current attempt count for reference
             uint8_t prof_tries = current_prof_profile->attempt_count;
             
             /* run to see the satellites visibility */
@@ -4486,6 +4510,9 @@ void module_sps_tx(void)
                                 if (m_prof_length == 0)
                                 {
                                     /* All pages for this profile have been transmitted successfully */
+                                    // Reset attempt counter since transmission was successful
+                                    MEM_queue_reset_attempts(&prof_queue);
+                                    
                                     MEM_queue_mark_transmitted(&prof_queue);
                                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, All pages for profile %u transmitted successfully\n", 
                                                         m_prof_number);
@@ -4495,6 +4522,8 @@ void module_sps_tx(void)
                                 }
                                 else
                                 {
+                                    // Reset attempt counter for this page since transmission was successful
+                                    MEM_queue_reset_attempts(&prof_queue);
                                     sProf.pageNumber++;
                                 }
                             }
@@ -4580,6 +4609,9 @@ void module_sps_tx(void)
                                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile after reset read=%u, m_prof_length=%u, nr_prof=%u\n\n", 
                                                     prof->cbuf.read, m_prof_length, nr_prof);
                                 
+                                // Only increment attempt count on failure
+                                MEM_queue_increment_attempt(&prof_queue);
+                                
                                 // Check if we've reached max transmission attempts for this profile
                                 if (MEM_queue_max_attempts_reached(&prof_queue, PROF_TRANSMIT_TRIES))
                                 {
@@ -4592,7 +4624,7 @@ void module_sps_tx(void)
                                 else
                                 {
                                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile transmit <NOT Successful>, attempt %u of %u\n\n", 
-                                                        prof_tries, PROF_TRANSMIT_TRIES);
+                                                        prof_tries + 1, PROF_TRANSMIT_TRIES);
                                     /* turn on checking satellite visibility */
                                     task_Iridium_satellite_visibility(&xSatellite);
                                     run_satellite = true;

@@ -37,7 +37,7 @@
 #define DATA_NUM_SEC_IN_HOUR                    ( 60 * 60 )
 #define DATA_NUM_SEC_IN_DAY                     ( DATA_NUM_SEC_IN_HOUR * DATA_PARK_PARK_MAX_DURATION_HOURS )
 #define DATA_NUM_SAMPLES_IN_DAY                 ( DATA_PARK_SAMPLE_FREQ * DATA_NUM_SEC_IN_DAY)
-#define DATA_PARK_SAMPLES_MAX                   ( 80 )//( 80 * SYSTEM_PROFILE_NUMBER ) //( 1440 )
+#define DATA_PARK_SAMPLES_MAX                   ( 300 )//( 80 * SYSTEM_PROFILE_NUMBER ) //( 1440 )
 //#define DATA_PARK_SAMPLES_MAX                   ( ((uint32_t)( 3600 ) * DATA_PARK_SAMPLE_FREQ) * DATA_PARK_PARK_MAX_DURATION_HOURS )
 
 //#define DATA_PROFILE_MAX_LEN                    ( 40000 )

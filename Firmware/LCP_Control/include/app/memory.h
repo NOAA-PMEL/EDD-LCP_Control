@@ -30,6 +30,7 @@ typedef struct sTransmissionQueue_t {
 // Queue management functions
 void MEM_init_transmission_queues(void);
 void MEM_cleanup_transmission_queues(void);
+bool MEM_queue_reset_attempts(TransmissionQueue_t *queue);
 bool MEM_queue_add_profile(TransmissionQueue_t *queue, uint8_t profile_number, Data_t *data);
 ProfileData_t* MEM_queue_get_next_profile(TransmissionQueue_t *queue);
 void MEM_queue_mark_transmitted(TransmissionQueue_t *queue);
