@@ -121,6 +121,9 @@ void module_pds_systemcheck(void);
 void module_pus_idle(void);
 void module_pus_surface_float(void);
 
+// memory monitor function
+void monitor_memory_usage(void);
+
 //*****************************************************************************
 //
 // Global Variables, buffers etc
@@ -207,6 +210,9 @@ void STATE_initialize(SystemMode_t mode)
         default:
             break;
     }
+
+    /* Initialize the memory management system */
+    MEM_init_transmission_queues();
 }
 
 void STATE_MainState(SystemMode_t mode)
@@ -1615,18 +1621,43 @@ void module_sps_park(void)
     /* set crush depth to false */
     crush_depth = false;
 
-    // Allocate memory for park data if not already allocated
-    if (park == NULL) {
-        park = DATA_alloc(1, DATA_PARK_SAMPLES_MAX);
-        if (park == NULL) {
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, ERROR: Failed to allocate park data memory\n");
-            // Handle allocation failure - perhaps light an LED or reset
-            am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
-            // Return or take other appropriate action
+    // Check and manage memory before allocation
+    size_t required_size = sizeof(Data_t) + (DATA_PARK_SAMPLES_MAX * 2 * sizeof(float)) + 
+                           sizeof(pData);
+    MEM_manage_memory_before_allocation(required_size, &park_queue, &prof_queue);
+
+    // Allocate memory for the new park data
+    Data_t *new_park_data = DATA_alloc(1, DATA_PARK_SAMPLES_MAX);
+    if (new_park_data == NULL) {
+        // If allocation still fails after memory management, take emergency action
+        ARTEMIS_DEBUG_PRINTF("SPS :: park, CRITICAL ERROR: Failed to allocate park data memory even after cleanup\n");
+        am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
+        
+        // Emergency cleanup - remove oldest data from any queue
+        while ((new_park_data == NULL) && 
+               (MEM_queue_get_count(&park_queue) > 0 || MEM_queue_get_count(&prof_queue) > 0)) {
+            
+            if (MEM_queue_get_count(&park_queue) > 0) {
+                MEM_queue_remove_oldest(&park_queue);
+            } else if (MEM_queue_get_count(&prof_queue) > 0) {
+                MEM_queue_remove_oldest(&prof_queue);
+            }
+            
+            // Try allocation again
+            new_park_data = DATA_alloc(1, DATA_PARK_SAMPLES_MAX);
+        }
+        
+        if (new_park_data == NULL) {
+            // If still fails, we can't continue with data collection
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, FATAL ERROR: Cannot allocate memory for data collection\n");
             return;
         }
-        ARTEMIS_DEBUG_PRINTF("SPS :: park, Successfully allocated park data memory\n");
     }
+    
+    ARTEMIS_DEBUG_PRINTF("SPS :: park, Successfully allocated park data memory\n");
+    
+    // Set the global park pointer to this new data
+    park = new_park_data;
 
 #ifdef TEST
     /** Sample at 9Hz */
@@ -2233,11 +2264,31 @@ void module_sps_park(void)
         vTaskDelay(park_period);
     }
 
+    // When done collecting data, add this profile to the transmission queue
+    if (!MEM_queue_add_profile(&park_queue, park_number, new_park_data)) {
+        // If queue is full, replace the oldest entry
+        if (MEM_queue_get_count(&park_queue) > 0) {
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Queue full, replacing oldest entry\n");
+            MEM_queue_remove_oldest(&park_queue);
+            MEM_queue_add_profile(&park_queue, park_number, new_park_data);
+        } else {
+            // This shouldn't happen, but handle it anyway
+            DATA_free(new_park_data);
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, ERROR: Failed to add profile to queue\n");
+        }
+    }
+    
+    // Set park to NULL to prevent accidental use
+    park = NULL;
+    
+    // Log memory status after collection
+    MEM_log_memory_status("SPS :: park end", &park_queue, &prof_queue);
+    
+    // Final cleanup and exit handling
     park_number++;
 
     /* check Heap size */
-    uint32_t size = xPortGetFreeHeapSize();
-    ARTEMIS_DEBUG_PRINTF("\nSPS :: park, FreeRTOS HEAP SIZE = %u Bytes\n\n", size);
+    monitor_memory_usage();
 
     ARTEMIS_DEBUG_PRINTF("SPS :: park, Task->finished\n\n");
     SendEvent(spsEventQueue, &spsEvent);
@@ -2796,18 +2847,43 @@ void module_sps_move_to_profile(void)
 
 void module_sps_profile(void)
 {
-    // Allocate memory for profile data if not already allocated
-    if (prof == NULL) {
-        prof = DATA_alloc(1, DATA_PROFILE_SAMPLES_MAX);
-        if (prof == NULL) {
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, ERROR: Failed to allocate profile data memory\n");
-            // Handle allocation failure
-            am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
-            // Return or take other appropriate action
+    // Check and manage memory before allocation
+    size_t required_size = sizeof(Data_t) + (DATA_PROFILE_SAMPLES_MAX * 2 * sizeof(float)) + 
+                           sizeof(pData);
+    MEM_manage_memory_before_allocation(required_size, &prof_queue, &park_queue);
+    
+    // Allocate memory for the new profile data
+    Data_t *new_prof_data = DATA_alloc(1, DATA_PROFILE_SAMPLES_MAX);
+    if (new_prof_data == NULL) {
+        // If allocation still fails after memory management, take emergency action
+        ARTEMIS_DEBUG_PRINTF("SPS :: profile, CRITICAL ERROR: Failed to allocate profile data memory even after cleanup\n");
+        am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
+        
+        // Emergency cleanup - remove oldest data from any queue
+        while ((new_prof_data == NULL) && 
+               (MEM_queue_get_count(&park_queue) > 0 || MEM_queue_get_count(&prof_queue) > 0)) {
+            
+            if (MEM_queue_get_count(&park_queue) > 0) {
+                MEM_queue_remove_oldest(&park_queue);
+            } else if (MEM_queue_get_count(&prof_queue) > 0) {
+                MEM_queue_remove_oldest(&prof_queue);
+            }
+            
+            // Try allocation again
+            new_prof_data = DATA_alloc(1, DATA_PROFILE_SAMPLES_MAX);
+        }
+        
+        if (new_prof_data == NULL) {
+            // If still fails, we can't continue with data collection
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, FATAL ERROR: Cannot allocate memory for data collection\n");
             return;
         }
-        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Successfully allocated profile data memory\n");
     }
+    
+    ARTEMIS_DEBUG_PRINTF("SPS :: profile, Successfully allocated profile data memory\n");
+    
+    // Set the global prof pointer to the allocated data
+    prof = new_prof_data;
     
     float Volume = 0.0;
     float Density = 0.0;
@@ -3557,13 +3633,32 @@ void module_sps_profile(void)
         vTaskDelay(period);
     }
 
+    // When done collecting data, add this profile to the transmission queue
+    if (!MEM_queue_add_profile(&prof_queue, prof_number, new_prof_data)) {
+        // If queue is full, replace the oldest entry
+        if (MEM_queue_get_count(&prof_queue) > 0) {
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Queue full, replacing oldest entry\n");
+            MEM_queue_remove_oldest(&prof_queue);
+            MEM_queue_add_profile(&prof_queue, prof_number, new_prof_data);
+        } else {
+            // This shouldn't happen, but handle it anyway
+            DATA_free(new_prof_data);
+            ARTEMIS_DEBUG_PRINTF("SPS :: profile, ERROR: Failed to add profile to queue\n");
+        }
+    }
+    
+    // Set prof to NULL to prevent accidental use
+    prof = NULL;
+    
+    // Log memory status after collection
+    MEM_log_memory_status("SPS :: profile end", &park_queue, &prof_queue);
+
     prof_number++;
     pistonzero_number++;
     pistonfull_number++;
 
-    /* check Heap size */
-    uint32_t size = xPortGetMinimumEverFreeHeapSize();
-    ARTEMIS_DEBUG_PRINTF("\nSPS :: profile, FreeRTOS MIN HEAP SIZE = %u Bytes\n\n", size);
+    // Log memory usage
+    monitor_memory_usage();
 
     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Task->finished\n");
     SendEvent(spsEventQueue, &spsEvent);
@@ -3897,6 +3992,17 @@ void module_sps_move_to_surface(void)
 void module_sps_tx(void)
 {
     Event_e spsEvent;
+
+    ProfileData_t *current_park_profile = NULL;
+    ProfileData_t *current_prof_profile = NULL;
+    
+    // Check if we have any profiles to transmit
+    bool send_park = (MEM_queue_get_count(&park_queue) > 0);
+    bool send_prof = (MEM_queue_get_count(&prof_queue) > 0);
+    
+    // Log memory status at start of transmission
+    MEM_log_memory_status("SPS :: tx start", &park_queue, &prof_queue);
+
     /** Initialize the Iridium Modem */
     if (!iridium_init)
     {
@@ -3971,6 +4077,21 @@ void module_sps_tx(void)
         /* start off with sending Park measurements pages */
         while (send_park)
         {
+            // Get the next park profile to transmit
+            current_park_profile = MEM_queue_get_next_profile(&park_queue);
+            if (current_park_profile == NULL || current_park_profile->data == NULL) {
+                send_park = false;
+                break;
+            }
+            
+            // Set the global park pointer to the current profile data
+            park = current_park_profile->data;
+            
+            // Set up for transmission
+            m_park_number = current_park_profile->profile_number;
+            m_park_length = 0; // Reset to start from the beginning
+            sPark.pageNumber = 0;
+            
             park_tries++;
             /* run to see the satellites visibility */
             while(run_satellite)
@@ -4093,12 +4214,11 @@ void module_sps_tx(void)
                                 if (m_park_length == 0)
                                 {
                                     /* Clear the full park data after all pages are successfully transmitted */
-                                    //DATA_clear(&park, m_park_number);
-                                    //ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park data cleared for profile %u\n", m_park_number);
+                                    MEM_queue_mark_transmitted(&park_queue);
                                     
-                                    m_park_number++;
-                                    sPark.pageNumber = 0;
-                                    sPark.mLength = 0;
+                                    //m_park_number++;
+                                    //sPark.pageNumber = 0;
+                                    //sPark.mLength = 0;
 
                                     ///* TODO: check extended measurements */
                                     //if (m_park_length_ext == 0)
@@ -4797,4 +4917,16 @@ void STATE_Moored(void)
         default:
             break;
     }
+}
+
+void monitor_memory_usage(void) {
+    uint32_t total_heap = configTOTAL_HEAP_SIZE;
+    uint32_t free_heap = xPortGetFreeHeapSize();
+    uint32_t min_ever_free = xPortGetMinimumEverFreeHeapSize();
+    uint32_t used_heap = total_heap - free_heap;
+    
+    ARTEMIS_DEBUG_PRINTF("Memory Usage: %lu/%lu bytes (%.1f%%)\n", 
+                         used_heap, total_heap, 
+                         (float)used_heap*100.0f/total_heap);
+    ARTEMIS_DEBUG_PRINTF("Minimum Ever Free: %lu bytes\n", min_ever_free);
 }

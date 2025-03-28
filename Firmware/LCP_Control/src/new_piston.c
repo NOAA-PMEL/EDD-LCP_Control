@@ -37,7 +37,7 @@ static void release_i2c_bus(void) {
 
 // I2C read with semaphore protection
 static bool pis_i2c_read(uint8_t addr, uint8_t *data, uint16_t len) {
-    if (!acquire_i2c_bus(pdMS_TO_TICKS(500))) {
+    if (acquire_i2c_bus(pdMS_TO_TICKS(500)) == false) {
         return false;
     }
     artemis_piston_i2c_read(addr, data, len);
@@ -47,7 +47,7 @@ static bool pis_i2c_read(uint8_t addr, uint8_t *data, uint16_t len) {
 
 // I2C send with semaphore protection
 static bool pis_i2c_send_msg(uint8_t *data, uint16_t len, bool stop) {
-    if (!acquire_i2c_bus(pdMS_TO_TICKS(500))) {
+    if (acquire_i2c_bus(pdMS_TO_TICKS(500)) == false) {
         return false;
     }
     artemis_piston_i2c_send_msg(data, len, stop);
@@ -56,11 +56,11 @@ static bool pis_i2c_send_msg(uint8_t *data, uint16_t len, bool stop) {
 }
 
 // Set the I2C bus to with semaphore protection
-static bool pis_i2c_set_write_mode(bool state) {
-    if (!acquire_i2c_bus(pdMS_TO_TICKS(500))) {
+static bool pis_i2c_set_write_mode(void) {
+    if (acquire_i2c_bus(pdMS_TO_TICKS(500)) == false) {
         return false;
     }
-    artemis_piston_set_write_mode(state);
+    artemis_piston_set_write_mode(true);
     release_i2c_bus();
     return true;
 }
@@ -162,7 +162,7 @@ static bool module_pis_write_cmd(uint8_t addr, uint8_t value)
 {
     uint8_t cmd[2] = {addr, value};
     
-    if (!pis_i2c_set_write_mode(true)) {
+    if (pis_i2c_set_write_mode() == false) {
         return false;
     }
     
@@ -176,7 +176,12 @@ static bool module_pis_wait_for_movement_or_timeout(uint32_t period, float desir
     uint8_t stall_count = 0;
     float current_value = 0.0f;
     float last_value = -1.0f;
-    float diff_max = is_volume ? PISTON_VOLUME_DIFF_MAX : PISTON_LENGTH_DIFF_MAX;
+    float diff_max;
+    if (is_volume) {
+        diff_max = PISTON_VOLUME_DIFF_MAX;
+    } else {
+        diff_max = PISTON_LENGTH_DIFF_MAX;
+    }
     
     pistonRun = true;
     
@@ -207,7 +212,7 @@ static bool module_pis_wait_for_movement_or_timeout(uint32_t period, float desir
         }
         
         // Check for movement completion
-        if (!is_moving)
+        if (is_moving == false) // Not moving
         {
             if ((current_value >= (desired_value - diff_max)) && 
                 (current_value <= (desired_value + diff_max)))
@@ -732,7 +737,7 @@ void PIS_extend(void)
     uint8_t addr = PISTON_I2C_RW_TRV_USER_OR;
     uint8_t cmd[5] = {addr, 0x01, 0x01, 0x00, 0x01};
 
-    if (!pis_i2c_set_write_mode(true)) {
+    if (pis_i2c_set_write_mode() == false) {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Failed to set write mode for extend\n");
         return;
     }
@@ -745,7 +750,7 @@ void PIS_retract(void)
     uint8_t addr = PISTON_I2C_RW_TRV_DIR;
     uint8_t cmd[5] = {addr, 0xFF, 0x01, 0x00, 0x01};
 
-    if (!pis_i2c_set_write_mode(true)) {
+    if (pis_i2c_set_write_mode() == false) {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Failed to set write mode for retract\n");
         return;
     }
@@ -758,7 +763,7 @@ void PIS_stop(void)
     uint8_t addr = PISTON_I2C_RW_TRV_USER_OR;
     uint8_t cmd[5] = {addr, 0x00, 0x01, 0x00, 0x01};
 
-    if (!pis_i2c_set_write_mode(true)) {
+    if (pis_i2c_set_write_mode() == false) {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Failed to set write mode for stop\n");
         return;
     }
@@ -827,7 +832,7 @@ bool PIS_move_to_length(float length)
         v[i+1] = piston_data.u32Length >> ((i)*8) & 0xFF;
     }
 
-    if (!pis_i2c_set_write_mode(true)) {
+    if (pis_i2c_set_write_mode() == false) {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Failed to set write mode for move to length\n");
         return false;
     }
@@ -855,7 +860,7 @@ bool PIS_move_to_volume(float volume)
         v[i+1] = piston_data.u64Volume >> ((i)*8) & 0xFF;
     }
 
-    if (!pis_i2c_set_write_mode(true)) {
+    if (pis_i2c_set_write_mode() == false) {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Failed to set write mode for move to volume\n");
         return false;
     }
