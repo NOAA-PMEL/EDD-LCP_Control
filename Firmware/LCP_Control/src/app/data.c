@@ -22,9 +22,9 @@
 //*****************************************************************************
 STATIC float module_convert_uint16_t_to_depth(uint16_t depth);
 STATIC float module_convert_uint16_t_to_temperature(uint16_t temp);
-STATIC float module_convert_uint16_t_to_pressure(uint16_t pressure);
+STATIC float module_convert_uint8_t_to_pressure(uint8_t pressure);
 
-STATIC uint16_t module_convert_pressure_to_uint16_t(float pressure);
+STATIC uint8_t module_convert_pressure_to_uint8_t(float pressure);
 STATIC uint16_t module_convert_temperature_to_uint16_t(float temp);
 
 STATIC int32_t module_convert_latitude_to_int32_t(float latitude);
@@ -309,11 +309,11 @@ void DATA_get_original(Data_t *buf, pData *P, float *pressure, float *temperatur
     }
 }
 
-void DATA_get_converted(Data_t *buf, pData *P, uint16_t *pressure, uint16_t *temperature, uint8_t pNumber)
+void DATA_get_converted(Data_t *buf, pData *P, uint8_t *pressure, uint16_t *temperature, uint8_t pNumber)
 {
     if (buf->cbuf.read < buf->cbuf.written)
     {
-        *pressure = module_convert_pressure_to_uint16_t(buf->data.pressure[buf->cbuf.read]);
+        *pressure = module_convert_pressure_to_uint8_t(buf->data.pressure[buf->cbuf.read]);
         *temperature = module_convert_temperature_to_uint16_t(buf->data.temperature[buf->cbuf.read]);
 
         P->pStart = buf->p[pNumber].pStart;
@@ -414,24 +414,24 @@ static float module_convert_uint16_t_to_temperature(uint16_t temp)
 }
 
 /**
- * @brief Convert pressure to uint16_t
+ * @brief Convert pressure to uint8_t
  * 
- * Converts the pressure value to fit in an unsigned 12-bit uint, precision 0.01.
+ * Converts the pressure value to fit in an unsigned 8-bit uint, precision 0.1.
  * 
  *  (uint8_t) pressure = (float)(pressure * 10);
  * 
  * @param pressure Pressure
  * @return uint8_t Converted value
  */
-STATIC uint16_t module_convert_pressure_to_uint16_t(float pressure)
+STATIC uint8_t module_convert_pressure_to_uint8_t(float pressure)
 {
-    pressure = round(pressure *100) / 100;
-    return (uint16_t) (pressure * 100.0f);
+    pressure = round(pressure *10) / 10;
+    return (uint8_t) (pressure * 10.0f);
 }
 
-STATIC float module_convert_uint16_t_to_pressure(uint16_t pressure)
+STATIC float module_convert_uint8_t_to_pressure(uint8_t pressure)
 {
-    return ((float)pressure/100.0f);
+    return ((float)pressure/10.0f);
 }
 
 /**
@@ -446,7 +446,7 @@ STATIC float module_convert_uint16_t_to_pressure(uint16_t pressure)
  */
 STATIC uint16_t module_convert_temperature_to_uint16_t(float temp)
 {
-    temp = round(temp * 1000) / 1000;
+    temp = round(temp * 100) / 100;
     temp *= 100;
     temp += 500;
     return (uint16_t) (temp);
@@ -597,7 +597,7 @@ uint16_t pack_measurements_irid(Data_t *buf, pData *P, sData *S, uint8_t *rBuf)
     create_header_irid(df, P, S);
 
     /* calculate the number of bytes (uint8_t) required for the length
-       16 bits for temperature, and 12 bits for pressure = 28 bits
+       12 bits for temperature, and 8 bits for pressure = 20 bits
        add more bits for future sensor inclusion.
     */
     uint16_t bytes_length = (length * MEASUREMENT_BITS + 7) / 8 ;
@@ -605,7 +605,7 @@ uint16_t pack_measurements_irid(Data_t *buf, pData *P, sData *S, uint8_t *rBuf)
 
     /* start collecting measurements into 312 bytes or less */
     uint16_t Temp = 0;
-    uint16_t Pressure = 0;
+    uint8_t Pressure = 0;
     /* start at the 29th position */
     uint16_t bytes = IRID_HEADER_LENGTH;
     uint32_t bit_pos = 0;
@@ -613,10 +613,10 @@ uint16_t pack_measurements_irid(Data_t *buf, pData *P, sData *S, uint8_t *rBuf)
     for (uint16_t i=0; i<length; i++)
     {
         DATA_get_converted(buf, P, &Pressure, &Temp, pNumber);
-        /* get temperature and fit into (16 bits) */
-        for (uint8_t j=0; j<16; j++)
+        /* get temperature and fit into (12 bits) */
+        for (uint8_t j=0; j<12; j++)
         {
-            if (Temp & (1 << (15-j)))
+            if (Temp & (1 << (11-j)))
             {
                 df[bytes] |= (1 << (7 - (bit_pos % 8)));
             }
@@ -628,10 +628,10 @@ uint16_t pack_measurements_irid(Data_t *buf, pData *P, sData *S, uint8_t *rBuf)
             }
         }
 
-        /* get pressure and fit into (12 bits) */
-        for (uint8_t j=0; j<12; j++)
+        /* get pressure and fit into (8 bits) */
+        for (uint8_t j=0; j<8; j++)
         {
-            if (Pressure & (1 << (11-j)))
+            if (Pressure & (1 << (7-j)))
             {
                 df[bytes] |= (1 << (7 - (bit_pos % 8)));
             }
@@ -677,7 +677,7 @@ uint16_t pack_measurements_irid_ext(Data_t *buf, pData *P, sData *S, uint8_t *rB
 
     /* start collecting measurements into 312 bytes or less */
     uint16_t Temp = 0;
-    uint16_t Pressure = 0;
+    uint8_t Pressure = 0;
     /* start at the 19th position */
     uint16_t bytes = IRID_HEADER_LENGTH_EXT;
     uint32_t bit_pos = 0;
@@ -685,10 +685,10 @@ uint16_t pack_measurements_irid_ext(Data_t *buf, pData *P, sData *S, uint8_t *rB
     for (uint16_t i=0; i<length; i++)
     {
         DATA_get_converted(buf, P, &Pressure, &Temp, pNumber);
-        /* get temperature and fit into (16 bits) */
-        for (uint8_t j=0; j<16; j++)
+        /* get temperature and fit into (12 bits) */
+        for (uint8_t j=0; j<12; j++)
         {
-            if (Temp & (1 << (15-j)))
+            if (Temp & (1 << (11-j)))
             {
                 df[bytes] |= (1 << (7 - (bit_pos % 8)));
             }
@@ -700,10 +700,10 @@ uint16_t pack_measurements_irid_ext(Data_t *buf, pData *P, sData *S, uint8_t *rB
             }
         }
 
-        /* get pressure and fit into (12 bits) */
-        for (uint8_t j=0; j<12; j++)
+        /* get pressure and fit into (8 bits) */
+        for (uint8_t j=0; j<8; j++)
         {
-            if (Pressure & (1 << (11-j)))
+            if (Pressure & (1 << (7-j)))
             {
                 df[bytes] |= (1 << (7 - (bit_pos % 8)));
             }

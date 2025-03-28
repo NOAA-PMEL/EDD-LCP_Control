@@ -52,8 +52,8 @@
 #define LCP_PROFILE_MODE        ( 0x01 )
 
 /* SENSORS DATA bits */
-#define TEMPERATURE_BITS        ( 16 )
-#define PRESSURE_BITS           ( 12 )
+#define TEMPERATURE_BITS        ( 12 )
+#define PRESSURE_BITS           ( 8 )
 /* add more bits for future sensor inclusion*/
 
 #define MEASUREMENT_BITS        ( TEMPERATURE_BITS + PRESSURE_BITS )
@@ -137,7 +137,7 @@ typedef struct __attribute__((packed))
 
 typedef struct cData_t
 {
-    uint16_t pressure;
+    uint8_t pressure;
     int16_t temp;
 } cData;
 
@@ -164,7 +164,7 @@ void DATA_add_gps(Data_t *buf, float latitude, float longitude, uint8_t pNumber)
 //size_t DATA_get_converted(Data_t *p, uint32_t *start, uint32_t *offset, uint8_t *pressure, int16_t *temp);
 
 void DATA_get_original(Data_t *buf, pData *P, float *pressure, float *temperature, uint8_t pNumber);
-void DATA_get_converted(Data_t *buf, pData *P, uint16_t *pressure, uint16_t *temperature, uint8_t pNumber);
+void DATA_get_converted(Data_t *buf, pData *P, uint8_t *pressure, uint16_t *temperature, uint8_t pNumber);
 
 uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec);
 void create_header(uint8_t *df, uint32_t start, uint32_t stop, float lat, float lon, uint8_t mode_type, uint8_t page);
