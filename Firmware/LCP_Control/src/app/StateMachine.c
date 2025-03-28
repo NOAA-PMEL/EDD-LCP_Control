@@ -4065,16 +4065,12 @@ void module_sps_tx(void)
     task_Iridium_satellite_visibility(&xSatellite);
 
     bool run = true;
-    bool send_park = true;
-    bool send_prof = true;
     bool run_satellite = true;
-    uint8_t park_tries = 0;
-    uint8_t prof_tries = 0;
     uint8_t satellite_tries = 0;
 
-    while ( run )
+    while (run)
     {
-        /* start off with sending Park measurements pages */
+        // Handle park data transmission
         while (send_park)
         {
             // Get the next park profile to transmit
@@ -4092,14 +4088,15 @@ void module_sps_tx(void)
             m_park_length = 0; // Reset to start from the beginning
             sPark.pageNumber = 0;
             
-            park_tries++;
+            // Increment attempt counter for this transmission attempt
+            MEM_queue_increment_attempt(&park_queue);
+            uint8_t park_tries = current_park_profile->attempt_count;
+            
             /* run to see the satellites visibility */
             while(run_satellite)
             {
-                eStatus = eTaskGetState( xSatellite );
-                if ( (eStatus==eRunning) ||
-                     (eStatus==eReady)   ||
-                     (eStatus==eBlocked)  )
+                eStatus = eTaskGetState(xSatellite);
+                if ((eStatus==eRunning) || (eStatus==eReady) || (eStatus==eBlocked))
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, Satellite, task->active\n");
                 }
@@ -4107,7 +4104,7 @@ void module_sps_tx(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, Satellite, task->suspended\n");
                 }
-                else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
+                else if ((eStatus==eDeleted) || (eStatus==eInvalid))
                 {
                     satellite_tries++;
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, Satellite task->finished\n");
@@ -4145,12 +4142,12 @@ void module_sps_tx(void)
                 vTaskDelay(xDelay1000ms);
             }
 
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, Measurements written=%u, read=%u\n\n", park.cbuf.written, park.cbuf.read);
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, Measurements written=%u, read=%u\n\n", park->cbuf.written, park->cbuf.read);
             uint8_t *ptrPark = &irid_park[0];
             uint8_t nr_park = 0;
             uint16_t txpark = create_park_page(ptrPark, &nr_park);
 
-            if ( txpark > 0 )
+            if (txpark > 0)
             {
                 /* we do have a page to send */
                 /* send the bytes to the originated buffer */
@@ -4174,11 +4171,9 @@ void module_sps_tx(void)
                 {
                     /* Iridum task state checking */
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park checking task eState\n");
-                    eStatus = eTaskGetState( xIridium );
+                    eStatus = eTaskGetState(xIridium);
 
-                    if ( (eStatus==eRunning) ||
-                         (eStatus==eReady)   ||
-                         (eStatus==eBlocked)  )
+                    if ((eStatus==eRunning) || (eStatus==eReady) || (eStatus==eBlocked))
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park task->active\n");
                     }
@@ -4186,14 +4181,14 @@ void module_sps_tx(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park task->suspended\n");
                     }
-                    else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
+                    else if ((eStatus==eDeleted) || (eStatus==eInvalid))
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park task->finished\n");
                         vTaskDelay(xDelay500ms);
 
                         /* check if the page are transmitted successfully, tranmission number */
                         uint8_t recv[6] = {0};
-                        bool ret = GET_Iridium_status (recv);
+                        bool ret = GET_Iridium_status(recv);
                         uint16_t wait_time = 0;
                         if (ret)
                         {
@@ -4202,31 +4197,21 @@ void module_sps_tx(void)
                                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park transmit <Successful>\n\n");
                                 park_run = false;
 
-                                // Calculate starting offset in the profile based on page number
-                                uint32_t pageOffset = sPark.pageNumber * MEASUREMENT_MAX;
-    
-                                // Clear just the successfully transmitted page
-                                DATA_clear_partial(&park, m_park_number, pageOffset, sPark.mLength);
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park page %u (containing %u measurements) cleared for profile %u\n", 
-                                                        sPark.pageNumber, sPark.mLength, m_park_number);
+                                // With dynamic memory allocation, we don't need to clear partial data
+                                // Just update our tracking of which page we're on
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park page %u (containing %u measurements) transmitted successfully for profile %u\n", 
+                                                       sPark.pageNumber, sPark.mLength, m_park_number);
 
                                 /* reset m_park_length and m_park_number */
                                 if (m_park_length == 0)
                                 {
-                                    /* Clear the full park data after all pages are successfully transmitted */
+                                    /* All pages for this profile have been transmitted successfully */
                                     MEM_queue_mark_transmitted(&park_queue);
+                                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, All pages for park profile %u transmitted successfully\n", 
+                                                        m_park_number);
                                     
-                                    //m_park_number++;
-                                    //sPark.pageNumber = 0;
-                                    //sPark.mLength = 0;
-
-                                    ///* TODO: check extended measurements */
-                                    //if (m_park_length_ext == 0)
-                                    //{
-                                    //    m_park_number_ext = 0;
-                                    //    sPark_ext.pageNumber = 0;
-                                    //    sPark_ext.mLength = 0;
-                                    //}
+                                    // Update park to NULL to prevent accidental use
+                                    park = NULL;
                                 }
                                 else
                                 {
@@ -4254,7 +4239,7 @@ void module_sps_tx(void)
                                     {
                                         wait_time = buf[1];
                                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, traffic management time is valid, %u seconds\n", wait_time);
-                                        if (wait_time < 10 )
+                                        if (wait_time < 10)
                                         {
                                             ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, waiting for 10 seconds instead\n");
                                             vTaskDelay(xDelay10000ms);
@@ -4278,9 +4263,10 @@ void module_sps_tx(void)
                                 vTaskDelay(xDelay1000ms);
 
                                 /* reset the read length */
-                                park.cbuf.read = park.cbuf.read - nr_park;
+                                park->cbuf.read = park->cbuf.read - nr_park;
                                 m_park_length += nr_park;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park after reset read=%u, m_park_length=%u, nr_park=%u\n\n", park.cbuf.read, m_park_length, nr_park);
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park after reset read=%u, m_park_length=%u, nr_park=%u\n\n", 
+                                                    park->cbuf.read, m_park_length, nr_park);
                             }
                             else
                             {
@@ -4309,19 +4295,25 @@ void module_sps_tx(void)
                                 vTaskDelay(xDelay1000ms);
 
                                 /* reset the read length */
-                                park.cbuf.read = park.cbuf.read - nr_park;
+                                park->cbuf.read = park->cbuf.read - nr_park;
                                 m_park_length += nr_park;
                                 park_run = false;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park after reset read=%u, m_park_length=%u, nr_park=%u\n\n", park.cbuf.read, m_park_length, nr_park);
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park after reset read=%u, m_park_length=%u, nr_park=%u\n\n", 
+                                                    park->cbuf.read, m_park_length, nr_park);
 
-                                if (park_tries >= PARK_TRANSMIT_TRIES)
+                                // Check if we've reached max transmission attempts for this profile
+                                if (MEM_queue_max_attempts_reached(&park_queue, PARK_TRANSMIT_TRIES))
                                 {
-                                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park transmit <NOT Successful>\n\n");
+                                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park reached max transmission attempts (%u), abandoning profile %u\n",
+                                                        PARK_TRANSMIT_TRIES, m_park_number);
+                                    MEM_queue_mark_transmitted(&park_queue);
+                                    park = NULL;
                                     send_park = false;
                                 }
                                 else
                                 {
-                                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park transmit <NOT Successful>\n\n");
+                                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park transmit <NOT Successful>, attempt %u of %u\n\n", 
+                                                        park_tries, PARK_TRANSMIT_TRIES);
                                     /* turn on checking satellite visibility */
                                     task_Iridium_satellite_visibility(&xSatellite);
                                     run_satellite = true;
@@ -4339,7 +4331,12 @@ void module_sps_tx(void)
             }
             else
             {
-                send_park = false;
+                // No more data to transmit for this profile
+                if (m_park_length == 0) {
+                    MEM_queue_mark_transmitted(&park_queue);
+                    park = NULL;
+                }
+                send_park = (MEM_queue_get_count(&park_queue) > 0);
             }
             vTaskDelay(xDelay1000ms);
         }
@@ -4349,17 +4346,33 @@ void module_sps_tx(void)
         run_satellite = true;
         satellite_tries = 0;
 
-        /* start off with sending Profile measurements pages */
+        // Handle profile data transmission
         while (send_prof)
         {
-            prof_tries++;
+            // Get the next profile data to transmit
+            current_prof_profile = MEM_queue_get_next_profile(&prof_queue);
+            if (current_prof_profile == NULL || current_prof_profile->data == NULL) {
+                send_prof = false;
+                break;
+            }
+            
+            // Set the global prof pointer to the current profile data
+            prof = current_prof_profile->data;
+            
+            // Set up for transmission
+            m_prof_number = current_prof_profile->profile_number;
+            m_prof_length = 0; // Reset to start from the beginning
+            sProf.pageNumber = 0;
+            
+            // Increment attempt counter for this transmission attempt
+            MEM_queue_increment_attempt(&prof_queue);
+            uint8_t prof_tries = current_prof_profile->attempt_count;
+            
             /* run to see the satellites visibility */
             while(run_satellite)
             {
-                eStatus = eTaskGetState( xSatellite );
-                if ( (eStatus==eRunning) ||
-                     (eStatus==eReady)   ||
-                     (eStatus==eBlocked)  )
+                eStatus = eTaskGetState(xSatellite);
+                if ((eStatus==eRunning) || (eStatus==eReady) || (eStatus==eBlocked))
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, Satellite, task->active\n");
                 }
@@ -4367,7 +4380,7 @@ void module_sps_tx(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, Satellite, task->suspended\n");
                 }
-                else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
+                else if ((eStatus==eDeleted) || (eStatus==eInvalid))
                 {
                     satellite_tries++;
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, Satellite, task->finished\n");
@@ -4405,12 +4418,12 @@ void module_sps_tx(void)
                 vTaskDelay(xDelay1000ms);
             }
 
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, Measurements written=%u, read=%u\n", prof.cbuf.written, prof.cbuf.read);
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, Measurements written=%u, read=%u\n", prof->cbuf.written, prof->cbuf.read);
             uint8_t *ptrProf = &irid_prof[0];
             uint8_t nr_prof = 0;
             uint16_t txprof = create_profile_page(ptrProf, &nr_prof);
 
-            if ( txprof > 0 )
+            if (txprof > 0)
             {
                 /* we do have a page to send */
                 /* send the bytes to the originated buffer */
@@ -4434,11 +4447,9 @@ void module_sps_tx(void)
                 {
                     /* Iridum task state checking */
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Prof checking task eState\n");
-                    eStatus = eTaskGetState( xIridium );
+                    eStatus = eTaskGetState(xIridium);
 
-                    if ( (eStatus==eRunning) ||
-                         (eStatus==eReady)   ||
-                         (eStatus==eBlocked)  )
+                    if ((eStatus==eRunning) || (eStatus==eReady) || (eStatus==eBlocked))
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile task->active\n");
                     }
@@ -4446,14 +4457,14 @@ void module_sps_tx(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile task->suspended\n");
                     }
-                    else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
+                    else if ((eStatus==eDeleted) || (eStatus==eInvalid))
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile task->finished\n");
                         vTaskDelay(xDelay1000ms);
 
                         /* check if the page are transmitted successfully, tranmission number */
                         uint8_t recv[6] = {0};
-                        bool ret = GET_Iridium_status (recv);
+                        bool ret = GET_Iridium_status(recv);
                         uint16_t wait_time = 10;
 
                         if (ret)
@@ -4463,24 +4474,21 @@ void module_sps_tx(void)
                                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile transmit <Successful>\n\n");
                                 prof_run = false;
 
-                                // Calculate starting offset in the profile based on page number
-                                uint32_t pageOffset = sProf.pageNumber * MEASUREMENT_MAX;
-                                
-                                // Clear just the successfully transmitted page
-                                DATA_clear_partial(&prof, m_prof_number, pageOffset, sProf.mLength);
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile page %u (containing %u measurements) cleared for profile %u\n", 
-                                                        sProf.pageNumber, sProf.mLength, m_prof_number);
+                                // With dynamic memory allocation, we don't need to clear partial data
+                                // Just update our tracking of which page we're on
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile page %u (containing %u measurements) transmitted successfully for profile %u\n", 
+                                                     sProf.pageNumber, sProf.mLength, m_prof_number);
 
-                                /* reset m_park_length and m_park_number */
+                                /* reset m_prof_length and m_prof_number */
                                 if (m_prof_length == 0)
                                 {
-                                    /* Clear the full profile data all pages are successfully transmitted */
-                                    //DATA_clear(&prof, m_prof_number);
-                                    //ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile data cleared for profile %u\n", m_prof_number);
-
-                                    m_prof_number++;
-                                    sProf.pageNumber = 0;
-                                    sProf.mLength = 0;
+                                    /* All pages for this profile have been transmitted successfully */
+                                    MEM_queue_mark_transmitted(&prof_queue);
+                                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, All pages for profile %u transmitted successfully\n", 
+                                                        m_prof_number);
+                                    
+                                    // Update prof to NULL to prevent accidental use
+                                    prof = NULL;
                                 }
                                 else
                                 {
@@ -4508,7 +4516,7 @@ void module_sps_tx(void)
                                     {
                                         wait_time = buf[1];
                                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, traffic management time is valid, %u seconds\n", wait_time);
-                                        if (wait_time < 10 )
+                                        if (wait_time < 10)
                                         {
                                             ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, waiting for 10 seconds instead\n");
                                             vTaskDelay(xDelay10000ms);
@@ -4531,9 +4539,10 @@ void module_sps_tx(void)
                                 i9603n_wakeup();
 
                                 /* reset the read length */
-                                prof.cbuf.read = prof.cbuf.read - nr_prof;
+                                prof->cbuf.read = prof->cbuf.read - nr_prof;
                                 m_prof_length += nr_prof;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile after reset read=%u, m_prof_length=%u, nr_prof=%u\n\n", prof.cbuf.read, m_prof_length, nr_prof);
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile after reset read=%u, m_prof_length=%u, nr_prof=%u\n\n", 
+                                                    prof->cbuf.read, m_prof_length, nr_prof);
                             }
                             else
                             {
@@ -4562,18 +4571,25 @@ void module_sps_tx(void)
                                 i9603n_wakeup();
 
                                 /* reset the read length */
-                                prof.cbuf.read = prof.cbuf.read - nr_prof;
+                                prof->cbuf.read = prof->cbuf.read - nr_prof;
                                 m_prof_length += nr_prof;
                                 prof_run = false;
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile after reset read=%u, m_prof_length=%u, nr_prof=%u\n\n", prof.cbuf.read, m_prof_length, nr_prof);
-                                if (prof_tries >= PROF_TRANSMIT_TRIES)
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile after reset read=%u, m_prof_length=%u, nr_prof=%u\n\n", 
+                                                    prof->cbuf.read, m_prof_length, nr_prof);
+                                
+                                // Check if we've reached max transmission attempts for this profile
+                                if (MEM_queue_max_attempts_reached(&prof_queue, PROF_TRANSMIT_TRIES))
                                 {
-                                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile transmit <NOT Successful>\n\n");
+                                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile reached max transmission attempts (%u), abandoning profile %u\n",
+                                                        PROF_TRANSMIT_TRIES, m_prof_number);
+                                    MEM_queue_mark_transmitted(&prof_queue);
+                                    prof = NULL;
                                     send_prof = false;
                                 }
                                 else
                                 {
-                                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile transmit <NOT Successful>\n\n");
+                                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile transmit <NOT Successful>, attempt %u of %u\n\n", 
+                                                        prof_tries, PROF_TRANSMIT_TRIES);
                                     /* turn on checking satellite visibility */
                                     task_Iridium_satellite_visibility(&xSatellite);
                                     run_satellite = true;
@@ -4591,11 +4607,20 @@ void module_sps_tx(void)
             }
             else
             {
-                send_prof = false;
+                // No more data to transmit for this profile
+                if (m_prof_length == 0) {
+                    MEM_queue_mark_transmitted(&prof_queue);
+                    prof = NULL;
+                }
+                send_prof = (MEM_queue_get_count(&prof_queue) > 0);
             }
             vTaskDelay(xDelay1000ms);
         }
 
+        // Check if we're done with all transmission
+        send_park = (MEM_queue_get_count(&park_queue) > 0);
+        send_prof = (MEM_queue_get_count(&prof_queue) > 0);
+        
         if (send_park || send_prof)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: tx, task->not_done, continue\n");
@@ -4604,6 +4629,10 @@ void module_sps_tx(void)
         {
             /* if we are here then transmission either was successful or failed */
             run = false;
+            
+            // Log memory status at end of transmission
+            MEM_log_memory_status("SPS :: tx end", &park_queue, &prof_queue);
+            
             /* check if we have reached the maximum profiling numbers */
             if (prof_number >= SYSTEM_PROFILE_NUMBER)
             {
@@ -4612,7 +4641,6 @@ void module_sps_tx(void)
             }
             else
             {
-
 #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
                 /* reset test profile */
                 datalogger_read_test_profile(true);
@@ -4623,16 +4651,17 @@ void module_sps_tx(void)
         /* check after every two seconds */
         vTaskDelay(xDelay2000ms);
     }
+    
+    // Make sure we don't leave any dangling pointers
+    park = NULL;
+    prof = NULL;
+    
     i9603n_off();
     vTaskDelay(xDelay1000ms);
 
     /* check Heap size */
-    uint32_t size = xPortGetFreeHeapSize();
-    ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, FreeRTOS HEAP SIZE = %u Bytes\n\n", size);
+    monitor_memory_usage();
 
-    ///* stack size */
-    //uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
-    //ARTEMIS_DEBUG_PRINTF("\n\nSPS :: tx, STACK Number = %u\n\n\n", uxHighWaterMark);
     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Task->finished\n\n");
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
