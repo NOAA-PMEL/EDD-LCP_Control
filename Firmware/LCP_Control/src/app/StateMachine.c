@@ -1470,7 +1470,7 @@ void module_sps_move_to_park(void)
                     }
                     else
                     {
-                        if (piston_timer >= 15000)
+                        if (piston_timer >= 30000)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston time-out, task->finished\n");
                             PIS_task_delete(xPiston);
@@ -2008,7 +2008,7 @@ void module_sps_park(void)
                     }
                     else
                     {
-                        if (piston_timer >= 15000)
+                        if (piston_timer >= 30000)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston time-out, task->finished\n");
                             PIS_task_delete(xPiston);
@@ -2633,7 +2633,7 @@ void module_sps_move_to_profile(void)
                     }
                     else
                     {
-                        if (piston_timer >= 15000)
+                        if (piston_timer >= 30000)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston time-out, task->finished\n");
                             PIS_task_delete(xPiston);
@@ -3407,7 +3407,7 @@ void module_sps_profile(void)
                 }
                 else
                 {
-                    if (piston_timer >= 15000)
+                    if (piston_timer >= 30000)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston time-out, task->finished\n");
                         PIS_task_delete(xPiston);
@@ -3735,9 +3735,9 @@ void module_sps_move_to_surface(void)
             if ( (eStatus==eRunning) || (eStatus==eBlocked) || (eStatus==eReady) )
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->active\n");
-                /* piston time for up to 30 seconds */
+                /* piston time for up to 180 seconds */
                 piston_timer += piston_period;
-                if (piston_timer >= 30000)
+                if (piston_timer >= 180000)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston time-out, task->finished\n");
                     PIS_Get_Length(&Length);
@@ -3781,7 +3781,7 @@ void module_sps_move_to_surface(void)
 
     if (piston_move)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, move to full deliberately stopping the Piston\n");
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS deliberately stopping the Piston\n");
         /* stop the piston */
         PIS_task_delete(xPiston);
         vTaskDelay(xDelay5000ms);
@@ -3803,7 +3803,6 @@ void module_sps_move_to_surface(void)
     spsEvent = MODE_DONE;
 #else
     SENS_sensor_gps_on();
-    eTaskState eStatus;
     TaskHandle_t xGps = NULL;
     SENS_task_gps(&xGps);
     SensorGps_t gps;

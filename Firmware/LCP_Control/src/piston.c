@@ -478,7 +478,7 @@ void task_move_piston_to_length(void)
                 else
                 {
                     count_reset++;
-                    if (count_reset > 4)
+                    if (count_reset > 3)
                     {
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
                         vTaskDelay(xDelay500ms);
@@ -638,7 +638,7 @@ void task_move_piston_to_volume(void)
                 else
                 {
                     count_reset++;
-                    if (count_reset > 4)
+                    if (count_reset > 3)
                     {
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
                         vTaskDelay(xDelay500ms);
