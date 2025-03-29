@@ -63,12 +63,20 @@ void DATA_reset(Data_t *buf)
     buf->rLength = 0;
 }
 
-void DATA_add_gps(Data_t *buf, float latitude, float longitude, uint8_t pNumber)
+void DATA_add_gps(Data_t *buf, float latitude, float longitude)
 {
+    if (buf == NULL) {
+        ARTEMIS_DEBUG_PRINTF("DATA :: GPS fix, ERROR: NULL buffer provided\n");
+        return;
+    }
+    
+    // Always use the current profile number stored in the Data_t struct
+    uint8_t pNumber = buf->pNumber;
+    
     buf->p[pNumber].pLatitude = latitude;
     buf->p[pNumber].pLongitude = longitude;
     ARTEMIS_DEBUG_PRINTF("DATA :: GPS fixed, ProfileNr=%u, Latitude=%.7f, Longitude=%.7f\n",
-                            pNumber, buf->p[pNumber].pLatitude, buf->p[pNumber].pLongitude);
+                          pNumber, buf->p[pNumber].pLatitude, buf->p[pNumber].pLongitude);
 }
 
 void DATA_add(Data_t *buf, uint32_t time, float pressure, float temperature, uint8_t pNumber)

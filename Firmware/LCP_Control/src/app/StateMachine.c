@@ -2273,23 +2273,6 @@ void module_sps_park(void)
         /* task delay time */
         vTaskDelay(park_period);
     }
-
-    // When done collecting data, add this profile to the transmission queue
-    if (!MEM_queue_add_profile(&park_queue, park_number, new_park_data)) {
-        // If queue is full, replace the oldest entry
-        if (MEM_queue_get_count(&park_queue) > 0) {
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, Queue full, replacing oldest entry\n");
-            MEM_queue_remove_oldest(&park_queue);
-            MEM_queue_add_profile(&park_queue, park_number, new_park_data);
-        } else {
-            // This shouldn't happen, but handle it anyway
-            DATA_free(new_park_data);
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, ERROR: Failed to add profile to queue\n");
-        }
-    }
-    
-    // Set park to NULL to prevent accidental use
-    park = NULL;
     
     // Log memory status after collection
     MEM_log_memory_status("SPS :: park end", &park_queue, &prof_queue);
@@ -3655,23 +3638,6 @@ void module_sps_profile(void)
 #endif
         vTaskDelay(period);
     }
-
-    // When done collecting data, add this profile to the transmission queue
-    if (!MEM_queue_add_profile(&prof_queue, prof_number, new_prof_data)) {
-        // If queue is full, replace the oldest entry
-        if (MEM_queue_get_count(&prof_queue) > 0) {
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Queue full, replacing oldest entry\n");
-            MEM_queue_remove_oldest(&prof_queue);
-            MEM_queue_add_profile(&prof_queue, prof_number, new_prof_data);
-        } else {
-            // This shouldn't happen, but handle it anyway
-            DATA_free(new_prof_data);
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, ERROR: Failed to add profile to queue\n");
-        }
-    }
-    
-    // Set prof to NULL to prevent accidental use
-    prof = NULL;
     
     // Log memory status after collection
     MEM_log_memory_status("SPS :: profile end", &park_queue, &prof_queue);
@@ -3964,8 +3930,8 @@ void module_sps_move_to_surface(void)
                 if (fix > 9)
                 {
                     /* update latitude and longitude for park and profile modes */
-                    DATA_add_gps(park, gps.latitude, gps.longitude, park_number-1);
-                    DATA_add_gps(prof, gps.latitude, gps.longitude, prof_number-1);
+                    DATA_add_gps(park, gps.latitude, gps.longitude);
+                    DATA_add_gps(prof, gps.latitude, gps.longitude);
 
                     /* Calibrate the GPS UTC time into RTC */
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, RTC : <GPS Time Set>\n");
@@ -3987,25 +3953,15 @@ void module_sps_move_to_surface(void)
             /* check, if it got at least two to three fixes */
             if (fix >= 2)
             {
-                /* Instead of trying to update via global pointers, get the data from the queues */
-                ProfileData_t *park_profile = MEM_queue_get_next_profile(&park_queue);
-                ProfileData_t *prof_profile = MEM_queue_get_next_profile(&prof_queue);
-                
-                /* Update latitude and longitude for park and profile modes from queues */
-                if (park_profile != NULL && park_profile->data != NULL) {
-                    DATA_add_gps(park_profile->data, gps.latitude, gps.longitude, park_number-1);
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Updated GPS for park profile %u\n", 
-                                        park_profile->profile_number);
-                } else {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, No park profile available for GPS update\n");
+                /* update latitude and longitude for park and profile modes */
+                if (park != NULL) {
+                    DATA_add_gps(park, gps.latitude, gps.longitude, park_number-1);
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Added GPS to park data\n");
                 }
                 
-                if (prof_profile != NULL && prof_profile->data != NULL) {
-                    DATA_add_gps(prof_profile->data, gps.latitude, gps.longitude, prof_number-1);
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Updated GPS for profile %u\n", 
-                                        prof_profile->profile_number);
-                } else {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, No profile available for GPS update\n");
+                if (prof != NULL) {
+                    DATA_add_gps(prof, gps.latitude, gps.longitude, prof_number-1);
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Added GPS to profile data\n");
                 }
 
                 /* Calibrate the GPS UTC time into RTC */
@@ -4041,9 +3997,39 @@ void module_sps_move_to_surface(void)
                         time.month, time.day, time.year, time.hour, time.min, time.sec);
     }
 
+    // Put the Park Data into the transmission queue and set the pointer to NULL
+    if (park != NULL) 
+    {
+        if (!MEM_queue_add_profile(&park_queue, park_number-1, park)) {
+            // If queue is full, replace the oldest entry
+            if (MEM_queue_get_count(&park_queue) > 0) {
+                MEM_queue_remove_oldest(&park_queue);
+                MEM_queue_add_profile(&park_queue, park_number-1, park);
+            } else {
+                DATA_free(park);
+            }
+        }
+        park = NULL;
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Added park data to transmission queue\n");
+    }
+
+    // Put the Profile Data into the transmission queue and set the pointer to NULL
+    if (prof != NULL) {
+        if (!MEM_queue_add_profile(&prof_queue, prof_number-1, prof)) {
+            // If queue is full, replace the oldest entry
+            if (MEM_queue_get_count(&prof_queue) > 0) {
+                MEM_queue_remove_oldest(&prof_queue);
+                MEM_queue_add_profile(&prof_queue, prof_number-1, prof);
+            } else {
+                DATA_free(prof);
+            }
+        }
+        prof = NULL;
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Added profile data to transmission queue\n");
+    }
+
     /* check Heap size */
-    uint32_t size = xPortGetFreeHeapSize();
-    ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_surface, FreeRTOS HEAP SIZE = %u Bytes\n\n", size);
+    monitor_memory_usage();
 
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Task->finished\n\n");
     SendEvent(spsEventQueue, &spsEvent);
