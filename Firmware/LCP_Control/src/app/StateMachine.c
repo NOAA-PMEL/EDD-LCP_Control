@@ -1637,7 +1637,7 @@ void module_sps_park(void)
     MEM_manage_memory_before_allocation(required_size, &park_queue, &prof_queue);
 
     // Allocate memory for the new park data
-    Data_t *new_park_data = DATA_alloc(1, DATA_PARK_SAMPLES_MAX);
+    Data_t *new_park_data = DATA_alloc(1, DATA_PARK_SAMPLES_MAX, park_number);
     if (new_park_data == NULL) {
         // If allocation still fails after memory management, take emergency action
         ARTEMIS_DEBUG_PRINTF("SPS :: park, CRITICAL ERROR: Failed to allocate park data memory even after cleanup\n");
@@ -1787,7 +1787,7 @@ void module_sps_park(void)
             /* turn off the sensors */
             SENS_sensor_temperature_off();
             SENS_sensor_depth_off();
-            datalogger_power_off();
+            //datalogger_power_off();
         }
         else
         {

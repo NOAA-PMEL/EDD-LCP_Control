@@ -5,6 +5,7 @@
  * @version 0.1
  * @date 2021-10-15
  */
+#include <cstdint>
 #include <string.h>
 #include <math.h>
 #include "data.h"
@@ -81,43 +82,56 @@ void DATA_add_gps(Data_t *buf, float latitude, float longitude)
 
 void DATA_add(Data_t *buf, uint32_t time, float pressure, float temperature, uint8_t pNumber)
 {
+    // Check if this is the first data point being written to this buffer
     if (buf->cbuf.written == 0)
     {
-        if (pNumber != 0)
+        // For the first data point, initialize the profile's metadata
+        // The pNumber should match buf->pNumber since we initialized it in DATA_alloc
+        if (pNumber != buf->pNumber)
         {
-            ARTEMIS_DEBUG_PRINTF("DATA :: ERROR, Profile is not zero\n");
+            // This is a sanity check - the profile number passed should match what was set during allocation
+            ARTEMIS_DEBUG_PRINTF("DATA :: WARNING, Profile number mismatch: expected %u, got %u\n", 
+                                 buf->pNumber, pNumber);
+            // Continue with initialization anyway using the buffer's profile number
         }
-        else
-        {
-            buf->p[buf->pNumber].pStart = time;
-            buf->p[buf->pNumber].pIndex = buf->cbuf.written;
-        }
+        
+        // Initialize the profile metadata for the first data point
+        buf->p[0].pStart = time;
+        buf->p[0].pIndex = buf->cbuf.written;
     }
     else
     {
+        // For subsequent data points, we already have a profile set up
+        // This handles the case where we might want to add a new profile to an existing buffer
+        // In the current design, this won't happen since each Data_t only holds one profile
         if (pNumber > buf->pNumber)
         {
             buf->pNumber++;
-            buf->p[buf->pNumber].pIndex = buf->cbuf.written;
-            buf->p[buf->pNumber].pStart = time;
+            buf->p[buf->pNumber - buf->pNumber + 1].pIndex = buf->cbuf.written;
+            buf->p[buf->pNumber - buf->pNumber + 1].pStart = time;
             buf->wLength = 0;
         }
     }
 
+    // Add the actual data point if we haven't exceeded the buffer capacity
     if (buf->cbuf.written < buf->cbuf.length)
     {
+        // Store temperature and pressure data
         buf->data.temperature[buf->cbuf.written] = temperature;
         buf->data.pressure[buf->cbuf.written] = pressure;
-        buf->p[buf->pNumber].pStop = time;
+        
+        // Update the profile metadata for the latest data point
+        // Since we're now using a single profile per Data_t structure, we use index 0
+        buf->p[0].pStop = time;
         buf->wLength++;
         buf->cbuf.written++;
-        buf->p[buf->pNumber].pLength = buf->wLength;
+        buf->p[0].pLength = buf->wLength;
     }
     else
     {
+        // Buffer overflow protection
         ARTEMIS_DEBUG_PRINTF("DATA :: ERROR, Maximum length overflows\n");
     }
-
 }
 
 // Delete the data after successfull transmission and consolidate remaining measurements into a contiguous block
@@ -319,10 +333,9 @@ uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour,
 
 // Dynamic Allocation -- Allocates the requested number of profiles with the requested number
 // of measurements per profile. Returns a pointer to the allocated Data_t struct.
-Data_t* DATA_alloc(uint32_t numProfiles, uint32_t numMeasurements)
+Data_t* DATA_alloc(uint32_t numProfiles, uint32_t numMeasurements, uint8_t prof_number)
 {
     // Allocate memory for the main Data_t structure using FreeRTOS's memory manager.
-    // This will contain pointers to our sensor data arrays and profile information.
     Data_t *buf = (Data_t *)pvPortMalloc(sizeof(Data_t));
     // Failure check for Data_t allocation
     if (buf == NULL) {
@@ -336,18 +349,16 @@ Data_t* DATA_alloc(uint32_t numProfiles, uint32_t numMeasurements)
     // Set the buffer capacity to the number of measurements
     buf->cbuf.length = numMeasurements;
     
-    // Allocate memory for the pressure measurement array using FreeRTOS's memory manager.
+    // Allocate memory for the pressure measurement array
     buf->data.pressure = (float *)pvPortMalloc(numMeasurements * sizeof(float));
-    // Failure check for pressure measurement allocation
     if (buf->data.pressure == NULL) {
         ARTEMIS_DEBUG_PRINTF("DATA_alloc: Failed to allocate pressure array\n");
         vPortFree(buf);
         return NULL;
     }
     
-    // Allocate memory for the temperature measurement array using FreeRTOS's memory manager.
+    // Allocate memory for the temperature measurement array
     buf->data.temperature = (float *)pvPortMalloc(numMeasurements * sizeof(float));
-    // Failure check for temperature measurement allocation
     if (buf->data.temperature == NULL) {
         ARTEMIS_DEBUG_PRINTF("DATA_alloc: Failed to allocate temperature array\n");
         vPortFree(buf->data.pressure);
@@ -355,9 +366,8 @@ Data_t* DATA_alloc(uint32_t numProfiles, uint32_t numMeasurements)
         return NULL;
     }
     
-    // Allocate memory for the profile data using FreeRTOS's memory manager.
+    // Allocate memory for the profile data
     buf->p = (pData *)pvPortMalloc(numProfiles * sizeof(pData));
-    // Failure check for pData Struct allocation 
     if (buf->p == NULL) {
         ARTEMIS_DEBUG_PRINTF("DATA_alloc: Failed to allocate profiles array\n");
         vPortFree(buf->data.pressure);
@@ -366,16 +376,16 @@ Data_t* DATA_alloc(uint32_t numProfiles, uint32_t numMeasurements)
         return NULL;
     }
     
-    /* Initialize counters */
+    // Initialize counters
     buf->cbuf.written = 0;
     buf->cbuf.read = 0;
-    buf->pNumber = 0;
+    buf->pNumber = prof_number;  // Use the global profile counter
     buf->wLength = 0;
     buf->rLength = 0;
     
-    ARTEMIS_DEBUG_PRINTF("DATA_alloc: Successfully allocated Data_t (%u measurements, %u profiles)\n", numMeasurements, numProfiles);
+    ARTEMIS_DEBUG_PRINTF("DATA_alloc: Successfully allocated Data_t for profile %u (%u measurements)\n", 
+                         startProfileNumber, numMeasurements);
     
-    // Return the pointer to the allocated Data_t structure
     return buf;
 }
 

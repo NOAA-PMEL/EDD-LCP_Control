@@ -139,7 +139,7 @@ float std_div(float *value, uint16_t len, float *var, float *avg);
 float average(float *value, uint16_t len);
 
 /* New functions for dynamic memory allocation */
-Data_t* DATA_alloc(uint32_t numProfiles, uint32_t numMeasurements);
+Data_t* DATA_alloc(uint32_t numProfiles, uint32_t numMeasurements, uint8_t prof_number);
 void DATA_free(Data_t *buf);
 
 /**********************************************************************************
