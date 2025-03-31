@@ -384,7 +384,7 @@ Data_t* DATA_alloc(uint32_t numProfiles, uint32_t numMeasurements, uint8_t prof_
     buf->rLength = 0;
     
     ARTEMIS_DEBUG_PRINTF("DATA_alloc: Successfully allocated Data_t for profile %u (%u measurements)\n", 
-                         startProfileNumber, numMeasurements);
+                         prof_number, numMeasurements);
     
     return buf;
 }
