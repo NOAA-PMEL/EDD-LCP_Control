@@ -1654,7 +1654,7 @@ void module_sps_park(void)
             }
             
             // Try allocation again
-            new_park_data = DATA_alloc(1, DATA_PARK_SAMPLES_MAX);
+            new_park_data = DATA_alloc(1, DATA_PARK_SAMPLES_MAX, park_number);
         }
         
         if (new_park_data == NULL) {
@@ -2846,7 +2846,7 @@ void module_sps_profile(void)
     MEM_manage_memory_before_allocation(required_size, &prof_queue, &park_queue);
     
     // Allocate memory for the new profile data
-    Data_t *new_prof_data = DATA_alloc(1, DATA_PROFILE_SAMPLES_MAX);
+    Data_t *new_prof_data = DATA_alloc(1, DATA_PROFILE_SAMPLES_MAX, prof_number);
     if (new_prof_data == NULL) {
         // If allocation still fails after memory management, take emergency action
         ARTEMIS_DEBUG_PRINTF("SPS :: profile, CRITICAL ERROR: Failed to allocate profile data memory even after cleanup\n");
@@ -2863,7 +2863,7 @@ void module_sps_profile(void)
             }
             
             // Try allocation again
-            new_prof_data = DATA_alloc(1, DATA_PROFILE_SAMPLES_MAX);
+            new_prof_data = DATA_alloc(1, DATA_PROFILE_SAMPLES_MAX, prof_number);
         }
         
         if (new_prof_data == NULL) {
