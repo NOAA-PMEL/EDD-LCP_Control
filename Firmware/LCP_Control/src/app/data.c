@@ -5,7 +5,7 @@
  * @version 0.1
  * @date 2021-10-15
  */
-#include <cstdint>
+#include <stdint.h>
 #include <string.h>
 #include <math.h>
 #include "data.h"
