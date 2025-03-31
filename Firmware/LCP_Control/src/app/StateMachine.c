@@ -3955,12 +3955,12 @@ void module_sps_move_to_surface(void)
             {
                 /* update latitude and longitude for park and profile modes */
                 if (park != NULL) {
-                    DATA_add_gps(park, gps.latitude, gps.longitude, park_number-1);
+                    DATA_add_gps(park, gps.latitude, gps.longitude);
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Added GPS to park data\n");
                 }
                 
                 if (prof != NULL) {
-                    DATA_add_gps(prof, gps.latitude, gps.longitude, prof_number-1);
+                    DATA_add_gps(prof, gps.latitude, gps.longitude);
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Added GPS to profile data\n");
                 }
 
