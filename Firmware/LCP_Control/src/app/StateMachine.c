@@ -4361,7 +4361,8 @@ void module_sps_tx(void)
                                 {
                                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park reached max transmission attempts (%u), abandoning profile %u\n",
                                                         PARK_TRANSMIT_TRIES, m_park_number);
-                                    MEM_queue_mark_transmitted(&park_queue);
+                                    // Reset attempt counter without removing from queue
+                                    MEM_queue_reset_attempts(&park_queue);
                                     park = NULL;
                                     send_park = false;
                                 }
@@ -4644,7 +4645,8 @@ void module_sps_tx(void)
                                 {
                                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile reached max transmission attempts (%u), abandoning profile %u\n",
                                                         PROF_TRANSMIT_TRIES, m_prof_number);
-                                    MEM_queue_mark_transmitted(&prof_queue);
+                                    // Reset attempt counter without removing from queue
+                                    MEM_queue_reset_attempts(&prof_queue);
                                     prof = NULL;
                                     send_prof = false;
                                 }
