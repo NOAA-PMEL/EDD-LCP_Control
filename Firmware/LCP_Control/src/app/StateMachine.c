@@ -4938,7 +4938,8 @@ static uint16_t create_profile_page(uint8_t *ptrProf, uint8_t *readlength)
     }
 
     // Get the actual Data_t structure from the global prof pointer
-    uint16_t nrBytes = pack_measurements_irid(prof, NULL, &sProf, ptrProf);
+    //uint16_t nrBytes = pack_measurements_irid(prof, NULL, &sProf, ptrProf);
+    uint16_t nrBytes = pack_measurements_irid(prof, prof->p, &sProf, ptrProf);
     *readlength = sProf.mLength;
     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile : profile_number=%u, pageNumber=%u, m_prof_number=%u, total_bytes=%u\n", sProf.profNumber, sProf.pageNumber, m_prof_number, nrBytes);
 
