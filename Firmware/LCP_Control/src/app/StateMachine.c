@@ -4780,7 +4780,8 @@ static uint16_t create_park_page(uint8_t *ptrPark, uint8_t *readlength)
     }
 
     // Get the actual Data_t structure from the global park pointer
-    uint16_t nrBytes = pack_measurements_irid(park, NULL, &sPark, ptrPark);
+    //uint16_t nrBytes = pack_measurements_irid(park, NULL, &sPark, ptrPark);
+    uint16_t nrBytes = pack_measurements_irid(park, park->p, &sPark, ptrPark);
     *readlength = sPark.mLength;
     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park : profile_number=%u, pageNumber=%u, m_park_number=%u, total_bytes=%u\n", sPark.profNumber, sPark.pageNumber, m_park_number, nrBytes);
 
