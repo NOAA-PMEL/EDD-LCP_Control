@@ -124,8 +124,6 @@ extern "C"{
 void DATA_reset(Data_t *p);
 void DATA_setbuffer(Data_t *buf, pData *P, float *pressure, float *temperature, uint32_t length);
 void DATA_add(Data_t *buf, uint32_t time, float pressure, float temperature, uint8_t pNumber);
-bool DATA_clear(Data_t *buf, uint8_t pNumber);
-bool DATA_clear_partial(Data_t *buf, uint8_t pNumber, uint32_t startOffset, uint32_t length);
 void DATA_add_gps(Data_t *buf, float latitude, float longitude);
 void DATA_get_original(Data_t *buf, pData *P, float *pressure, float *temperature, uint8_t pNumber);
 void DATA_get_converted(Data_t *buf, pData *P, uint16_t *pressure, uint16_t *temperature, uint8_t pNumber);
