@@ -714,7 +714,7 @@ void module_pds_idle(void)
                 piston_move = false;
                 piston_timer = 0;
             }
-            
+
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Pressure reached = %0.4f bar\n", Pressure);
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Depth reached    = %0.4f m\n", Depth);
             run = false;
@@ -3733,6 +3733,7 @@ void module_sps_move_to_surface(void)
         vTaskDelay(xDelay5000ms);
         
         if (piston_move)
+
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, move to full deliberately stopping the Piston\n");
             /* stop the piston */
@@ -3824,9 +3825,7 @@ void module_sps_move_to_surface(void)
     else
     {
         PIS_task_move_length(&xPiston);
-
         piston_move = true;
-
         vTaskDelay(xDelay5000ms);
         
 
