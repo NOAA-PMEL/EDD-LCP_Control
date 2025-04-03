@@ -92,7 +92,7 @@
 #define PISTON_MOVE_TO_SURFACE              ( 10.5f ) //11.0f /* Piston position move to surface in inches */
 #define PROFILE_DEPTH_RATE_COUNTER          ( 60.0f )       /* Change piston position after this number of measurements */
 #define PARK_DEPTH_RATE_COUNTER             ( 3.0f )       /* Change piston position after this number of measurements */
-#define SYSTEM_CDPP_TIMER                   ( 4.0f * 60.0f )    /* Timer for getting stuck in critical depth piston position 300s*/
+#define SYSTEM_CDPP_TIMER                   ( 8.0f * 60.0f )    /* Timer for getting stuck in critical depth piston position 300s*/
 #define TO_PROFILE_STATE_TIMER              ( 5.0f * 60.0f )    /* Timer for getting stuck in move_to_profile state */
 #define TO_PARK_STATE_TIMER                 ( 5.0f * 60.0f )    /* Timer for getting stuck in move_to_park state */
 
