@@ -4,10 +4,8 @@
  * @brief 
  * @version 0.1
  * @date 2021-10-15
- * 
- * 
  */
-
+#include <stdint.h>
 #include <string.h>
 #include <math.h>
 #include "data.h"
@@ -30,28 +28,11 @@ STATIC uint16_t module_convert_temperature_to_uint16_t(float temp);
 STATIC int32_t module_convert_latitude_to_int32_t(float latitude);
 STATIC int32_t module_convert_longitude_to_int32_t(float longitude);
 
-//static uint8_t header[27];
-
 //*****************************************************************************
 //
 // Global Functions
 //
 //*****************************************************************************
-
-//void DATA_setbuffer(Data_t *p, uint32_t *pStart, uint32_t *pStop,
-//                            float *pPressure, float *pTemp, size_t length)
-//{
-//    p->cbuf.length = length;
-//    p->cbuf.read = 0;
-//    p->cbuf.written = 0;
-//    p->data.pNumber = 0;
-//
-//    //p->data.pTimeOffset = pTime;
-//    p->data.pStateTime = pStart;
-//    p->data.pStopTime = pStop
-//    p->data.pPressure = pPressure;
-//    p->data.pTemperature = pTemp;
-//}
 
 void DATA_setbuffer(Data_t *buf, pData *P, float *pressure, float *temperature, uint32_t length)
 {
@@ -76,9 +57,6 @@ void DATA_setbuffer(Data_t *buf, pData *P, float *pressure, float *temperature, 
 
 void DATA_reset(Data_t *buf)
 {
-    //buf->cbuf.read = 0;
-    //buf->cbuf.written = 0;
-    //buf->data.start_time = 0;
     buf->cbuf.read = 0;
     buf->cbuf.written = 0;
     buf->pNumber = 0;
@@ -86,200 +64,74 @@ void DATA_reset(Data_t *buf)
     buf->rLength = 0;
 }
 
-void DATA_add_gps(Data_t *buf, float latitude, float longitude, uint8_t pNumber)
+void DATA_add_gps(Data_t *buf, float latitude, float longitude)
 {
+    if (buf == NULL) {
+        ARTEMIS_DEBUG_PRINTF("DATA :: GPS fix, ERROR: NULL buffer provided\n");
+        return;
+    }
+    
+    // Always use the current profile number stored in the Data_t struct
+    uint8_t pNumber = buf->pNumber;
+    
     buf->p[pNumber].pLatitude = latitude;
     buf->p[pNumber].pLongitude = longitude;
     ARTEMIS_DEBUG_PRINTF("DATA :: GPS fixed, ProfileNr=%u, Latitude=%.7f, Longitude=%.7f\n",
-                            pNumber, buf->p[pNumber].pLatitude, buf->p[pNumber].pLongitude);
+                          pNumber, buf->p[pNumber].pLatitude, buf->p[pNumber].pLongitude);
 }
 
-//size_t DATA_add(Data_t *buf, uint32_t time, float pressure, float temp, uint16_t prof_nr, bool finish)
 void DATA_add(Data_t *buf, uint32_t time, float pressure, float temperature, uint8_t pNumber)
 {
+    // Check if this is the first data point being written to this buffer
     if (buf->cbuf.written == 0)
     {
-        if (pNumber != 0)
+        // For the first data point, initialize the profile's metadata
+        // The pNumber should match buf->pNumber since we initialized it in DATA_alloc
+        if (pNumber != buf->pNumber)
         {
-            ARTEMIS_DEBUG_PRINTF("DATA :: ERROR, Profile is not zero\n");
+            // This is a sanity check - the profile number passed should match what was set during allocation
+            ARTEMIS_DEBUG_PRINTF("DATA :: WARNING, Profile number mismatch: expected %u, got %u\n", 
+                                 buf->pNumber, pNumber);
+            // Continue with initialization anyway using the buffer's profile number
         }
-        else
-        {
-            buf->p[buf->pNumber].pStart = time;
-            buf->p[buf->pNumber].pIndex = buf->cbuf.written;
-        }
+        
+        // Initialize the profile metadata for the first data point
+        buf->p[0].pStart = time;
+        buf->p[0].pIndex = buf->cbuf.written;
     }
     else
     {
+        // For subsequent data points, we already have a profile set up
+        // This handles the case where we might want to add a new profile to an existing buffer
+        // In the current design, this won't happen since each Data_t only holds one profile
         if (pNumber > buf->pNumber)
         {
             buf->pNumber++;
-            buf->p[buf->pNumber].pIndex = buf->cbuf.written;
-            buf->p[buf->pNumber].pStart = time;
+            buf->p[buf->pNumber - buf->pNumber + 1].pIndex = buf->cbuf.written;
+            buf->p[buf->pNumber - buf->pNumber + 1].pStart = time;
             buf->wLength = 0;
         }
     }
 
+    // Add the actual data point if we haven't exceeded the buffer capacity
     if (buf->cbuf.written < buf->cbuf.length)
     {
+        // Store temperature and pressure data
         buf->data.temperature[buf->cbuf.written] = temperature;
         buf->data.pressure[buf->cbuf.written] = pressure;
-        buf->p[buf->pNumber].pStop = time;
-
-        //ARTEMIS_DEBUG_PRINTF("DATA :: ADD, Temperature = %.2f, Pressure = %.2f\n", buf->data.temperature[buf->cbuf.written], buf->data.pressure[buf->cbuf.written]);
-
+        
+        // Update the profile metadata for the latest data point
+        // Since we're now using a single profile per Data_t structure, we use index 0
+        buf->p[0].pStop = time;
         buf->wLength++;
         buf->cbuf.written++;
-        buf->p[buf->pNumber].pLength = buf->wLength;
+        buf->p[0].pLength = buf->wLength;
     }
     else
     {
+        // Buffer overflow protection
         ARTEMIS_DEBUG_PRINTF("DATA :: ERROR, Maximum length overflows\n");
     }
-
-    //if(buf->cbuf.written == 0)
-    //{
-    //    buf->data.start_time = time;
-    //}
-
-    //if(buf->cbuf.written < buf->cbuf.length)
-    //{
-    //    buf->data.pPressure[buf->cbuf.written] = pressure;
-    //    buf->data.pTemperature[buf->cbuf.written] = temp;
-    //    //buf->data.pTimeOffset[buf->cbuf.written] = time - buf->data.start_time;
-    //    buf->data.pTimeOffset[buf->cbuf.written] = time;
-    //    buf->cbuf.written++;
-    //    return(1);
-    //}
-    //return(0);
-}
-
-// Delete the data after successfull transmission and consolidate remaining measurements into a contiguous block
-bool DATA_clear(Data_t *buf, uint8_t pNumber) {
-    // First perform a sanity check to verify that buf points to valid memory and isn't a null pointer.
-    // Also checks to make sure that pNumber passed in isn't higher than the profile number stored in the buffer
-    if (buf == NULL || pNumber > buf->pNumber) {
-        ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR : ERROR, Invalid buffer or profile number\n");
-        return false;
-    }
-
-    // Get the start index and length of the profile to be deleted
-    uint32_t startIdx = buf->p[pNumber].pIndex;
-    uint32_t length = buf->p[pNumber].pLength;
-    
-    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR : Compacting memory for profile %u, start=%u, length=%u\n", 
-                        pNumber, startIdx, length);
-    
-    
-    // Show the available space in memory before deletion
-    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR : Current memory status: %u/%u measurements used (%u%% full)\n", 
-                        buf->cbuf.written, 
-                        buf->cbuf.length,
-                        (buf->cbuf.written * 100) / buf->cbuf.length);
-    
-    // If profile length is already 0 or there's nothing to move, just return
-    if (length == 0 || startIdx + length >= buf->cbuf.written) {
-        buf->p[pNumber].pLength = 0;
-        return true;
-    }
-    
-    // Calculate how many measurements need to be shifted
-    uint32_t moveCount = buf->cbuf.written - (startIdx + length);
-    
-    // Shift remaining data to fill the memory gap created by the deleted profile
-    for (uint32_t i = 0; i < moveCount; i++) {
-        // Move the next pressure measurement to where the previous one started
-        buf->data.pressure[startIdx + i] = buf->data.pressure[startIdx + length + i];
-        // Same, but for temperature 
-        buf->data.temperature[startIdx + i] = buf->data.temperature[startIdx + length + i]; 
-        // This will need to be expanded as new sensors are added to the system
-    }
-    
-    // Update the write position for the next profile
-    buf->cbuf.written -= length;
-    
-    // Loop through the profiles and update each index 
-    for (uint8_t i = pNumber + 1; i <= buf->pNumber; i++) {
-        buf->p[i].pIndex -= length;
-    }
-    
-    // Set length = 0 for the profile being cleared
-    buf->p[pNumber].pLength = 0;
-    
-    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR : Successfully compacted memory for profile %u, freed %u measurements\n", 
-                         pNumber, length);
-
-    // Show available space after deletion
-    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR : Available memory: %u/%u measurements (%u%%)\n", 
-                         buf->cbuf.length - buf->cbuf.written, 
-                         buf->cbuf.length,
-                         ((buf->cbuf.length - buf->cbuf.written) * 100) / buf->cbuf.length);
-    return true;
-}
-
-// Partially delete data after a page has been successfully sent
-bool DATA_clear_partial(Data_t *buf, uint8_t pNumber, uint32_t startOffset, uint32_t length) {
-    // First perform a sanity check to verify that buf points to valid memory and isn't a null pointer.
-    // Also checks to make sure that pNumber passed in isn't higher than the profile number stored in the buffer
-    if (buf == NULL || pNumber > buf->pNumber) {
-        ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR_PARTIAL : ERROR, Invalid buffer or profile number\n");
-        return false;
-    }
-    
-    // Get profile's base info
-    uint32_t profileStartIdx = buf->p[pNumber].pIndex;
-    uint32_t profileLength = buf->p[pNumber].pLength;
-    
-    // Make sure startOffset and length are within the bounds of the profile specified by pNumber
-    if (startOffset + length > profileLength) {
-        ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR_PARTIAL : ERROR, Requested range exceeds profile length\n");
-        return false;
-    }
-    
-    // Calculate absolute positions within the buffer
-    uint32_t absoluteStartIdx = profileStartIdx + startOffset;
-    uint32_t dataEndIdx = absoluteStartIdx + length;
-    
-    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR_PARTIAL : Removing %u measurements at offset %u from profile %u\n", 
-                        length, startOffset, pNumber);
-    
-    // Show the available space in memory before deletion
-    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR_PARTIAL : Current memory status: %u/%u measurements used (%u%% full)\n", 
-                        buf->cbuf.written, 
-                        buf->cbuf.length,
-                        (buf->cbuf.written * 100) / buf->cbuf.length);
-    
-    // Calculate how many measurements need to be shifted
-    uint32_t moveCount = buf->cbuf.written - dataEndIdx;
-    
-    // Shift remaining data to fill the gap
-    for (uint32_t i = 0; i < moveCount; i++) {
-        buf->data.pressure[absoluteStartIdx + i] = buf->data.pressure[dataEndIdx + i];
-        buf->data.temperature[absoluteStartIdx + i] = buf->data.temperature[dataEndIdx + i];
-        // Add other sensor types here as needed
-    }
-    
-    // Update the write position
-    buf->cbuf.written -= length;
-    
-    // Update the current profile's length
-    buf->p[pNumber].pLength -= length;
-    
-    // Update indices for profiles that come after this one
-    for (uint8_t i = pNumber + 1; i <= buf->pNumber; i++) {
-        buf->p[i].pIndex -= length;
-    }
-    
-    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR_PARTIAL : Successfully removed %u measurements from profile %u\n", 
-                        length, pNumber);
-                        
-    // Show available space after deletion
-    ARTEMIS_DEBUG_PRINTF("DATA :: CLEAR_PARTIAL : Available memory: %u/%u measurements (%u%%)\n", 
-                        buf->cbuf.length - buf->cbuf.written, 
-                        buf->cbuf.length,
-                        ((buf->cbuf.length - buf->cbuf.written) * 100) / buf->cbuf.length);
-    
-    return true;
 }
 
 void DATA_get_original(Data_t *buf, pData *P, float *pressure, float *temperature, uint8_t pNumber)
@@ -336,35 +188,6 @@ void DATA_get_converted(Data_t *buf, pData *P, uint16_t *pressure, uint16_t *tem
     }
 }
 
-//size_t DATA_get_original(Data_t *buf, uint32_t *time, float *pressure, float *temp)
-//{
-//    if( buf->cbuf.read < buf->cbuf.written)
-//    {
-//        *time = buf->data.pTimeOffset[buf->cbuf.read] + buf->data.start_time;
-//        *pressure = buf->data.pPressure[buf->cbuf.read];
-//        *temp = buf->data.pTemperature[buf->cbuf.read];
-//        buf->cbuf.read++;
-//        return (1);
-//    }
-//    return (0);
-//}
-//
-//size_t DATA_get_converted(Data_t *p, uint32_t *start, uint32_t *offset, uint8_t *pressure, int16_t *temp)
-//{
-//    //ARTEMIS_DEBUG_PRINTF("read = %u, written = %u\n", p->cbuf.read, p->cbuf.written);
-//
-//    if( p->cbuf.read < p->cbuf.written)
-//    {
-//        *start = p->data.start_time;
-//        *offset = p->data.pTimeOffset[p->cbuf.read];
-//        *pressure = module_convert_pressure_to_uint8_t( p->data.pPressure[p->cbuf.read] );
-//        *temp = module_convert_temperature_to_int16_t( p->data.pTemperature[p->cbuf.read] );
-//        p->cbuf.read++;
-//        return (1);
-//    }
-//    return (0);
-//}
-
 uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec)
 {
     year = year + 2000;
@@ -377,8 +200,84 @@ uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour,
     {
         epoch -= 86400;
     }
-
     return epoch;
+}
+
+// Dynamic Allocation -- Allocates the requested number of profiles with the requested number
+// of measurements per profile. Returns a pointer to the allocated Data_t struct.
+Data_t* DATA_alloc(uint32_t numProfiles, uint32_t numMeasurements, uint8_t prof_number)
+{
+    // Allocate memory for the main Data_t structure using FreeRTOS's memory manager.
+    Data_t *buf = (Data_t *)pvPortMalloc(sizeof(Data_t));
+    // Failure check for Data_t allocation
+    if (buf == NULL) {
+        ARTEMIS_DEBUG_PRINTF("DATA_alloc: Failed to allocate Data_t\n");
+        return NULL;
+    }
+    
+    // Zero initialize the entire Data_t structure to ensure all fields are 0.
+    memset(buf, 0, sizeof(Data_t));
+    
+    // Set the buffer capacity to the number of measurements
+    buf->cbuf.length = numMeasurements;
+    
+    // Allocate memory for the pressure measurement array
+    buf->data.pressure = (float *)pvPortMalloc(numMeasurements * sizeof(float));
+    if (buf->data.pressure == NULL) {
+        ARTEMIS_DEBUG_PRINTF("DATA_alloc: Failed to allocate pressure array\n");
+        vPortFree(buf);
+        return NULL;
+    }
+    
+    // Allocate memory for the temperature measurement array
+    buf->data.temperature = (float *)pvPortMalloc(numMeasurements * sizeof(float));
+    if (buf->data.temperature == NULL) {
+        ARTEMIS_DEBUG_PRINTF("DATA_alloc: Failed to allocate temperature array\n");
+        vPortFree(buf->data.pressure);
+        vPortFree(buf);
+        return NULL;
+    }
+    
+    // Allocate memory for the profile data
+    buf->p = (pData *)pvPortMalloc(numProfiles * sizeof(pData));
+    if (buf->p == NULL) {
+        ARTEMIS_DEBUG_PRINTF("DATA_alloc: Failed to allocate profiles array\n");
+        vPortFree(buf->data.pressure);
+        vPortFree(buf->data.temperature);
+        vPortFree(buf);
+        return NULL;
+    }
+    
+    // Initialize counters
+    buf->cbuf.written = 0;
+    buf->cbuf.read = 0;
+    buf->pNumber = prof_number;  // Use the global profile counter
+    buf->wLength = 0;
+    buf->rLength = 0;
+    
+    ARTEMIS_DEBUG_PRINTF("DATA_alloc: Successfully allocated Data_t for profile %u (%u measurements)\n", 
+                         prof_number, numMeasurements);
+    
+    return buf;
+}
+
+// Free the memory allocated for the Data_t structure
+void DATA_free(Data_t *buf)
+{
+    // If data is present at the pointer passed in, memory in each part of the struct is freed
+    if (buf) {
+        if (buf->data.pressure) {
+            vPortFree(buf->data.pressure);
+        }
+        if (buf->data.temperature) {
+            vPortFree(buf->data.temperature);
+        }
+        if (buf->p) {
+            vPortFree(buf->p);
+        }
+        vPortFree(buf); // Frees the struct itself
+        ARTEMIS_DEBUG_PRINTF("DATA_free: Data_t memory freed\n");
+    }
 }
 
 
@@ -526,7 +425,6 @@ void create_header_irid(uint8_t *df, pData *P, sData *S)
     for (uint8_t i=0; i<IRID_HEADER_LENGTH; i++)
     {
         df[i] = buf[i];
-        //ARTEMIS_DEBUG_PRINTF("0x%02X, 0x%02X \n", df[i], buf[i]);
     }
 }
 
@@ -581,7 +479,6 @@ void create_header_irid_ext(uint8_t *df, pData *P, sData *S)
     for (uint8_t i=0; i<IRID_HEADER_LENGTH_EXT; i++)
     {
         df[i] = buf[i];
-        //ARTEMIS_DEBUG_PRINTF("0x%02X, 0x%02X \n", df[i], buf[i]);
     }
 }
 

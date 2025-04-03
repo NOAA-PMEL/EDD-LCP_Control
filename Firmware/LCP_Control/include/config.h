@@ -157,7 +157,7 @@
 /** TEST profile2 */
 #define BALLAST_DEPTH                       ( 1.5f )    // pressure reading ( 0.0101f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
-#define BALLAST_DEPTH_PROFILE               ( 1.0f )
+#define BALLAST_DEPTH_PROFILE               ( 4.0f )
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 1.0f )
 #define PARK_DEPTH                          ( 160.0f )
 #define PARK_DEPTH_ERR                      ( 10.0f )

@@ -216,6 +216,7 @@ SRC += artemis_rtc.c
 SRC += artemis_accel.c
 SRC += datalogger.c
 SRC += sensors_test.c
+SRC += memory.c
 #files removed from the compilation process
 ##SRC += LED.c
 ##SRC += bsp_uart.c

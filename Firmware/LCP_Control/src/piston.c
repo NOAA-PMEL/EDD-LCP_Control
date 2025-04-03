@@ -1,31 +1,14 @@
-/**
- * @file piston.c
- * @author Matt Casari (matthew.casari@noaa.gov)
- * @brief 
- * @version 0.1
- * @date 2021-10-14
- * 
- * 
- */
 #include "piston.h"
 #include "artemis_piston.h"
 #include "artemis_debug.h"
 #include "math.h"
 #include "config.h"
 
-//*****************************************************************************
-//
 // Static variables
-//
-//*****************************************************************************
 static Piston_t piston;
 static volatile bool pistonRun = false;
 
-//*****************************************************************************
-//
 // Static Function Prototypes
-//
-//*****************************************************************************
 static bool module_pis_read_if_full(void);
 static bool module_pis_read_if_fullreset(void);
 static bool module_pis_read_if_zero(void);
@@ -34,45 +17,13 @@ static float module_pis_get_volume(void);
 static float module_pis_get_length(void);
 static void module_pis_information(void);
 
-//*****************************************************************************
-//
-// FreeRTOS Functions, MACROS, STRUCT etc
-//
-//*****************************************************************************
-
-
-//*****************************************************************************
-//
 // Global Functions
-//
-//*****************************************************************************
 bool PIS_initialize(void)
 {
     /** Initialize the I2C Port */
     artemis_piston_i2c_initialize(PISTON_I2C_ADDR);
-
-    /** Power On */
-    //artemis_piston_i2c_power_on();
-
-    /** Update state */
-    //module_pis_update_state();
     module_pis_information();
     bool success = true;
-
-    ///* create a semaphore */
-    //piston.rtos.semaphore = xSemaphoreCreateMutex();
-    //bool success = false;
-
-    //if (piston.rtos.semaphore == NULL)
-    //{
-    //    ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, Semaphore is NULL\n");
-    //    success = false;
-    //}
-    //else
-    //{
-    //    success = true;
-    //}
-
     return success;
 }
 
@@ -201,8 +152,9 @@ void task_move_piston_to_zero(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(xDelay5000ms);
-        //vTaskDelete(NULL);
+
+        vTaskDelay(xDelay2000ms);
+
     }
 
     /** Start Piston Retract to zero length */
@@ -214,47 +166,37 @@ void task_move_piston_to_zero(void)
     bool fullFlag = false;
     uint8_t count_reset = 0;
 
-    // Initialise the xLastWakeTime variable with the current time.
-    //TickType_t xLastWakeTime;
-    //xLastWakeTime = xTaskGetTickCount();
-
     while(pistonRun)
     {
         /** Read the piston memory to see if we're done */
-        //if(xSemaphoreTake(piston.rtos.semaphore, period) == pdTRUE)
-        //{
-            if(module_pis_trv_eng() == false)
+        if(module_pis_trv_eng() == false)
+        {
+            vTaskDelay(xDelay250ms);
+            fullFlag = module_pis_read_if_zero();
+            if (fullFlag)
             {
-                vTaskDelay(xDelay250ms);
-                fullFlag = module_pis_read_if_zero();
-                if (fullFlag)
-                {
-                    pistonRun = false;
-                }
-                count_reset++;
-                if (count_reset > 4)
-                {
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
-                    vTaskDelay(xDelay1000ms);
-                    PIS_Reset();
-                    vTaskDelay(period);
-                    PIS_move_to_zero();
-                    vTaskDelay(period);
-                    count_reset = 0;
-                }
+                pistonRun = false;
             }
-            else
+            count_reset++;
+            if (count_reset > 4)
             {
-                vTaskDelay(xDelay250ms);
-                length = module_pis_get_length();
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
-                fullFlag = module_pis_read_if_zero();
-                //ARTEMIS_DEBUG_PRINTF("Piston not zero yet\n");
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
+                vTaskDelay(xDelay1000ms);
+                PIS_Reset();
+                vTaskDelay(period);
+                PIS_move_to_zero();
+                vTaskDelay(period);
+                count_reset = 0;
             }
-            //xSemaphoreGive(piston.rtos.semaphore);
-        //}
+        }
+        else
+        {
+            vTaskDelay(xDelay250ms);
+            length = module_pis_get_length();
+            ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
+            fullFlag = module_pis_read_if_zero();
+        }
         vTaskDelay(xDelay1000ms);
-        //vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     /* get the length and update it */
@@ -278,9 +220,9 @@ void task_move_piston_to_full(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(xDelay5000ms);
-        //vTaskDelete(NULL);
-        //return;
+
+        vTaskDelay(xDelay2000ms);
+
     }
 
     /** Start Piston Extend to full length */
@@ -292,46 +234,38 @@ void task_move_piston_to_full(void)
     bool fullFlag = false;
     uint8_t count_reset = 0;
 
-    /* Initialise the xLastWakeTime variable with the current time*/
-    //TickType_t xLastWakeTime;
-    //xLastWakeTime = xTaskGetTickCount();
 
     while(pistonRun)
     {
         /** Read the piston memory to see if we're done */
-        //if(xSemaphoreTake(piston.rtos.semaphore, period) == pdTRUE)
-        //{
-            if(module_pis_trv_eng() == false)
+        if(module_pis_trv_eng() == false)
+        {
+            count_reset++;
+            vTaskDelay(xDelay250ms);
+            fullFlag = module_pis_read_if_full();
+            if (fullFlag)
             {
-                count_reset++;
-                vTaskDelay(xDelay250ms);
-                fullFlag = module_pis_read_if_full();
-                if (fullFlag)
-                {
-                    pistonRun = false;
-                }
-                if (count_reset > 4)
-                {
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
-                    vTaskDelay(xDelay1000ms);
-                    PIS_Reset();
-                    vTaskDelay(period);
-                    PIS_move_to_full();
-                    vTaskDelay(period);
-                    count_reset = 0;
-                }
+                pistonRun = false;
             }
-            else
+            if (count_reset > 4)
             {
-                vTaskDelay(xDelay250ms);
-                length = module_pis_get_length();
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
-                fullFlag = module_pis_read_if_full();
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
+                vTaskDelay(xDelay1000ms);
+                PIS_Reset();
+                vTaskDelay(period);
+                PIS_move_to_full();
+                vTaskDelay(period);
+                count_reset = 0;
             }
-            //xSemaphoreGive(piston.rtos.semaphore);
-        //}
+        }
+        else
+        {
+            vTaskDelay(xDelay250ms);
+            length = module_pis_get_length();
+            ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
+            fullFlag = module_pis_read_if_full();
+        }
         vTaskDelay(xDelay1000ms);
-        //vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     /* get the length and update it */
@@ -355,9 +289,9 @@ void task_reset_piston_to_full(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(xDelay5000ms);
-        //vTaskDelete(NULL);
-        //return;
+
+        vTaskDelay(xDelay2000ms);
+
     }
 
     /** Start Piston Extend to full length and reset encoder counts */
@@ -369,46 +303,37 @@ void task_reset_piston_to_full(void)
     bool fullFlag = false;
     uint8_t count_reset = 0;
 
-    /* Initialise the xLastWakeTime variable with the current time*/
-    //TickType_t xLastWakeTime;
-    //xLastWakeTime = xTaskGetTickCount();
-
     while(pistonRun)
     {
         /** Read the piston memory to see if we're done */
-        //if(xSemaphoreTake(piston.rtos.semaphore, period) == pdTRUE)
-        //{
-            if(module_pis_trv_eng() == false)
+        if(module_pis_trv_eng() == false)
+        {
+            count_reset++;
+            vTaskDelay(xDelay250ms);
+            fullFlag = module_pis_read_if_fullreset();
+            if (fullFlag)
             {
-                count_reset++;
-                vTaskDelay(xDelay250ms);
-                fullFlag = module_pis_read_if_fullreset();
-                if (fullFlag)
-                {
-                    pistonRun = false;
-                }
-                if (count_reset > 4)
-                {
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
-                    vTaskDelay(xDelay1000ms);
-                    PIS_Reset();
-                    vTaskDelay(period);
-                    PIS_reset_to_full();
-                    vTaskDelay(period);
-                    count_reset = 0;
-                }
+                pistonRun = false;
             }
-            else
+            if (count_reset > 4)
             {
-                vTaskDelay(xDelay250ms);
-                length = module_pis_get_length();
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
-                fullFlag = module_pis_read_if_fullreset();
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
+                vTaskDelay(xDelay1000ms);
+                PIS_Reset();
+                vTaskDelay(period);
+                PIS_reset_to_full();
+                vTaskDelay(period);
+                count_reset = 0;
             }
-            //xSemaphoreGive(piston.rtos.semaphore);
-        //}
+        }
+        else
+        {
+            vTaskDelay(xDelay250ms);
+            length = module_pis_get_length();
+            ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
+            fullFlag = module_pis_read_if_fullreset();
+        }
         vTaskDelay(xDelay1000ms);
-        //vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     /* get the length and update it */
@@ -434,17 +359,15 @@ void task_move_piston_to_length(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(xDelay5000ms);
-        //vTaskDelete(NULL);
+
+        vTaskDelay(xDelay2000ms);
+
     }
     vTaskDelay(xDelay50ms);
     /** Start the move */
     PIS_move_to_length(piston.setpoint_l);
     /** wait 500ms after shooting an I2C command */
     vTaskDelay(xDelay250ms);
-
-    //TickType_t xLastWakeTime;
-    //xLastWakeTime = xTaskGetTickCount();
 
     /** Start reading until we hit the volume */
     pistonRun = true;
@@ -457,80 +380,75 @@ void task_move_piston_to_length(void)
     while(pistonRun)
     {
         /** Read the piston memory to see if we're done moving and at volume */
-        //if(xSemaphoreTake(piston.rtos.semaphore, period) == pdTRUE)
-        //{
-            if(module_pis_trv_eng() == false)
-            {
-                vTaskDelay(xDelay250ms);
-                length = module_pis_get_length();
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Length = %0.5f\n", length);
-                taskENTER_CRITICAL();
-                piston.length = length;
-                taskEXIT_CRITICAL();
+        if(module_pis_trv_eng() == false)
+        {
+            vTaskDelay(xDelay250ms);
+            length = module_pis_get_length();
+            ARTEMIS_DEBUG_PRINTF("PISTON :: Length = %0.5f\n", length);
+            taskENTER_CRITICAL();
+            piston.length = length;
+            taskEXIT_CRITICAL();
 
-                if (piston.length >=(piston.setpoint_l - PISTON_LENGTH_DIFF_MAX) &&
-                    piston.length <=(piston.setpoint_l + PISTON_LENGTH_DIFF_MAX))
-                {
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Length reached\n");
-                    pistonRun = false;
-                    count_reset = 0;
-                }
-                else
-                {
-                    count_reset++;
-                    if (count_reset > 3)
-                    {
-                        ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
-                        vTaskDelay(xDelay500ms);
-                        PIS_Reset();
-                        vTaskDelay(period);
-                        ARTEMIS_DEBUG_PRINTF("PISTON :: Setting length = %0.5f\n", piston.setpoint_l);
-                        PIS_move_to_length(piston.setpoint_l);
-                        vTaskDelay(period);
-                        count_reset = 0;
-                    }
-                }
+            if (piston.length >=(piston.setpoint_l - PISTON_LENGTH_DIFF_MAX) &&
+                piston.length <=(piston.setpoint_l + PISTON_LENGTH_DIFF_MAX))
+            {
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Length reached\n");
+                pistonRun = false;
+                count_reset = 0;
             }
             else
             {
-                vTaskDelay(xDelay250ms);
-                length = module_pis_get_length();
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
-                taskENTER_CRITICAL();
-                piston.length = length;
-                taskEXIT_CRITICAL();
-
-                if (isnan(last_length) || isinf(last_length) 
-                    || isnan(length)   || isinf(length) 
-                    || fabs(length - last_length) < 0.001) { // check for stall condition: Invalid Float for length/last_length or no movement
-                    stall_count++; // increment stall count
+                count_reset++;
+                if (count_reset > 3)
+                {
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
                     vTaskDelay(xDelay500ms);
-                    if (isnan(length) || isinf(length)) {
-                        ARTEMIS_DEBUG_PRINTF("PISTON :: Invalid length value detected\n");
-                    }
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count = %d/%d\n", stall_count, stall_count_max);
-                    if (stall_count > stall_count_max) {
-                        ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
-                        ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
-                        PIS_Reset();            // reset the board
-                        vTaskDelay(period);     // wait for reset to complete
-                        pistonRun = false;      // exit the loop
-                        stall_count = 0;        // reset stall count
-                    }
-
-                } else {
-                    stall_count = 0;            // reset stall count
+                    PIS_Reset();
+                    vTaskDelay(period);
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Setting length = %0.5f\n", piston.setpoint_l);
+                    PIS_move_to_length(piston.setpoint_l);
+                    vTaskDelay(period);
+                    count_reset = 0;
                 }
-                last_length = length;           // update last length
             }
-            //xSemaphoreGive(piston.rtos.semaphore);
-        //}
+        }
+        else
+        {
+            vTaskDelay(xDelay250ms);
+            length = module_pis_get_length();
+            ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
+            taskENTER_CRITICAL();
+            piston.length = length;
+            taskEXIT_CRITICAL();
+
+            if (isnan(last_length) || isinf(last_length) 
+                || isnan(length)   || isinf(length) 
+                || fabs(length - last_length) < 0.001) { // check for stall condition: Invalid Float for length/last_length or no movement
+                stall_count++; // increment stall count
+                vTaskDelay(xDelay500ms);
+                if (isnan(length) || isinf(length)) {
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Invalid length value detected\n");
+                }
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count = %d/%d\n", stall_count, stall_count_max);
+                if (stall_count > stall_count_max) {
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
+                    PIS_Reset();            // reset the board
+                    vTaskDelay(period);     // wait for reset to complete
+                    pistonRun = false;      // exit the loop
+                    stall_count = 0;        // reset stall count
+                }
+
+            } else {
+                stall_count = 0;            // reset stall count
+            }
+            last_length = length;           // update last length
+        }
 
         if (pistonRun)
         {
             vTaskDelay(period);
         }
-        //vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     vTaskDelay(xDelay100ms);
@@ -551,15 +469,6 @@ void task_move_piston_to_length(void)
         ARTEMIS_DEBUG_PRINTF("PISTON :: SUCCESS, Length = %0.5f, diff = %0.5f, max_diff = %0.5f\n",
                                     length, (length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
     }
-
-    // /* check Heap size for debug only*/
-    // uint32_t sizeB = xPortGetFreeHeapSize();
-    // ARTEMIS_DEBUG_PRINTF("PISTON :: FreeRTOS HEAP SIZE = %u Bytes\n\n", sizeB);
-
-    // uint32_t sizeC = xPortGetMinimumEverFreeHeapSize();
-    // ARTEMIS_DEBUG_PRINTF("PISTON :: FreeRTOS MIN HEAP SIZE = %u Bytes\n\n", sizeC);
-
-
     vTaskDelay(xDelay100ms);
     vTaskDelete(NULL);
     vTaskDelay(xDelay1000ms);
@@ -597,17 +506,14 @@ void task_move_piston_to_volume(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
         PIS_Reset();
-        vTaskDelay(xDelay5000ms);
-        //vTaskDelete(NULL);
-        //return;
+
+        vTaskDelay(xDelay2000ms);
+
     }
     vTaskDelay(xDelay50ms);
     PIS_move_to_volume(piston.setpoint_v);
     /** wait 500ms after shooting an I2C command */
     vTaskDelay(xDelay500ms);
-
-    //TickType_t xLastWakeTime;
-    //xLastWakeTime = xTaskGetTickCount();
 
     /** Start reading until we hit the volume */
     pistonRun = true;
@@ -616,58 +522,54 @@ void task_move_piston_to_volume(void)
     while(pistonRun)
     {
         /** Read the piston memory to see if we're done moving and at volume */
-        //if(xSemaphoreTake(piston.rtos.semaphore, period) == pdTRUE)
-        //{
-            if(module_pis_trv_eng() == false)
+        if(module_pis_trv_eng() == false)
+        {
+            vTaskDelay(xDelay250ms);
+            volume = module_pis_get_volume();
+            ARTEMIS_DEBUG_PRINTF("PISTON :: Volume = %.3fin³\n", volume);
+
+            taskENTER_CRITICAL();
+            piston.volume = volume;
+            taskEXIT_CRITICAL();
+
+            if (piston.volume >=(piston.setpoint_v - PISTON_VOLUME_DIFF_MAX) &&
+                piston.volume <=(piston.setpoint_v + PISTON_VOLUME_DIFF_MAX))
             {
-                vTaskDelay(xDelay250ms);
-                volume = module_pis_get_volume();
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Volume = %.3fin³\n", volume);
-
-                taskENTER_CRITICAL();
-                piston.volume = volume;
-                taskEXIT_CRITICAL();
-
-                if (piston.volume >=(piston.setpoint_v - PISTON_VOLUME_DIFF_MAX) &&
-                    piston.volume <=(piston.setpoint_v + PISTON_VOLUME_DIFF_MAX))
-                {
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Volume reached\n");
-                    pistonRun = false;
-                    count_reset = 0;
-                }
-                else
-                {
-                    count_reset++;
-                    if (count_reset > 3)
-                    {
-                        ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
-                        vTaskDelay(xDelay500ms);
-                        PIS_Reset();
-                        vTaskDelay(period);
-                        PIS_move_to_volume(piston.setpoint_v);
-                        vTaskDelay(period);
-                        count_reset = 0;
-                    }
-                }
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Volume reached\n");
+                pistonRun = false;
+                count_reset = 0;
             }
             else
             {
-                vTaskDelay(xDelay250ms);
-                volume = module_pis_get_volume();
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Volume in moving = %.3fin³\n", volume);
+                count_reset++;
+                if (count_reset > 3)
+                {
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
+                    vTaskDelay(xDelay500ms);
+                    PIS_Reset();
+                    vTaskDelay(period);
+                    PIS_move_to_volume(piston.setpoint_v);
+                    vTaskDelay(period);
+                    count_reset = 0;
+                }
 
-                taskENTER_CRITICAL();
-                piston.volume = volume;
-                taskEXIT_CRITICAL();
             }
-            //xSemaphoreGive(piston.rtos.semaphore);
-        //}
+        }
+        else
+        {
+            vTaskDelay(xDelay250ms);
+            volume = module_pis_get_volume();
+            ARTEMIS_DEBUG_PRINTF("PISTON :: Volume in moving = %.3fin³\n", volume);
+
+            taskENTER_CRITICAL();
+            piston.volume = volume;
+            taskEXIT_CRITICAL();
+        }
 
         if (pistonRun)
         {
             vTaskDelay(period);
         }
-        //vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     vTaskDelay(xDelay100ms);
@@ -728,49 +630,33 @@ bool PIS_set_length(float length)
 
 void PIS_extend(void)
 {
-    //uint8_t addr = PISTON_I2C_RW_TRV_DIR;
     uint8_t addr = PISTON_I2C_RW_TRV_USER_OR;
-    //uint8_t cmd[4] = {0x01, 0x01, 0x00, 0x01};
     uint8_t cmd[5] = {addr, 0x01, 0x01, 0x00, 0x01};
-
-    //artemis_piston_i2c_send_msg(&addr, 1, false);
-    //artemis_piston_i2c_send_msg(cmd, 4, true);
 
     /** Put in write mode */
     artemis_piston_set_write_mode(true);
     artemis_piston_i2c_send_msg(cmd, 5, true);
-    //artemis_piston_set_write_mode(false);
 }
 
 void PIS_retract(void)
 {
-    //bool retVal = false;
-    // self._write(0x60, [0xFF, 0x01, 0x00, 0x01])
-
     uint8_t addr = PISTON_I2C_RW_TRV_DIR;
-    //uint8_t cmd[4] = {0xFF, 0x01, 0x00, 0x01};
     uint8_t cmd[5] = {addr, 0xFF, 0x01, 0x00, 0x01};
 
-    //artemis_piston_i2c_send_msg(&addr, 1, false);
+    /** Put in write mode */
     artemis_piston_set_write_mode(true);
     artemis_piston_i2c_send_msg(cmd, 5, true);
 }
 
 void PIS_stop(void)
 {
-    //bool retVal = false;
     uint8_t addr = PISTON_I2C_RW_TRV_USER_OR;
     uint8_t cmd[5] = {addr, 0x00, 0x01, 0x00, 0x01};
 
+    /** Put in write mode */
     artemis_piston_set_write_mode(true);
-
-    //artemis_piston_i2c_send_msg(&addr, 1, false);
     artemis_piston_i2c_send_msg(cmd, 5, true);
 
-    //artemis_piston_i2c_send_msg(&addr, 1, false);
-    //artemis_piston_set_write_mode(true);
-    //artemis_piston_i2c_send_msg(cmd, 3, true);
-    //return retVal;
 }
 
 bool PIS_calibration_check(void)
@@ -852,10 +738,9 @@ bool PIS_move_to_length(float length)
         v[i+1] = piston.u32Length >> ((i)*8) & 0xFF;
     }
 
+    /** Put in write mode */
     artemis_piston_set_write_mode(true);
     artemis_piston_i2c_send_msg(v, 5, true);
-    //artemis_piston_i2c_send_msg(&addr, 1, false);
-    //artemis_piston_i2c_send_msg(v, 8, true);
     return true;
 }
 
@@ -881,15 +766,12 @@ bool PIS_move_to_volume(float volume)
 
     for(uint8_t i=0; i<4; i++)
     {
-        //v[i+1] = piston.u64Volume >> ((3-i)*8) & 0xFF;
         v[i+1] = piston.u64Volume >> ((i)*8) & 0xFF;
     }
-    //v[5] = 0x00;
 
+    /** Put in write mode */
     artemis_piston_set_write_mode(true);
     artemis_piston_i2c_send_msg(v, 5, true);
-    //artemis_piston_i2c_send_msg(&addr, 1, false);
-    //artemis_piston_i2c_send_msg(v, 8, true);
 
     return true;
 }
@@ -931,10 +813,8 @@ static bool module_pis_read_if_zero(void)
 static bool module_pis_trv_eng(void)
 {
     uint8_t addr = PISTON_I2C_RW_TRV_ENG;
-
     uint8_t data = 0;
     artemis_piston_i2c_read(addr, &data, 1);
-
     return (bool) data;
 }
 
@@ -942,7 +822,6 @@ static float module_pis_get_length(void)
 {
     uint8_t addr = PISTON_I2C_R_LENGTH_TOTAL;
     uint8_t data[4] = {0};
-
     artemis_piston_i2c_read(addr, data, 4);
 
     union{
@@ -985,6 +864,8 @@ void PIS_Reset(void)
 {
     uint8_t addr = PISTON_I2C_W_RESET;
     uint8_t cmd[2] = {addr, PISTON_I2C_W_RESET_KEY};
+    
+    /** Put in write mode */
     artemis_piston_set_write_mode(true);
     artemis_piston_i2c_send_msg(cmd, 2, true);
 }
@@ -993,6 +874,8 @@ void PIS_move_to_full(void)
 {
     uint8_t addr = PISTON_I2C_RW_MOV_FULL;
     uint8_t cmd[2] = {addr, 0x01};
+    
+    /** Put in write mode */
     artemis_piston_set_write_mode(true);
     artemis_piston_i2c_send_msg(cmd, 2, true);
 }
@@ -1001,6 +884,8 @@ void PIS_move_to_zero(void)
 {
     uint8_t addr = PISTON_I2C_RW_MOV_ZERO;
     uint8_t cmd[2] = {addr, 0x01};
+    
+    /** Put in write mode */
     artemis_piston_set_write_mode(true);
     artemis_piston_i2c_send_msg(cmd, 2, true);
 }
@@ -1009,6 +894,8 @@ void PIS_reset_to_full(void)
 {
     uint8_t addr = PISTON_I2C_RW_RST_FULL;
     uint8_t cmd[2] = {addr, 0x01};
+    
+    /** Put in write mode */
     artemis_piston_set_write_mode(true);
     artemis_piston_i2c_send_msg(cmd, 2, true);
 }
