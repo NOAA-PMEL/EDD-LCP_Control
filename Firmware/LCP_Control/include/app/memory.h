@@ -24,8 +24,8 @@ typedef struct sTransmissionQueue_t {
 } TransmissionQueue_t;
 
 // Memory threshold definitions
-#define MEMORY_LOW_THRESHOLD       (4096)   // 4KB threshold to consider memory low
-#define MEMORY_CRITICAL_THRESHOLD  (2048)   // 2KB threshold for critical memory situation
+#define MEMORY_LOW_THRESHOLD       (16384)   // 16KB threshold to consider memory low
+#define MEMORY_CRITICAL_THRESHOLD  (8192)   // 8KB threshold for critical memory situation
 
 // Queue management functions
 void MEM_init_transmission_queues(void);

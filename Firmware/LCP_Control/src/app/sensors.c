@@ -131,9 +131,30 @@ void SENS_uninitialize(void)
     /** Piston Board information */
     PIS_uninitialize();
 
-    /** delete semaphores */
-    vSemaphoreDelete(xTDSemaphore);
-    vSemaphoreDelete(sensor_data.gps.semaphore);
+    // Delete Semaphores
+    if (xTDSemaphore != NULL) {
+        vSemaphoreDelete(xTDSemaphore);
+        xTDSemaphore = NULL;
+    }
+    if (sensor_data.gps.semaphore != NULL) {
+        vSemaphoreDelete(sensor_data.gps.semaphore);
+        sensor_data.gps.semaphore = NULL;
+    }
+
+    // --- Delete Event Queues ---
+    if (xTempEventQueue != NULL) {
+        vQueueDelete(xTempEventQueue);
+        xTempEventQueue = NULL;
+    }
+    if (xDepthEventQueue != NULL) {
+        vQueueDelete(xDepthEventQueue);
+        xDepthEventQueue = NULL;
+    }
+    if (xTDEventQueue != NULL) {
+        vQueueDelete(xTDEventQueue);
+        xTDEventQueue = NULL;
+    }
+
     vTaskDelay(xDelay10ms);
     ARTEMIS_DEBUG_PRINTF("SENSORS :: Sensors are uninitialized\n\n");
 }
@@ -603,6 +624,19 @@ void task_gps(void)
         }
         vTaskDelayUntil(&xLastWakeTime, period);
     }
+
+    /* stop the timer and delete it */
+    if (xTimer != NULL) {
+        // Ensure timer is stopped before attempting deletion (optional safety)
+        xTimerStop(xTimer, portMAX_DELAY); 
+        if (xTimerDelete(xTimer, portMAX_DELAY) == pdPASS) {
+            ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS Timer deleted successfully.\n");
+        } else {
+            ARTEMIS_DEBUG_PRINTF("SENSORS :: ERROR: Failed to delete GPS Timer.\n");
+        }
+        xTimer = NULL;
+    }
+
     vTaskDelete(NULL);
 }
 
