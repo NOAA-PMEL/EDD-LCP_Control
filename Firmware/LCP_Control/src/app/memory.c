@@ -245,50 +245,73 @@ bool MEM_queue_remove_oldest(TransmissionQueue_t *queue) {
 
 /**
  * @brief Manage memory before attempting an allocation
- * 
- * Checks if memory is low and removes profiles from queues if necessary to free memory.
- * 
- * @param required_size Size of the memory allocation that will be attempted
+ * * Checks if memory is sufficient for the required size OR if general memory is low.
+ * Removes profiles from queues if necessary until enough space is freed for the 
+ * required allocation plus a critical buffer, or queues are empty.
+ * * @param required_size Size of the memory allocation that will be attempted
  * @param primary_queue Pointer to the primary queue to remove from first
  * @param secondary_queue Pointer to the secondary queue to remove from if necessary
  */
-void MEM_manage_memory_before_allocation(size_t required_size, 
-                                         TransmissionQueue_t *primary_queue, 
-                                         TransmissionQueue_t *secondary_queue) {
-    // First check if memory is already low
-    if (MEM_is_memory_low()) {
-        ARTEMIS_DEBUG_PRINTF("MEMORY: Low memory detected (%u bytes free)\n", 
-                             xPortGetFreeHeapSize());
+ void MEM_manage_memory_before_allocation(size_t required_size, 
+    TransmissionQueue_t *primary_queue, 
+    TransmissionQueue_t *secondary_queue) {
         
-        // Check if we have any profiles in the queues that we can remove
-        bool removed = false;
-        
-        // First try to remove from primary queue
-        if (MEM_queue_get_count(primary_queue) > 0) {
-            removed = MEM_queue_remove_oldest(primary_queue);
-        }
-        
-        // If still low on memory and we have data in secondary queue, remove from there
-        if (!removed && MEM_is_memory_low() && MEM_queue_get_count(secondary_queue) > 0) {
-            removed = MEM_queue_remove_oldest(secondary_queue);
-        }
-        
-        // If we're still critically low on memory after removing one profile,
-        // continue removing until we have enough or queues are empty
-        while (MEM_is_memory_critical() && 
-              (MEM_queue_get_count(primary_queue) > 0 || 
-               MEM_queue_get_count(secondary_queue) > 0)) {
-            
+    uint32_t current_free_memory = xPortGetFreeHeapSize();
+    uint32_t target_free_memory = required_size + MEMORY_CRITICAL_THRESHOLD; // Target: space for allocation + critical buffer
+
+    bool needs_cleanup = false;
+
+    // Check 1: Is there definitely not enough space for the required allocation + critical buffer?
+    if (current_free_memory < target_free_memory) {
+        ARTEMIS_DEBUG_PRINTF("MEMORY: Insufficient free memory (%u bytes) for request (%u bytes + %u buffer). Cleanup required.\n", 
+        current_free_memory, required_size, MEMORY_CRITICAL_THRESHOLD);
+        needs_cleanup = true;
+    } 
+    
+    // Check 2: Even if enough for current request, is general memory below the LOW threshold?
+    else if (MEM_is_memory_low()) { // MEM_is_memory_low() checks < MEMORY_LOW_THRESHOLD
+        ARTEMIS_DEBUG_PRINTF("MEMORY: Low memory detected (%u bytes free, threshold %u). Opportunistic cleanup.\n", 
+        current_free_memory, MEMORY_LOW_THRESHOLD);
+        needs_cleanup = true; 
+        // In this case, the target is just to get above the critical threshold, 
+        // as we already know the required_size fits.
+        // We could potentially adjust target_free_memory here if desired, e.g., 
+        // target_free_memory = MEMORY_LOW_THRESHOLD; // Aim to get back above LOW threshold
+    }
+
+    // If cleanup is needed (either not enough space OR general low memory)
+    if (needs_cleanup) {
+
+        ARTEMIS_DEBUG_PRINTF("MEMORY: Starting cleanup. Target free memory: %u bytes.\n", target_free_memory);
+
+        // Loop while free memory is below the target AND there are profiles to remove
+        while ((xPortGetFreeHeapSize() < target_free_memory) && 
+        (MEM_queue_get_count(primary_queue) > 0 || 
+        MEM_queue_get_count(secondary_queue) > 0)) {
+
+            bool removed_primary = false;
+            // Prioritize removing from primary queue
             if (MEM_queue_get_count(primary_queue) > 0) {
-                MEM_queue_remove_oldest(primary_queue);
-            } else if (MEM_queue_get_count(secondary_queue) > 0) {
+                removed_primary = MEM_queue_remove_oldest(primary_queue);
+            } 
+
+            // If primary was empty or removal failed (shouldn't happen if count > 0), try secondary
+            if (!removed_primary && MEM_queue_get_count(secondary_queue) > 0) {
                 MEM_queue_remove_oldest(secondary_queue);
             }
         }
-        
-        // Log the result of our memory management
-        ARTEMIS_DEBUG_PRINTF("MEMORY: After cleanup, %u bytes free\n", 
-                            xPortGetFreeHeapSize());
+
+        // Log the result after cleanup attempt
+        ARTEMIS_DEBUG_PRINTF("MEMORY: Cleanup finished. %u bytes free (Target was %u).\n", 
+        xPortGetFreeHeapSize(), target_free_memory);
+
+        // Final check if allocation is still likely to fail
+        if(xPortGetFreeHeapSize() < required_size) {
+            ARTEMIS_DEBUG_PRINTF("MEMORY: WARNING - Still insufficient memory for required size %u after cleanup!\n", required_size);
+        }
+    } else {
+        ARTEMIS_DEBUG_PRINTF("MEMORY: Sufficient memory (%u bytes free) for request (%u bytes). No cleanup needed.\n",
+        current_free_memory, required_size);
     }
 }
 
