@@ -169,6 +169,10 @@ set(LINKER_SCRIPT_FLAG "-Wl,-T,${LINKER_SCRIPT}")
 
 target_link_options(${TARGET_NAME} PRIVATE ${LINKER_SCRIPT_FLAG} ${LINKER_FLAGS})
 
+# --- Add BSP Subdirectory ---
+# Process the CMakeLists.txt located in src/bsp to build the am_bsp library
+add_subdirectory(src/bsp)
+
 # --- Libraries ---
 # Corresponds to LIBS in Makefile
 # Assuming these are pre-built or handled elsewhere (e.g., SDK build process)
