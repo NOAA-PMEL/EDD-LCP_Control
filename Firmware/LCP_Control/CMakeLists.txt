@@ -185,7 +185,7 @@ target_link_options(${TARGET_NAME} PRIVATE ${LINKER_SCRIPT_FLAG} ${LINKER_FLAGS}
 # Option 3: Build them as part of this CMake project using add_subdirectory (Requires CMakeLists for those libs)
 # For now, just listing them as general libraries. Ensure they are found by the linker.
 target_link_libraries(${TARGET_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/bsp/bin/libam_bsp.a
+    am_bsp # Link the target defined in src/bsp/CMakeLists.txt
     ${AMBIQ_SDK_PATH}/mcu/apollo3/hal/gcc/bin/libam_hal.a
     )
 
