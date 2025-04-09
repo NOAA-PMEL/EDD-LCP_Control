@@ -9,7 +9,7 @@ project(LCP_Control LANGUAGES C)
 # and necessary target properties (CPU, FPU, ABI).
 
 # Application specific variables (adjust paths as necessary)
-get_filename_component(AMBIQ_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../AmbiqSuiteSDK ABSOLUTE)
+get_filename_component(AMBIQ_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../../AmbiqSuiteSDK ABSOLUTE)
 
 # Verify the path exists
 if(NOT EXISTS "${AMBIQ_SDK_PATH}")
