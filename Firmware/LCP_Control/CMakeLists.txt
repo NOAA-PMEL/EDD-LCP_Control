@@ -5,36 +5,35 @@ cmake_minimum_required(VERSION 3.15)
 project(LCP_Control LANGUAGES C)
 
 # --- Configuration ---
-# Toolchain file is expected to set CMAKE_C_COMPILER, CMAKE_CXX_COMPILER, etc.
-# and necessary target properties (CPU, FPU, ABI).
-
-# Application specific variables (adjust paths as necessary)
 get_filename_component(AMBIQ_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../../AmbiqSuiteSDK ABSOLUTE)
 
-# Verify the path exists
 if(NOT EXISTS "${AMBIQ_SDK_PATH}")
-    message(FATAL_ERROR "Ambiq Suite SDK path not found at expected relative location: ${AMBIQ_SDK_PATH}. Please check the directory structure.")
+    message(FATAL_ERROR "Ambiq Suite SDK path not found: ${AMBIQ_SDK_PATH}.")
 endif()
 message(STATUS "Using Ambiq Suite SDK Path: ${AMBIQ_SDK_PATH}")
 
 set(TARGET_NAME ${PROJECT_NAME})
 set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/linker/lcpcontrol_lowpower.ld)
-set(LINKER_SCRIPT_ASB ${CMAKE_CURRENT_SOURCE_DIR}/linker/lcpcontrol_lowpower_asb.ld)
-set(LINKER_SCRIPT_SVL ${CMAKE_CURRENT_SOURCE_DIR}/linker/lcpcontrol_lowpower_svl.ld)
+# Note: ASB/SVL linker scripts are not used in this setup, objcopy creates variants from the main output
+# set(LINKER_SCRIPT_ASB ${CMAKE_CURRENT_SOURCE_DIR}/linker/lcpcontrol_lowpower_asb.ld)
+# set(LINKER_SCRIPT_SVL ${CMAKE_CURRENT_SOURCE_DIR}/linker/lcpcontrol_lowpower_svl.ld)
 
-set(PART apollo3) # Corresponds to PART in Makefile
-set(CPU cortex-m4) # Corresponds to CPU in Makefile
-set(FPU fpv4-sp-d16) # Corresponds to FPU in Makefile
-set(FABI hard) # Corresponds to FABI in Makefile
+set(PART apollo3)
+set(CPU cortex-m4)
+set(FPU fpv4-sp-d16)
+set(FABI hard)
 
 # --- Executable Target ---
 add_executable(${TARGET_NAME} "") # Sources added later
 
-# --- Source Files ---
-# Get source files from the Makefile analysis and file structure
+# --- Add BSP Subdirectory ---
+# This will define the 'am_bsp' library target using src/bsp/CMakeLists.txt
+add_subdirectory(src/bsp)
+
+# --- Source Files (Main Application) ---
 set(SOURCES
     src/main.c
-    # SDK Sources (relative to SDK path - VPATH/SRC from Makefile)
+    # SDK Sources
     ${AMBIQ_SDK_PATH}/third_party/FreeRTOSv10.1.1/Source/portable/MemMang/heap_4.c
     ${AMBIQ_SDK_PATH}/devices/am_devices_button.c
     ${AMBIQ_SDK_PATH}/devices/am_devices_led.c
@@ -51,8 +50,8 @@ set(SOURCES
     ${AMBIQ_SDK_PATH}/utils/am_util_string.c
     ${AMBIQ_SDK_PATH}/utils/am_util_time.c
     ${AMBIQ_SDK_PATH}/utils/am_util_id.c
-    # Project Sources (relative to project root - VPATH/SRC from Makefile)
-    src/startup_gcc.c # Note: Startup file might need adjustment based on CMake/Compiler
+    # Project Sources
+    src/startup_gcc.c
     src/buffer_c.c
     src/buffer_u32.c
     src/depth.c
@@ -69,7 +68,7 @@ set(SOURCES
     src/artemis/artemis_i9603n.c
     src/artemis/artemis_iom.c
     src/artemis/artemis_mcu.c
-    # src/artemis/artemis_pa9ld.c # Assuming K9lx is used based on depth.c
+    # src/artemis/artemis_pa9ld.c
     src/artemis/artemis_piston.c
     src/artemis/artemis_spi.c
     src/artemis/artemis_stream.c
@@ -89,16 +88,11 @@ set(SOURCES
     src/datalogger.c
     src/app/sensors_test.c
     src/app/memory.c
-    # src/LED.c # Commented out in Makefile
-    # src/bsp/bsp_uart.c # Commented out in Makefile
-    # src/artemis/artemis_max14830.c # Commented out in Makefile
-    # src/isbd_at_cmd.c # Commented out in Makefile
-    # src/dataframe.c # Commented out in Makefile
 )
 
 target_sources(${TARGET_NAME} PRIVATE ${SOURCES})
 
-# --- Include Directories ---
+# --- Include Directories (Main Target) ---
 target_include_directories(${TARGET_NAME} PRIVATE
     # SDK Includes
     ${AMBIQ_SDK_PATH}/third_party/FreeRTOSv10.1.1/Source/portable/GCC/AMapollo2
@@ -115,12 +109,12 @@ target_include_directories(${TARGET_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/app
     ${CMAKE_CURRENT_SOURCE_DIR}/include/artemis
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/bsp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/bsp # For am_bsp.h and am_bsp_pins.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/RTOS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/sys
     )
 
-# --- Compile Definitions ---
+# --- Compile Definitions (Main Target) ---
 target_compile_definitions(${TARGET_NAME} PRIVATE
     "PART_${PART}"
     AM_PART_APOLLO3
@@ -130,70 +124,43 @@ target_compile_definitions(${TARGET_NAME} PRIVATE
     AM_DEBUG_PRINTF
     gcc
     # AM_BSP_GPIO_ITM_SWO # Optional: Define if you want SWO output
-    )
+)
 
-# --- Compile Options ---
-# Corresponds to CFLAGS in Makefile
-# The toolchain file should set -mthumb, -mcpu, -mfpu, -mfloat-abi
+# --- Compile Options (Main Target - Use toolchain defaults + specific options) ---
 target_compile_options(${TARGET_NAME} PRIVATE
-    -ffunction-sections
-    -fdata-sections
-    -MMD -MP # CMake handles dependency generation
-    -std=gnu99
-    -Wall
-    -Wno-unused-function # Added this explicitly
-    -g # Debug symbols
-    -O3 # Optimization level
-    # Add any EXTRA_CFLAGS here if needed
-    )
+    # Inherits flags from toolchain CMAKE_C_FLAGS
+    # Add specific flags if needed:
+    # -Wextra
+)
 
-# --- Linker Options ---
-# Corresponds to LFLAGS in Makefile
-# Toolchain file sets -mthumb, -mcpu, -mfpu, -mfloat-abi
+# --- Linker Options (Main Target) ---
+# Use nosys.specs (from toolchain file)
 set(LINKER_FLAGS
     -nostartfiles
     -static
     -Wl,--gc-sections
-    -Wl,--entry=Reset_Handler # Ensure Reset_Handler is the entry point
+    -Wl,--entry=Reset_Handler
     -Wl,-Map=${CMAKE_BINARY_DIR}/${TARGET_NAME}.map
-    --specs=rdimon.specs # For semihosting printf/debug
-    -lgcc
+    # --specs=rdimon.specs # REMOVED
+    -lgcc # Keep standard libs
     -lc
-    -lm
-    -lrdimon
-    -u _printf_float # Link float support for printf
+    -lm   # Keep standard libs
+    # -lrdimon # REMOVED
+    -u _printf_float
     )
-
-# Add linker script T flag separately for target_link_options
 set(LINKER_SCRIPT_FLAG "-Wl,-T,${LINKER_SCRIPT}")
-
+# Toolchain file adds: ${THUMB_FLAGS} ${CPU_FLAGS} ${FPU_FLAGS} --specs=nosys.specs
 target_link_options(${TARGET_NAME} PRIVATE ${LINKER_SCRIPT_FLAG} ${LINKER_FLAGS})
 
-# --- Add BSP Subdirectory ---
-# Process the CMakeLists.txt located in src/bsp to build the am_bsp library
-add_subdirectory(src/bsp)
-
-# --- Libraries ---
-# Corresponds to LIBS in Makefile
-# Assuming these are pre-built or handled elsewhere (e.g., SDK build process)
-# Option 1: Find pre-built libraries
-# find_library(AM_BSP_LIB am_bsp PATHS ${CMAKE_CURRENT_SOURCE_DIR}/src/bsp/bin)
-# find_library(AM_HAL_LIB am_hal PATHS ${AMBIQ_SDK_PATH}/mcu/apollo3/hal/gcc/bin)
-# if (AM_BSP_LIB AND AM_HAL_LIB)
-#   target_link_libraries(${TARGET_NAME} PRIVATE ${AM_BSP_LIB} ${AM_HAL_LIB})
-# else()
-#   message(WARNING "Could not find pre-built BSP or HAL libraries. Linking might fail.")
-# endif()
-
-# Option 2: Add as INTERFACE libraries if headers are sufficient for linking stage (less likely for .a)
-# Option 3: Build them as part of this CMake project using add_subdirectory (Requires CMakeLists for those libs)
-# For now, just listing them as general libraries. Ensure they are found by the linker.
+# --- Libraries (Main Target - Link BSP target, HAL lib, and Math lib) ---
 target_link_libraries(${TARGET_NAME} PRIVATE
-    am_bsp # Link the target defined in src/bsp/CMakeLists.txt
+    am_bsp # Link the library target defined in src/bsp/CMakeLists.txt
     ${AMBIQ_SDK_PATH}/mcu/apollo3/hal/gcc/bin/libam_hal.a
+    m # Explicitly link libm
     )
 
-# --- Post-Build Steps (objcopy) ---
+# --- Post-Build Steps (objcopy/objdump) ---
+# Use $<TARGET_FILE:${TARGET_NAME}> which CMake resolves to the actual executable path
 add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${TARGET_NAME}> ${CMAKE_BINARY_DIR}/${TARGET_NAME}.bin
     COMMAND ${CMAKE_OBJDUMP} -S $<TARGET_FILE:${TARGET_NAME}> > ${CMAKE_BINARY_DIR}/${TARGET_NAME}.lst
@@ -201,40 +168,38 @@ add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     VERBATIM)
 
 # --- Custom Targets for SVL/ASB and Bootloading ---
-# Note: This assumes PYTHON3 is findable on the PATH or specified via CMAKE_COMMAND
-
 find_program(PYTHON_EXECUTABLE NAMES python3.8 python3 python HINTS ENV PATH)
 if(NOT PYTHON_EXECUTABLE)
     message(WARNING "Python 3.8 (or compatible) not found. Bootload targets may fail.")
-    set(PYTHON_EXECUTABLE "python3.8") # Use default from Makefile as fallback
+    set(PYTHON_EXECUTABLE "python3.8")
 endif()
-
 set(ASB_UPLOADER_SCRIPT ${AMBIQ_SDK_PATH}/boards_sfe/common/tools_sfe/asb/asb.py)
 set(SVL_UPLOADER_SCRIPT ${AMBIQ_SDK_PATH}/boards_sfe/common/tools_sfe/svl/svl.py)
 
 # SVL Target (depends on the main executable)
+# Use $<TARGET_FILE:${TARGET_NAME}> as the input for objcopy
 add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin
-    COMMAND ${CMAKE_OBJCOPY} -Obinary ${CMAKE_BINARY_DIR}/${TARGET_NAME}.axf ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin # Simplified, uses default linker script output for svl bin
+    COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${TARGET_NAME}> ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin
     DEPENDS ${TARGET_NAME}
     COMMENT "Creating ${TARGET_NAME}_svl.bin"
     VERBATIM)
-add_custom_target(svl ALL DEPENDS ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin) # 'ALL' makes it build by default
+add_custom_target(svl DEPENDS ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin)
 
 # ASB Target (depends on the main executable)
+# Use $<TARGET_FILE:${TARGET_NAME}> as the input for objcopy
 add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin
-    COMMAND ${CMAKE_OBJCOPY} -Obinary ${CMAKE_BINARY_DIR}/${TARGET_NAME}.axf ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin # Simplified, uses default linker script output for asb bin
+    COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${TARGET_NAME}> ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin
     DEPENDS ${TARGET_NAME}
     COMMENT "Creating ${TARGET_NAME}_asb.bin"
     VERBATIM)
-add_custom_target(asb DEPENDS ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin) # Not built by default unless specified
+add_custom_target(asb DEPENDS ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin)
 
 # Bootload SVL Target
-# Note: COM_PORT needs to be defined, e.g., via -DCOM_PORT=COM3 or environment variable
 set(COM_PORT "$ENV{COM_PORT}" CACHE STRING "Serial port for bootloading")
 if(NOT COM_PORT)
-    set(COM_PORT "/dev/ttyACM0") # Default for Linux, adjust as needed
+    set(COM_PORT "/dev/ttyACM0") # Default for Linux, adjust as needed for Windows if not set
     message(STATUS "COM_PORT not set, defaulting to ${COM_PORT}")
 endif()
 set(SVL_UPLOAD_BAUD 921600)
@@ -255,17 +220,9 @@ add_custom_target(bootload_asb DEPENDS asb
 add_custom_target(bootload DEPENDS bootload_asb)
 # add_custom_target(bootload DEPENDS bootload_svl) # Uncomment to default to SVL
 
-# Optional: Add a target to build the BSP/HAL libraries if their Makefiles are present
-# add_custom_target(build_libs
-#     COMMAND ${CMAKE_COMMAND} -E env "AmbiqSuiteSDK=${AMBIQ_SDK_PATH}" ${CMAKE_MAKE_PROGRAM} -C ${CMAKE_CURRENT_SOURCE_DIR}/src/bsp
-#     COMMAND ${CMAKE_COMMAND} -E env "AmbiqSuiteSDK=${AMBIQ_SDK_PATH}" ${CMAKE_MAKE_PROGRAM} -C ${AMBIQ_SDK_PATH}/mcu/apollo3/hal
-#     COMMENT "Building dependent libraries"
-#     VERBATIM)
-# add_dependencies(${TARGET_NAME} build_libs) # Make target depend on libs being built
-
 # --- Output ---
 message(STATUS "Target: ${TARGET_NAME}")
 message(STATUS "SDK Path: ${AMBIQ_SDK_PATH}")
 message(STATUS "Linker Script: ${LINKER_SCRIPT}")
 message(STATUS "Output directory: ${CMAKE_BINARY_DIR}")
-message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}") # Informative
+message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")

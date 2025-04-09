@@ -1,35 +1,35 @@
 # CMakeLists.txt for the BSP library (src/bsp)
 
-# Define the library target
 add_library(am_bsp STATIC
     am_bsp.c
     am_bsp_pins.c
-    # Add other .c files from src/bsp if any are needed for the library
 )
 
-# Specify include directories needed to compile the library sources
-target_include_directories(am_bsp PUBLIC
-    # Allow code linking against am_bsp to see headers in include/bsp
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include> # Adjust if installation is planned
-PRIVATE
-    # Internal includes needed by am_bsp.c/am_bsp_pins.c
-    ${CMAKE_SOURCE_DIR}/include/bsp # Contains am_bsp.h, am_bsp_pins.h
-    # Include necessary SDK directories
+# Specify include directories needed ONLY to compile the BSP library sources
+target_include_directories(am_bsp PRIVATE
+    # Path to the directory containing am_bsp.h and am_bsp_pins.h
+    ${CMAKE_SOURCE_DIR}/include/bsp
+    # SDK Includes needed for BSP compilation
     ${AMBIQ_SDK_PATH}/CMSIS/AmbiqMicro/Include
     ${AMBIQ_SDK_PATH}/devices
     ${AMBIQ_SDK_PATH}/mcu/apollo3
-    ${AMBIQ_SDK_PATH}/mcu/apollo3/hal
+    ${AMBIQ_SDK_PATH}/CMSIS/ARM/Include
     ${AMBIQ_SDK_PATH}/utils
-    # Add other SDK includes if required by am_bsp sources
 )
 
-# Add compile definitions if specific ones are needed for the BSP library
-# target_compile_definitions(am_bsp PRIVATE
-#     SOME_BSP_SPECIFIC_DEFINE
-# )
+# Explicitly set compile definitions for am_bsp target ONLY
+target_compile_definitions(am_bsp PRIVATE
+    AM_PART_APOLLO3
+    AM_PACKAGE_BGA
+    gcc
+)
 
-# Set the output directory for the library (optional, defaults to build tree)
-# set_target_properties(am_bsp PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+# Explicitly set compile options for am_bsp target that DIFFER
+# from the main project or toolchain defaults.
+target_compile_options(am_bsp PRIVATE
+    # Match the BSP Makefile's C standard, overriding the main project's -std=gnu99
+    -std=c99
+    # Core flags (-mthumb, -mcpu, -O3, -Wall etc.) should be inherited.
+)
 
-message(STATUS "Configuring BSP library target: am_bsp")
+message(STATUS "Configuring BSP library target: am_bsp with minimal overrides and corrected include")
