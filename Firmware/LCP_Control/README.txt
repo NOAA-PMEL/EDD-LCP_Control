@@ -23,3 +23,10 @@ If enabled debug messages will be sent over UART.
 
 
 State of the world (project):
+
+
+Build with the following commands (windows and linux):
+mkdir build
+cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE="../arm-gcc-toolchain.cmake" -G "Ninja"
+ninja bootload_asb (or whichever target is being used to flash)
