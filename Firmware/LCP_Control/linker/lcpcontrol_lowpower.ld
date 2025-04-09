@@ -11,6 +11,9 @@ MEMORY
     RWMEM (rwx) : ORIGIN = 0x10000000, LENGTH = 384K
 }
 
+/* Define top of stack */
+_estack = ORIGIN(RWMEM) + LENGTH(RWMEM);
+
 SECTIONS
 {
     .text :
@@ -26,14 +29,17 @@ SECTIONS
         _etext = .;
     } > ROMEM
 
-    /* User stack section initialized by startup code. */
+    /* User stack section defined in startup code. Put it high in RAM. */
+    /* The startup code initializes SP to _estack */
     .stack (NOLOAD):
     {
         . = ALIGN(8);
+        _sstack = .; /* Define label for start of stack area (optional) */
         *(.stack)
         *(.stack*)
         . = ALIGN(8);
-    } > RWMEM
+     } > RWMEM /* Grows down from _estack */
+
 
     .data :
     {
@@ -58,6 +64,19 @@ SECTIONS
         . = ALIGN(4);
         _ebss = .;
     } > RWMEM
+
+    /* ---> Define end of BSS and start of Heap <--- */
+    . = ALIGN(4);
+    _end = .; /* Standard symbol for end of data/bss */
+    end = _end; /* Symbol expected by libnosys _sbrk */
+    __end__ = _end;
+    PROVIDE ( end = _end );
+    _heap_start = _end; /* Heap starts immediately after BSS */
+    /* --- End of Heap/Start of Stack definition (Optional) --- */
+    /* Define heap end relative to stack pointer, leave space for stack */
+    /* Example: _heap_end = _estack - 0x800;  */
+    /* Ensure _heap_end does not overlap _heap_start */
+
 
     .ARM.attributes 0 : { *(.ARM.attributes) }
 }
