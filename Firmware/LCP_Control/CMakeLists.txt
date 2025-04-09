@@ -7,20 +7,13 @@ project(LCP_Control LANGUAGES C)
 # --- Configuration ---
 # Toolchain file is expected to set CMAKE_C_COMPILER, CMAKE_CXX_COMPILER, etc.
 # and necessary target properties (CPU, FPU, ABI).
-# Example toolchain file content will be provided below.
 
 # Application specific variables (adjust paths as necessary)
-# Option 1: Use environment variable (like the Makefile)
-# Requires AmbiqSuiteSDK environment variable to be set before running CMake.
-# get_environment_variable(AMBIQ_SDK_PATH AmbiqSuiteSDK)
-# if(NOT AMBIQ_SDK_PATH)
-#   message(FATAL_ERROR "Environment variable AmbiqSuiteSDK is not set.")
-# endif()
+get_filename_component(AMBIQ_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../AmbiqSuiteSDK ABSOLUTE)
 
-# Option 2: Set as CMake variable (can be set via -D command line argument)
-set(AMBIQ_SDK_PATH "$ENV{AmbiqSuiteSDK}" CACHE PATH "Path to the Ambiq Suite SDK")
-if(NOT AMBIQ_SDK_PATH)
-    message(FATAL_ERROR "AMBIQ_SDK_PATH is not set. Set it using -DAMBIQ_SDK_PATH=/path/to/sdk or environment variable AmbiqSuiteSDK")
+# Verify the path exists
+if(NOT EXISTS "${AMBIQ_SDK_PATH}")
+    message(FATAL_ERROR "Ambiq Suite SDK path not found at expected relative location: ${AMBIQ_SDK_PATH}. Please check the directory structure.")
 endif()
 message(STATUS "Using Ambiq Suite SDK Path: ${AMBIQ_SDK_PATH}")
 
