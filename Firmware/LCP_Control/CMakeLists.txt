@@ -199,7 +199,7 @@ add_custom_target(asb DEPENDS ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin)
 # Bootload SVL Target
 set(COM_PORT "$ENV{COM_PORT}" CACHE STRING "Serial port for bootloading")
 if(NOT COM_PORT)
-    set(COM_PORT "/dev/ttyACM0") # Default for Linux, adjust as needed for Windows if not set
+    set(COM_PORT "/dev/ttyUSB0") # Default for Linux, adjust as needed for Windows if not set
     message(STATUS "COM_PORT not set, defaulting to ${COM_PORT}")
 endif()
 set(SVL_UPLOAD_BAUD 921600)
