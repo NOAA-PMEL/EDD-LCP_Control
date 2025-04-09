@@ -36,4 +36,4 @@ Build with the following commands in the ./Firmware/LCP_Control/ directory (wind
 mkdir build
 cd build
 cmake .. -DCMAKE_TOOLCHAIN_FILE="../arm-gcc-toolchain.cmake" -G "Ninja"
-ninja bootload_asb (or whichever target is being used to flash)
+ninja bootload_asb (or whichever target is being used to flash, ensure the target in CMakeLists.txt contains the correct COM port)

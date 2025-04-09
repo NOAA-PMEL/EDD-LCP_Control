@@ -14,9 +14,6 @@ message(STATUS "Using Ambiq Suite SDK Path: ${AMBIQ_SDK_PATH}")
 
 set(TARGET_NAME ${PROJECT_NAME})
 set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/linker/lcpcontrol_lowpower.ld)
-# Note: ASB/SVL linker scripts are not used in this setup, objcopy creates variants from the main output
-# set(LINKER_SCRIPT_ASB ${CMAKE_CURRENT_SOURCE_DIR}/linker/lcpcontrol_lowpower_asb.ld)
-# set(LINKER_SCRIPT_SVL ${CMAKE_CURRENT_SOURCE_DIR}/linker/lcpcontrol_lowpower_svl.ld)
 
 set(PART apollo3)
 set(CPU cortex-m4)
@@ -25,6 +22,8 @@ set(FABI hard)
 
 # --- Executable Target ---
 add_executable(${TARGET_NAME} "") # Sources added later
+# Set output suffix to .elf so J-Link recognizes the format
+set_target_properties(${TARGET_NAME} PROPERTIES SUFFIX ".elf")
 
 # --- Add BSP Subdirectory ---
 # This will define the 'am_bsp' library target using src/bsp/CMakeLists.txt
@@ -109,10 +108,10 @@ target_include_directories(${TARGET_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/app
     ${CMAKE_CURRENT_SOURCE_DIR}/include/artemis
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/bsp # For am_bsp.h and am_bsp_pins.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/bsp # Include project's BSP headers
     ${CMAKE_CURRENT_SOURCE_DIR}/include/RTOS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/sys
-    )
+)
 
 # --- Compile Definitions (Main Target) ---
 target_compile_definitions(${TARGET_NAME} PRIVATE
@@ -123,71 +122,61 @@ target_compile_definitions(${TARGET_NAME} PRIVATE
     AM_PACKAGE_BGA
     AM_DEBUG_PRINTF
     gcc
-    # AM_BSP_GPIO_ITM_SWO # Optional: Define if you want SWO output
+    # AM_BSP_GPIO_ITM_SWO # Optional
 )
 
-# --- Compile Options (Main Target - Use toolchain defaults + specific options) ---
+# --- Compile Options (Main Target) ---
 target_compile_options(${TARGET_NAME} PRIVATE
     # Inherits flags from toolchain CMAKE_C_FLAGS
-    # Add specific flags if needed:
-    # -Wextra
+    # -Wno-unused-variable # Example if you want to suppress specific warnings
 )
 
 # --- Linker Options (Main Target) ---
-# Use nosys.specs (from toolchain file)
+# Uses nosys.specs from toolchain file
 set(LINKER_FLAGS
     -nostartfiles
     -static
     -Wl,--gc-sections
     -Wl,--entry=Reset_Handler
     -Wl,-Map=${CMAKE_BINARY_DIR}/${TARGET_NAME}.map
-    # --specs=rdimon.specs # REMOVED
-    -lgcc # Keep standard libs
+    -lgcc
     -lc
-    -lm   # Keep standard libs
-    # -lrdimon # REMOVED
+    -lm   # Standard libs (libm added explicitly later too)
     -u _printf_float
-    )
+)
 set(LINKER_SCRIPT_FLAG "-Wl,-T,${LINKER_SCRIPT}")
-# Toolchain file adds: ${THUMB_FLAGS} ${CPU_FLAGS} ${FPU_FLAGS} --specs=nosys.specs
 target_link_options(${TARGET_NAME} PRIVATE ${LINKER_SCRIPT_FLAG} ${LINKER_FLAGS})
 
-# --- Libraries (Main Target - Link BSP target, HAL lib, and Math lib) ---
+# --- Libraries (Main Target - Link BSP, HAL, and Math lib) ---
 target_link_libraries(${TARGET_NAME} PRIVATE
     am_bsp # Link the library target defined in src/bsp/CMakeLists.txt
     ${AMBIQ_SDK_PATH}/mcu/apollo3/hal/gcc/bin/libam_hal.a
     m # Explicitly link libm
-    )
+)
 
 # --- Post-Build Steps (objcopy/objdump) ---
-# Use $<TARGET_FILE:${TARGET_NAME}> which CMake resolves to the actual executable path
+# $<TARGET_FILE:${TARGET_NAME}> resolves to LCP_Control.elf
 add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${TARGET_NAME}> ${CMAKE_BINARY_DIR}/${TARGET_NAME}.bin
     COMMAND ${CMAKE_OBJDUMP} -S $<TARGET_FILE:${TARGET_NAME}> > ${CMAKE_BINARY_DIR}/${TARGET_NAME}.lst
     COMMENT "Creating ${TARGET_NAME}.bin and ${TARGET_NAME}.lst"
     VERBATIM)
 
-# --- Custom Targets for SVL/ASB and Bootloading ---
-find_program(PYTHON_EXECUTABLE NAMES python3.8 python3 python HINTS ENV PATH)
-if(NOT PYTHON_EXECUTABLE)
-    message(WARNING "Python 3.8 (or compatible) not found. Bootload targets may fail.")
-    set(PYTHON_EXECUTABLE "python3.8")
-endif()
+# --- Custom Targets for SVL/ASB binary generation ---
 set(ASB_UPLOADER_SCRIPT ${AMBIQ_SDK_PATH}/boards_sfe/common/tools_sfe/asb/asb.py)
 set(SVL_UPLOADER_SCRIPT ${AMBIQ_SDK_PATH}/boards_sfe/common/tools_sfe/svl/svl.py)
 
-# SVL Target (depends on the main executable)
-# Use $<TARGET_FILE:${TARGET_NAME}> as the input for objcopy
+# SVL Target
 add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin
     COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${TARGET_NAME}> ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin
     DEPENDS ${TARGET_NAME}
     COMMENT "Creating ${TARGET_NAME}_svl.bin"
     VERBATIM)
+# Removed ALL, svl is not built by default
 add_custom_target(svl DEPENDS ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin)
 
-# ASB Target (depends on the main executable)
-# Use $<TARGET_FILE:${TARGET_NAME}> as the input for objcopy
+# ASB Target
 add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin
     COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${TARGET_NAME}> ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin
@@ -196,32 +185,65 @@ add_custom_command(
     VERBATIM)
 add_custom_target(asb DEPENDS ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin)
 
-# Bootload SVL Target
+# --- Custom Target for Flashing with SEGGER J-Link ---
+
+find_program(JLINK_EXECUTABLE NAMES JLink.exe HINTS ENV "ProgramFiles(x86)" ENV ProgramFiles PATH_SUFFIXES SEGGER/JLink)
+
+if(NOT JLINK_EXECUTABLE)
+    message(WARNING "JLink.exe not found. Please ensure SEGGER J-Link software is installed and JLink.exe is in the system PATH or provide path via CMAKE_PREFIX_PATH. 'flash_jlink' target may fail.")
+    set(JLINK_EXECUTABLE "JLink.exe") # Fallback to assuming it's in PATH
+endif()
+
+set(JLINK_SCRIPT_PATH ${CMAKE_BINARY_DIR}/flash_script_elf.jlink)
+set(ELF_FILE_PATH "${CMAKE_BINARY_DIR}/${TARGET_NAME}.elf")
+file(TO_CMAKE_PATH "${ELF_FILE_PATH}" ELF_FILE_PATH_CMAKE)
+
+# Content of the J-Link script file (remains the same from previous step)
+set(JLINK_SCRIPT_CONTENT
+# "erase\n" # Keep erase commented out
+"loadfile \"${ELF_FILE_PATH_CMAKE}\"\n"
+"r\n"
+"g\n"
+"exit\n"
+)
+file(WRITE ${JLINK_SCRIPT_PATH} "${JLINK_SCRIPT_CONTENT}")
+
+# Define the custom target - Pass arguments individually to COMMAND
+add_custom_target(flash_jlink DEPENDS ${TARGET_NAME}
+    COMMAND ${JLINK_EXECUTABLE} # Program
+            # Arguments, each as a separate item
+            -device AMA3B1KK-KBR
+            -if SWD
+            -speed 4000
+            -autoconnect 1
+            -ExitOnError 1
+            -CommanderScript ${JLINK_SCRIPT_PATH}
+    COMMENT "Flashing target with SEGGER J-Link using ELF file ${ELF_FILE_PATH}"
+    VERBATIM
+    USES_TERMINAL
+)
+
+# --- Bootload Targets (Using specific .bin files) ---
 set(COM_PORT "$ENV{COM_PORT}" CACHE STRING "Serial port for bootloading")
 if(NOT COM_PORT)
-    set(COM_PORT "/dev/ttyUSB0") # Default for Linux, adjust as needed for Windows if not set
+    set(COM_PORT "/dev/ttyACM0")
     message(STATUS "COM_PORT not set, defaulting to ${COM_PORT}")
 endif()
 set(SVL_UPLOAD_BAUD 921600)
-
-add_custom_target(bootload_svl DEPENDS svl
+add_custom_target(bootload_svl DEPENDS svl # Depends on the svl target which creates _svl.bin
     COMMAND ${PYTHON_EXECUTABLE} ${SVL_UPLOADER_SCRIPT} ${COM_PORT} -f ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin -b ${SVL_UPLOAD_BAUD} -v
     COMMENT "Bootloading SVL via ${COM_PORT}"
     VERBATIM)
-
-# Bootload ASB Target
 set(ASB_UPLOAD_BAUD 115200)
-add_custom_target(bootload_asb DEPENDS asb
+add_custom_target(bootload_asb DEPENDS asb # Depends on the asb target which creates _asb.bin
     COMMAND ${PYTHON_EXECUTABLE} ${ASB_UPLOADER_SCRIPT} --bin ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin --load-address-blob 0x20000 --magic-num 0xCB -o ${CMAKE_BINARY_DIR}/${TARGET_NAME} --version 0x0 --load-address-wired 0xC000 -i 6 --options 0x1 -b ${ASB_UPLOAD_BAUD} -port ${COM_PORT} -r 2 -v
     COMMENT "Bootloading ASB via ${COM_PORT}"
     VERBATIM)
+add_custom_target(bootload DEPENDS bootload_asb) # Default bootload uses ASB
 
-# Default bootload target
-add_custom_target(bootload DEPENDS bootload_asb)
-# add_custom_target(bootload DEPENDS bootload_svl) # Uncomment to default to SVL
 
 # --- Output ---
-message(STATUS "Target: ${TARGET_NAME}")
+message(STATUS "Target: ${TARGET_NAME}.elf") # Reflect suffix change
 message(STATUS "SDK Path: ${AMBIQ_SDK_PATH}")
 message(STATUS "Linker Script: ${LINKER_SCRIPT}")
 message(STATUS "Output directory: ${CMAKE_BINARY_DIR}")
