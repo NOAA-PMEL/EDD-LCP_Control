@@ -151,7 +151,7 @@ target_link_options(${TARGET_NAME} PRIVATE ${LINKER_SCRIPT_FLAG} ${LINKER_FLAGS}
 target_link_libraries(${TARGET_NAME} PRIVATE
     am_bsp # Link the library target defined in src/bsp/CMakeLists.txt
     ${AMBIQ_SDK_PATH}/mcu/apollo3/hal/gcc/bin/libam_hal.a
-    m # Explicitly link libm
+    m # Explicitly link libm 
 )
 
 # --- Post-Build Steps (objcopy/objdump) ---
@@ -226,16 +226,20 @@ add_custom_target(flash_jlink DEPENDS ${TARGET_NAME}
 # --- Bootload Targets (Using specific .bin files) ---
 set(COM_PORT "$ENV{COM_PORT}" CACHE STRING "Serial port for bootloading")
 if(NOT COM_PORT)
-    set(COM_PORT "/dev/ttyACM0")
+    set(COM_PORT "/dev/ttyUSB0")
     message(STATUS "COM_PORT not set, defaulting to ${COM_PORT}")
 endif()
 set(SVL_UPLOAD_BAUD 921600)
 add_custom_target(bootload_svl DEPENDS svl # Depends on the svl target which creates _svl.bin
+    # For the RHEL8 Linux system in the lab, specify python3.8 explicitly and comment out the other command. 
+    #COMMAND python3.8 ${SVL_UPLOADER_SCRIPT} ${COM_PORT} -f ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin -b ${SVL_UPLOAD_BAUD} -v
     COMMAND ${PYTHON_EXECUTABLE} ${SVL_UPLOADER_SCRIPT} ${COM_PORT} -f ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin -b ${SVL_UPLOAD_BAUD} -v
     COMMENT "Bootloading SVL via ${COM_PORT}"
     VERBATIM)
 set(ASB_UPLOAD_BAUD 115200)
 add_custom_target(bootload_asb DEPENDS asb # Depends on the asb target which creates _asb.bin
+    # For the RHEL8 Linux system in the lab, specify python3.8 explicitly and comment out the other command.
+    #COMMAND python3.8 ${ASB_UPLOADER_SCRIPT} --bin ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin --load-address-blob 0x20000 --magic-num 0xCB -o ${CMAKE_BINARY_DIR}/${TARGET_NAME} --version 0x0 --load-address-wired 0xC000 -i 6 --options 0x1 -b ${ASB_UPLOAD_BAUD} -port ${COM_PORT} -r 2 -v
     COMMAND ${PYTHON_EXECUTABLE} ${ASB_UPLOADER_SCRIPT} --bin ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin --load-address-blob 0x20000 --magic-num 0xCB -o ${CMAKE_BINARY_DIR}/${TARGET_NAME} --version 0x0 --load-address-wired 0xC000 -i 6 --options 0x1 -b ${ASB_UPLOAD_BAUD} -port ${COM_PORT} -r 2 -v
     COMMENT "Bootloading ASB via ${COM_PORT}"
     VERBATIM)
