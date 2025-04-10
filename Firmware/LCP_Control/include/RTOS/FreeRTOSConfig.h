@@ -194,6 +194,8 @@ extern void am_freertos_wakeup(uint32_t);
 #define configCTIMER_CLOCK                        AM_HAL_CTIMER_XT_32_768KHZ
 #endif
 
+#include "trcRecorder.h" // TraceRecorder
+
 #ifdef __cplusplus
 }
 #endif

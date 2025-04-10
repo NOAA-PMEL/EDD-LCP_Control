@@ -20,6 +20,7 @@
 #include "main.h"
 #include "sensors.h"
 #include "StateMachine.h"
+#include "trcRecorder.h" // TraceRecorder
 
 #define LCP_FREE_RTOS
 //#define SENSORS_Test
@@ -32,6 +33,12 @@ int main(void)
     /** initialize debug features */
     artemis_debug_initialize();
 
+    /** initialize time functions */
+    artemis_time_initialize(); // Moved here, above the trace recorder init
+
+    // Initialize and start the TraceRecorder
+    xTraceEnable(TRC_START);
+
     /** 1 second delay */
     am_util_delay_ms(1000);
 
@@ -43,8 +50,7 @@ int main(void)
     ARTEMIS_DEBUG_PRINTF("DEBUG :: LCP Controlboard");
     ARTEMIS_DEBUG_PRINTF("\n*****************************\n");
 
-    /** initialize time functions */
-    artemis_time_initialize();
+    // previous location of artemis_time_initialize()
 
     /** LEDS just for testing */
 	am_hal_gpio_pinconfig(AM_BSP_GPIO_LED_GREEN, g_AM_BSP_GPIO_LED_GREEN);
