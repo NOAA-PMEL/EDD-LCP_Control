@@ -232,15 +232,15 @@ endif()
 set(SVL_UPLOAD_BAUD 921600)
 add_custom_target(bootload_svl DEPENDS svl # Depends on the svl target which creates _svl.bin
     # For the RHEL8 Linux system in the lab, specify python3.8 explicitly and comment out the other command. 
-    #COMMAND python3.8 ${SVL_UPLOADER_SCRIPT} ${COM_PORT} -f ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin -b ${SVL_UPLOAD_BAUD} -v
-    COMMAND ${PYTHON_EXECUTABLE} ${SVL_UPLOADER_SCRIPT} ${COM_PORT} -f ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin -b ${SVL_UPLOAD_BAUD} -v
+    COMMAND python3.8 ${SVL_UPLOADER_SCRIPT} ${COM_PORT} -f ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin -b ${SVL_UPLOAD_BAUD} -v
+    #COMMAND ${PYTHON_EXECUTABLE} ${SVL_UPLOADER_SCRIPT} ${COM_PORT} -f ${CMAKE_BINARY_DIR}/${TARGET_NAME}_svl.bin -b ${SVL_UPLOAD_BAUD} -v
     COMMENT "Bootloading SVL via ${COM_PORT}"
     VERBATIM)
 set(ASB_UPLOAD_BAUD 115200)
 add_custom_target(bootload_asb DEPENDS asb # Depends on the asb target which creates _asb.bin
     # For the RHEL8 Linux system in the lab, specify python3.8 explicitly and comment out the other command.
-    #COMMAND python3.8 ${ASB_UPLOADER_SCRIPT} --bin ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin --load-address-blob 0x20000 --magic-num 0xCB -o ${CMAKE_BINARY_DIR}/${TARGET_NAME} --version 0x0 --load-address-wired 0xC000 -i 6 --options 0x1 -b ${ASB_UPLOAD_BAUD} -port ${COM_PORT} -r 2 -v
-    COMMAND ${PYTHON_EXECUTABLE} ${ASB_UPLOADER_SCRIPT} --bin ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin --load-address-blob 0x20000 --magic-num 0xCB -o ${CMAKE_BINARY_DIR}/${TARGET_NAME} --version 0x0 --load-address-wired 0xC000 -i 6 --options 0x1 -b ${ASB_UPLOAD_BAUD} -port ${COM_PORT} -r 2 -v
+    COMMAND python3.8 ${ASB_UPLOADER_SCRIPT} --bin ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin --load-address-blob 0x20000 --magic-num 0xCB -o ${CMAKE_BINARY_DIR}/${TARGET_NAME} --version 0x0 --load-address-wired 0xC000 -i 6 --options 0x1 -b ${ASB_UPLOAD_BAUD} -port ${COM_PORT} -r 2 -v
+    #COMMAND ${PYTHON_EXECUTABLE} ${ASB_UPLOADER_SCRIPT} --bin ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin --load-address-blob 0x20000 --magic-num 0xCB -o ${CMAKE_BINARY_DIR}/${TARGET_NAME} --version 0x0 --load-address-wired 0xC000 -i 6 --options 0x1 -b ${ASB_UPLOAD_BAUD} -port ${COM_PORT} -r 2 -v
     COMMENT "Bootloading ASB via ${COM_PORT}"
     VERBATIM)
 add_custom_target(bootload DEPENDS bootload_asb) # Default bootload uses ASB
