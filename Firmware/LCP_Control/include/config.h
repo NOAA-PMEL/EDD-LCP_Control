@@ -79,7 +79,7 @@
 #define SYSTEM_PROFILER_PROFILE_EXTRA_OOMPH ( true )
 
 #define SYSTEM_CRUSH_LIMIT_DEPTH            ( 220.0f )      /* crash limit depth in meters */
-#define SYSTEM_PROFILE_NUMBER               ( 70 )         /* for testing */
+#define SYSTEM_PROFILE_NUMBER               ( 200 )         /* for testing */
 #define PISTON_POSITION_INCREMENT           ( 0.030f )      /* Piston position increment-decrement in inches 0.015*/
 #define PISTON_POSITION_INCREMENT2          ( 0.010f )      /* Piston position increment-decrement in inches, minimum length is 0.008in */
 #define PISTON_POSITION_MAXIMUM             ( 11.6f )      /* Piston position maximum in inches at full extension*/

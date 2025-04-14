@@ -1237,6 +1237,7 @@ void module_sps_move_to_park(void)
     float Depth = 0.0, Rate = 0.0;
     float Pressure = 0.0;
     uint32_t to_park_state_time = 0;
+    uint8_t to_park_pistonmin_try = 0;
 
     /* variables for checking if the LCP hit the bottom for PISTON_MOVEMENT_ON_BOTTOM (inches) movement */
     //PIS_Get_Length(&Length);
@@ -1333,6 +1334,7 @@ void module_sps_move_to_park(void)
                 if (length_update <= PISTON_POSITION_MINIMUM)
                 {
                     length_update = PISTON_POSITION_MINIMUM;
+                    to_park_pistonmin_try++;
                     /* start the timer for TO_PARK_STATE_TIMER (20 mins) */
                     to_park_state_time += (period * rate_count);
                     ARTEMIS_DEBUG_PRINTF("<< SPS :: move_to_park, critical piston minimum position time = %.2f seconds >>\n", (float)to_park_state_time/xDelay1000ms);
@@ -1374,6 +1376,10 @@ void module_sps_move_to_park(void)
                 vTaskDelay(piston_period);
 
                 if (length_update <= PISTON_POSITION_MINIMUM && Length <= PISTON_POSITION_MINIMUM)
+                {
+                    /* do not even send a piston command, do nothing  */
+                }
+                else if (length_update <= PISTON_POSITION_MINIMUM && to_park_pistonmin_try >=2 )
                 {
                     /* do not even send a piston command, do nothing  */
                 }
@@ -1758,6 +1764,7 @@ void module_sps_park(void)
     float Length = 0.0;
     bool piston_move = false;
     float length_update = park_piston_length;
+    uint8_t park_pistonmin_try = 0;
 
     /* average 10 pressure, temperature values and store */
     float samples_p[10] = {0};
@@ -1908,7 +1915,7 @@ void module_sps_park(void)
                     }
                     else if (averaged_rate < 0.0 && !piston_move && !crush_depth)
                     {
-                        /* increase piston position by PARK_POSITION_INCREMENT inches */
+                        /* increase piston position by PARK_POSITION_INCREMENT 2 inches */
                         length_update += PARK_POSITION_INCREMENT2;
                         ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth Rate Positive, averaged_rate=%f, increase %fin, length_update=%.4fin\n", averaged_rate, PARK_POSITION_INCREMENT, length_update);
 
@@ -1952,6 +1959,7 @@ void module_sps_park(void)
                         {
                             ARTEMIS_DEBUG_PRINTF("\n<< SPS :: park, length_update=%.4fin < piston position minimum >>\n", length_update);
                             length_update = PISTON_POSITION_MINIMUM;
+                            park_pistonmin_try++;
                         }
 
                         /* check if it needs to move the piston or not */
@@ -1961,6 +1969,10 @@ void module_sps_park(void)
                         if (length_update <= PISTON_POSITION_MINIMUM && Length <= PISTON_POSITION_MINIMUM)
                         {
                         /* do not even send a piston command, do nothing  */
+                        }
+                        else if (length_update <= PISTON_POSITION_MINIMUM && park_pistonmin_try >=2 )
+                        {
+                            /* do not even send a piston command, do nothing  */
                         }
                         else
                         {
@@ -1973,7 +1985,7 @@ void module_sps_park(void)
                     }
                     else if (averaged_rate > 0.0 && !piston_move && !crush_depth)
                     {
-                        /* decrease piston position by PARK_POSITION_INCREMENT inches */
+                        /* decrease piston position by PARK_POSITION_INCREMENT 2 inches */
                         length_update -= PARK_POSITION_INCREMENT2;
                         ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth Rate Positive, averaged_rate=%f, decrease %fin, length_update=%.4fin\n", averaged_rate, PARK_POSITION_INCREMENT2, length_update);
 
@@ -2001,6 +2013,10 @@ void module_sps_park(void)
                         if (length_update <= PISTON_POSITION_MINIMUM && Length <= PISTON_POSITION_MINIMUM)
                         {
                         /* do not even send a piston command, do nothing  */
+                        }
+                        else if (length_update <= PISTON_POSITION_MINIMUM && park_pistonmin_try >=2 )
+                        {
+                            /* do not even send a piston command, do nothing  */
                         }
                         else
                         {
@@ -2438,6 +2454,7 @@ void module_sps_move_to_profile(void)
 
     /* time for critical piston minimum position */
     uint32_t to_profile_state_time = 0;
+    uint8_t to_profile_pistonmin_try = 0;
 
     /* variables for checking if the LCP hit the bottom for PISTON_MOVEMENT_ON_BOTTOM (inches) movement */
     //PIS_Get_Length(&Length);
@@ -2530,6 +2547,7 @@ void module_sps_move_to_profile(void)
                 if (length_update <= PISTON_POSITION_MINIMUM)
                 {
                     length_update = PISTON_POSITION_MINIMUM;
+                    to_profile_pistonmin_try++;
 
                     if (Depth < PARK_DEPTH-PARK_DEPTH_ERR)
                     {
@@ -2578,6 +2596,10 @@ void module_sps_move_to_profile(void)
                 vTaskDelay(piston_period);
 
                 if (length_update <= PISTON_POSITION_MINIMUM && Length <= PISTON_POSITION_MINIMUM)
+                {
+                    /* do not even send a piston command, do nothing  */
+                }
+                else if (length_update <= PISTON_POSITION_MINIMUM && to_profile_pistonmin_try >=2 )
                 {
                     /* do not even send a piston command, do nothing  */
                 }
@@ -2943,6 +2965,7 @@ void module_sps_profile(void)
     /* time for critical depth piston position */
     uint32_t crit_depth_piston_pos_time = 0;
     float length_update_last_adjusted = length_update;
+    float length_update_surf_adjusted = length_update;
     
     /*If entering profile state because exceeded Crush_Depth*/
     if (crush_depth)
@@ -3568,6 +3591,8 @@ void module_sps_profile(void)
         {
             if (!surface_piston)
             {
+                length_update_surf_adjusted = length_update;
+
                 /* check if piston is still moving then reset it and stop */
                 if (piston_move)
                 {
@@ -3624,6 +3649,11 @@ void module_sps_profile(void)
             {
                 /* set to previous adjusted length update */
                 prof_piston_length = length_update_last_adjusted;
+            }
+            else
+            {
+                /* set to profile length update before surface move */
+                prof_piston_length = length_update_surf_adjusted;
             }
           
             crush_depth = false;
