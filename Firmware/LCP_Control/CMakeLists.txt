@@ -87,6 +87,35 @@ set(SOURCES
     src/datalogger.c
     src/app/sensors_test.c
     src/app/memory.c
+    ## TRACEALYZER FILES ##
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcAssert.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcCounter.c 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcDependency.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcDiagnostics.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcEntryTable.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcError.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcEvent.c 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcEventBuffer.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcExtension.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcHardwarePort.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcHeap.c 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcInternalEventBuffer.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcInterval.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcISR.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcKernelPort.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcMultiCoreEventBuffer.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcObject.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcPrint.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcRunnable.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcSnapshotRecorder.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcStackMonitor.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcStateMachine.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcStaticBuffer.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcStreamingRecorder.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcString.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcTask.c 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/trcTimestamp.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/streamports/RingBuffer/trcStreamPort.c
 )
 
 target_sources(${TARGET_NAME} PRIVATE ${SOURCES})
@@ -111,6 +140,10 @@ target_include_directories(${TARGET_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/bsp # Include project's BSP headers
     ${CMAKE_CURRENT_SOURCE_DIR}/include/RTOS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/sys
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/streamports/RingBuffer/config
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/streamports/RingBuffer/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/config
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TraceRecorder/include
 )
 
 # --- Compile Definitions (Main Target) ---

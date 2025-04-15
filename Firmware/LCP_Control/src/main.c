@@ -35,6 +35,8 @@ int main(void)
     /** 1 second delay */
     am_util_delay_ms(1000);
 
+    xTraceEnable(TRC_START); // Enable Trace Recorder
+
     /* clear the screen output, if wanted */
     //am_util_stdio_terminal_clear();
 
