@@ -75,6 +75,7 @@ set(SOURCES
     src/artemis/artemis_time.c
     src/artemis/artemis_uart.c
     src/artemis/artemis_ublox_i2c.c
+    src/artemis/artemis_flash.c # Flash Storage Driver
     src/RTOS/rtos.c
     src/sys/sysinfo.c
     src/temperature.c
