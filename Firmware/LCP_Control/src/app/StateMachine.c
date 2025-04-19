@@ -47,26 +47,32 @@
 //
 //*****************************************************************************
 
-/* park numbers and measurements */
-//static pData pPark[SYSTEM_PROFILE_NUMBER];
-//static float park_temp[DATA_PARK_SAMPLES_MAX];
-//static float park_pressure[DATA_PARK_SAMPLES_MAX];
-/* profile numbers and measurements */
-//static pData pProf[SYSTEM_PROFILE_NUMBER];
-//static float prof_temp[DATA_PROFILE_SAMPLES_MAX];
-//static float prof_pressure[DATA_PROFILE_SAMPLES_MAX];
+// --- Static declarations for "in-use" Park data ---
+static pData current_park_profile_info; // Holds metadata (start/stop times, lat/lon, length) for the current park cycle
+static float park_pressure_measurements[DATA_PARK_SAMPLES_MAX]; // Static array for park pressure
+static float park_temp_measurements[DATA_PARK_SAMPLES_MAX];     // Static array for park temperature
 
-//static Data_t park;         /**< Park mode Data */
-//static Data_t prof;         /**< Profile mode data */
+// The main static structure for current park data
+static Data_t current_park_data = {                             
+    .data.pressure = park_pressure_measurements,                // Point to the static pressure array
+    .data.temperature = park_temp_measurements,               // Point to the static temperature array
+    .p = &current_park_profile_info                             // Point to the static metadata struct
+};
 
-// Pointers used for dynamic memory allocation
-static Data_t *park = NULL;  /**< Park mode Data */
-static Data_t *prof = NULL;  /**< Profile mode data */
+// --- Static declarations for "in-use" Profile data ---
+static pData current_profile_profile_info; // Holds metadata for the current profile cycle
+static float profile_pressure_measurements[DATA_PROFILE_SAMPLES_MAX]; // Static array for profile pressure
+static float profile_temp_measurements[DATA_PROFILE_SAMPLES_MAX];     // Static array for profile temperature
+
+// The main static structure for current profile data
+static Data_t current_profile_data = {                          
+    .data.pressure = profile_pressure_measurements,             // Point to the static pressure array
+    .data.temperature = profile_temp_measurements,            // Point to the static temperature array
+    .p = &current_profile_profile_info                          // Point to the static metadata struct
+};
 
 static sData sPark;         /**< Park mode measurement - StateMachine */
 static sData sProf;         /**< Profile mode measurement - StateMachine */
-//static sData sPark_ext;     /**< Park mode measurement extended - StateMachine */
-//static sData sProf_ext;     /**< Profile mode measurement extended - StateMachine */
 
 static System_t system =
 {
@@ -187,24 +193,36 @@ void STATE_initialize(SystemMode_t mode)
     switch(mode)
     {
         case SYSST_Predeployment_mode:
+            // No specific data buffer setup needed here for park/profile
             break;
 
         case SYSST_AutoBallast_mode:
+            // No specific data buffer setup needed here for park/profile
             break;
 
         case SYSST_SimpleProfiler_mode:
-            //DATA_setbuffer(&park, pPark, park_pressure, park_temp, DATA_PARK_SAMPLES_MAX);
-            //DATA_setbuffer(&prof, pProf, prof_pressure, prof_temp, DATA_PROFILE_SAMPLES_MAX);
+            // --- Initialize static data structures ---
+            // Set the maximum sample capacity for the static buffers
+            current_park_data.cbuf.length = DATA_PARK_SAMPLES_MAX;
+            current_profile_data.cbuf.length = DATA_PROFILE_SAMPLES_MAX;
+
+            // Reset the counters and state for the static buffers
+            DATA_reset(&current_park_data);
+            DATA_reset(&current_profile_data);
+            ARTEMIS_DEBUG_PRINTF("STATE_initialize: Static Park and Profile data structures reset.\n");
 
             break;
 
         case SYSST_Moored_mode:
+            // Add specific setup if this mode uses the static buffers
             break;
 
         case SYSST_AirDeploy_mode:
+            // Add specific setup if this mode uses the static buffers
             break;
 
         case SYSST_Popup_mode:
+            // No specific data buffer setup needed here for park/profile
             break;
 
         default:
@@ -212,7 +230,7 @@ void STATE_initialize(SystemMode_t mode)
     }
 
     /* Initialize the memory management system */
-    MEM_init_transmission_queues();
+    MEM_init_transmission_queues(); // This likely needs modification too for the static queue
 }
 
 void STATE_MainState(SystemMode_t mode)
@@ -1637,43 +1655,11 @@ void module_sps_park(void)
     /* set crush depth to false */
     crush_depth = false;
 
-    // Check and manage memory before allocation
-    size_t required_size = sizeof(Data_t) + (DATA_PARK_SAMPLES_MAX * 2 * sizeof(float)) + 
-                           sizeof(pData);
-    MEM_manage_memory_before_allocation(required_size, &park_queue, &prof_queue);
-
-    // Allocate memory for the new park data
-    Data_t *new_park_data = DATA_alloc(1, DATA_PARK_SAMPLES_MAX, park_number);
-    if (new_park_data == NULL) {
-        // If allocation still fails after memory management, take emergency action
-        ARTEMIS_DEBUG_PRINTF("SPS :: park, CRITICAL ERROR: Failed to allocate park data memory even after cleanup\n");
-        am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
-        
-        // Emergency cleanup - remove oldest data from any queue
-        while ((new_park_data == NULL) && 
-               (MEM_queue_get_count(&park_queue) > 0 || MEM_queue_get_count(&prof_queue) > 0)) {
-            
-            if (MEM_queue_get_count(&park_queue) > 0) {
-                MEM_queue_remove_oldest(&park_queue);
-            } else if (MEM_queue_get_count(&prof_queue) > 0) {
-                MEM_queue_remove_oldest(&prof_queue);
-            }
-            
-            // Try allocation again
-            new_park_data = DATA_alloc(1, DATA_PARK_SAMPLES_MAX, park_number);
-        }
-        
-        if (new_park_data == NULL) {
-            // If still fails, we can't continue with data collection
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, FATAL ERROR: Cannot allocate memory for data collection\n");
-            return;
-        }
-    }
-    
-    ARTEMIS_DEBUG_PRINTF("SPS :: park, Successfully allocated park data memory\n");
-    
-    // Set the global park pointer to this new data
-    park = new_park_data;
+    // --- Prepare the static park data structure for this cycle ---
+    ARTEMIS_DEBUG_PRINTF("SPS :: park, Resetting static park data structure for park number %d\n", park_number);
+    DATA_reset(&current_park_data);
+    current_park_data.pNumber = park_number; // Explicitly set the profile number for this cycle
+    // --- End data preparation ---
 
 #ifdef TEST
     /** Sample at 9Hz */
@@ -1814,7 +1800,7 @@ void module_sps_park(void)
         /* store first sample with start time */
         if (start_time)
         {
-            DATA_add(park, epoch, Pressure, Temperature, park_number);
+            DATA_add(&current_park_data, epoch, Pressure, Temperature, park_number); // changed to use current_park_data
             datalogger_park_mode(filename, Pressure, Temperature, &time);
             start_time = false;
 #ifdef TEST
@@ -1842,7 +1828,7 @@ void module_sps_park(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: park, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
 
             /* store averages data locally */
-            DATA_add(park, epoch, avg_p, avg_t, park_number);
+            DATA_add(&current_park_data, epoch, avg_p, avg_t, park_number); // changed to use current_park_data
             samples = 0;
 
 #ifdef TEST
@@ -2862,43 +2848,11 @@ void module_sps_move_to_profile(void)
 
 void module_sps_profile(void)
 {
-    // Check and manage memory before allocation
-    size_t required_size = sizeof(Data_t) + (DATA_PROFILE_SAMPLES_MAX * 2 * sizeof(float)) + 
-                           sizeof(pData);
-    MEM_manage_memory_before_allocation(required_size, &prof_queue, &park_queue);
-    
-    // Allocate memory for the new profile data
-    Data_t *new_prof_data = DATA_alloc(1, DATA_PROFILE_SAMPLES_MAX, prof_number);
-    if (new_prof_data == NULL) {
-        // If allocation still fails after memory management, take emergency action
-        ARTEMIS_DEBUG_PRINTF("SPS :: profile, CRITICAL ERROR: Failed to allocate profile data memory even after cleanup\n");
-        am_hal_gpio_output_clear(AM_BSP_GPIO_LED_RED);
-        
-        // Emergency cleanup - remove oldest data from any queue
-        while ((new_prof_data == NULL) && 
-               (MEM_queue_get_count(&park_queue) > 0 || MEM_queue_get_count(&prof_queue) > 0)) {
-            
-            if (MEM_queue_get_count(&park_queue) > 0) {
-                MEM_queue_remove_oldest(&park_queue);
-            } else if (MEM_queue_get_count(&prof_queue) > 0) {
-                MEM_queue_remove_oldest(&prof_queue);
-            }
-            
-            // Try allocation again
-            new_prof_data = DATA_alloc(1, DATA_PROFILE_SAMPLES_MAX, prof_number);
-        }
-        
-        if (new_prof_data == NULL) {
-            // If still fails, we can't continue with data collection
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, FATAL ERROR: Cannot allocate memory for data collection\n");
-            return;
-        }
-    }
-    
-    ARTEMIS_DEBUG_PRINTF("SPS :: profile, Successfully allocated profile data memory\n");
-    
-    // Set the global prof pointer to the allocated data
-    prof = new_prof_data;
+    // --- Prepare the static profile data structure for this cycle ---
+    ARTEMIS_DEBUG_PRINTF("SPS :: profile, Resetting static profile data structure for profile number %d\n", prof_number);
+    DATA_reset(&current_profile_data);
+    current_profile_data.pNumber = prof_number; // Explicitly set the profile number for this cycle
+    // --- End static profile data structure preparation ---
     
     float Volume = 0.0;
     float Density = 0.0;
@@ -3100,7 +3054,7 @@ void module_sps_profile(void)
         /* store first sample with start time */
         if (start_time == true)
         {
-            DATA_add(prof, epoch, Pressure, Temperature, prof_number);
+            DATA_add(&current_profile_data, epoch, Pressure, Temperature, prof_number); // Changed to use the static profile data structure
             datalogger_profile_mode(filename, Pressure, Temperature, &time);
             start_time = false;
             bin_pressure = ceil(Pressure * 10) / 10;
@@ -3138,7 +3092,7 @@ void module_sps_profile(void)
 
             /* store averaged data locally */
             //DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
-            DATA_add(prof, epoch, avg_p, avg_t, prof_number);
+            DATA_add(&current_profile_data, epoch, avg_p, avg_t, prof_number); // Changed to use the static profile data structure
             samples = 0;
             samples_p = 0;
             samples_t = 0;
@@ -3167,7 +3121,7 @@ void module_sps_profile(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
 
             /* store averaged data locally */
-            DATA_add(prof, epoch, avg_p, avg_t, prof_number);
+            DATA_add(&current_profile_data, epoch, avg_p, avg_t, prof_number); // Changed to use the static profile data structure
             samples = 0;
             samples_p = 0;
             samples_t = 0;
@@ -3193,7 +3147,7 @@ void module_sps_profile(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
 
             /* store averaged data locally */
-            DATA_add(prof, epoch, avg_p, avg_t, prof_number);
+            DATA_add(&current_profile_data, epoch, avg_p, avg_t, prof_number); // Changed to use the static profile data structure
             samples = 0;
             samples_p = 0;
             samples_t = 0;
@@ -3223,7 +3177,7 @@ void module_sps_profile(void)
 
             // store averaged data locally
             //DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
-            DATA_add(prof, epoch, avg_p, avg_t, prof_number);
+            DATA_add(&current_profile_data, epoch, avg_p, avg_t, prof_number); // Changed to use the static profile data structure
             samples = 0;
             samples_p = 0;
             samples_t = 0;
@@ -3248,7 +3202,7 @@ void module_sps_profile(void)
 
             //store averaged data locally
             //DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
-            DATA_add(prof, epoch, avg_p, avg_t, prof_number);
+            DATA_add(&current_profile_data, epoch, avg_p, avg_t, prof_number); // Changed to use the static profile data structure
             samples = 0;
             samples_p = 0;
             samples_t = 0;
@@ -3959,8 +3913,8 @@ void module_sps_move_to_surface(void)
                 if (fix > 9)
                 {
                     /* update latitude and longitude for park and profile modes */
-                    DATA_add_gps(park, gps.latitude, gps.longitude);
-                    DATA_add_gps(prof, gps.latitude, gps.longitude);
+                    DATA_add_gps(&current_park_data, gps.latitude, gps.longitude); // Change to current_park_data
+                    DATA_add_gps(&current_profile_data, gps.latitude, gps.longitude); // Change to current_profile_data
 
                     /* Calibrate the GPS UTC time into RTC */
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, RTC : <GPS Time Set>\n");
@@ -3984,12 +3938,12 @@ void module_sps_move_to_surface(void)
             {
                 /* update latitude and longitude for park and profile modes */
                 if (park != NULL) {
-                    DATA_add_gps(park, gps.latitude, gps.longitude);
+                    DATA_add_gps(&current_park_data, gps.latitude, gps.longitude); // Change to current_park_data
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Added GPS to park data\n");
                 }
                 
                 if (prof != NULL) {
-                    DATA_add_gps(prof, gps.latitude, gps.longitude);
+                    DATA_add_gps(&current_profile_data, gps.latitude, gps.longitude); // Change to current_profile_data
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Added GPS to profile data\n");
                 }
 

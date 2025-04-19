@@ -7,77 +7,83 @@ ENTRY(Reset_Handler)
 
 MEMORY
 {
-    ROMEM (rx) : ORIGIN = 0x0000C000, LENGTH = 360K /* Program and constant data */
-    NVSTORAGE (rx) : ORIGIN = 0x0004A000, LENGTH = 600K /* Reserved NV storage */
-    RWMEM (rwx) : ORIGIN = 0x10000000, LENGTH = 384K /* RAM */
-}
+    /* Starts at 0x0C000, ends at 0x65FFF */
+    ROMEM (rx) : ORIGIN = 0x0000C000, LENGTH = 360K
 
-/* Define top of stack */
-_estack = ORIGIN(RWMEM) + LENGTH(RWMEM);
+    /* Starts immediately after ROMEM at 0x66000, ends at 0xFBFFF */
+    NVSTORAGE (rx) : ORIGIN = 0x00066000, LENGTH = 600K
+
+    /* Starts much later, no overlap */
+    RWMEM (rwx) : ORIGIN = 0x10000000, LENGTH = 384K
+}
 
 SECTIONS
 {
+    /* Code and read-only data section */
     .text :
     {
         . = ALIGN(4);
-        KEEP(*(.isr_vector))
-        KEEP(*(.patch))
+        KEEP(*(.isr_vector)) /* Keep interrupt vector table */
+        KEEP(*(.patch))      /* Keep patch code */
         *(.text)
         *(.text*)
         *(.rodata)
         *(.rodata*)
         . = ALIGN(4);
-        _etext = .;
+        _etext = .; /* End of text section */
     } > ROMEM
 
-    /* User stack section defined in startup code. Put it high in RAM. */
-    /* The startup code initializes SP to _estack */
-    .stack (NOLOAD):
+    /* Non-volatile storage section */
+    .nvdata :
     {
-        . = ALIGN(8);
-        _sstack = .; /* Define label for start of stack area (optional) */
-        *(.stack)
-        *(.stack*)
-        . = ALIGN(8);
-     } > RWMEM /* Grows down from _estack */
+        . = ALIGN(4);
+        *(.nvdata)          /* Non-volatile user data */
+        *(.nvdata*)         /* Non-volatile user data */
+        . = ALIGN(4);
+        _envdata = .;       /* End of NV storage section */
+    } > NVSTORAGE
 
-
+    /* Initialized data section */
     .data :
     {
         . = ALIGN(4);
-        _sdata = .;
+        _sdata = .;         /* Start of initialized data */
         *(.data)
         *(.data*)
         . = ALIGN(4);
-        _edata = .;
+        _edata = .;         /* End of initialized data */
     } > RWMEM AT>ROMEM
 
-    /* used by startup to initialize data */
+    /* Used by startup to initialize .data */
     _init_data = LOADADDR(.data);
 
+    /* Uninitialized data section */
     .bss :
     {
         . = ALIGN(4);
-        _sbss = .;
+        _sbss = .;          /* Start of BSS */
         *(.bss)
         *(.bss*)
-        *(COMMON)
+        *(COMMON)           /* Common uninitialized symbols */
         . = ALIGN(4);
-        _ebss = .;
+        _ebss = .;          /* End of BSS */
     } > RWMEM
 
-    /* ---> Define end of BSS and start of Heap <--- */
-    . = ALIGN(4);
-    _end = .; /* Standard symbol for end of data/bss */
-    end = _end; /* Symbol expected by libnosys _sbrk */
-    __end__ = _end;
-    PROVIDE ( end = _end );
-    _heap_start = _end; /* Heap starts immediately after BSS */
-    /* --- End of Heap/Start of Stack definition (Optional) --- */
-    /* Define heap end relative to stack pointer, leave space for stack */
-    /* Example: _heap_end = _estack - 0x800;  */
-    /* Ensure _heap_end does not overlap _heap_start */
+    /* User stack section */
+    .stack (NOLOAD):
+    {
+        . = ALIGN(8);
+        *(.stack)
+        *(.stack*)
+        . = ALIGN(8);
+    } > RWMEM
 
+    /* End of user data - Heap starts from here */
+    end = .;
 
+    /* Stack starts at the end of RAM */
+    _estack = ORIGIN(RWMEM) + LENGTH(RWMEM);
+
+    /* ARM attributes */
     .ARM.attributes 0 : { *(.ARM.attributes) }
 }

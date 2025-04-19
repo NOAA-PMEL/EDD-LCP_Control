@@ -7,9 +7,14 @@ ENTRY(Reset_Handler)
 
 MEMORY
 {
-    ROMEM (rx) : ORIGIN = 0x0000C000, LENGTH = 360K /* Program and constant data */
-    NVSTORAGE (rx) : ORIGIN = 0x0004A000, LENGTH = 600K /* Reserved NV storage */
-    RWMEM (rwx) : ORIGIN = 0x10000000, LENGTH = 384K /* RAM */
+    /* Starts at 0x0C000, ends at 0x65FFF */
+    ROMEM (rx) : ORIGIN = 0x0000C000, LENGTH = 360K
+
+    /* Starts immediately after ROMEM at 0x66000, ends at 0xFBFFF */
+    NVSTORAGE (rx) : ORIGIN = 0x00066000, LENGTH = 600K
+
+    /* Starts much later, no overlap */
+    RWMEM (rwx) : ORIGIN = 0x10000000, LENGTH = 384K
 }
 
 SECTIONS
@@ -26,6 +31,16 @@ SECTIONS
         . = ALIGN(4);
         _etext = .;
     } > ROMEM
+
+    /* Non-volatile storage section */
+    .nvdata :
+    {
+        . = ALIGN(4);
+        *(.nvdata)          /* Non-volatile user data */
+        *(.nvdata*)         /* Non-volatile user data */
+        . = ALIGN(4);
+        _envdata = .;       /* End of NV storage section */
+    } > NVSTORAGE
 
     /* User stack section initialized by startup code. */
     .stack (NOLOAD):
