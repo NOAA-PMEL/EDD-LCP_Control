@@ -230,7 +230,7 @@ void STATE_initialize(SystemMode_t mode)
     }
 
     /* Initialize the memory management system */
-    MEM_init_transmission_queues(); // This likely needs modification too for the static queue
+    MEM_init_transmission_queue();
 }
 
 void STATE_MainState(SystemMode_t mode)
@@ -2277,7 +2277,7 @@ void module_sps_park(void)
     }
     
     // Log memory status after collection
-    MEM_log_memory_status("SPS :: park end", &park_queue, &prof_queue);
+    MEM_log_memory_status("SPS :: park end");
     
     // Final cleanup and exit handling
     park_number++;
@@ -3624,7 +3624,7 @@ void module_sps_profile(void)
     }
     
     // Log memory status after collection
-    MEM_log_memory_status("SPS :: profile end", &park_queue, &prof_queue);
+    MEM_log_memory_status("SPS :: profile end");
 
     prof_number++;
     pistonzero_number++;
@@ -3985,7 +3985,7 @@ void module_sps_move_to_surface(void)
     {
         if (!MEM_queue_add_profile(&park_queue, park_number-1, park)) {
             // If queue is full, replace the oldest entry
-            if (MEM_queue_get_count(&park_queue) > 0) {
+            if (MEM_queue_get_count() > 0) {
                 MEM_queue_remove_oldest(&park_queue);
                 MEM_queue_add_profile(&park_queue, park_number-1, park);
             } else {
@@ -4000,7 +4000,7 @@ void module_sps_move_to_surface(void)
     if (prof != NULL) {
         if (!MEM_queue_add_profile(&prof_queue, prof_number-1, prof)) {
             // If queue is full, replace the oldest entry
-            if (MEM_queue_get_count(&prof_queue) > 0) {
+            if (MEM_queue_get_count() > 0) {
                 MEM_queue_remove_oldest(&prof_queue);
                 MEM_queue_add_profile(&prof_queue, prof_number-1, prof);
             } else {
@@ -4027,14 +4027,14 @@ void module_sps_tx(void)
     ProfileData_t *current_prof_profile = NULL;
     
     // Check if we have any profiles to transmit
-    bool send_park = (MEM_queue_get_count(&park_queue) > 0);
-    bool send_prof = (MEM_queue_get_count(&prof_queue) > 0);
+    bool send_park = (MEM_queue_get_count() > 0);
+    bool send_prof = (MEM_queue_get_count() > 0);
     
     // Flag to track if we've had a successful transmission
     bool transmission_successful = false;
     
     // Log memory status at start of transmission
-    MEM_log_memory_status("SPS :: tx start", &park_queue, &prof_queue);
+    MEM_log_memory_status("SPS :: tx start");
 
     /** Initialize the Iridium Modem */
     if (!iridium_init)
@@ -4249,7 +4249,7 @@ void module_sps_tx(void)
                                         park = NULL;
                                         
                                         // Check if there are more park profiles to send
-                                        send_park = (MEM_queue_get_count(&park_queue) > 0);
+                                        send_park = (MEM_queue_get_count() > 0);
                                     }
                                     else
                                     {
@@ -4385,7 +4385,7 @@ void module_sps_tx(void)
                         park = NULL;
                         transmission_successful = true;
                     }
-                    send_park = (MEM_queue_get_count(&park_queue) > 0);
+                    send_park = (MEM_queue_get_count() > 0);
                 }
                 vTaskDelay(xDelay1000ms);
             }
@@ -4546,7 +4546,7 @@ void module_sps_tx(void)
                                         prof = NULL;
                                         
                                         // Check if there are more profiles to send
-                                        send_prof = (MEM_queue_get_count(&prof_queue) > 0);
+                                        send_prof = (MEM_queue_get_count() > 0);
                                     }
                                     else
                                     {
@@ -4681,7 +4681,7 @@ void module_sps_tx(void)
                         prof = NULL;
                         transmission_successful = true;
                     }
-                    send_prof = (MEM_queue_get_count(&prof_queue) > 0);
+                    send_prof = (MEM_queue_get_count() > 0);
                 }
                 vTaskDelay(xDelay1000ms);
             }
@@ -4698,8 +4698,8 @@ void module_sps_tx(void)
             transmission_successful = false;
             
             // Check if we have more data to transmit
-            send_park = (MEM_queue_get_count(&park_queue) > 0);
-            send_prof = (MEM_queue_get_count(&prof_queue) > 0);
+            send_park = (MEM_queue_get_count() > 0);
+            send_prof = (MEM_queue_get_count() > 0);
             
             if (send_park || send_prof) {
                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, task->not_done, continuing with next item after successful transmission\n");
@@ -4708,7 +4708,7 @@ void module_sps_tx(void)
                 run = false;
                 
                 // Log memory status at end of transmission
-                MEM_log_memory_status("SPS :: tx end", &park_queue, &prof_queue);
+                MEM_log_memory_status("SPS :: tx end");
             }
         }
         

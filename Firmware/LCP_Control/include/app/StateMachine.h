@@ -14,7 +14,6 @@
 #include "sensors.h"
 #include "data.h"
 #include "config.h"
-#include "memory.h"
 
 
 /**********************************************************************************
@@ -40,9 +39,17 @@
 #define DATA_PARK_SAMPLES_MAX                   ( 300 )//( 80 * SYSTEM_PROFILE_NUMBER ) //( 1440 )
 //#define DATA_PARK_SAMPLES_MAX                   ( ((uint32_t)( 3600 ) * DATA_PARK_SAMPLE_FREQ) * DATA_PARK_PARK_MAX_DURATION_HOURS )
 
+#if DATA_PARK_SAMPLES_MAX > DATA_PROFILE_SAMPLES_MAX
+    #define DATA_MAX_SAMPLES DATA_PARK_SAMPLES_MAX
+#else
+    #define DATA_MAX_SAMPLES DATA_PROFILE_SAMPLES_MAX
+#endif
+
 //#define DATA_PROFILE_MAX_LEN                    ( 40000 )
 #define DATA_PROFILE_MAX_LEN                    ( (DATA_PROFILE_SAMPLES_MAX * SYSTEM_PROFILE_NUMBER) + \
                                                     (DATA_PARK_SAMPLES_MAX * SYSTEM_PROFILE_NUMBER) )
+
+#include "memory.h"
 
 
 /**********************************************************************************

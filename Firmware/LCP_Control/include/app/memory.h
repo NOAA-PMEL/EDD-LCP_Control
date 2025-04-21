@@ -10,12 +10,6 @@
 #include "data.h"           // Include for pData definition
 #include "StateMachine.h"   // Include for DATA_MAX_SAMPLES
 
-// Define DATA_MAX_SAMPLES based on the larger of Park/Profile
-#if DATA_PARK_SAMPLES_MAX > DATA_PROFILE_SAMPLES_MAX
-    #define DATA_MAX_SAMPLES DATA_PARK_SAMPLES_MAX
-#else
-    #define DATA_MAX_SAMPLES DATA_PROFILE_SAMPLES_MAX
-#endif
 
 // --- Define structure for entries in the static RAM queue ---
 typedef struct {
