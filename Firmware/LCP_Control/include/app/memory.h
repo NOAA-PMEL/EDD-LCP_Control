@@ -39,7 +39,7 @@ typedef struct sTransmissionQueue_t {
 } TransmissionQueue_t;
 
 // --- Define static queue capacity ---
-#define STATIC_TX_QUEUE_CAPACITY 10
+#define STATIC_TX_QUEUE_CAPACITY 20
 
 // --- Function Declarations ---
 void MEM_init_transmission_queue(void); // Renamed from MEM_init_transmission_queues

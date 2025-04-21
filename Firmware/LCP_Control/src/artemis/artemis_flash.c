@@ -16,9 +16,9 @@
 
 #include "artemis_flash.h"
 #include "am_hal_flash.h"
-#include <string.h> // For memcpy (if needed for reading)
+#include <string.h> // For memcpy (not sure if needed)
 
-// Helper macros for error checking
+// Helper macro for checking alignment
 #define IS_ALIGNED(addr, alignment) (((addr) % (alignment)) == 0)
 
 int flash_is_valid_range(uint32_t offset, size_t size) {

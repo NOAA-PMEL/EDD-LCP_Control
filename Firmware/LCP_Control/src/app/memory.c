@@ -1,12 +1,12 @@
 // memory.c - Memory management module implementation
 
-#include <string.h>         // For memcpy
+#include <string.h>             // For memcpy
 #include "memory.h"
 #include "artemis_debug.h"
-#include "artemis_flash.h" // Include for flash operations
-#include "config.h"        // May contain DATA_MAX_SAMPLES or flash layout info
-#include "FreeRTOS.h"      // For pvPortMalloc, vPortFree, xPortGetFreeHeapSize, etc.
-#include "semphr.h"        // For mutexes
+#include "artemis_flash.h"      // Include for flash operations
+#include "StateMachine.h"       // Include for DATA_MAX_SAMPLES
+#include "FreeRTOS.h"           // For pvPortMalloc, vPortFree, xPortGetFreeHeapSize, etc.
+#include "semphr.h"             // For mutex semaphores
 
 // --- Define the magic number for flash entries ---
 // This is used to identify valid entries in flash storage.
@@ -77,7 +77,7 @@ void MEM_init_flash_queue(void) {
 /**
  * @brief Initialize the static transmission queue
  *
- * Initializes the static queue structure and its mutex.
+ * Initializes the static queue structure and its semaphore.
  * Calls flash queue initialization.
  */
 void MEM_init_transmission_queue(void) {
@@ -89,7 +89,7 @@ void MEM_init_transmission_queue(void) {
     // Create mutex for the RAM queue
     transmission_queue.mutex = xSemaphoreCreateMutex();
     if (transmission_queue.mutex == NULL) {
-        ARTEMIS_DEBUG_PRINTF("MEMORY: Failed to create transmission queue mutex!\n");
+        ARTEMIS_DEBUG_PRINTF("MEMORY: Failed to create transmission queue semaphore!\n");
         // Handle error: perhaps block initialization or enter error state
         return;
     }
@@ -161,7 +161,7 @@ bool MEM_queue_add(Data_t *data_to_queue, bool is_park) {
         }
         xSemaphoreGive(transmission_queue.mutex);
     } else {
-         ARTEMIS_DEBUG_PRINTF("MEMORY ADD: Failed to take queue mutex.\n");
+         ARTEMIS_DEBUG_PRINTF("MEMORY ADD: Failed to take queue semaphore.\n");
          return false; // Mutex error
     }
 
@@ -191,7 +191,7 @@ QueuedDataEntry_t* MEM_queue_get_next(void) {
         }
         xSemaphoreGive(transmission_queue.mutex);
     } else {
-         ARTEMIS_DEBUG_PRINTF("MEMORY GET: Failed to take queue mutex.\n");
+         ARTEMIS_DEBUG_PRINTF("MEMORY GET: Failed to take queue semaphore.\n");
     }
     return entry; // Returns NULL if queue is empty or mutex fails
 }
@@ -225,11 +225,11 @@ void MEM_queue_mark_transmitted(void) {
 
     xSemaphoreGive(transmission_queue.mutex);
     } else {
-        ARTEMIS_DEBUG_PRINTF("MEMORY MARK TX: Failed to take queue mutex.\n");
+        ARTEMIS_DEBUG_PRINTF("MEMORY MARK TX: Failed to take queue semaphore.\n");
     }
 
      // --- Part 2: Attempt to Load from Flash ---
-     // Done outside the RAM queue mutex to avoid holding it while doing flash I/O
+     // Done outside the RAM queue semaphore to avoid holding it while doing flash I/O
     if(load_from_flash) {
         MEM_load_from_flash(); // Attempt to fill the potentially freed slot
     }
@@ -251,7 +251,7 @@ void MEM_queue_increment_attempt(void) {
         }
          xSemaphoreGive(transmission_queue.mutex);
      } else {
-         ARTEMIS_DEBUG_PRINTF("MEMORY INC ATTEMPT: Failed to take queue mutex.\n");
+         ARTEMIS_DEBUG_PRINTF("MEMORY INC ATTEMPT: Failed to take queue semaphore.\n");
      }
 }
 
@@ -268,9 +268,9 @@ bool MEM_queue_max_attempts_reached(uint8_t max_attempts) {
                 // Check if the current profile at the head has reached max transmission attempts
                 reached = (transmission_queue.profiles[transmission_queue.head].attempt_count >= max_attempts);
         }
-        xSemaphoreGive(transmission_queue.mutex); // Release mutex
+        xSemaphoreGive(transmission_queue.mutex); // Release semaphore
     } else {
-        ARTEMIS_DEBUG_PRINTF("MEMORY MAX ATTEMPT: Failed to take queue mutex.\n");
+        ARTEMIS_DEBUG_PRINTF("MEMORY MAX ATTEMPT: Failed to take queue semaphore.\n");
     }
     return reached;
 }
@@ -286,7 +286,7 @@ uint8_t MEM_queue_get_count(void) {
          count = transmission_queue.count;
          xSemaphoreGive(transmission_queue.mutex);
      } else {
-         ARTEMIS_DEBUG_PRINTF("MEMORY GET COUNT: Failed to take queue mutex.\n");
+         ARTEMIS_DEBUG_PRINTF("MEMORY GET COUNT: Failed to take queue semaphore.\n");
      }
     return count;
 }
@@ -310,7 +310,7 @@ bool MEM_queue_reset_attempts(void) {
     }
     xSemaphoreGive(transmission_queue.mutex);
     } else {
-        ARTEMIS_DEBUG_PRINTF("MEMORY RESET ATTEMPT: Failed to take queue mutex.\n");
+        ARTEMIS_DEBUG_PRINTF("MEMORY RESET ATTEMPT: Failed to take queue semaphore.\n");
     }
     return success;
 }
@@ -460,7 +460,7 @@ bool MEM_queue_reset_attempts(void) {
         }
         xSemaphoreGive(flash_mutex);
     } else {
-        ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Failed to take flash mutex.\n");
+        ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Failed to take flash semaphore.\n");
         result = false;
     }
     return result;
@@ -498,7 +498,7 @@ bool MEM_load_from_flash(void) {
             if (ret != FLASH_SUCCESS) {
                 ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Failed to read header at 0x%X! ret=%d\n", current_read_offset, ret);
                 
-                // Release mutex and return false
+                // Release semaphore and return false
                 xSemaphoreGive(flash_mutex);
                 return false;
             }
@@ -543,8 +543,8 @@ bool MEM_load_from_flash(void) {
         // Keep RAM mutex
     } else {
         // Failed to take RAM mutex, log and release flash mutex
-         ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Failed to take RAM queue mutex.\n");
-        ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Failed to take queue mutex.\n");
+         ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Failed to take RAM queue Semaphore.\n");
+        ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Failed to take queue Semaphore.\n");
         xSemaphoreGive(flash_mutex); // Release flash mutex if RAM mutex failed
         return false;
     }
@@ -552,12 +552,12 @@ bool MEM_load_from_flash(void) {
     // Check if RAM queue has space
     if (!ram_queue_has_space) {
         // RAM queue is full, log and release mutexes
-        xSemaphoreGive(transmission_queue.mutex);   // Release RAM mutex
-        xSemaphoreGive(flash_mutex);                // Release flash mutex
+        xSemaphoreGive(transmission_queue.mutex);   // Release RAM Semaphore
+        xSemaphoreGive(flash_mutex);                // Release flash Semaphore
         return false;
     }
 
-    // --- Proceed with loading: Flash has data, RAM has space, both mutexes held ---
+    // Proceed with loading: Flash has data, RAM has space, both mutexes held ---
     ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Loading entry from flash offset 0x%X (Size: %u)\n",
                          current_read_offset, entry_size_from_header);
     
@@ -625,14 +625,13 @@ bool MEM_load_from_flash(void) {
 
     result = true; // Success!
 
-    // Release mutexes
+    // Release Semaphores
     xSemaphoreGive(transmission_queue.mutex);
     xSemaphoreGive(flash_mutex);
 
     // Return success
     return result;
 }
-
 
 /**
  * @brief Log the current memory status for debugging.

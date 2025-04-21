@@ -279,8 +279,7 @@
          ARTEMIS_DEBUG_PRINTF("DATA_free: Data_t memory freed\n");
      }
  }
- 
- 
+
  //*****************************************************************************
  //
  // Static Functions
@@ -366,11 +365,11 @@
      buf[0] = SYS_get_system_id();
  
      /*  2. Firmware Version */
-     buf[1] = SYS_get_firmware()>>8 ;
+     buf[1] = SYS_get_firmware()>>8;
      buf[2] = SYS_get_firmware()&0xFF;
  
      /*  3. Build Year_Date */
-     buf[3] = SYS_get_build_year_date()>>8 ;
+     buf[3] = SYS_get_build_year_date()>>8;
      buf[4] = SYS_get_build_year_date()&0xFF;
  
      /*  4. Latitude  */
