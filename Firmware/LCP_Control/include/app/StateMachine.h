@@ -46,10 +46,9 @@
 #endif
 
 //#define DATA_PROFILE_MAX_LEN                    ( 40000 )
-#define DATA_PROFILE_MAX_LEN                    ( (DATA_PROFILE_SAMPLES_MAX * SYSTEM_PROFILE_NUMBER) + \
-                                                    (DATA_PARK_SAMPLES_MAX * SYSTEM_PROFILE_NUMBER) )
+#define DATA_PROFILE_MAX_LEN   ( (DATA_PROFILE_SAMPLES_MAX * SYSTEM_PROFILE_NUMBER) + (DATA_PARK_SAMPLES_MAX * SYSTEM_PROFILE_NUMBER) )
 
-#include "memory.h"
+#include "memory.h" // Include this here to avoid circular dependency issues
 
 
 /**********************************************************************************
