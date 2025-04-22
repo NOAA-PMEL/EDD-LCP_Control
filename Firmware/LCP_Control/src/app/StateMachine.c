@@ -3940,14 +3940,16 @@ void module_sps_move_to_surface(void)
             if (fix >= 2)
             {
                 /* update latitude and longitude for park and profile modes */
-                if (park != NULL) {
-                    DATA_add_gps(&current_park_data, gps.latitude, gps.longitude); // Change to current_park_data
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Added GPS to park data\n");
+                // Check if any park data samples were actually collected in this cycle
+                if (current_park_data.cbuf.written > 0) { 
+                    DATA_add_gps(&current_park_data, gps.latitude, gps.longitude); 
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Added GPS to park data (%u samples exist)\n", current_park_data.cbuf.written);
                 }
                 
-                if (prof != NULL) {
-                    DATA_add_gps(&current_profile_data, gps.latitude, gps.longitude); // Change to current_profile_data
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Added GPS to profile data\n");
+                // Check if any profile data samples were actually collected in this cycle
+                if (current_profile_data.cbuf.written > 0) { 
+                    DATA_add_gps(&current_profile_data, gps.latitude, gps.longitude); 
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Added GPS to profile data (%u samples exist)\n", current_profile_data.cbuf.written);
                 }
 
                 /* Calibrate the GPS UTC time into RTC */
@@ -4445,126 +4447,6 @@ ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: ERROR - pack_measurements_ir
 }
 
 return nrBytes;
-}
-
-// old helper function, not used anymore
-static uint16_t create_park_page(uint8_t *ptrPark, uint8_t *readlength) 
-{
-    /* check if we have read and transmitted all the measurements*/
-    if (m_park_number >= park_number)
-    {
-        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, No more measurements available m_park_number=%u, park_number=%u\n", m_park_number, park_number);
-        *readlength = 0;
-        return 0;
-    }
-
-    /* set modeType */
-    sPark.modeType = LCP_PARK_MODE;
-    /* check if we are sending the first page of any profile number */
-    if (m_park_length == 0)
-    {
-        // Instead of reading from pPark array, get the actual length from the Data_t structure
-        m_park_length = park->cbuf.written;
-        sPark.profNumber = m_park_number;
-        sPark.pageNumber = 0;
-        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, profile_number=%u, pageNumber=%u, measurement_length=%u\n", m_park_number, sPark.pageNumber, m_park_length);
-
-        /* check the length of measurements must not exceed 312 bytes > 312*8/(12+8) = 124 */
-        if (m_park_length > MEASUREMENT_MAX)
-        {
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, WARNING : Park, profile_number=%u exceeding (%u) length of measurements, creating pages!\n", sPark.profNumber, MEASUREMENT_MAX);
-            sPark.mLength = MEASUREMENT_MAX;
-            m_park_length = park->cbuf.written - sPark.mLength;
-        }
-        else
-        {
-            sPark.mLength = m_park_length;
-            m_park_length = 0;
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, profile_number=%u length of measurements=%u fitting in one page!\n", sPark.profNumber, sPark.mLength);
-        }
-    }
-    else
-    {
-        if (m_park_length > MEASUREMENT_MAX)
-        {
-            sPark.mLength = MEASUREMENT_MAX;
-            m_park_length = m_park_length - sPark.mLength;
-        }
-        else
-        {
-            sPark.mLength = m_park_length;
-            m_park_length = 0;
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park, profile_number=%u measurement_length=%u\n", sPark.profNumber, sPark.mLength);
-        }
-    }
-
-    // Get the actual Data_t structure from the global park pointer
-    //uint16_t nrBytes = pack_measurements_irid(park, NULL, &sPark, ptrPark);
-    uint16_t nrBytes = pack_measurements_irid(park, park->p, &sPark, ptrPark);
-    *readlength = sPark.mLength;
-    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Park : profile_number=%u, pageNumber=%u, m_park_number=%u, total_bytes=%u\n", sPark.profNumber, sPark.pageNumber, m_park_number, nrBytes);
-
-    return nrBytes;
-}
-
-// old helper function, not used anymore
-static uint16_t create_profile_page(uint8_t *ptrProf, uint8_t *readlength)
-{
-    /* check if we have read and transmitted all the measurements*/
-    if (m_prof_number >= prof_number)
-    {
-        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, No more measurements available m_prof_number=%u, prof_number=%u\n", m_prof_number, prof_number);
-        *readlength = 0;
-        return 0;
-    }
-
-    /* set modeType */
-    sProf.modeType = LCP_PROFILE_MODE;
-    /* check if we are sending the first page of any profile number */
-    if (m_prof_length == 0)
-    {
-        // Instead of reading from pProf array, get the actual length from the Data_t structure
-        m_prof_length = prof->cbuf.written;
-        sProf.profNumber = m_prof_number;
-        sProf.pageNumber = 0;
-        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, profile_number=%u, pageNumber=%u, measurement_length=%u\n", m_prof_number, sProf.pageNumber, m_prof_length);
-
-        /* check the length of measurements must not exceed 312 bytes > 312*8/(12+8) = 124 */
-        if (m_prof_length > MEASUREMENT_MAX)
-        {
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, WARNING : Profile, profile_number=%u exceeding (%u) length of measurements, creating pages!\n", sProf.profNumber, MEASUREMENT_MAX);
-            sProf.mLength = MEASUREMENT_MAX;
-            m_prof_length = prof->cbuf.written - sProf.mLength;
-        }
-        else
-        {
-            sProf.mLength = m_prof_length;
-            m_prof_length = 0;
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, profile_number=%u length of measurements=%u fitting in one page!\n", sProf.profNumber, sProf.mLength);
-        }
-    }
-    else
-    {
-        if (m_prof_length > MEASUREMENT_MAX)
-        {
-            sProf.mLength = MEASUREMENT_MAX;
-            m_prof_length = m_prof_length - sProf.mLength;
-        }
-        else
-        {
-            sProf.mLength = m_prof_length;
-            m_prof_length = 0;
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile, profile_number=%u measurement_length=%u\n", sProf.profNumber, sProf.mLength);
-        }
-    }
-
-    // Get the actual Data_t structure from the global prof pointer
-    //uint16_t nrBytes = pack_measurements_irid(prof, NULL, &sProf, ptrProf);
-    uint16_t nrBytes = pack_measurements_irid(prof, prof->p, &sProf, ptrProf);
-    *readlength = sProf.mLength;
-    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Profile : profile_number=%u, pageNumber=%u, m_prof_number=%u, total_bytes=%u\n", sProf.profNumber, sProf.pageNumber, m_prof_number, nrBytes);
-
-    return nrBytes;
 }
 
 void module_sps_rx(void)
