@@ -43,7 +43,8 @@ set(CMAKE_ASM_FLAGS "${THUMB_FLAGS} ${CPU_FLAGS} ${FPU_FLAGS} -g" CACHE STRING "
 # Include CPU/FPU flags, and potentially linker script handling if not done in CMakeLists.txt
 # The --specs=rdimon.specs is handled in the main CMakeLists.txt LFLAGS/target_link_options
 # Add essential architecture flags for linking.
-set(CMAKE_EXE_LINKER_FLAGS "${THUMB_FLAGS} ${CPU_FLAGS} ${FPU_FLAGS} --specs=nosys.specs" CACHE STRING "Default Linker Flags" FORCE)
+#set(CMAKE_EXE_LINKER_FLAGS "${THUMB_FLAGS} ${CPU_FLAGS} ${FPU_FLAGS} --specs=nosys.specs" CACHE STRING "Default Linker Flags" FORCE)
+set(CMAKE_EXE_LINKER_FLAGS "${THUMB_FLAGS} ${CPU_FLAGS} ${FPU_FLAGS} --specs=rdimon.specs" CACHE STRING "Default Linker Flags" FORCE)
 # Using nosys.specs here as a common baseline; rdimon.specs is added specifically in the main CMakeLists
 
 # --- Search Behavior for Cross-Compilation ---

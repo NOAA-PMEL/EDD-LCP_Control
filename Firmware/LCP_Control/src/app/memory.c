@@ -40,6 +40,22 @@ typedef struct __attribute__((packed)) {
 #define FLASH_TX_QUEUE_SIZE          (FLASH_NVSTORAGE_SIZE)
 #define FLASH_TX_QUEUE_END_OFFSET    (FLASH_TX_QUEUE_START_OFFSET + FLASH_TX_QUEUE_SIZE)
 
+// --- Static variables for flash queue management ---
+static SemaphoreHandle_t flash_mutex = NULL; // Mutex for flash access
+static uint32_t flash_queue_head_offset = 0; // Offset for reading from flash queue
+static uint32_t flash_queue_tail_offset = 0; // Offset for writing to flash queue
+static uint32_t flash_queue_count = 0;       // Number of items currently in flash queue
+static bool flash_initialized = false;     // Flag indicating flash queue subsystem is ready
+
+// Define the maximum size for a single entry in flash and the associated buffers
+// **** IMPORTANT: Adjust this size based on your maximum expected data entry size
+// **** and potentially the flash hardware page size
+#define MAX_FLASH_ENTRY_SIZE (8 * 1024) // 8192 bytes
+
+static uint8_t flash_write_buffer[MAX_FLASH_ENTRY_SIZE]; // Buffer for preparing data to write
+static uint8_t flash_read_buffer[MAX_FLASH_ENTRY_SIZE];  // Buffer for reading data from flash
+
+
 /**
  * @brief Initialize the flash queue metadata and mutex.
  * Erases the flash region designated for the queue on initialization.
