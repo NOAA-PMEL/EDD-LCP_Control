@@ -26,8 +26,8 @@
 #define FLASH_INVALID_PARAM -2 // Add explicit error for invalid parameters
 
 // Define start and size of NVSTORAGE
-#define FLASH_NVSTORAGE_START 0x00066000 // Per the linker file, this is the start of the NVSTORAGE region.
-#define FLASH_NVSTORAGE_SIZE  (600 * 1024)
+#define FLASH_NVSTORAGE_START 0x0008C000 // Per the linker file, this is the start of the NVSTORAGE region.
+#define FLASH_NVSTORAGE_SIZE  (512 * 1024)
 
 // Flash alignment constraints
 #define FLASH_ALIGNMENT 4
