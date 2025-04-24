@@ -1,12 +1,12 @@
 // memory.c - Memory management module implementation
 
-#include <string.h>             // For memcpy
+#include <string.h>           // For memcpy
 #include "memory.h"
 #include "artemis_debug.h"
-#include "artemis_flash.h"      // Include for flash operations
-#include "StateMachine.h"       // Include for DATA_MAX_SAMPLES
-#include "FreeRTOS.h"           // For pvPortMalloc, vPortFree, xPortGetFreeHeapSize, etc.
-#include "semphr.h"             // For mutex semaphores
+#include "artemis_flash.h"    // Include for flash operations
+#include "StateMachine.h"     // Include for DATA_MAX_SAMPLES
+#include "FreeRTOS.h"         // For pvPortMalloc, vPortFree, xPortGetFreeHeapSize, etc.
+#include "semphr.h"           // For mutex semaphores
 
 // --- Define the magic number for flash entries ---
 // This is used to identify valid entries in flash storage.
@@ -25,27 +25,28 @@ TransmissionQueue_t transmission_queue = {
     .mutex = NULL                                   // Initialize mutex in init function
 };
 
-// --- Define a simple header structure for flash entries --- 
+// --- Define a simple header structure for flash entries ---
 typedef struct __attribute__((packed)) {
-    uint32_t magic;           // Magic number to identify valid entries
-    uint32_t total_entry_size;// Total size of this entry in flash (including header and padding)
-    uint8_t  profile_number;  // Original profile/park number
-    uint16_t num_samples;     // Actual number of samples stored
-    uint8_t  is_park_data;    // 1 for park, 0 for profile
+    uint32_t magic;             // Magic number to identify valid entries
+    uint32_t total_entry_size;  // Total size of this entry in flash (including header and padding)
+    uint8_t  profile_number;    // Original profile/park number
+    uint16_t num_samples;       // Actual number of samples stored
+    uint8_t  is_park_data;      // 1 for park, 0 for profile
 } FlashEntryHeader_t;
 
 // --- Define flash storage metadata ---
 // Using start/size from artemis_flash.h
-#define FLASH_TX_QUEUE_START_OFFSET  (FLASH_NVSTORAGE_START)
-#define FLASH_TX_QUEUE_SIZE          (FLASH_NVSTORAGE_SIZE)
-#define FLASH_TX_QUEUE_END_OFFSET    (FLASH_TX_QUEUE_START_OFFSET + FLASH_TX_QUEUE_SIZE)
+// Note: The driver handles the absolute start address (FLASH_NVSTORAGE_START).
+// Offsets used within this file should be relative to that start address (0).
+#define FLASH_TX_QUEUE_RELATIVE_START_OFFSET 0
+#define FLASH_TX_QUEUE_SIZE                  (FLASH_NVSTORAGE_SIZE) // Size remains the same (512KB)
 
 // --- Static variables for flash queue management ---
 static SemaphoreHandle_t flash_mutex = NULL; // Mutex for flash access
-static uint32_t flash_queue_head_offset = 0; // Offset for reading from flash queue
-static uint32_t flash_queue_tail_offset = 0; // Offset for writing to flash queue
+static uint32_t flash_queue_head_offset = 0; // Offset RELATIVE TO START for reading from flash queue
+static uint32_t flash_queue_tail_offset = 0; // Offset RELATIVE TO START for writing to flash queue
 static uint32_t flash_queue_count = 0;       // Number of items currently in flash queue
-static bool flash_initialized = false;     // Flag indicating flash queue subsystem is ready
+static bool flash_initialized = false;       // Flag indicating flash queue subsystem is ready
 
 // Define the maximum size for a single entry in flash and the associated buffers
 // **** IMPORTANT: Adjust this size based on your maximum expected data entry size
@@ -68,22 +69,29 @@ void MEM_init_flash_queue(void) {
         return;
     }
 
-    ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Erasing flash region 0x%X (Size: %u bytes)...\n",
-                         FLASH_TX_QUEUE_START_OFFSET, FLASH_TX_QUEUE_SIZE);
+    // Use the relative start offset (0) and the total size for erasing the
+    // entire region managed by the flash driver.
+    ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Erasing flash region managed by driver (Offset: %u, Size: %u bytes)...\n",
+                         FLASH_TX_QUEUE_RELATIVE_START_OFFSET, FLASH_TX_QUEUE_SIZE);
 
     // Erase the entire flash region dedicated to the queue.
-    int erase_ret = flash_erase(FLASH_TX_QUEUE_START_OFFSET, FLASH_TX_QUEUE_SIZE);
+    // Pass offset 0 and the total size.
+    int erase_ret = flash_erase(FLASH_TX_QUEUE_RELATIVE_START_OFFSET, FLASH_TX_QUEUE_SIZE);
 
     if (erase_ret == FLASH_SUCCESS) {
         ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Flash region erased successfully.\n");
     } else {
         ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: ERROR - Failed to erase flash region! ret=%d\n", erase_ret);
         // Handle error: Initialization failed, flash might be unusable.
+        // Consider releasing the mutex if initialization fails permanently.
+        // vSemaphoreDelete(flash_mutex);
+        // flash_mutex = NULL;
+        return; // Stop initialization if erase fails
     }
 
-    // Reset in-memory metadata variables
-    flash_queue_head_offset = FLASH_TX_QUEUE_START_OFFSET;
-    flash_queue_tail_offset = FLASH_TX_QUEUE_START_OFFSET;
+    // Reset in-memory metadata variables (using relative offsets)
+    flash_queue_head_offset = FLASH_TX_QUEUE_RELATIVE_START_OFFSET; // Start at relative offset 0
+    flash_queue_tail_offset = FLASH_TX_QUEUE_RELATIVE_START_OFFSET; // Start at relative offset 0
     flash_queue_count = 0;
 
     flash_initialized = true;
@@ -157,7 +165,7 @@ bool MEM_queue_add(Data_t *data_to_queue, bool is_park) {
             // Ensure num_samples does not exceed DATA_MAX_SAMPLES
             uint16_t samples_to_copy = (entry->num_samples > DATA_MAX_SAMPLES) ? DATA_MAX_SAMPLES : entry->num_samples;
             if (data_to_queue->data.pressure != NULL) {
-                 memcpy(entry->pressure_measurements, data_to_queue->data.pressure, samples_to_copy * sizeof(float));
+                memcpy(entry->pressure_measurements, data_to_queue->data.pressure, samples_to_copy * sizeof(float));
             } else {
                 memset(entry->pressure_measurements, 0, DATA_MAX_SAMPLES * sizeof(float)); // Or handle error
             }
@@ -222,7 +230,7 @@ void MEM_queue_mark_transmitted(void) {
 
     // --- Part 1: Update RAM Queue ---
     if (xSemaphoreTake(transmission_queue.mutex, portMAX_DELAY) == pdTRUE) {
-    
+
     if (transmission_queue.count > 0) { // Check if queue is not empty
         removed_profile_num = transmission_queue.profiles[transmission_queue.head].profile_number; // Store for logging
 
@@ -234,9 +242,9 @@ void MEM_queue_mark_transmitted(void) {
         load_from_flash = true; // Signal to check flash
 
         ARTEMIS_DEBUG_PRINTF("MEMORY MARK TX: Marked %u as transmitted. RAM Queue Count: %u\n",
-                            removed_profile_num, transmission_queue.count);
+                             removed_profile_num, transmission_queue.count);
     } else {
-            ARTEMIS_DEBUG_PRINTF("MEMORY MARK TX: Queue empty, nothing to mark.\n");
+             ARTEMIS_DEBUG_PRINTF("MEMORY MARK TX: Queue empty, nothing to mark.\n");
     }
 
     xSemaphoreGive(transmission_queue.mutex);
@@ -257,15 +265,15 @@ void MEM_queue_mark_transmitted(void) {
  */
 void MEM_queue_increment_attempt(void) {
      if (xSemaphoreTake(transmission_queue.mutex, portMAX_DELAY) == pdTRUE) {
-        if (transmission_queue.count > 0) {
-             transmission_queue.profiles[transmission_queue.head].attempt_count++;
-            ARTEMIS_DEBUG_PRINTF("MEMORY INC ATTEMPT: Incremented attempt count to %u for profile %u\n",
-                        transmission_queue.profiles[transmission_queue.head].attempt_count,
-                        transmission_queue.profiles[transmission_queue.head].profile_number);
-        } else {
-             ARTEMIS_DEBUG_PRINTF("MEMORY INC ATTEMPT: Queue empty.\n");
-        }
-         xSemaphoreGive(transmission_queue.mutex);
+         if (transmission_queue.count > 0) {
+              transmission_queue.profiles[transmission_queue.head].attempt_count++;
+             ARTEMIS_DEBUG_PRINTF("MEMORY INC ATTEMPT: Incremented attempt count to %u for profile %u\n",
+                             transmission_queue.profiles[transmission_queue.head].attempt_count,
+                             transmission_queue.profiles[transmission_queue.head].profile_number);
+         } else {
+              ARTEMIS_DEBUG_PRINTF("MEMORY INC ATTEMPT: Queue empty.\n");
+         }
+          xSemaphoreGive(transmission_queue.mutex);
      } else {
          ARTEMIS_DEBUG_PRINTF("MEMORY INC ATTEMPT: Failed to take queue semaphore.\n");
      }
@@ -314,15 +322,15 @@ uint8_t MEM_queue_get_count(void) {
 */
 bool MEM_queue_reset_attempts(void) {
     bool success = false;
-    
+
     if (xSemaphoreTake(transmission_queue.mutex, portMAX_DELAY) == pdTRUE) {
     if (transmission_queue.count > 0) {
         transmission_queue.profiles[transmission_queue.head].attempt_count = 0;
         ARTEMIS_DEBUG_PRINTF("MEMORY RESET ATTEMPT: Reset attempt count for profile %u\n",
-                    transmission_queue.profiles[transmission_queue.head].profile_number);
+                        transmission_queue.profiles[transmission_queue.head].profile_number);
         success = true;
     } else {
-            ARTEMIS_DEBUG_PRINTF("MEMORY RESET ATTEMPT: Queue empty.\n");
+         ARTEMIS_DEBUG_PRINTF("MEMORY RESET ATTEMPT: Queue empty.\n");
     }
     xSemaphoreGive(transmission_queue.mutex);
     } else {
@@ -351,7 +359,7 @@ bool MEM_queue_reset_attempts(void) {
     uint32_t required_total_size;
     uint32_t aligned_size;
     uint16_t num_samples_to_store;
-    uint32_t write_offset; // The offset where we will actually write
+    uint32_t write_offset_relative; // The offset RELATIVE TO START where we will actually write
 
     num_samples_to_store = (data_to_store->wLength > DATA_MAX_SAMPLES) ? DATA_MAX_SAMPLES : data_to_store->wLength;
     required_payload_size = sizeof(pData) + (2 * num_samples_to_store * sizeof(float));
@@ -368,46 +376,52 @@ bool MEM_queue_reset_attempts(void) {
     }
 
     if (xSemaphoreTake(flash_mutex, portMAX_DELAY) == pdTRUE) {
-        // --- Circular Buffer Space Check ---
+        // --- Circular Buffer Space Check (using relative offsets) ---
         bool space_available = false;
-        write_offset = 0; // Initialize write_offset
+        write_offset_relative = 0; // Initialize relative write offset
 
-        if (flash_queue_tail_offset >= flash_queue_head_offset) {
-            uint32_t available_space_end = FLASH_TX_QUEUE_END_OFFSET - flash_queue_tail_offset;
-            uint32_t available_space_start = flash_queue_head_offset - FLASH_TX_QUEUE_START_OFFSET;
+        // Calculate available space based on relative head/tail offsets
+        uint32_t current_head = flash_queue_head_offset;
+        uint32_t current_tail = flash_queue_tail_offset;
+        uint32_t current_count = flash_queue_count;
+        uint32_t total_size = FLASH_TX_QUEUE_SIZE;
 
-            // Check if it fits contiguously after tail
-            if (aligned_size <= available_space_end) {
-                write_offset = flash_queue_tail_offset;
+        if (current_count == 0) {
+            // Buffer is empty, can write anywhere up to total size
+            if (aligned_size <= total_size) {
+                write_offset_relative = current_tail; // Should be 0 initially
                 space_available = true;
             }
-            // Check if it fits contiguously at the beginning (before head)
-            else if (aligned_size <= available_space_start) {
-                 // If head is exactly at START, we can't write before it unless buffer empty
-                 if (flash_queue_head_offset != FLASH_TX_QUEUE_START_OFFSET || flash_queue_count == 0) {
-                    write_offset = FLASH_TX_QUEUE_START_OFFSET; // Wrap around
+        } else if (current_tail >= current_head) {
+            // Tail is ahead of or at the head (data is contiguous or buffer is full)
+            // Space available at the end: total_size - current_tail
+            // Space available at the beginning: current_head
+            if (aligned_size <= (total_size - current_tail)) {
+                // Fits after tail
+                write_offset_relative = current_tail;
+                space_available = true;
+            } else if (aligned_size <= current_head) {
+                // Fits at the beginning (wrap around)
+                // Need to ensure head isn't 0 (unless count is 0, handled above)
+                 if (current_head > 0) {
+                    write_offset_relative = 0; // Wrap around
                     space_available = true;
-                    ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Wrapping tail to start (0x%X).\n", write_offset);
+                    ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Wrapping tail to start (Relative Offset: %u).\n", write_offset_relative);
                  }
             }
-        } else {        // flash_queue_tail_offset < flash_queue_head_offset
-            // Check space between tail and head
-            uint32_t available_space_middle = flash_queue_head_offset - flash_queue_tail_offset;
-             if (aligned_size <= available_space_middle) {
-                 write_offset = flash_queue_tail_offset;
-                 space_available = true;
-             }
+        } else { // current_tail < current_head
+            // Head is ahead of tail (data wrapped around)
+            // Space available between tail and head
+            if (aligned_size <= (current_head - current_tail)) {
+                write_offset_relative = current_tail;
+                space_available = true;
+            }
         }
 
-        // Final check: If buffer is empty, space is available at the current tail
-        if (flash_queue_count == 0) {
-            write_offset = flash_queue_tail_offset; // Should be START_OFFSET initially
-            space_available = true; // Empty buffer, so we can write at the tail
-        }
         // If after all checks, space is still not found, log it
-        else if (!space_available) {
-              ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Flash full or too fragmented for entry size %u (Head: 0x%X, Tail: 0x%X, Count: %u).\n",
-                                 aligned_size, flash_queue_head_offset, flash_queue_tail_offset, flash_queue_count);
+        if (!space_available && current_count > 0) { // Only log if not empty
+             ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Flash full or too fragmented for entry size %u (Head Rel: %u, Tail Rel: %u, Count: %u).\n",
+                                  aligned_size, current_head, current_tail, current_count);
         }
 
 
@@ -416,7 +430,7 @@ bool MEM_queue_reset_attempts(void) {
         } else {
             // --- Prepare buffer ---
             uint8_t *ptr = flash_write_buffer;
-            memset(flash_write_buffer, 0xFF, aligned_size); // Pre-fill with erased state? (Optional)
+            memset(flash_write_buffer, 0xFF, aligned_size); // Pre-fill with erased state
 
             // 1. Header
             FlashEntryHeader_t *hdr = (FlashEntryHeader_t*)ptr;
@@ -456,18 +470,19 @@ bool MEM_queue_reset_attempts(void) {
             }
 
             // --- Write to Flash ---
-            ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Writing %u bytes (Aligned: %u) for %s %u to flash offset 0x%X.\n",
-                                required_total_size, aligned_size, is_park ? "Park" : "Profile",
-                                data_to_store->pNumber, write_offset);
+            ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Writing %u bytes (Aligned: %u) for %s %u to flash RELATIVE offset %u.\n",
+                                 required_total_size, aligned_size, is_park ? "Park" : "Profile",
+                                 data_to_store->pNumber, write_offset_relative);
 
-            int ret = flash_write(flash_write_buffer, aligned_size, write_offset - FLASH_TX_QUEUE_START_OFFSET); // Pass relative offset
+            // Pass the RELATIVE offset to the flash driver
+            int ret = flash_write(flash_write_buffer, aligned_size, write_offset_relative);
 
             if (ret == FLASH_SUCCESS) {
-                // Update tail pointer using modulus arithmetic
-                flash_queue_tail_offset = FLASH_TX_QUEUE_START_OFFSET + (write_offset + aligned_size - FLASH_TX_QUEUE_START_OFFSET) % FLASH_TX_QUEUE_SIZE;
+                // Update tail pointer using modulus arithmetic with relative offsets
+                flash_queue_tail_offset = (write_offset_relative + aligned_size) % FLASH_TX_QUEUE_SIZE;
                 flash_queue_count++;
                 result = true;
-                ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Write successful. Flash Count: %u, New Tail Offset: 0x%X\n",
+                ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Write successful. Flash Count: %u, New Tail Relative Offset: %u\n",
                                      flash_queue_count, flash_queue_tail_offset);
             } else {
                 ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: flash_write failed! ret=%d\n", ret);
@@ -487,12 +502,12 @@ bool MEM_queue_reset_attempts(void) {
  * Treats the flash region as a circular buffer.
  */
 bool MEM_load_from_flash(void) {
-    
+
     bool result = false;
     bool ram_queue_has_space = false;
     bool flash_has_data = false;
     FlashEntryHeader_t *hdr = (FlashEntryHeader_t*)flash_read_buffer; // Point to the read buffer
-    uint32_t current_read_offset = 0;
+    uint32_t current_read_offset_relative = 0; // Relative offset
     uint32_t entry_size_from_header = 0;
 
     // Check if flash is initialized (should be called after MEM_init...)
@@ -504,30 +519,29 @@ bool MEM_load_from_flash(void) {
     if (xSemaphoreTake(flash_mutex, portMAX_DELAY) == pdTRUE) {
         // Check if flash has data to read
         if (flash_queue_count > 0) {
-            // Check if the head offset is valid
-            current_read_offset = flash_queue_head_offset;
+            // Get the current relative head offset
+            current_read_offset_relative = flash_queue_head_offset;
 
-            // Check if the offset is within the valid range
-            int ret = flash_read(flash_read_buffer, sizeof(FlashEntryHeader_t), current_read_offset - FLASH_TX_QUEUE_START_OFFSET);
-            
+            // Read only the header first using the relative offset
+            int ret = flash_read(flash_read_buffer, sizeof(FlashEntryHeader_t), current_read_offset_relative);
+
             // Check if the read was successful
             if (ret != FLASH_SUCCESS) {
-                ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Failed to read header at 0x%X! ret=%d\n", current_read_offset, ret);
-                
+                ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Failed to read header at relative offset %u! ret=%d\n", current_read_offset_relative, ret);
                 // Release semaphore and return false
                 xSemaphoreGive(flash_mutex);
                 return false;
             }
 
             // Check if the header is valid
-            if (hdr->magic != FLASH_ENTRY_MAGIC || 
-                hdr->total_entry_size == 0 || 
-                hdr->total_entry_size > MAX_FLASH_ENTRY_SIZE || 
-                hdr->total_entry_size % FLASH_ALIGNMENT != 0) {
-                
+            if (hdr->magic != FLASH_ENTRY_MAGIC ||
+                hdr->total_entry_size == 0 ||
+                hdr->total_entry_size > MAX_FLASH_ENTRY_SIZE ||
+                !IS_ALIGNED(hdr->total_entry_size, FLASH_ALIGNMENT)) { // Use IS_ALIGNED macro
+
                 // Invalid header, log and return false
-                ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Invalid header found at offset 0x%X! Magic=0x%X, Size=%u\n",
-                                     current_read_offset, hdr->magic, hdr->total_entry_size);
+                ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Invalid header found at relative offset %u! Magic=0x%X, Size=%u\n",
+                                     current_read_offset_relative, hdr->magic, hdr->total_entry_size);
                 xSemaphoreGive(flash_mutex);
                 return false;
             }
@@ -536,8 +550,11 @@ bool MEM_load_from_flash(void) {
             flash_has_data = true;
             entry_size_from_header = hdr->total_entry_size;
         }
-        
-        // Keep flash mutex
+
+        // Keep flash mutex if data might be present
+        if (!flash_has_data) {
+             xSemaphoreGive(flash_mutex); // Release if no data
+        }
     } else {
         // Failed to take flash mutex, log and return false
         ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Failed to take flash mutex.\n");
@@ -546,8 +563,7 @@ bool MEM_load_from_flash(void) {
 
     // Check if flash has data to read
     if (!flash_has_data) {
-        xSemaphoreGive(flash_mutex); // Release if no data found
-        return false;
+        return false; // flash mutex already released
     }
 
     // Check RAM queue space
@@ -560,7 +576,6 @@ bool MEM_load_from_flash(void) {
     } else {
         // Failed to take RAM mutex, log and release flash mutex
          ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Failed to take RAM queue Semaphore.\n");
-        ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Failed to take queue Semaphore.\n");
         xSemaphoreGive(flash_mutex); // Release flash mutex if RAM mutex failed
         return false;
     }
@@ -574,12 +589,12 @@ bool MEM_load_from_flash(void) {
     }
 
     // Proceed with loading: Flash has data, RAM has space, both mutexes held ---
-    ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Loading entry from flash offset 0x%X (Size: %u)\n",
-                         current_read_offset, entry_size_from_header);
-    
-    // Read the full entry from flash
-    int ret = flash_read(flash_read_buffer, entry_size_from_header, current_read_offset - FLASH_TX_QUEUE_START_OFFSET);
-    
+    ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Loading entry from flash relative offset %u (Size: %u)\n",
+                         current_read_offset_relative, entry_size_from_header);
+
+    // Read the full entry from flash using the relative offset
+    int ret = flash_read(flash_read_buffer, entry_size_from_header, current_read_offset_relative);
+
     // Check if the read was successful
     if (ret != FLASH_SUCCESS) {
         // Failed to read full entry, log and release mutexes
@@ -590,26 +605,26 @@ bool MEM_load_from_flash(void) {
     }
 
     // Index to insert into RAM queue
-    uint8_t insert_index = transmission_queue.tail; 
-    
+    uint8_t insert_index = transmission_queue.tail;
+
     // Point to the entry in RAM queue
-    QueuedDataEntry_t *ram_entry = &transmission_queue.profiles[insert_index]; 
-    
+    QueuedDataEntry_t *ram_entry = &transmission_queue.profiles[insert_index];
+
     // Pointer to read buffer
-    uint8_t *read_ptr = flash_read_buffer; 
+    uint8_t *read_ptr = flash_read_buffer;
 
     // Skip header by incrementing the read pointer by header size
-    read_ptr += sizeof(FlashEntryHeader_t);                             
+    read_ptr += sizeof(FlashEntryHeader_t);
 
     // Copy metadata
-    memcpy(&ram_entry->profile_metadata, read_ptr, sizeof(pData));      
-    
-    // Move pointer to pressure samples
-    read_ptr += sizeof(pData);                                          
+    memcpy(&ram_entry->profile_metadata, read_ptr, sizeof(pData));
 
-    ram_entry->num_samples = hdr->num_samples;                          // Set number of samples from header
-    uint16_t samples_to_copy = hdr->num_samples;                        // Number of samples to copy from flash
-    
+    // Move pointer to pressure samples
+    read_ptr += sizeof(pData);
+
+    ram_entry->num_samples = hdr->num_samples;                 // Set number of samples from header
+    uint16_t samples_to_copy = hdr->num_samples;               // Number of samples to copy from flash
+
     // Ensure we don't copy more than the max defined in the struct
     if (samples_to_copy > DATA_MAX_SAMPLES) {
         ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: ERROR - Sample count %u from flash exceeds max %u.\n", samples_to_copy, DATA_MAX_SAMPLES);
@@ -619,8 +634,8 @@ bool MEM_load_from_flash(void) {
     // Copy pressure samples
     memcpy(ram_entry->pressure_measurements, read_ptr, samples_to_copy * sizeof(float));
     // Move pointer to temperature samples
-    read_ptr += samples_to_copy * sizeof(float);    
-    // Copy temperature samples                                       
+    read_ptr += samples_to_copy * sizeof(float);
+    // Copy temperature samples
     memcpy(ram_entry->temp_measurements, read_ptr, samples_to_copy * sizeof(float));
 
     ram_entry->profile_number = hdr->profile_number;
@@ -634,9 +649,10 @@ bool MEM_load_from_flash(void) {
                          ram_entry->is_park_data ? "Park" : "Profile", ram_entry->profile_number, transmission_queue.count);
 
     // --- Update Flash Queue ---
-    flash_queue_head_offset = FLASH_TX_QUEUE_START_OFFSET + (current_read_offset + entry_size_from_header - FLASH_TX_QUEUE_START_OFFSET) % FLASH_TX_QUEUE_SIZE;
+    // Advance head offset using relative offsets and modulus
+    flash_queue_head_offset = (current_read_offset_relative + entry_size_from_header) % FLASH_TX_QUEUE_SIZE;
     flash_queue_count--;
-    ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Advanced flash head offset to 0x%X. Flash Count: %u\n",
+    ARTEMIS_DEBUG_PRINTF("MEM LOAD FLASH: Advanced flash head relative offset to %u. Flash Count: %u\n",
                           flash_queue_head_offset, flash_queue_count);
 
     result = true; // Success!
@@ -648,6 +664,7 @@ bool MEM_load_from_flash(void) {
     // Return success
     return result;
 }
+
 
 /**
  * @brief Log the current memory status for debugging.
@@ -662,6 +679,15 @@ void MEM_log_memory_status(const char* location) {
 
     ARTEMIS_DEBUG_PRINTF("%s: Memory status - Free: %u bytes, Min ever free: %u bytes\n",
                          location, free_memory, min_free_memory);
-    ARTEMIS_DEBUG_PRINTF("%s: Queue stats - RAM Queue: %u profiles, Flash Queue: %u profiles (estimated)\n",
-                         location, queue_count, flash_queue_count); // Log both RAM and estimated flash count
+    // Take flash mutex briefly to get consistent count
+    uint32_t flash_count_local = 0;
+    if (xSemaphoreTake(flash_mutex, (TickType_t)10) == pdTRUE) { // Short timeout
+        flash_count_local = flash_queue_count;
+        xSemaphoreGive(flash_mutex);
+    } else {
+        // Could not get mutex, indicate count might be stale
+        ARTEMIS_DEBUG_PRINTF("%s: Could not get flash mutex for count.\n", location);
+    }
+    ARTEMIS_DEBUG_PRINTF("%s: Queue stats - RAM Queue: %u profiles, Flash Queue: %u profiles\n",
+                         location, queue_count, flash_count_local); // Log both RAM and flash count
 }
