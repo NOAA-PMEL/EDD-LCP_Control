@@ -59,7 +59,8 @@ static uint8_t flash_read_buffer[MAX_FLASH_ENTRY_SIZE];  // Buffer for reading d
 
 /**
  * @brief Initialize the flash queue metadata and mutex.
- * Erases the flash region designated for the queue on initialization.
+ * Does NOT erase flash on initialization anymore. Assumes flash content
+ * might be stale and relies on read/write logic to manage it.
  */
 void MEM_init_flash_queue(void) {
     flash_mutex = xSemaphoreCreateMutex();
@@ -69,33 +70,32 @@ void MEM_init_flash_queue(void) {
         return;
     }
 
-    // Use the relative start offset (0) and the total size for erasing the
-    // entire region managed by the flash driver.
-    ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Erasing flash region managed by driver (Offset: %u, Size: %u bytes)...\n",
-                         FLASH_TX_QUEUE_RELATIVE_START_OFFSET, FLASH_TX_QUEUE_SIZE);
-
-    // Erase the entire flash region dedicated to the queue.
-    // Pass offset 0 and the total size.
-    int erase_ret = flash_erase(FLASH_TX_QUEUE_RELATIVE_START_OFFSET, FLASH_TX_QUEUE_SIZE);
-
-    if (erase_ret == FLASH_SUCCESS) {
-        ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Flash region erased successfully.\n");
-    } else {
-        ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: ERROR - Failed to erase flash region! ret=%d\n", erase_ret);
-        // Handle error: Initialization failed, flash might be unusable.
-        // Consider releasing the mutex if initialization fails permanently.
-        // vSemaphoreDelete(flash_mutex);
-        // flash_mutex = NULL;
-        return; // Stop initialization if erase fails
-    }
+    // --- Erase operation removed ---
+    // ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Erasing flash region managed by driver (Offset: %u, Size: %u bytes)...\n",
+    //                      FLASH_TX_QUEUE_RELATIVE_START_OFFSET, FLASH_TX_QUEUE_SIZE);
+    // int erase_ret = flash_erase(FLASH_TX_QUEUE_RELATIVE_START_OFFSET, FLASH_TX_QUEUE_SIZE);
+    // if (erase_ret == FLASH_SUCCESS) {
+    //     ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Flash region erased successfully.\n");
+    // } else {
+    //     ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: ERROR - Failed to erase flash region! ret=%d\n", erase_ret);
+    //     // Handle error: Initialization failed, flash might be unusable.
+    //     // Consider releasing the mutex if initialization fails permanently.
+    //     // vSemaphoreDelete(flash_mutex);
+    //     // flash_mutex = NULL;
+    //     // return; // Stop initialization if erase fails (REMOVED - no longer erasing)
+    // }
+    ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Skipping erase on initialization.\n");
 
     // Reset in-memory metadata variables (using relative offsets)
+    // TODO: Implement logic here to scan flash and find the actual head/tail/count
+    //       based on valid magic numbers if persistence across resets is needed.
+    //       For now, assume it starts empty for the current run.
     flash_queue_head_offset = FLASH_TX_QUEUE_RELATIVE_START_OFFSET; // Start at relative offset 0
     flash_queue_tail_offset = FLASH_TX_QUEUE_RELATIVE_START_OFFSET; // Start at relative offset 0
     flash_queue_count = 0;
 
     flash_initialized = true;
-    ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Flash queue metadata reset.\n");
+    ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Flash queue metadata reset (assumed empty).\n");
 }
 
 /**

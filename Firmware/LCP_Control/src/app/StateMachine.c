@@ -940,7 +940,7 @@ void STATE_Profiler(void)
                 break;
             case SPS_TX_mode:
                 configASSERT(xTaskCreate((TaskFunction_t) module_sps_tx,
-                                        "sps_txt", 1024, NULL,
+                                        "sps_txt", 4096, NULL,
                                         tskIDLE_PRIORITY + 2UL,
                                         NULL) == pdPASS );
                 ReceiveEvent(spsEventQueue, &spsEvent);
@@ -4165,7 +4165,6 @@ void module_sps_tx(void)
                 retry_page = false; // Assume success for this attempt unless failure occurs
 
                 /* Satellite visibility check */
-                // ... (Keep existing satellite check logic - verified OK) ...
                 bool run_satellite = true;
                 uint8_t satellite_tries = 0;
                 task_Iridium_satellite_visibility(&xSatellite);
@@ -4193,7 +4192,9 @@ void module_sps_tx(void)
                                    i9603n_sleep();
                                    vTaskDelay(xDelay1000ms * visibility_period);
                                    i9603n_wakeup();
-                                   vTaskDelete(xSatellite); 
+                                   //ARTEMIS_DEBUG_PRINTF("DEBUG: Before vTaskDelete(xSatellite). Handle: %p\n", xSatellite);
+                                   //vTaskDelete(xSatellite); // This should be handled in the task itself
+                                   //ARTEMIS_DEBUG_PRINTF("DEBUG: After vTaskDelete(xSatellite).\n"); // <-- Does this print?
                                    xSatellite = NULL;
                                    task_Iridium_satellite_visibility(&xSatellite); 
                               }
@@ -4341,11 +4342,13 @@ void module_sps_tx(void)
 
     // --- Cleanup ---
     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Transmission loop finished. Queue count: %u\n", MEM_queue_get_count());
-    
-    // Only turn off if it was initialized
+
+    // Only turn off AND uninitialize if it was initialized
     if(iridium_init) {
-       i9603n_off(); 
-       iridium_init = false; // Maybe reset flag? Depends on overall design.
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Powering off and uninitializing Iridium.\n"); // <-- Add log
+        i9603n_off();
+        i9603n_uninitialize();
+        iridium_init = false; 
     }
     vTaskDelay(xDelay1000ms);
 
@@ -4357,12 +4360,12 @@ void module_sps_tx(void)
         spsEvent = MODE_POPUP;
         ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, << %u Profiles have been reached >>\n\n", prof_number);
     } else {
-#if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+    #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
         datalogger_read_test_profile(true); // Assuming this exists
-#endif
+    #endif
         spsEvent = MODE_IDLE;
     }
-    
+
     MEM_log_memory_status("SPS :: tx end"); // Log final status
     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Task->finished\n\n");
     SendEvent(spsEventQueue, &spsEvent); // Assuming this exists
