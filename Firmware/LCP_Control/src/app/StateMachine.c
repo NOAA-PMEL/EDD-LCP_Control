@@ -940,7 +940,7 @@ void STATE_Profiler(void)
                 break;
             case SPS_TX_mode:
                 configASSERT(xTaskCreate((TaskFunction_t) module_sps_tx,
-                                        "sps_txt", 4096, NULL,
+                                        "sps_txt", 2048, NULL,
                                         tskIDLE_PRIORITY + 2UL,
                                         NULL) == pdPASS );
                 ReceiveEvent(spsEventQueue, &spsEvent);
@@ -1517,6 +1517,7 @@ void module_sps_move_to_park(void)
                             PIS_task_delete(xPiston);
                             vTaskDelay(xDelay5000ms);
                             PIS_Reset();
+                            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Board Done Resetting...\n");
                             piston_timer = 0;
                         }
                     }
@@ -1576,6 +1577,7 @@ void module_sps_move_to_park(void)
                 }
                 else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
                 {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->deleted or invalid. Getting Length...\n");
                     PIS_Get_Length(&Length);
                     Volume = CTRL_calculate_volume_from_length(Length);
                     Density = CTRL_calculate_lcp_density(Volume);
@@ -2070,6 +2072,7 @@ void module_sps_park(void)
                             ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston time-out, task->finished\n");
                             PIS_task_delete(xPiston);
                             vTaskDelay(xDelay5000ms);
+                            ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston Board Resetting...\n");
                             PIS_Reset();
                             piston_timer = 0;
                         }
@@ -2132,6 +2135,7 @@ void module_sps_park(void)
                 }
                 else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
                 {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->deleted or invalid. Getting Length...\n");
                     PIS_Get_Length(&Length);
                     Volume = CTRL_calculate_volume_from_length(Length);
                     Density = CTRL_calculate_lcp_density(Volume);
@@ -2704,6 +2708,7 @@ void module_sps_move_to_profile(void)
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston time-out, task->finished\n");
                             PIS_task_delete(xPiston);
                             vTaskDelay(xDelay5000ms);
+                            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston Board Resetting...\n");
                             PIS_Reset();
                             piston_timer = 0;
                         }
@@ -2766,6 +2771,7 @@ void module_sps_move_to_profile(void)
                 }
                 else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
                 {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->deleted or invalid. Getting Length...\n");
                     PIS_Get_Length(&Length);
                     Volume = CTRL_calculate_volume_from_length(Length);
                     Density = CTRL_calculate_lcp_density(Volume);
@@ -4035,344 +4041,345 @@ void module_sps_move_to_surface(void)
     vTaskDelete(NULL);
 }
 
+/**
+ * @brief State function for transmitting queued data via Iridium.
+ * Attempts items sequentially. Continues ONLY on full item success.
+ * Exits state on ANY persistent item failure in the current cycle.
+ * Resets attempt counter ONLY if max attempts were reached for the failed item before exiting.
+ */
 void module_sps_tx(void)
 {
-    Event_e spsEvent;
+    Event_e spsEvent = MODE_IDLE; // Default next state
     QueuedDataEntry_t *current_item = NULL;
-    bool fatal_error_occurred = false;      // Flag to exit main loop on HW fail
-    bool queue_processed = false;           // Flag to track if we processed at least one item
+    bool fatal_error_occurred = false;
+    bool stop_processing_queue_this_cycle = false; // Flag to break main loop on ANY persistent failure for the current item
+    bool max_attempts_stop_reason = false;      // Specific flag indicating max attempts caused the stop
+    bool item_processed_successfully = false;   // Flag set when an item is fully transmitted and removed
+    bool queue_processed_at_least_once = false; // Renamed original queue_processed for clarity
 
     MEM_log_memory_status("SPS :: tx start");
 
-    /** Initialize the Iridium Modem */
-    // ... (Keep existing Iridium init/power-on logic - verified OK) ...
-     if (!iridium_init)
-     {
-         i9603n_initialize();
-         iridium_init = true;
-         vTaskDelay(xDelay1000ms);
- #ifdef TEST
-         datalogger_test_sbd_messages_init();
- #endif
-     }
+    // --- Initialize Iridium (Only if not already initialized) ---
+    if (!iridium_init) {
+        i9603n_initialize(); // Initializes UART etc.
+        iridium_init = true;
+        vTaskDelay(xDelay1000ms);
+        #ifdef TEST
+        // datalogger_test_sbd_messages_init(); // Assuming this function exists
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, TEST mode - SBD message init called.\n");
+        #endif
+    }
 
-    /* turn on the iridium module and wait for it be charged */
-     uint8_t wait = 0;
-     uint8_t tries = 0;
-     while (wait < 2 && tries < 2)
-     {
-         bool retVal = i9603n_on();
-         if (!retVal)
-         {
-             wait++;
-             if (wait >= 2)
-             {
-                 tries++;
-                 i9603n_off();
-                 vTaskDelay(xDelay1000ms);
-                 wait = 0;
-             }
-         }
-         else
-         {
-             ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium looks fine\n");
-             tries = 0;
-             break;
-         }
-     }
+    // --- Power On Iridium ---
+    uint8_t tries = 0;
+    bool iridium_ready = false;
+    while (tries < 2 && !fatal_error_occurred) {
+        if (i9603n_on()) {
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium powered on.\n");
+            vTaskDelay(xDelay1000ms); // Allow modem time to boot
+            iridium_ready = true;
+            break;
+        } else {
+            tries++;
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium power on attempt %u failed. Retrying...\n", tries);
+            i9603n_off(); // Ensure it's fully off before retry
+            vTaskDelay(xDelay2000ms);
+        }
+    }
 
-     if (tries >= 2)
-     {
-         i9603n_off();
- #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
-         datalogger_read_test_profile(true);
- #endif
-         spsEvent = MODE_IDLE;
-         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium not charged, trying again later.\n");
-         SendEvent(spsEventQueue, &spsEvent);
-         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Task->finished abruptly, NOT transmitting.\n");
-         vTaskDelete(NULL);
-         return; // Exit function
-     }
-     vTaskDelay(xDelay1000ms);
+    if (!iridium_ready) {
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium failed to power on after %u tries. Exiting TX state.\n", tries);
+        #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+        // datalogger_read_test_profile(true); // Assuming this exists
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, TEST mode - Reading test profile due to power fail.\n");
+        #endif
+        goto cleanup_and_exit; // Use goto for cleaner exit
+    }
 
 
     // --- Main Transmission Loop ---
-    while (MEM_queue_get_count() > 0 && !fatal_error_occurred)
+    // Processes items sequentially. Exits if queue is empty or any item fails persistently.
+    while (MEM_queue_get_count() > 0 && !fatal_error_occurred && !stop_processing_queue_this_cycle)
     {
-        queue_processed = true; // Indicate we started processing the queue
+        queue_processed_at_least_once = true; // Mark that we entered the loop
         current_item = MEM_queue_get_next(); // Get item at head
-        
+
         if (current_item == NULL) {
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Queue empty unexpectedly, exiting TX loop.\n");
-            // This case should ideally not be reached if MEM_queue_get_count() > 0,
-            // but handles potential race conditions or errors.
-            break; 
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Queue count > 0 but get_next is NULL! Exiting TX loop.\n");
+            fatal_error_occurred = true; // Inconsistent state
+            break; // Exit main loop
         }
 
-        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Processing %s %u (Attempts: %u, Samples: %u)\n", 
-                             current_item->is_park_data ? "Park" : "Profile", 
-                             current_item->profile_number, 
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Processing %s %u (Attempts: %u, Samples: %u)\n",
+                             current_item->is_park_data ? "Park" : "Profile",
+                             current_item->profile_number,
                              current_item->attempt_count,
                              current_item->num_samples);
 
         uint16_t samples_processed_this_item = 0;
         uint8_t current_page_num = 0;
-        bool item_fully_transmitted = false;
+        bool item_fully_transmitted = false; // Tracks if all pages were SENT successfully for this item
         uint8_t max_transmit_tries = current_item->is_park_data ? PARK_TRANSMIT_TRIES : PROF_TRANSMIT_TRIES;
+        bool exit_paging_loop = false;       // Flag to break out of page processing for this item upon failure
+        item_processed_successfully = false; // Reset for each item attempt
 
         // --- Paging Loop (for current_item) ---
-        while (!item_fully_transmitted && !fatal_error_occurred) 
+        // Processes pages sequentially unless item finishes, a fatal error occurs, or a page fails persistently.
+        while (!item_fully_transmitted && !fatal_error_occurred && !exit_paging_loop)
         {
             TaskHandle_t xIridium = NULL;
             TaskHandle_t xSatellite = NULL;
             eTaskState eStatus;
-            uint32_t visibility_period = xDelay1000ms; // Default
-            bool page_transmission_success = false;
+            bool page_transmission_success = false; // Success for the *current* page transmission cycle
             uint16_t samples_packed_this_page = 0;
+            // Buffer for the current page's packed data - declared inside loop
+            uint8_t current_page_buffer[IRID_DATA_OUT];
 
-            // Buffer for the current page's packed data
-            uint8_t current_page_buffer[IRID_DATA_OUT]; // Defined in StateMachine.c? Ensure size.
-            memset(current_page_buffer, 0, IRID_DATA_OUT); // Clear buffer
-
-            // Use the new helper to prepare and pack the page
-            uint16_t txbytes = prepare_transmit_page(current_page_buffer, 
-                                                     current_item, 
-                                                     samples_processed_this_item, 
-                                                     current_page_num, 
+            // --- Pack Page ---
+            memset(current_page_buffer, 0, IRID_DATA_OUT);
+            uint16_t txbytes = prepare_transmit_page(current_page_buffer,
+                                                     current_item,
+                                                     samples_processed_this_item,
+                                                     current_page_num,
                                                      &samples_packed_this_page);
 
-            // Check if packing produced data or if all samples are done
             if (txbytes == 0 || samples_packed_this_page == 0) {
-                 if (samples_processed_this_item >= current_item->num_samples) {
-                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, All samples processed for item %u. Finalizing.\n", current_item->profile_number);
-                     // Mark transmitted should happen upon *successful* transmission of the last page
-                     // This path indicates successful completion from previous iteration.
-                     item_fully_transmitted = true; 
-                 } else {
-                      // Error during packing or unexpected state
-                      ARTEMIS_DEBUG_PRINTF("SPS :: tx, ERROR packing page %u for item %u! Discarding item.\n", current_page_num, current_item->profile_number);
-                      MEM_queue_mark_transmitted(); // Discard problematic item
-                      item_fully_transmitted = true; // Stop processing this item
-                 }
-                 break; // Exit paging loop for this item
+                if (samples_processed_this_item >= current_item->num_samples) {
+                    // Should have been caught by item_fully_transmitted, but defensive check
+                    item_fully_transmitted = true;
+                    item_processed_successfully = true; // Assume previous pages were successful
+                } else {
+                    // Error during packing
+                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, ERROR packing page %u for item %u! Discarding item.\n", current_page_num, current_item->profile_number);
+                    MEM_queue_mark_transmitted(); // Discard unprocessable item
+                    item_fully_transmitted = true; // Treat as 'processed' (by discarding)
+                    item_processed_successfully = false; // Explicitly mark as not successful
+                    exit_paging_loop = true;       // Ensure loop exits
+                }
+                break; // Exit paging loop
             }
 
-            // --- Transmission Attempt Loop (for current page) ---
-            bool retry_page = true; 
-            while(retry_page && !fatal_error_occurred) 
+            // --- Transmission Attempt Loop (retries CURRENT PAGE on temporary failure) ---
+            bool retry_page_internally = true; // Flag to control retries for THIS page
+            while (retry_page_internally && !fatal_error_occurred)
             {
-                retry_page = false; // Assume success for this attempt unless failure occurs
+                retry_page_internally = false; // Assume success for this inner attempt unless flag is set true again
 
-                /* Satellite visibility check */
+                // --- Satellite Check ---
                 bool run_satellite = true;
                 uint8_t satellite_tries = 0;
-                task_Iridium_satellite_visibility(&xSatellite);
-                while(run_satellite && !fatal_error_occurred) 
-                {
+                task_Iridium_satellite_visibility(&xSatellite); // This task self-deletes
+                page_transmission_success = false; // Assume check will fail unless it explicitly succeeds
+                while(run_satellite && !fatal_error_occurred) {
                     eStatus = eTaskGetState(xSatellite);
-                    if ((eStatus==eRunning) || (eStatus==eReady) || (eStatus==eBlocked)) {
-                         // Waiting...
-                    } else if ((eStatus==eDeleted) || (eStatus==eInvalid)) {
-                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite check finished for page %u.\n", current_page_num);
-                         satellite_tries++;
-                         bool visible = GET_Iridium_satellite(); 
-                         if (visible) {
-                              ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite VISIBLE.\n");
-                              run_satellite = false;
-                              SET_Iridium_delay_rate(0.5); 
-                         } else {
-                              if (satellite_tries >= SATELLITE_VISIBILITY_TRIES) {
-                                   run_satellite = false;
-                                   SET_Iridium_delay_rate(0.1);
-                                   ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite NOT visible after %u tries.\n", SATELLITE_VISIBILITY_TRIES);
-                              } else {
-                                   visibility_period = 20;
-                                   ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite NOT Visible, waiting %u sec...\n", visibility_period);
-                                   i9603n_sleep();
-                                   vTaskDelay(xDelay1000ms * visibility_period);
-                                   i9603n_wakeup();
-                                   //ARTEMIS_DEBUG_PRINTF("DEBUG: Before vTaskDelete(xSatellite). Handle: %p\n", xSatellite);
-                                   //vTaskDelete(xSatellite); // This should be handled in the task itself
-                                   //ARTEMIS_DEBUG_PRINTF("DEBUG: After vTaskDelete(xSatellite).\n"); // <-- Does this print?
-                                   xSatellite = NULL;
-                                   task_Iridium_satellite_visibility(&xSatellite); 
-                              }
-                         }
-                    } else if (eStatus==eSuspended) { 
-                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite check task suspended, retrying...\n");
-                         vTaskDelete(xSatellite); 
-                         xSatellite = NULL;
-                         task_Iridium_satellite_visibility(&xSatellite); 
-                         vTaskDelay(xDelay1000ms); 
-                    }
-                    vTaskDelay(xDelay1000ms); 
+                    if (eStatus == eRunning || eStatus == eReady || eStatus == eBlocked) { vTaskDelay(xDelay1000ms); /* Waiting... */ }
+                    else if (eStatus == eDeleted || eStatus == eInvalid) {
+                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite check finished for page %u.\n", current_page_num);
+                        satellite_tries++;
+                        bool visible = GET_Iridium_satellite();
+                        if (visible) {
+                            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite VISIBLE.\n");
+                            page_transmission_success = true; // Visibility OK for this attempt
+                            run_satellite = false; // Exit check loop
+                            SET_Iridium_delay_rate(0.5);
+                        } else { // Not visible
+                            if (satellite_tries >= SATELLITE_VISIBILITY_TRIES) {
+                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite NOT visible after %u tries.\n", satellite_tries);
+                                page_transmission_success = false; // Visibility FAILED persistently for this attempt cycle
+                                run_satellite = false; // Exit check loop
+                                SET_Iridium_delay_rate(0.1); // Keep reduced rate if needed later
+                            } else { /* Wait and restart check */ ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite NOT Visible, waiting 20 sec...\n"); i9603n_sleep(); vTaskDelay(xDelay20000ms); i9603n_wakeup(); xSatellite=NULL; task_Iridium_satellite_visibility(&xSatellite);}
+                        }
+                    } else if (eStatus == eSuspended) { ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite check task suspended, retrying...\n"); vTaskDelete(xSatellite); xSatellite = NULL; task_Iridium_satellite_visibility(&xSatellite); vTaskDelay(xDelay1000ms); }
+                    else {vTaskDelay(xDelay1000ms); } // Added delay for non-waiting, non-finished states
                 } // End satellite check loop
 
-                /* Send data to modem buffer */
-                bool send_buffer_success = i9603n_send_data(current_page_buffer, txbytes);
-                if (!send_buffer_success) {
-                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Failed to send Page %u data to modem buffer. Retrying page.\n", current_page_num);
-                     retry_page = true; 
-                     vTaskDelay(xDelay2000ms); // Wait before retrying send
-                     continue; // Retry this page attempt
+                // If satellite check failed permanently for this attempt cycle, exit attempt loop
+                if (!page_transmission_success) {
+                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite visibility failed for this attempt cycle.\n");
+                     break; // Exit attempt loop, page_transmission_success remains false
+                }
+                if(fatal_error_occurred) { break; } // Exit if fatal error during check
+
+
+                // --- Send data to modem buffer ---
+                if (!i9603n_send_data(current_page_buffer, txbytes)) {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Failed send Page %u to buffer. Retrying attempt...\n", current_page_num);
+                    page_transmission_success = false; // Mark as failed for this attempt
+                    retry_page_internally = true;      // Signal inner loop to retry
+                    vTaskDelay(xDelay2000ms);
+                    continue; // Retry this inner attempt loop
                 }
                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Page %u data (%u bytes) sent to modem buffer.\n", current_page_num, txbytes);
                 vTaskDelay(xDelay1000ms);
 
-                /* Start Iridium transfer task and monitor */
-                task_Iridium_transfer(&xIridium); 
+                // --- Initiate Transfer and Monitor ---
+                task_Iridium_transfer(&xIridium); // This task also self-deletes
                 bool transfer_run = true;
-                while(transfer_run && !fatal_error_occurred)
-                {
-                    eStatus = eTaskGetState(xIridium);
-                    if ((eStatus==eRunning) || (eStatus==eReady) || (eStatus==eBlocked)){
-                         // Waiting...
-                    } else if ((eStatus==eDeleted) || (eStatus==eInvalid)) {
-                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium transfer task finished.\n");
-                        vTaskDelay(xDelay500ms);
-                        uint8_t recv[6] = {0};
-                        bool status_ok = GET_Iridium_status(recv); 
-                        uint16_t wait_time = 10; // Default wait
-                        
-                        transfer_run = false; // Exit transfer monitor loop
-                        
-                        if (status_ok) {
-                            if (recv[0] <= 4) { // Success code
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Page %u transmit SUCCESSFUL.\n", current_page_num);
-                                page_transmission_success = true; // Mark page as successfully sent
-                            } else { // Failure code
-                                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Page %u transmit FAILED (Iridium Status: %u).\n", current_page_num, recv[0]);
-                                page_transmission_success = false; 
-                                retry_page = true; // Signal to retry this page after handling error code
-                                
-                                // Handle specific codes like traffic management 
-                                if (recv[0] == 38) {
-                                     vTaskDelay(xDelay2000ms);
-                                     uint16_t traffic_buf[8] = {0};
-                                     uint8_t traffic_len = i9603n_traffic_mgmt_time(traffic_buf);
-                                     i9603n_sleep();
-                                     if(traffic_len > 0 && traffic_buf[0] == 0) wait_time = traffic_buf[1];
-                                     if(wait_time < 10) wait_time = 10;
-                                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Traffic management wait: %u sec\n", wait_time);
-                                     vTaskDelay(xDelay1000ms * wait_time);
-                                     i9603n_wakeup();
-                                     vTaskDelay(xDelay1000ms);
-                                } else { // Other failure codes
-                                     i9603n_sleep();
-                                     vTaskDelay(xDelay1000ms * wait_time); // General wait
-                                     i9603n_wakeup();
-                                     vTaskDelay(xDelay1000ms);
-                                }
-                            }
-                        } else { // Failed to get Iridium status
-                            ARTEMIS_DEBUG_PRINTF("SPS :: tx, ERROR getting Iridium transmit status!\n");
-                            page_transmission_success = false;
-                            retry_page = true; // Retry page if status check failed
-                        }
-                    } else if (eStatus == eSuspended) {
-                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium transfer task suspended?\n");
-                         vTaskDelay(xDelay1000ms);
-                    }
-                    vTaskDelay(xDelay1000ms); // Check status periodically
+                page_transmission_success = false; // Reset before this transfer attempt
+                while(transfer_run && !fatal_error_occurred) {
+                     eStatus = eTaskGetState(xIridium);
+                     if (eStatus == eRunning || eStatus == eReady || eStatus == eBlocked) { vTaskDelay(xDelay1000ms); /* Waiting */ }
+                     else if (eStatus == eDeleted || eStatus == eInvalid) {
+                          ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium transfer task finished.\n"); vTaskDelay(xDelay500ms);
+                          uint8_t recv[6] = {0}; bool status_ok = GET_Iridium_status(recv); transfer_run = false;
+                          if (status_ok) {
+                              if (recv[0] <= 4) { // Success code
+                                  ARTEMIS_DEBUG_PRINTF("SPS :: tx, Page %u transmit SUCCESSFUL.\n", current_page_num);
+                                  page_transmission_success = true; // Page success!
+                                  // Let loop exit naturally
+                              } else { // Failure code
+                                  ARTEMIS_DEBUG_PRINTF("SPS :: tx, Page %u transmit FAILED (Iridium Status: %u).\n", current_page_num, recv[0]);
+                                  page_transmission_success = false; // Page failed
+                                  retry_page_internally = true; // Signal inner loop to retry page after delay
+                                  // Handle delays based on error codes
+                                  uint16_t wait_time = 10; // Default wait time
+                                  if (recv[0] == 38) { // Traffic management
+                                      uint16_t traffic_buf[8] = {0}; uint8_t traffic_len = i9603n_traffic_mgmt_time(traffic_buf);
+                                      if(traffic_len > 0 && traffic_buf[0] == 0) wait_time = traffic_buf[1];
+                                      if(wait_time < 10) wait_time = 10;
+                                      ARTEMIS_DEBUG_PRINTF("SPS :: tx, Traffic management wait: %u sec\n", wait_time);
+                                  } // Add other specific error code delays here if needed
+                                  i9603n_sleep(); vTaskDelay(pdMS_TO_TICKS(wait_time * 1000)); i9603n_wakeup(); vTaskDelay(xDelay1000ms);
+                                  continue; // Continue attempt loop to retry page
+                              }
+                          } else { // Failed to get Iridium status
+                              ARTEMIS_DEBUG_PRINTF("SPS :: tx, ERROR getting Iridium transmit status! Retrying attempt...\n");
+                              page_transmission_success = false; // Page failed
+                              retry_page_internally = true; // Retry page attempt
+                          }
+                     } else if (eStatus == eSuspended) { ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium transfer task suspended?\n"); vTaskDelay(xDelay1000ms); }
+                     else {vTaskDelay(xDelay1000ms); } // Delay for other states?
                 } // end transfer_run loop
 
-                // --- Handle outcome of this transmission attempt ---
-                if (page_transmission_success) {
-                     samples_processed_this_item += samples_packed_this_page; // Update processed count
-                     MEM_queue_reset_attempts(); // Reset attempts for the item on page success
-                     
-                     if (samples_processed_this_item >= current_item->num_samples) {
-                          ARTEMIS_DEBUG_PRINTF("SPS :: tx, Item %u fully transmitted.\n", current_item->profile_number);
-                          MEM_queue_mark_transmitted(); // Mark item done in queue
-                          item_fully_transmitted = true; // Exit paging loop
-                     } else {
-                          ARTEMIS_DEBUG_PRINTF("SPS :: tx, Page %u for item %u transmitted, more pages needed (%u/%u samples).\n", 
-                                                current_page_num, current_item->profile_number, samples_processed_this_item, current_item->num_samples);
-                          current_page_num++; // Go to next page
-                     }
-                     retry_page = false; // Don't retry this page
+            } // End Transmission Attempt Loop (retry_page_internally)
 
-                } else if (retry_page) { 
-                     // Page transmission failed, increment attempt count for the *item*
-                     MEM_queue_increment_attempt(); 
-                     // Re-fetch item pointer in case queue shifted (unlikely if single-threaded access)
-                     current_item = MEM_queue_get_next(); 
-                     if (current_item == NULL) { // Check if item was removed somehow
-                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, ERROR: Current item became NULL after failed attempt!\n");
-                         fatal_error_occurred = true; // Treat as fatal
-                         retry_page = false;
-                         item_fully_transmitted = true; // Exit loops
-                         break;
-                     }
 
-                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Item %u attempt count now %u.\n", 
-                                           current_item->profile_number, current_item->attempt_count);
+            // --- Handle outcome for the CURRENT PAGE ---
+            if (page_transmission_success) {
+                // Page was sent successfully after internal retries (if any)
+                MEM_queue_reset_attempts(); // Reset item's overall attempts on page success
+                samples_processed_this_item += samples_packed_this_page;
 
-                     if (MEM_queue_max_attempts_reached(max_transmit_tries)) {
-                          ARTEMIS_DEBUG_PRINTF("SPS :: tx, MAX ATTEMPTS (%u) reached for item %u. Discarding.\n", 
-                                                max_transmit_tries, current_item->profile_number);
-                          MEM_queue_mark_transmitted(); // Discard item
-                          item_fully_transmitted = true; // Exit paging loop for this item
-                          retry_page = false; // Don't retry page
-                     } else {
-                          ARTEMIS_DEBUG_PRINTF("SPS :: tx, Retrying page %u for item %u.\n", current_page_num, current_item->profile_number);
-                          // retry_page remains true, transmission attempt loop will iterate
-                     }
+                if (samples_processed_this_item >= current_item->num_samples) {
+                    // This was the last page for the item
+                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Item %u fully transmitted.\n", current_item->profile_number);
+                    MEM_queue_mark_transmitted();      // Remove successful item from RAM queue
+                    item_fully_transmitted = true;     // Mark item processing as done for paging loop
+                    item_processed_successfully = true;// Flag overall success for this item
+                    exit_paging_loop = true;         // Exit paging loop (main loop will continue to next item)
                 } else {
-                    // This case (page !success and !retry) shouldn't be reached easily
-                    // but implies a non-retryable HW error potentially
-                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Unhandled non-retryable failure for page %u.\n", current_page_num);
-                     fatal_error_occurred = true; // Treat as fatal
-                     retry_page = false;
-                     item_fully_transmitted = true; // Exit loops
+                    // More pages remain for this item
+                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Page %u sent, moving to next page for item %u.\n", current_page_num, current_item->profile_number);
+                    current_page_num++;
+                    // Continue paging loop for the next page
                 }
+            } else {
+                // Failed to transmit this page after all internal retries for this attempt cycle
+                MEM_queue_increment_attempt();
+                // Re-fetch item pointer as the queue implementation might use it directly
+                // (or ensure MEM_queue_increment_attempt works correctly on the handle)
+                current_item = MEM_queue_get_next();
+                if (current_item == NULL) { // Should not happen if count > 0 but defensive check
+                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, ERROR: Head item became NULL after failed page attempt!\n");
+                     fatal_error_occurred = true;
+                     break; // Exit paging loop immediately
+                 }
 
-                vTaskDelay(xDelay1000ms); // Small delay between page attempts or before moving to next page
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Item %u attempt count now %u.\n", current_item->profile_number, current_item->attempt_count);
 
-            } // End Transmission Attempt Loop (retry_page)
+                if (MEM_queue_max_attempts_reached(max_transmit_tries)) {
+                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, MAX ATTEMPTS (%u) reached for item %u. Stopping ALL transmissions for this cycle.\n",
+                                         max_transmit_tries, current_item->profile_number);
+                     max_attempts_stop_reason = true;          // Set specific flag for cleanup logic
+                     stop_processing_queue_this_cycle = true; // Signal outer loop to stop
+                } else {
+                     // Failed, but more attempts remain. Stop processing for THIS CYCLE.
+                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Page %u failed for item %u, more attempts remain. Stopping TX cycle.\n",
+                                         current_page_num, current_item->profile_number);
+                     stop_processing_queue_this_cycle = true; // Signal outer loop to stop
+                }
+                // Exit the paging loop in both failure cases (max attempts or not)
+                // because we stop processing the queue for this cycle upon any persistent page failure.
+                exit_paging_loop = true;
+            }
+            vTaskDelay(xDelay500ms); // Small delay between pages or before exiting item loop
 
-        } // End Paging Loop (item_fully_transmitted)
+        } // End Paging Loop
 
-        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Finished processing item %u.\n", (current_item ? current_item->profile_number : 0)); // Safely print profile number
+        // If processing stopped for ANY reason other than successful transmission of the item, break the main loop
+        if (!item_processed_successfully || stop_processing_queue_this_cycle || fatal_error_occurred) {
+             break; // Exit the main 'while (MEM_queue_get_count...' loop
+        }
+
+        // If we get here, the item was successful, and the main loop continues to the next item.
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Successfully processed item %u. Checking for next item...\n", current_item->profile_number);
         vTaskDelay(xDelay1000ms); // Delay before processing next item
 
-    } // End Main Transmission Loop (while queue not empty)
+    } // End Main Transmission Loop
 
 
-    // --- Cleanup ---
-    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Transmission loop finished. Queue count: %u\n", MEM_queue_get_count());
+// --- Cleanup and Exit Logic ---
+cleanup_and_exit:
+    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Entering cleanup and exit. Max attempts stop reason: %d\n", max_attempts_stop_reason);
 
-    // Only turn off AND uninitialize if it was initialized
-    if(iridium_init) {
-        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Powering off and uninitializing Iridium.\n"); // <-- Add log
-        i9603n_off();
+    // Reset attempts ONLY if we stopped processing BECAUSE the head item reached max attempts
+    if (max_attempts_stop_reason) {
+         // Get the pointer again in case the queue was modified unexpectedly
+         current_item = MEM_queue_get_next();
+         if (current_item != NULL) {
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Resetting attempts for failed item %u before exiting.\n", current_item->profile_number);
+            MEM_queue_reset_attempts();
+         } else {
+             // This case should ideally not happen if max_attempts_stop_reason is true
+             ARTEMIS_DEBUG_PRINTF("SPS :: tx, WARNING: Failed item pointer was NULL during cleanup reset attempt.\n");
+         }
+    }
+
+    // Power off and De-initialize Iridium
+    if (iridium_init) { // Check if initialized at all during this run
+        if (iridium_ready) { // Only turn off if power on succeeded
+             ARTEMIS_DEBUG_PRINTF("SPS :: tx, Powering off Iridium.\n");
+             i9603n_off();
+        } else {
+             ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium power on failed, ensuring power is off.\n");
+             i9603n_off(); // Ensure power is off even if startup failed
+        }
+        // Always uninitialize the driver state if init flag was set
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Uninitializing Iridium driver.\n");
         i9603n_uninitialize();
-        iridium_init = false; 
+        iridium_init = false;
     }
-    vTaskDelay(xDelay1000ms);
+    vTaskDelay(xDelay1000ms); // Use original constant
 
-    /* check Heap size */
-    monitor_memory_usage(); // Assuming this function exists
+    monitor_memory_usage();
 
-    // Determine the next state to transition to
-    if (prof_number >= SYSTEM_PROFILE_NUMBER) { // Assuming prof_number is still tracked globally
+    // Determine next state
+    // Base decision only on RAM queue and profile number completion
+    if (prof_number >= SYSTEM_PROFILE_NUMBER && MEM_queue_get_count() == 0) {
         spsEvent = MODE_POPUP;
-        ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, << %u Profiles have been reached >>\n\n", prof_number);
+        ARTEMIS_DEBUG_PRINTF("\nSPS :: tx, << All profiles processed and RAM queue empty >>\n\n");
     } else {
-    #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
-        datalogger_read_test_profile(true); // Assuming this exists
-    #endif
+        // If we exited due to failure (max attempts or otherwise), or success but more items remain, go to IDLE
         spsEvent = MODE_IDLE;
+        #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+         // This datalogger call might be better placed in the transition logic *to* IDLE state
+         ARTEMIS_DEBUG_PRINTF("SPS :: tx, TEST mode - Reading test profile on exit to IDLE.\n");
+         // datalogger_read_test_profile(true); // Assuming this exists
+        #endif
     }
 
-    MEM_log_memory_status("SPS :: tx end"); // Log final status
-    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Task->finished\n\n");
-    SendEvent(spsEventQueue, &spsEvent); // Assuming this exists
-    vTaskDelete(NULL);
+    MEM_log_memory_status("SPS :: tx end");
+    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Task->finished, transitioning to %s\n\n",
+                         (spsEvent == MODE_IDLE) ? "MODE_IDLE" : "MODE_POPUP");
+
+    // Send the event to the queue (void function)
+    SendEvent(spsEventQueue, &spsEvent); // Corrected: Call void function
+
+    vTaskDelete(NULL); // Delete self task
 }
 
-// *** NEW STATIC HELPER FUNCTION (Add this before module_sps_tx) ***
+// *** NEW COMBINED STATIC HELPER FUNCTION ***
 /**
  * @brief Prepares and packs one page of data from a QueuedDataEntry item for Iridium transmission.
  * * @param iridium_buffer Pointer to the output buffer for the packed Iridium message.

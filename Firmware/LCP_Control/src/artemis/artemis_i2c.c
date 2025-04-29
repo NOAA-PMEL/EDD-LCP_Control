@@ -18,7 +18,8 @@ void artemis_i2c_send(artemis_i2c_t *i2c, bool stop, artemis_stream_t *txstream)
 	//ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer));
 	status = am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer);
 	if (status != AM_HAL_STATUS_SUCCESS){
-		ARTEMIS_DEBUG_PRINTF("I2C :: SEND ERROR\n");
+		// Print the specific HAL status code
+		ARTEMIS_DEBUG_PRINTF("I2C :: SEND ERROR Status=0x%X (%d)\n", status, status);
 	}
 
 	/** update the number of bytes read from the txstream */
@@ -40,7 +41,8 @@ void artemis_i2c_receive(artemis_i2c_t *i2c, bool stop, artemis_stream_t *rxstre
 	//ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer));
 	status = am_hal_iom_blocking_transfer(i2c->iom.handle, &transfer);
 	if (status != AM_HAL_STATUS_SUCCESS){
-		ARTEMIS_DEBUG_PRINTF("I2C :: RECEIVE ERROR\n");
+		// Print the specific HAL status code
+		ARTEMIS_DEBUG_PRINTF("I2C :: RECEIVE ERROR Status=0x%X (%d)\n", status, status);
 	}
 
 	/** update the number of bytes written to the rxstream */

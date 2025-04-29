@@ -349,129 +349,183 @@ void task_reset_piston_to_full(void)
 
 void task_move_piston_to_length(void)
 {
-    assert(piston.rtos.rate != 0);
-    uint32_t period = xDelay5000ms/piston.rtos.rate;
+    // Initialize required variables
+    assert(piston.rtos.rate != 0); // Check if the piston rate is set
+    uint32_t period = xDelay5000ms / piston.rtos.rate; // Calculate task period based on rate
     float length = 0.0;
+    float target_length = 0.0; // Store target length locally
+    bool move_success = false; // Flag to track if the move was successful
 
-    /*  before sending any write cmd to piston, read first
-        if piston is already moving */
-    if(module_pis_trv_eng() == true)
+    // Get target length safely
+    taskENTER_CRITICAL(); // Use critical section for brief access
+    target_length = piston.setpoint_l;
+    taskEXIT_CRITICAL();
+
+    ARTEMIS_DEBUG_PRINTF("PISTON :: Task started. Target Length = %0.5f\n", target_length);
+
+    // Check if piston is already moving; if so, reset and retry command
+    if(module_pis_trv_eng())
     {
-        ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, moving already\n");
+        ARTEMIS_DEBUG_PRINTF("PISTON :: WARNING, piston was already moving. Resetting board.\n");
         PIS_Reset();
-
-        vTaskDelay(xDelay2000ms);
-
+        vTaskDelay(xDelay2000ms); // Allow time for reset
     }
-    vTaskDelay(xDelay50ms);
-    /** Start the move */
-    PIS_move_to_length(piston.setpoint_l);
-    /** wait 500ms after shooting an I2C command */
-    vTaskDelay(xDelay250ms);
 
-    /** Start reading until we hit the volume */
+    // Start the move command
+    vTaskDelay(xDelay50ms); // Short delay before sending command
+    if (!PIS_move_to_length(target_length)) {
+        ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, failed to send move command.\n");
+        vTaskDelete(NULL); // Exit task if command fails
+        return;
+    }
+    ARTEMIS_DEBUG_PRINTF("PISTON :: Move command sent for length = %0.5f\n", target_length);
+    vTaskDelay(xDelay250ms); // Wait after sending command
+
+    // Monitoring loop
     pistonRun = true;
     uint8_t count_reset = 0;
-
     uint8_t stall_count = 0;
-    uint8_t stall_count_max = 38;
-    float last_length = -1.0;
+    const uint8_t stall_count_max = 38; // Reset after ~19 seconds of stall/no reading
+    float last_length = NAN; // Initialize to NaN to ensure first valid read updates it
 
     while(pistonRun)
     {
-        /** Read the piston memory to see if we're done moving and at volume */
-        if(module_pis_trv_eng() == false)
-        {
-            vTaskDelay(xDelay250ms);
-            length = module_pis_get_length();
-            ARTEMIS_DEBUG_PRINTF("PISTON :: Length = %0.5f\n", length);
-            taskENTER_CRITICAL();
-            piston.length = length;
-            taskEXIT_CRITICAL();
+        vTaskDelay(xDelay250ms); // Wait a bit before checking status/length
+        bool is_moving = module_pis_trv_eng();
+        length = module_pis_get_length();
 
-            if (piston.length >=(piston.setpoint_l - PISTON_LENGTH_DIFF_MAX) &&
-                piston.length <=(piston.setpoint_l + PISTON_LENGTH_DIFF_MAX))
+        bool length_is_valid = !(isnan(length) || isinf(length));
+
+        // --- Print current status ---
+        if (length_is_valid) {
+             ARTEMIS_DEBUG_PRINTF("PISTON :: Current Length%s = %0.5f\n",
+                                  is_moving ? " (moving)" : "", length);
+        } else {
+             ARTEMIS_DEBUG_PRINTF("PISTON :: WARNING - Invalid length reading received%s.\n",
+                                  is_moving ? " (while moving)" : "");
+        }
+        // --- End Print ---
+
+        // Update shared piston length safely
+        taskENTER_CRITICAL();
+        piston.length = length; // Store potentially invalid value for now, check below
+        taskEXIT_CRITICAL();
+
+
+        if (!is_moving) // Piston controller reports not moving
+        {
+            // Check if target reached ONLY if the reading is valid
+            if (length_is_valid &&
+                (length >= (target_length - PISTON_LENGTH_DIFF_MAX)) &&
+                (length <= (target_length + PISTON_LENGTH_DIFF_MAX)))
             {
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Length reached\n");
-                pistonRun = false;
-                count_reset = 0;
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Target length reached.\n");
+                move_success = true;
+                pistonRun = false; // Exit loop
             }
             else
             {
-                count_reset++;
-                if (count_reset > 3)
-                {
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
-                    vTaskDelay(xDelay500ms);
+                // Piston stopped, but not at target (or reading is invalid)
+                 ARTEMIS_DEBUG_PRINTF("PISTON :: WARNING - Stopped but not at target (Current: %f, Target: %f) or reading invalid.\n", length, target_length);
+                 count_reset++;
+                 if (count_reset > 3) // Reset after ~1 second of being stopped incorrectly
+                 {
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting due to incorrect stop position.\n");
                     PIS_Reset();
-                    vTaskDelay(period);
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Setting length = %0.5f\n", piston.setpoint_l);
-                    PIS_move_to_length(piston.setpoint_l);
-                    vTaskDelay(period);
-                    count_reset = 0;
-                }
+                    vTaskDelay(xDelay2000ms); // Wait for reset
+
+                    // Re-issue command after reset
+                    if (!PIS_move_to_length(target_length)) {
+                         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, failed to re-send move command after reset.\n");
+                         pistonRun = false; // Exit loop on command fail
+                         break;
+                    }
+                     ARTEMIS_DEBUG_PRINTF("PISTON :: Re-issued move command for length = %0.5f\n", target_length);
+                    vTaskDelay(xDelay250ms); // Wait after re-sending command
+                    count_reset = 0; // Reset counter
+                    last_length = NAN; // Reset stall detection
+                    stall_count = 0;
+                 }
             }
         }
-        else
+        else // Piston controller reports it IS moving
         {
-            vTaskDelay(xDelay250ms);
-            length = module_pis_get_length();
-            ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
-            taskENTER_CRITICAL();
-            piston.length = length;
-            taskEXIT_CRITICAL();
+            count_reset = 0; // Reset the reset counter if piston is moving
 
-            if (isnan(last_length) || isinf(last_length) 
-                || isnan(length)   || isinf(length) 
-                || fabs(length - last_length) < 0.001) { // check for stall condition: Invalid Float for length/last_length or no movement
-                stall_count++; // increment stall count
-                vTaskDelay(xDelay500ms);
-                if (isnan(length) || isinf(length)) {
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Invalid length value detected\n");
+            // Check for stall or invalid readings while moving
+            // Use fabs only if both lengths are valid
+            if (!length_is_valid || (length_is_valid && !isnan(last_length) && !isinf(last_length) && fabs(length - last_length) < 0.001) )
+            {
+                stall_count++;
+                vTaskDelay(xDelay500ms); // Extra delay during stall check
+                if (!length_is_valid) {
+                     ARTEMIS_DEBUG_PRINTF("PISTON :: Invalid length value detected while moving.\n");
                 }
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count = %d/%d\n", stall_count, stall_count_max);
-                if (stall_count > stall_count_max) {
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
-                    PIS_Reset();            // reset the board
-                    vTaskDelay(period);     // wait for reset to complete
-                    pistonRun = false;      // exit the loop
-                    stall_count = 0;        // reset stall count
-                }
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall/Invalid count = %d/%d\n", stall_count, stall_count_max);
 
+                if (stall_count >= stall_count_max) {
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout or persistent invalid readings.\n");
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting.\n");
+                    PIS_Reset();
+                    vTaskDelay(xDelay2000ms); // Wait for reset
+                    pistonRun = false; // Exit the loop after reset
+                    break; // Exit while loop
+                }
             } else {
-                stall_count = 0;            // reset stall count
+                stall_count = 0; // Reset stall count if valid movement detected
             }
-            last_length = length;           // update last length
+            // Update last_length only if the current length is valid
+            if (length_is_valid) {
+                last_length = length;
+            }
         }
 
+        // Main loop delay
         if (pistonRun)
         {
             vTaskDelay(period);
         }
-    }
+    } // End while(pistonRun)
 
-    vTaskDelay(xDelay100ms);
+    // Final actions after loop exits
+    vTaskDelay(xDelay100ms); // Allow final I2C reads if needed
+
+    // Get final length reading one last time
     length = module_pis_get_length();
-    ARTEMIS_DEBUG_PRINTF("PISTON :: Length updated = %0.5f\n", length);
+    bool final_length_is_valid = !(isnan(length) || isinf(length));
+
+    // Update shared struct safely
     taskENTER_CRITICAL();
-    piston.length = length;
+    piston.length = length; // Store final value (even if invalid for logging below)
     taskEXIT_CRITICAL();
 
-    /** Check to see if length is valid , and update the last length */
-    if( fabs(length - piston.setpoint_l) >= PISTON_LENGTH_DIFF_MAX )
-    {
-        /** ERROR - Alert the system somehow */
-        ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, Length diff = %0.5f\n", (length - piston.setpoint_l));
+    // Print final status
+    if (final_length_is_valid) {
+         ARTEMIS_DEBUG_PRINTF("PISTON :: Final Length = %0.5f\n", length);
+        // Check final difference only if the move was successful (not aborted by reset/stall)
+        if (move_success) {
+             if( fabs(length - target_length) >= PISTON_LENGTH_DIFF_MAX ) {
+                 ARTEMIS_DEBUG_PRINTF("PISTON :: WARNING, Final Length diff = %0.5f (Target: %0.5f)\n",
+                                      (length - target_length), target_length);
+             } else {
+                 ARTEMIS_DEBUG_PRINTF("PISTON :: SUCCESS, Final Length = %0.5f, diff = %0.5f, max_diff = %0.5f\n",
+                                      length, (length - target_length), PISTON_LENGTH_DIFF_MAX);
+             }
+         } else {
+              ARTEMIS_DEBUG_PRINTF("PISTON :: Move did not complete successfully (stalled/reset).\n");
+         }
+    } else {
+         ARTEMIS_DEBUG_PRINTF("PISTON :: Final length reading invalid.\n");
+         // Log error if the target was supposedly reached but reading is invalid
+         if (move_success) {
+              ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR - Target likely reached but final reading is invalid!\n");
+         } else {
+             ARTEMIS_DEBUG_PRINTF("PISTON :: Move did not complete successfully and final reading invalid.\n");
+         }
     }
-    else
-    {
-        ARTEMIS_DEBUG_PRINTF("PISTON :: SUCCESS, Length = %0.5f, diff = %0.5f, max_diff = %0.5f\n",
-                                    length, (length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
-    }
-    vTaskDelay(xDelay100ms);
-    vTaskDelete(NULL);
-    vTaskDelay(xDelay1000ms);
+
+    ARTEMIS_DEBUG_PRINTF("PISTON :: Task finished, deleting...\n");
+    vTaskDelete(NULL); // Delete self task
 }
 
 bool PIS_Get_Volume(float *volume)
@@ -865,6 +919,7 @@ void PIS_Reset(void)
     uint8_t addr = PISTON_I2C_W_RESET;
     uint8_t cmd[2] = {addr, PISTON_I2C_W_RESET_KEY};
     
+    ARTEMIS_DEBUG_PRINTF("PISTON :: Resetting...\n");
     /** Put in write mode */
     artemis_piston_set_write_mode(true);
     artemis_piston_i2c_send_msg(cmd, 2, true);
