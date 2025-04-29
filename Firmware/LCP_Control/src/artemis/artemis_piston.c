@@ -107,9 +107,7 @@ void artemis_piston_i2c_initialize(uint8_t i2c_addr)
     i2c->address = i2c_addr;
     i2c->iom.module = 2;
     i2c->iom.config.eInterfaceMode = AM_HAL_IOM_I2C_MODE;
-    //i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_400KHZ;
-    // Trying 100KHz for now
-    i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_100KHZ;
+    i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_400KHZ;
     artemis_iom_initialize(&i2c->iom);
 
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM2_SCL, g_AM_BSP_GPIO_IOM2_SCL));
