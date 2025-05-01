@@ -4370,6 +4370,13 @@ cleanup_and_exit:
     }
 
     MEM_log_memory_status("SPS :: tx end");
+
+    // Reset the test pressure profile for the next cycle
+    #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+        /* reset test profile */
+        datalogger_read_test_profile(true);
+    #endif
+
     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Task->finished, transitioning to %s\n\n",
                          (spsEvent == MODE_IDLE) ? "MODE_IDLE" : "MODE_POPUP");
 
