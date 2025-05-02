@@ -542,6 +542,7 @@ void module_pus_surface_float(void)
                 vTaskDelay(xDelay5000ms);
                 PIS_Reset();
                 piston_timer = 0;
+                piston_move = false;
                 pusEvent = MODE_DONE;
             }
         }
@@ -556,7 +557,7 @@ void module_pus_surface_float(void)
             ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->suspended\n");
             PIS_task_delete(xPiston);
             vTaskDelay(xDelay5000ms);
-            //piston_move = false;
+            piston_move = false;
             piston_timer = 0;
         }
         else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
@@ -657,10 +658,34 @@ void module_pds_idle(void)
             if (piston_timer >= 180000)
             {
                 ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston time-out, task->finished\n");
-                PIS_task_delete(xPiston);
+                // Time-out: delete the task, reset the piston board and set piston_move to false
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
+                ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston time-out, task->finished\n");
+
+                PIS_task_delete(xPiston); // Signal to self-delete
+
+                // Delete the task here if it doesn't self-delete:
+                /*
+                if (xPiston != NULL)
+                {
+                    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task didn't self-delete. Deleting now...\n");
+                    vTaskDelete(xPiston);
+                    xPiston = NULL;
+                    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task deleted.\n");
+                }
+                */
+
                 vTaskDelay(xDelay5000ms);
+                
                 PIS_Reset();
                 piston_timer = 0;
+
+                // Board is reset, task is deleted, so the piston isn't moving anymore.
+                // Added this to prevent lockup in the while loop.
+                piston_move = false;
             }
             // else if (eStatus==eReady)
             // {
@@ -674,7 +699,7 @@ void module_pds_idle(void)
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task->suspended\n");
             PIS_task_delete(xPiston);
             vTaskDelay(xDelay5000ms);
-            //piston_move = false;
+            piston_move = false;
             piston_timer = 0;
         }
         else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
@@ -1182,11 +1207,17 @@ void module_sps_move_to_park(void)
             piston_timer += piston_period;
             if (piston_timer >= 180000)
             {
+                // Time-out: delete the task, reset the piston board and set piston_move to false
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston time-out, task->finished\n");
 
-                //PIS_task_delete(xPiston); // Signal to self-delete -- this didn't work and caused a lockup...
+                PIS_task_delete(xPiston); // Signal to self-delete
 
                 // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task didn't self-delete. Deleting now...\n");
@@ -1194,6 +1225,7 @@ void module_sps_move_to_park(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task deleted.\n");
                 }
+                */
 
                 vTaskDelay(xDelay5000ms);
                 
@@ -2389,12 +2421,34 @@ void module_sps_move_to_profile(void)
             piston_timer += piston_period;
             if (piston_timer >= 60000)
             {
+                // Time-out: delete the task, reset the piston board and set piston_move to false
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston time-out, task->finished\n");
-                PIS_task_delete(xPiston);
+
+                PIS_task_delete(xPiston); // Signal to self-delete
+
+                // Delete the task here if it doesn't self-delete:
+                /*
+                if (xPiston != NULL)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task didn't self-delete. Deleting now...\n");
+                    vTaskDelete(xPiston);
+                    xPiston = NULL;
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task deleted.\n");
+                }
+                */
+
                 vTaskDelay(xDelay5000ms);
+                
                 PIS_Reset();
-                //piston_move = false;
                 piston_timer = 0;
+
+                // Board is reset, task is deleted, so the piston isn't moving anymore.
+                // Added this to prevent lockup in the while loop.
+                piston_move = false;
             }
         }
         // else if (eStatus==eReady)
@@ -2983,11 +3037,34 @@ void module_sps_profile(void)
             piston_timer += piston_period;
             if (piston_timer >= 120000)
             {
+                // Time-out: delete the task, reset the piston board and set piston_move to false
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
+                ARTEMIS_DEBUG_PRINTF("SPS :: profile, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston time-out, task->finished\n");
-                PIS_task_delete(xPiston);
+
+                PIS_task_delete(xPiston); // Signal to self-delete
+
+                // Delete the task here if it doesn't self-delete:
+                /*
+                if (xPiston != NULL)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task didn't self-delete. Deleting now...\n");
+                    vTaskDelete(xPiston);
+                    xPiston = NULL;
+                    ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task deleted.\n");
+                }
+                */
+
                 vTaskDelay(xDelay5000ms);
+                
                 PIS_Reset();
                 piston_timer = 0;
+
+                // Board is reset, task is deleted, so the piston isn't moving anymore.
+                // Added this to prevent lockup in the while loop.
+                piston_move = false;
             }
         }
         // else if (eStatus==eReady)
@@ -3002,6 +3079,7 @@ void module_sps_profile(void)
             PIS_task_delete(xPiston);
             vTaskDelay(xDelay5000ms);
             piston_timer = 0;
+            piston_move = false;
         }
         else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
         {
