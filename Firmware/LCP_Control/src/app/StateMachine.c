@@ -1183,10 +1183,26 @@ void module_sps_move_to_park(void)
             if (piston_timer >= 180000)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston time-out, task->finished\n");
-                PIS_task_delete(xPiston);
+
+                //PIS_task_delete(xPiston); // Signal to self-delete -- this didn't work and caused a lockup...
+
+                // Delete the task here if it doesn't self-delete:
+                if (xPiston != NULL)
+                {
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task didn't self-delete. Deleting now...\n");
+                    vTaskDelete(xPiston);
+                    xPiston = NULL;
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task deleted.\n");
+                }
+
                 vTaskDelay(xDelay5000ms);
+                
                 PIS_Reset();
                 piston_timer = 0;
+
+                // Board is reset, task is deleted, so the piston isn't moving anymore.
+                // Added this to prevent lockup in the while loop.
+                piston_move = false;
             }
         }
         // else if (eStatus==eReady)
