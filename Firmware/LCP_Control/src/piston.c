@@ -137,8 +137,8 @@ void PIS_task_delete(TaskHandle_t xHandle)
             delete = true;
         }
         wait++;
-        /* wait for 100ms */
-        vTaskDelay(xDelay100ms);
+        /* wait for 50ms */
+        vTaskDelay(xDelay50ms);
     }
 }
 
