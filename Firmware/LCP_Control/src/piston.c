@@ -111,7 +111,7 @@ void PIS_task_delete(TaskHandle_t xHandle)
     uint8_t wait = 0;
     bool delete = false;
 
-    /* check the task state */
+    /* check the task state 
     while (!delete && wait < 20)
     {
         eTaskState eState = eTaskGetState(xHandle);
@@ -137,9 +137,12 @@ void PIS_task_delete(TaskHandle_t xHandle)
             delete = true;
         }
         wait++;
-        /* wait for 50ms */
+        // wait for 50ms
         vTaskDelay(xDelay50ms);
-    }
+    }*/
+
+    pistonRun = false;
+    vTaskDelay(xDelay1000ms);
 }
 
 void task_move_piston_to_zero(void)
@@ -206,7 +209,7 @@ void task_move_piston_to_zero(void)
     taskEXIT_CRITICAL();
 
     vTaskDelay(xDelay100ms);
-    vTaskDelete(NULL);
+    //vTaskDelete(NULL);
     vTaskDelay(xDelay1000ms);
 }
 
@@ -275,7 +278,7 @@ void task_move_piston_to_full(void)
     taskEXIT_CRITICAL();
 
     vTaskDelay(xDelay100ms);
-    vTaskDelete(NULL);
+    //vTaskDelete(NULL);
     vTaskDelay(xDelay1000ms);
 }
 
@@ -343,7 +346,7 @@ void task_reset_piston_to_full(void)
     taskEXIT_CRITICAL();
 
     vTaskDelay(xDelay100ms);
-    vTaskDelete(NULL);
+    //vTaskDelete(NULL);
     vTaskDelay(xDelay1000ms);
 }
 
@@ -470,7 +473,7 @@ void task_move_piston_to_length(void)
                                     length, (length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
     }
     vTaskDelay(xDelay100ms);
-    vTaskDelete(NULL);
+    //vTaskDelete(NULL);
     vTaskDelay(xDelay1000ms);
 }
 
