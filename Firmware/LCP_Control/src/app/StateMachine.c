@@ -496,6 +496,7 @@ void module_pus_surface_float(void)
                     */
                     vTaskDelay(xDelay500ms);
                     PIS_Reset();
+                    vTaskDelay(xDelay1000ms);
                     piston_timer = 0;
                     piston_move = false;
                 }
@@ -528,6 +529,7 @@ void module_pus_surface_float(void)
                 */
                 vTaskDelay(xDelay500ms);
                 PIS_Reset();
+                vTaskDelay(xDelay1000ms);
                 piston_timer = 0;
                 piston_move = false;                
             }
@@ -580,6 +582,7 @@ void module_pus_surface_float(void)
                 vTaskDelay(xDelay5000ms);
 
                 PIS_Reset();
+                vTaskDelay(xDelay1000ms);
                 piston_timer = 0;
                 piston_move = false;
 
@@ -724,6 +727,7 @@ void module_pds_idle(void)
                 */
                 vTaskDelay(xDelay500ms);
                 PIS_Reset();
+                vTaskDelay(xDelay1000ms);
                 piston_timer = 0;
                 piston_move = false;
             }
@@ -1174,6 +1178,7 @@ void module_sps_move_to_park(void)
                     */
                     vTaskDelay(xDelay500ms);
                     PIS_Reset();
+                    vTaskDelay(xDelay1000ms);
                     piston_timer = 0;
                     piston_move = false;
                 }
@@ -1201,6 +1206,7 @@ void module_sps_move_to_park(void)
                 */
                 vTaskDelay(xDelay500ms);
                 PIS_Reset();
+                vTaskDelay(xDelay1000ms);
                 piston_timer = 0;
                 piston_move = false;
             }
@@ -1318,6 +1324,7 @@ void module_sps_move_to_park(void)
                 vTaskDelay(xDelay500ms);
                 
                 PIS_Reset();
+                vTaskDelay(xDelay1000ms);
                 piston_timer = 0;
                 piston_move = false;
 
@@ -1347,6 +1354,7 @@ void module_sps_move_to_park(void)
             vTaskDelay(xDelay500ms);
             
             PIS_Reset();
+            vTaskDelay(xDelay1000ms);
             piston_timer = 0;
             piston_move = false;
         }
@@ -1659,6 +1667,7 @@ void module_sps_move_to_park(void)
                             */
                             vTaskDelay(xDelay500ms);
                             PIS_Reset();
+                            vTaskDelay(xDelay1000ms);
                             piston_timer = 0;
                             piston_move = false;
 
@@ -1699,6 +1708,7 @@ void module_sps_move_to_park(void)
                             */
                             vTaskDelay(xDelay500ms);
                             PIS_Reset();
+                            vTaskDelay(xDelay1000ms);
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Board Done Resetting...\n");
                             piston_timer = 0;
                             piston_move = false;
@@ -2267,6 +2277,7 @@ void module_sps_park(void)
                             */
                             vTaskDelay(xDelay500ms);
                             PIS_Reset();
+                            vTaskDelay(xDelay1000ms);
                             piston_timer = 0;
                             piston_move = false;
 
@@ -2314,6 +2325,7 @@ void module_sps_park(void)
                             vTaskDelay(xDelay500ms);
                             ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston Board Resetting...\n");
                             PIS_Reset();
+                            vTaskDelay(xDelay1000ms);
                             piston_timer = 0;
                             piston_move = false;
                         }
@@ -2369,6 +2381,7 @@ void module_sps_park(void)
                     vTaskDelay(xDelay500ms);
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston Board Resetting...\n");
                     PIS_Reset();
+                    vTaskDelay(xDelay1000ms);
                     piston_timer = 0;
                     piston_move = false;
 
@@ -2690,6 +2703,7 @@ void module_sps_move_to_profile(void)
                 */
                 vTaskDelay(xDelay500ms);
                 PIS_Reset();
+                vTaskDelay(xDelay1000ms);
                 piston_timer = 0;
                 piston_move = false;
             }
@@ -3026,6 +3040,7 @@ void module_sps_move_to_profile(void)
                             */
                             vTaskDelay(xDelay500ms);
                             PIS_Reset();
+                            vTaskDelay(xDelay1000ms);
                             piston_timer = 0;
                             piston_move = false;
                             
@@ -3068,6 +3083,7 @@ void module_sps_move_to_profile(void)
                             vTaskDelay(xDelay500ms);
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston Board Resetting...\n");
                             PIS_Reset();
+                            vTaskDelay(xDelay1000ms);
                             piston_timer = 0;
                             piston_move = false;
                         }
@@ -3372,6 +3388,7 @@ void module_sps_profile(void)
                 */
                 vTaskDelay(xDelay500ms);
                 PIS_Reset();
+                vTaskDelay(xDelay1000ms);
                 piston_timer = 0;
                 piston_move = false;
             }
@@ -3399,6 +3416,7 @@ void module_sps_profile(void)
             */
             vTaskDelay(xDelay500ms);
             PIS_Reset();
+            vTaskDelay(xDelay1000ms);
             piston_timer = 0;
             piston_move = false;
         }
@@ -3915,6 +3933,7 @@ void module_sps_profile(void)
                         */
                         vTaskDelay(xDelay500ms);
                         PIS_Reset();
+                        vTaskDelay(xDelay1000ms);
                         piston_timer = 0;
                         piston_move = false;
                     }
@@ -3938,6 +3957,7 @@ void module_sps_profile(void)
                         */
                         vTaskDelay(xDelay500ms);
                         PIS_Reset();
+                        vTaskDelay(xDelay1000ms);
                         piston_timer = 0;
                         piston_move = false;
                     }
@@ -3968,6 +3988,7 @@ void module_sps_profile(void)
                 vTaskDelay(xDelay500ms);
                 piston_timer = 0;
                 PIS_Reset();
+                vTaskDelay(xDelay1000ms);
                 piston_move = false;
             }
             else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
@@ -4203,6 +4224,7 @@ void module_sps_move_to_surface(void)
                     */
                     vTaskDelay(xDelay500ms);
                     PIS_Reset();
+                    vTaskDelay(xDelay1000ms);
                     piston_timer = 0;
                     piston_move = false;
                 }
@@ -4230,6 +4252,7 @@ void module_sps_move_to_surface(void)
                 */
                 vTaskDelay(xDelay500ms);
                 PIS_Reset();
+                vTaskDelay(xDelay1000ms);
                 piston_timer = 0;
                 piston_move = false;
             }
@@ -4310,6 +4333,7 @@ void module_sps_move_to_surface(void)
                     */
                     vTaskDelay(xDelay500ms);
                     PIS_Reset();
+                    vTaskDelay(xDelay1000ms);
                     piston_timer = 0;
                     piston_move = false;
                 }
@@ -4338,6 +4362,7 @@ void module_sps_move_to_surface(void)
                 vTaskDelay(xDelay500ms);
                 piston_timer = 0;
                 PIS_Reset();
+                vTaskDelay(xDelay1000ms);
                 piston_move = false;
             }
             else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
@@ -4414,6 +4439,7 @@ void module_sps_move_to_surface(void)
                     */
                     vTaskDelay(xDelay500ms);
                     PIS_Reset();
+                    vTaskDelay(xDelay1000ms);
                     piston_timer = 0;
                     piston_move = false;
                 }
@@ -4441,6 +4467,7 @@ void module_sps_move_to_surface(void)
                 */
                 vTaskDelay(xDelay500ms);
                 PIS_Reset();
+                vTaskDelay(xDelay1000ms);
                 piston_timer = 0;
                 piston_move = false;
             }

@@ -157,7 +157,7 @@ void task_move_piston_to_zero(void)
         PIS_Reset();
 
         //vTaskDelay(xDelay2000ms);
-        vTaskDelay(xDelay100ms);
+        vTaskDelay(xDelay1000ms);
 
     }
 
@@ -226,7 +226,7 @@ void task_move_piston_to_full(void)
         PIS_Reset();
 
         //vTaskDelay(xDelay2000ms);
-        vTaskDelay(xDelay100ms);
+        vTaskDelay(xDelay1000ms);
 
     }
 
@@ -295,7 +295,7 @@ void task_reset_piston_to_full(void)
         PIS_Reset();
 
         //vTaskDelay(xDelay2000ms);
-        vTaskDelay(xDelay100ms);
+        vTaskDelay(xDelay1000ms);
 
     }
 
@@ -324,7 +324,7 @@ void task_reset_piston_to_full(void)
             {
                 ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
                 PIS_Reset();
-                vTaskDelay(xDelay250ms);
+                vTaskDelay(xDelay1000ms);
                 //vTaskDelay(period);
                 PIS_reset_to_full();
                 vTaskDelay(period);
@@ -365,7 +365,7 @@ void task_move_piston_to_length(void)
         PIS_Reset();
 
         //vTaskDelay(xDelay2000ms);
-        vTaskDelay(xDelay100ms);
+        vTaskDelay(xDelay1000ms);
 
     }
     vTaskDelay(xDelay50ms);
@@ -409,7 +409,7 @@ void task_move_piston_to_length(void)
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
                     //vTaskDelay(xDelay250ms);
                     PIS_Reset();
-                    vTaskDelay(xDelay250ms);
+                    vTaskDelay(xDelay1000ms);
                     //vTaskDelay(period);
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Setting length = %0.5f\n", piston.setpoint_l);
                     PIS_move_to_length(piston.setpoint_l);
@@ -440,7 +440,7 @@ void task_move_piston_to_length(void)
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
                     PIS_Reset();            // reset the board
-                    vTaskDelay(xDelay250ms);     // wait for reset to complete
+                    vTaskDelay(xDelay1000ms);     // wait for reset to complete
                     pistonRun = false;      // exit the loop
                     stall_count = 0;        // reset stall count
                 }
@@ -513,7 +513,7 @@ void task_move_piston_to_volume(void)
         PIS_Reset();
 
         //vTaskDelay(xDelay1000ms);
-        vTaskDelay(xDelay100ms);
+        vTaskDelay(xDelay1000ms);
 
     }
     vTaskDelay(xDelay50ms);
