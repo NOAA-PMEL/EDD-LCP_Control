@@ -483,6 +483,9 @@ void module_pus_surface_float(void)
                     ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Density=%.3fkg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                     ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston time-out, task->finished\n");
                     PIS_task_delete(xPiston); // Signal to exit loop
+                    vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                    // Delete the task here if it doesn't self-delete:
+                    /*
                     if (xPiston != NULL)
                     {
                         ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Deleting Piston task...\n");
@@ -490,7 +493,8 @@ void module_pus_surface_float(void)
                         xPiston = NULL;
                         ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task deleted.\n");
                     }
-                    vTaskDelay(xDelay5000ms);
+                    */
+                    vTaskDelay(xDelay500ms);
                     PIS_Reset();
                     piston_timer = 0;
                     piston_move = false;
@@ -511,6 +515,9 @@ void module_pus_surface_float(void)
                 ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Density=%.3fkg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                 ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston time-out, task->finished\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Deleting Piston task...\n");
@@ -518,7 +525,8 @@ void module_pus_surface_float(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 PIS_Reset();
                 piston_timer = 0;
                 piston_move = false;                
@@ -582,7 +590,9 @@ void module_pus_surface_float(void)
         {
             ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task->suspended\n");
             PIS_task_delete(xPiston); // Signal to exit loop
-            // Delete the task, reset the piston board and set piston_move to false
+            vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+            // Delete the task here if it doesn't self-delete:
+            /*
             if (xPiston != NULL)
             {
                 ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Deleting Piston Task...\n");
@@ -590,7 +600,8 @@ void module_pus_surface_float(void)
                 xPiston = NULL;
                 ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Piston task deleted.\n");
             }
-            vTaskDelay(xDelay5000ms);
+            */
+            vTaskDelay(xDelay500ms);
             piston_move = false;
             piston_timer = 0;
         }
@@ -700,9 +711,9 @@ void module_pds_idle(void)
                 ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston time-out, task->finished\n");
 
                 PIS_task_delete(xPiston); // Signal to exit loop
-
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
                 // Delete the task here if it doesn't self-delete:
-                
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Deleting Piston Task...\n");
@@ -710,15 +721,10 @@ void module_pds_idle(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task deleted.\n");
                 }
-                
-
-                vTaskDelay(xDelay5000ms);
-                
+                */
+                vTaskDelay(xDelay500ms);
                 PIS_Reset();
                 piston_timer = 0;
-
-                // Board is reset, task is deleted, so the piston isn't moving anymore.
-                // Added this to prevent lockup in the while loop.
                 piston_move = false;
             }
             // else if (eStatus==eReady)
@@ -732,6 +738,9 @@ void module_pds_idle(void)
         {
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task->suspended\n");
             PIS_task_delete(xPiston); // Signal to exit loop
+            vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+            // Delete the task here if it doesn't self-delete:
+            /*
             if (xPiston != NULL)
             {
                 ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Deleting Piston task...\n");
@@ -739,7 +748,8 @@ void module_pds_idle(void)
                 xPiston = NULL;
                 ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task deleted.\n");
             }
-            vTaskDelay(xDelay5000ms);
+            */
+            vTaskDelay(xDelay500ms);
             piston_move = false;
             piston_timer = 0;
         }
@@ -795,6 +805,9 @@ void module_pds_idle(void)
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, deliberately stopping the Piston\n");
                 /* stop the piston */
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Deleting Piston task...\n");
@@ -802,7 +815,8 @@ void module_pds_idle(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 PIS_stop();
                 vTaskDelay(piston_period);
                 piston_move = false;
@@ -1146,10 +1160,10 @@ void module_sps_move_to_park(void)
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero time-out, task->finished\n");
                     PIS_task_delete(xPiston);
                     PIS_Get_Length(&zlengthdrift);
-                    vTaskDelay(piston_period);
+                    vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Length=%.4fin\n", zlengthdrift);
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Task->Finished\n");
-
+                    /*
                     if (xPiston != NULL)
                     {
                         ARTEMIS_DEBUG_PRINTF("PDS :: move_to_park, Piston task didn't self-delete. Deleting now...\n");
@@ -1157,8 +1171,8 @@ void module_sps_move_to_park(void)
                         xPiston = NULL;
                         ARTEMIS_DEBUG_PRINTF("PDS :: move_to_park, Piston task deleted.\n");
                     }
-
-                    vTaskDelay(xDelay5000ms);
+                    */
+                    vTaskDelay(xDelay500ms);
                     PIS_Reset();
                     piston_timer = 0;
                     piston_move = false;
@@ -1173,19 +1187,22 @@ void module_sps_move_to_park(void)
             else if (eStatus==eSuspended) // NOTE: in its current state, the program won't reach this.
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero task->suspended\n");
-                PIS_task_delete(xPiston);
+                PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
-                    {
-                        ARTEMIS_DEBUG_PRINTF("PDS :: move_to_park, Piston task didn't self-delete. Deleting now...\n");
-                        vTaskDelete(xPiston);
-                        xPiston = NULL;
-                        ARTEMIS_DEBUG_PRINTF("PDS :: move_to_park, Piston task deleted.\n");
-                    }
-
-                    vTaskDelay(xDelay5000ms);
-                    PIS_Reset();
-                    piston_timer = 0;
-                    piston_move = false;
+                {
+                    ARTEMIS_DEBUG_PRINTF("PDS :: move_to_park, Piston task didn't self-delete. Deleting now...\n");
+                    vTaskDelete(xPiston);
+                    xPiston = NULL;
+                    ARTEMIS_DEBUG_PRINTF("PDS :: move_to_park, Piston task deleted.\n");
+                }
+                */
+                vTaskDelay(xDelay500ms);
+                PIS_Reset();
+                piston_timer = 0;
+                piston_move = false;
             }
             else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
             {
@@ -1287,6 +1304,9 @@ void module_sps_move_to_park(void)
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston time-out, task->finished\n");
 
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Deleting Piston task...\n");
@@ -1294,7 +1314,8 @@ void module_sps_move_to_park(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 
                 PIS_Reset();
                 piston_timer = 0;
@@ -1312,18 +1333,22 @@ void module_sps_move_to_park(void)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->suspended\n");
             PIS_task_delete(xPiston); // Signal to exit loop
+            vTaskDelay(xDelay5000ms); // Wait for the task to exit the loop and delete itself
+            // Delete the task here if it doesn't self-delete:
+            /*
             if (xPiston != NULL)
-                {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task didn't self-delete. Deleting now...\n");
-                    vTaskDelete(xPiston);
-                    xPiston = NULL;
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task deleted.\n");
-                }
-                vTaskDelay(xDelay5000ms);
-                
-                PIS_Reset();
-                piston_timer = 0;
-                piston_move = false;
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task didn't self-delete. Deleting now...\n");
+                vTaskDelete(xPiston);
+                xPiston = NULL;
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task deleted.\n");
+            }
+            */
+            vTaskDelay(xDelay500ms);
+            
+            PIS_Reset();
+            piston_timer = 0;
+            piston_move = false;
         }
         else if ( (eStatus==eDeleted) || (eStatus==eInvalid) )
         {
@@ -1569,6 +1594,9 @@ void module_sps_move_to_park(void)
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, deliberately stopping the Piston\n");
                 /* stop the piston */
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Deleting Piston task...\n");
@@ -1576,7 +1604,8 @@ void module_sps_move_to_park(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 PIS_stop();
                 vTaskDelay(piston_period);
                 piston_move = false;
@@ -1617,6 +1646,9 @@ void module_sps_move_to_park(void)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston CRUSH_DEPTH time-out, task->finished\n");
                             PIS_task_delete(xPiston); // Signal to exit loop
+                            vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                            // Delete the task here if it doesn't self-delete:
+                            /*
                             if (xPiston != NULL)
                             {
                                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Deleting Piston task...\n");
@@ -1624,7 +1656,8 @@ void module_sps_move_to_park(void)
                                 xPiston = NULL;
                                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task deleted.\n");
                             }
-                            vTaskDelay(xDelay5000ms);
+                            */
+                            vTaskDelay(xDelay500ms);
                             PIS_Reset();
                             piston_timer = 0;
                             piston_move = false;
@@ -1653,6 +1686,9 @@ void module_sps_move_to_park(void)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston time-out, task->finished\n");
                             PIS_task_delete(xPiston); // Signal to exit loop
+                            vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                            // Delete the task here if it doesn't self-delete:
+                            /*
                             if (xPiston != NULL)
                             {
                                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Deleting Piston task...\n");
@@ -1660,7 +1696,8 @@ void module_sps_move_to_park(void)
                                 xPiston = NULL;
                                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task deleted.\n");
                             }
-                            vTaskDelay(xDelay5000ms);
+                            */
+                            vTaskDelay(xDelay500ms);
                             PIS_Reset();
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Board Done Resetting...\n");
                             piston_timer = 0;
@@ -1703,6 +1740,9 @@ void module_sps_move_to_park(void)
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task->finished\n");
                     PIS_task_delete(xPiston); // Signal to exit loop
+                    vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                    // Delete the task here if it doesn't self-delete:
+                    /*
                     if (xPiston != NULL)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Deleting Piston task...\n");
@@ -1710,7 +1750,8 @@ void module_sps_move_to_park(void)
                         xPiston = NULL;
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task deleted.\n");
                     }
-                    vTaskDelay(xDelay5000ms);
+                    */
+                    vTaskDelay(xDelay500ms);
                     piston_move = false;
                     piston_timer = 0;
 
@@ -1786,6 +1827,9 @@ void module_sps_move_to_park(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Deleting Piston task...\n");
@@ -1793,7 +1837,8 @@ void module_sps_move_to_park(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 /* stop the piston */
                 PIS_stop();
                 piston_timer = 0;
@@ -2209,6 +2254,9 @@ void module_sps_park(void)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston CRUSH_DEPTH time-out, task->finished\n");
                             PIS_task_delete(xPiston); // Signal to exit loop
+                            vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                            // Delete the task here if it doesn't self-delete:
+                            /*
                             if (xPiston != NULL)
                             {
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Deleting Piston task...\n");
@@ -2216,7 +2264,8 @@ void module_sps_park(void)
                                 xPiston = NULL;
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task deleted.\n");
                             }
-                            vTaskDelay(xDelay5000ms);
+                            */
+                            vTaskDelay(xDelay500ms);
                             PIS_Reset();
                             piston_timer = 0;
                             piston_move = false;
@@ -2251,6 +2300,9 @@ void module_sps_park(void)
                             ARTEMIS_DEBUG_PRINTF("SPS :: park, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                             ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->finished\n");
                             PIS_task_delete(xPiston); // Signal to exit loop
+                            vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                            // Delete the task here if it doesn't self-delete:
+                            /*
                             if (xPiston != NULL)
                             {
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Deleting Piston task...\n");
@@ -2258,7 +2310,8 @@ void module_sps_park(void)
                                 xPiston = NULL;
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task deleted.\n");
                             }
-                            vTaskDelay(xDelay5000ms);
+                            */
+                            vTaskDelay(xDelay500ms);
                             ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston Board Resetting...\n");
                             PIS_Reset();
                             piston_timer = 0;
@@ -2302,6 +2355,9 @@ void module_sps_park(void)
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->finished\n");
                     PIS_task_delete(xPiston); // Signal to exit loop
+                    vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                    // Delete the task here if it doesn't self-delete:
+                    /*
                     if (xPiston != NULL)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: park, Deleting Piston task...\n");
@@ -2309,7 +2365,8 @@ void module_sps_park(void)
                         xPiston = NULL;
                         ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task deleted.\n");
                     }
-                    vTaskDelay(xDelay5000ms);
+                    */
+                    vTaskDelay(xDelay500ms);
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston Board Resetting...\n");
                     PIS_Reset();
                     piston_timer = 0;
@@ -2389,6 +2446,9 @@ void module_sps_park(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: park, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Deleting Piston task...\n");
@@ -2396,7 +2456,8 @@ void module_sps_park(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 /* stop the piston */
                 PIS_stop();
                 piston_timer = 0;
@@ -2424,6 +2485,9 @@ void module_sps_park(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: park, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Deleting Piston task...\n");
@@ -2431,7 +2495,8 @@ void module_sps_park(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 /* stop the piston */
                 PIS_stop();
                 vTaskDelay(piston_period);
@@ -2474,6 +2539,9 @@ void module_sps_park(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: park, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Deleting Piston task...\n");
@@ -2481,7 +2549,8 @@ void module_sps_park(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 /* stop the piston */
                 PIS_stop();
                 vTaskDelay(piston_period);
@@ -2608,16 +2677,18 @@ void module_sps_move_to_profile(void)
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston time-out, task->finished\n");
 
                 PIS_task_delete(xPiston); // Signal to exit loop
-                
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task didn't self-delete. Deleting now...\n");
+                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Deleting Piston task...\n");
                     vTaskDelete(xPiston);
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task deleted.\n");
                 }
-                
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 PIS_Reset();
                 piston_timer = 0;
                 piston_move = false;
@@ -2633,6 +2704,9 @@ void module_sps_move_to_profile(void)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->suspended\n");
             PIS_task_delete(xPiston); // Signal to exit loop
+            vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+            // Delete the task here if it doesn't self-delete:
+            /*
             if (xPiston != NULL)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task didn't self-delete. Deleting now...\n");
@@ -2640,7 +2714,8 @@ void module_sps_move_to_profile(void)
                 xPiston = NULL;
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task deleted.\n");
             }
-            vTaskDelay(xDelay5000ms);
+            */
+            vTaskDelay(xDelay500ms);
             piston_move = false;
             piston_timer = 0;
         }
@@ -2886,6 +2961,9 @@ void module_sps_move_to_profile(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Deleting Piston task...\n");
@@ -2893,7 +2971,8 @@ void module_sps_move_to_profile(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_t_profile, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 /* stop the piston */
                 PIS_stop();
                 piston_move = false;
@@ -2934,6 +3013,9 @@ void module_sps_move_to_profile(void)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston CRUSH_DEPTH time-out, task->finished\n");
                             PIS_task_delete(xPiston); // Signal to exit loop
+                            vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                            // Delete the task here if it doesn't self-delete:
+                            /*
                             if (xPiston != NULL)
                             {
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Deleting Piston task...\n");
@@ -2941,7 +3023,8 @@ void module_sps_move_to_profile(void)
                                 xPiston = NULL;
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task deleted.\n");
                             }
-                            vTaskDelay(xDelay5000ms);
+                            */
+                            vTaskDelay(xDelay500ms);
                             PIS_Reset();
                             piston_timer = 0;
                             piston_move = false;
@@ -2971,6 +3054,9 @@ void module_sps_move_to_profile(void)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston time-out, task->finished\n");
                             PIS_task_delete(xPiston); // Signal to exit loop
+                            vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                            // Delete the task here if it doesn't self-delete:
+                            /*
                             if (xPiston != NULL)
                             {
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Deleting Piston task...\n");
@@ -2978,7 +3064,8 @@ void module_sps_move_to_profile(void)
                                 xPiston = NULL;
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task deleted.\n");
                             }
-                            vTaskDelay(xDelay5000ms);
+                            */
+                            vTaskDelay(xDelay500ms);
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston Board Resetting...\n");
                             PIS_Reset();
                             piston_timer = 0;
@@ -3017,6 +3104,9 @@ void module_sps_move_to_profile(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task->suspended\n");
                     PIS_task_delete(xPiston); // Signal to exit loop
+                    vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                    // Delete the task here if it doesn't self-delete:
+                    /*
                     if (xPiston != NULL)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Deleting Piston task...\n");
@@ -3024,7 +3114,8 @@ void module_sps_move_to_profile(void)
                         xPiston = NULL;
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task deleted.\n");
                     }
-                    vTaskDelay(xDelay5000ms);
+                    */
+                    vTaskDelay(xDelay500ms);
                     piston_timer = 0;
                     piston_move = false;
 
@@ -3107,6 +3198,9 @@ void module_sps_move_to_profile(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Deleting Piston task...\n");
@@ -3114,7 +3208,8 @@ void module_sps_move_to_profile(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 /* stop the piston */
                 PIS_stop();
                 piston_timer = 0;
@@ -3264,6 +3359,9 @@ void module_sps_profile(void)
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston time-out, task->finished\n");
 
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task didn't self-delete. Deleting now...\n");
@@ -3271,7 +3369,8 @@ void module_sps_profile(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 PIS_Reset();
                 piston_timer = 0;
                 piston_move = false;
@@ -3287,6 +3386,9 @@ void module_sps_profile(void)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->suspended\n");
             PIS_task_delete(xPiston); // Signal to exit loop
+            vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+            // Delete the task here if it doesn't self-delete:
+            /*
             if (xPiston != NULL)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task didn't self-delete. Deleting now...\n");
@@ -3294,7 +3396,8 @@ void module_sps_profile(void)
                 xPiston = NULL;
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task deleted.\n");
             }
-            vTaskDelay(xDelay5000ms);
+            */
+            vTaskDelay(xDelay500ms);
             PIS_Reset();
             piston_timer = 0;
             piston_move = false;
@@ -3799,6 +3902,9 @@ void module_sps_profile(void)
                         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->finished\n");
                         PIS_task_delete(xPiston); // Signal to exit loop
+                        vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                        // Delete the task here if it doesn't self-delete:
+                        /*
                         if (xPiston != NULL)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Deleting Piston task...\n");
@@ -3806,7 +3912,8 @@ void module_sps_profile(void)
                             xPiston = NULL;
                             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task deleted.\n");
                         }
-                        vTaskDelay(xDelay5000ms);
+                        */
+                        vTaskDelay(xDelay500ms);
                         PIS_Reset();
                         piston_timer = 0;
                         piston_move = false;
@@ -3818,6 +3925,9 @@ void module_sps_profile(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston time-out, task->finished\n");
                         PIS_task_delete(xPiston); // Signal to exit loop
+                        vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                        // Delete the task here if it doesn't self-delete:
+                        /*
                         if (xPiston != NULL)
                         {
                             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Deleting Piston task...\n");
@@ -3825,7 +3935,8 @@ void module_sps_profile(void)
                             xPiston = NULL;
                             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task deleted.\n");
                         }
-                        vTaskDelay(xDelay5000ms);
+                        */
+                        vTaskDelay(xDelay500ms);
                         PIS_Reset();
                         piston_timer = 0;
                         piston_move = false;
@@ -3843,6 +3954,9 @@ void module_sps_profile(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->suspended\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Deleting Piston task...\n");
@@ -3850,7 +3964,8 @@ void module_sps_profile(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 piston_timer = 0;
                 PIS_Reset();
                 piston_move = false;
@@ -3877,6 +3992,9 @@ void module_sps_profile(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Deleting Piston task...\n");
@@ -3884,7 +4002,8 @@ void module_sps_profile(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 /* try to stop first*/
                 PIS_stop();
                 piston_timer = 0;
@@ -3911,6 +4030,9 @@ void module_sps_profile(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
                     PIS_task_delete(xPiston); // Signal to exit loop
+                    vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                    // Delete the task here if it doesn't self-delete:
+                    /*
                     if (xPiston != NULL)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Deleting Piston task...\n");
@@ -3918,7 +4040,8 @@ void module_sps_profile(void)
                         xPiston = NULL;
                         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task deleted.\n");
                     }
-                    vTaskDelay(xDelay5000ms);
+                    */
+                    vTaskDelay(xDelay500ms);
                     /* try to stop first*/
                     PIS_stop();
                     piston_timer = 0;
@@ -3960,6 +4083,9 @@ void module_sps_profile(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Deleting Piston task...\n");
@@ -3967,7 +4093,8 @@ void module_sps_profile(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 /* try to stop first*/
                 PIS_stop();
                 piston_timer = 0;
@@ -4063,6 +4190,9 @@ void module_sps_move_to_surface(void)
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full Length=%.4fin\n", Length);
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full Task->Finished\n");
                     PIS_task_delete(xPiston); // Signal to exit loop
+                    vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                    // Delete the task here if it doesn't self-delete:
+                    /*
                     if (xPiston != NULL)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task didn't self-delete. Deleting now...\n");
@@ -4070,7 +4200,8 @@ void module_sps_move_to_surface(void)
                         xPiston = NULL;
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task deleted.\n");
                     }
-                    vTaskDelay(xDelay5000ms);
+                    */
+                    vTaskDelay(xDelay500ms);
                     PIS_Reset();
                     piston_timer = 0;
                     piston_move = false;
@@ -4086,6 +4217,9 @@ void module_sps_move_to_surface(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston move to full task->suspended\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task didn't self-delete. Deleting now...\n");
@@ -4093,7 +4227,8 @@ void module_sps_move_to_surface(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 PIS_Reset();
                 piston_timer = 0;
                 piston_move = false;
@@ -4118,6 +4253,9 @@ void module_sps_move_to_surface(void)
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, move to full deliberately stopping the Piston\n");
             /* stop the piston */
             PIS_task_delete(xPiston); // Signal to exit loop
+            vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+            // Delete the task here if it doesn't self-delete:
+            /*
             if (xPiston != NULL)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Deleting Piston task...\n");
@@ -4125,7 +4263,8 @@ void module_sps_move_to_surface(void)
                 xPiston = NULL;
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task deleted.\n");
             }
-            vTaskDelay(xDelay5000ms);
+            */
+            vTaskDelay(xDelay500ms);
             PIS_stop();
             vTaskDelay(piston_period);
             piston_move = false;
@@ -4158,6 +4297,9 @@ void module_sps_move_to_surface(void)
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston encoder reset to full Length=%.4fin\n", Length);
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full Task->Finished\n");
                     PIS_task_delete(xPiston); // Signal to exit loop
+                    vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                    // Delete the task here if it doesn't self-delete:
+                    /*
                     if (xPiston != NULL)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task didn't self-delete. Deleting now...\n");
@@ -4165,7 +4307,8 @@ void module_sps_move_to_surface(void)
                         xPiston = NULL;
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task deleted.\n");
                     }
-                    vTaskDelay(xDelay5000ms);
+                    */
+                    vTaskDelay(xDelay500ms);
                     PIS_Reset();
                     piston_timer = 0;
                     piston_move = false;
@@ -4181,6 +4324,9 @@ void module_sps_move_to_surface(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston reset to full task->suspended\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Deleting Piston task...\n");
@@ -4188,7 +4334,8 @@ void module_sps_move_to_surface(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 piston_timer = 0;
                 PIS_Reset();
                 piston_move = false;
@@ -4254,6 +4401,9 @@ void module_sps_move_to_surface(void)
                     Density = CTRL_calculate_lcp_density(Volume);
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                     PIS_task_delete(xPiston); // Signal to exit loop
+                    vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                    // Delete the task here if it doesn't self-delete:
+                    /*
                     if (xPiston != NULL)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task didn't self-delete. Deleting now...\n");
@@ -4261,7 +4411,8 @@ void module_sps_move_to_surface(void)
                         xPiston = NULL;
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task deleted.\n");
                     }
-                    vTaskDelay(xDelay5000ms);
+                    */
+                    vTaskDelay(xDelay500ms);
                     PIS_Reset();
                     piston_timer = 0;
                     piston_move = false;
@@ -4277,6 +4428,9 @@ void module_sps_move_to_surface(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task->suspended\n");
                 PIS_task_delete(xPiston); // Signal to exit loop
+                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                // Delete the task here if it doesn't self-delete:
+                /*
                 if (xPiston != NULL)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task didn't self-delete. Deleting now...\n");
@@ -4284,7 +4438,8 @@ void module_sps_move_to_surface(void)
                     xPiston = NULL;
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task deleted.\n");
                 }
-                vTaskDelay(xDelay5000ms);
+                */
+                vTaskDelay(xDelay500ms);
                 PIS_Reset();
                 piston_timer = 0;
                 piston_move = false;
@@ -4309,6 +4464,9 @@ void module_sps_move_to_surface(void)
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS deliberately stopping the Piston\n");
         /* stop the piston */
         PIS_task_delete(xPiston); // Signal to exit loop
+        vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+        // Delete the task here if it doesn't self-delete:
+        /*
         if (xPiston != NULL)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Deleting Piston task...\n");
@@ -4316,7 +4474,8 @@ void module_sps_move_to_surface(void)
             xPiston = NULL;
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface B, Piston task deleted.\n");
         }
-        vTaskDelay(xDelay5000ms);
+        */
+        vTaskDelay(xDelay500ms);
         PIS_stop();
         vTaskDelay(piston_period);
         piston_move = false;
