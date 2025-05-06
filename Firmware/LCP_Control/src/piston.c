@@ -209,7 +209,7 @@ void task_move_piston_to_zero(void)
     taskEXIT_CRITICAL();
 
     vTaskDelay(xDelay100ms);
-    //vTaskDelete(NULL);
+    vTaskDelete(NULL);
     vTaskDelay(xDelay1000ms);
 }
 
@@ -278,7 +278,7 @@ void task_move_piston_to_full(void)
     taskEXIT_CRITICAL();
 
     vTaskDelay(xDelay100ms);
-    //vTaskDelete(NULL);
+    vTaskDelete(NULL);
     vTaskDelay(xDelay1000ms);
 }
 
@@ -346,7 +346,7 @@ void task_reset_piston_to_full(void)
     taskEXIT_CRITICAL();
 
     vTaskDelay(xDelay100ms);
-    //vTaskDelete(NULL);
+    vTaskDelete(NULL);
     vTaskDelay(xDelay1000ms);
 }
 
@@ -473,7 +473,7 @@ void task_move_piston_to_length(void)
                                     length, (length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
     }
     vTaskDelay(xDelay100ms);
-    //vTaskDelete(NULL);
+    vTaskDelete(NULL);
     vTaskDelay(xDelay1000ms);
 }
 
