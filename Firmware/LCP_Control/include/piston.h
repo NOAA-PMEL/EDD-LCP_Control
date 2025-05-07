@@ -134,7 +134,8 @@ void task_reset_piston_to_full(void);
 void task_move_piston_to_volume(void);
 void task_move_piston_to_length(void);
 void PIS_set_piston_rate(uint8_t rate);
-void PIS_task_delete(TaskHandle_t xHandle);
+void PIS_task_delete(void);
+bool PIS_taskStatus(void);
 
 /**********************************************************************************
  * Unit Test Variables & Static Prototpyes

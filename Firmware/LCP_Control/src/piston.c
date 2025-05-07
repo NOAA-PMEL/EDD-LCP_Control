@@ -7,6 +7,7 @@
 // Static variables
 static Piston_t piston;
 static volatile bool pistonRun = false;
+static volatile bool LiveTask = false;
 
 // Static Function Prototypes
 static bool module_pis_read_if_full(void);
@@ -16,6 +17,11 @@ static bool module_pis_trv_eng(void);
 static float module_pis_get_volume(void);
 static float module_pis_get_length(void);
 static void module_pis_information(void);
+
+bool PIS_taskStatus(void)
+{
+    return LiveTask;
+}
 
 // Global Functions
 bool PIS_initialize(void)
@@ -106,43 +112,10 @@ void PIS_task_move_zero(TaskHandle_t *xPiston)
                                 xPiston) == pdPASS );
 }
 
-void PIS_task_delete(TaskHandle_t xHandle)
+void PIS_task_delete()
 {
-    uint8_t wait = 0;
-    bool delete = false;
-
-    /* check the task state 
-    while (!delete && wait < 20)
-    {
-        eTaskState eState = eTaskGetState(xHandle);
-        if ( (eState==eReady) || (eState==eBlocked) )
-        {
-            if (pistonRun)
-            {
-                pistonRun = false;
-            }
-        }
-        else if (eState==eRunning)
-        {
-            ARTEMIS_DEBUG_PRINTF("PISTON :: Task is in eRunning state, wait\n");
-        }
-        else if (eState==eSuspended)
-        {
-            ARTEMIS_DEBUG_PRINTF("PISTON :: Task is Suspended\n");
-            vTaskDelete(xHandle);
-        }
-        else if ( (eState==eDeleted)|| (eState==eInvalid) )
-        {
-            ARTEMIS_DEBUG_PRINTF("PISTON :: Task is Deleted\n");
-            delete = true;
-        }
-        wait++;
-        // wait for 50ms
-        vTaskDelay(xDelay50ms);
-    }*/
-
     pistonRun = false;
-    vTaskDelay(xDelay1000ms);
+    vTaskDelay(xDelay10000ms);
 }
 
 void task_move_piston_to_zero(void)
@@ -353,6 +326,7 @@ void task_reset_piston_to_full(void)
 
 void task_move_piston_to_length(void)
 {
+    LiveTask = true;
     assert(piston.rtos.rate != 0);
     uint32_t period = xDelay5000ms/piston.rtos.rate;
     float length = 0.0;
@@ -476,6 +450,7 @@ void task_move_piston_to_length(void)
                                     length, (length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
     }
     vTaskDelay(xDelay100ms);
+    LiveTask = false;
     vTaskDelete(NULL);
 }
 

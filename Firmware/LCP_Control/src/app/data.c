@@ -303,6 +303,7 @@
   * @return float Actual float representation of temperature
   * @shit -5° to the left (fitting values within 12 bits (-5 to 35.59)
   */
+  // FIX THIS TO USE 16 BITS
  static float module_convert_uint16_t_to_temperature(uint16_t temp)
  {
      int16_t t = temp - 500;
@@ -399,8 +400,11 @@
      buf[17] = profNumber;
  
      /* 9. Length of measurements in one profile */
-     buf[18] = P[profNumber].pLength >> 8 & 0xFF;
-     buf[19] = P[profNumber].pLength & 0xFF;
+     //buf[18] = P[profNumber].pLength >> 8 & 0xFF; // This gives the TOTAL measurements, not current page
+     //buf[19] = P[profNumber].pLength & 0xFF;
+     buf[18] = S->mLength >> 8 & 0xFF;
+     buf[19] = S->mLength & 0xFF;
+
  
      /* 10. Mode - higher 4bites, Type of measurements -> (Profile_mode=0x01, Park_mode=0x00) */
      /* 11. Page Number - lower 4bits ,(in case of multiple measurements exceede the 340 bytes */
