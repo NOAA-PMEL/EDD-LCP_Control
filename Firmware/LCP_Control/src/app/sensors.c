@@ -46,6 +46,12 @@ void xGPSTimer(TimerHandle_t xTimer)
     }
 }
 
+void killGPS(void)
+{
+    ARTEMIS_DEBUG_PRINTF("SENSORS :: Setting GPS Run Flag to False...\n");
+    xGPS_run = false;
+}
+
 static SensorData_t sensor_data;
 //static SensorData_t sensor_data = {
 //  .depth.semaphore = &xDepthSemaphore,
@@ -636,7 +642,8 @@ void task_gps(void)
         }
         xTimer = NULL;
     }
-
+    ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Task is deleting...\n");
+    vDelay(xDelay1000ms);
     vTaskDelete(NULL);
 }
 

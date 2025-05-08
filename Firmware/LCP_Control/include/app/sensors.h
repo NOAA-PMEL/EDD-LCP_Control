@@ -110,4 +110,6 @@ void SENS_uninitialize(void);
 /* for testing the sensors with semaphore */
 void SENS_Test(void);
 
+void killGPS(void);
+
 #endif // SENSORS_H
