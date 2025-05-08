@@ -1436,6 +1436,17 @@ void module_sps_move_to_park(void)
                         SENS_task_delete(xDepth);
                         SENS_sensor_depth_off();
                     }
+                    /* check if piston is still moving then reset it and stop */
+                    if (piston_move)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
+                        PIS_task_delete(); // Signal to exit loop
+                        vTaskDelay(xDelay5000ms); // Wait for the task to exit the loop and delete itself
+                        PIS_stop();
+                        piston_move = false;
+                        piston_timer = 0;
+                        vTaskDelay(period);
+                    }
 
                     spsEvent = MODE_DONE;
                     run = false;
@@ -1467,6 +1478,18 @@ void module_sps_move_to_park(void)
                         {
                             SENS_task_delete(xDepth);
                             SENS_sensor_depth_off();
+                        }
+
+                        /* check if piston is still moving then reset it and stop */
+                        if (piston_move)
+                        {
+                            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
+                            PIS_task_delete(); // Signal to exit loop
+                            vTaskDelay(xDelay5000ms); // Wait for the task to exit the loop and delete itself
+                            PIS_stop();
+                            piston_move = false;
+                            piston_timer = 0;
+                            vTaskDelay(period);
                         }
 
                         run = false;
@@ -1697,7 +1720,10 @@ void module_sps_move_to_park(void)
                 }
 
 
-                vTaskDelay(piston_period);
+                if (period >= xDelay10000ms)
+                {
+                    vTaskDelay(piston_period);
+                }
                 piston_timer += piston_period;
 
             } while (piston_move && period >= xDelay10000ms);
@@ -2381,6 +2407,7 @@ void module_sps_park(void)
     monitor_memory_usage();
 
     ARTEMIS_DEBUG_PRINTF("SPS :: park, Task->finished\n\n");
+    vTaskDelay(xDelay10000ms);
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
 }
@@ -2636,6 +2663,18 @@ void module_sps_move_to_profile(void)
                         SENS_sensor_depth_off();
                     }
 
+                    /* check if piston is still moving then reset it and stop */
+                    if (piston_move)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
+                        PIS_task_delete(); // Signal to exit loop
+                        vTaskDelay(xDelay5000ms); // Wait for the task to exit the loop and delete itself
+                        PIS_stop();
+                        piston_move = false;
+                        piston_timer = 0;
+                        vTaskDelay(period);
+                    }
+
                     spsEvent = MODE_DONE;
                     run = false;
                     /* I guess break the loop*/
@@ -2675,6 +2714,17 @@ void module_sps_move_to_profile(void)
                             SENS_sensor_depth_off();
                         }
 
+                         /* check if piston is still moving then reset it and stop */
+                        if (piston_move)
+                        {
+                            ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
+                            PIS_task_delete(); // Signal to exit loop
+                            vTaskDelay(xDelay5000ms); // Wait for the task to exit the loop and delete itself
+                            PIS_stop();
+                            piston_move = false;
+                            piston_timer = 0;
+                            vTaskDelay(period);
+                        }
                         run = false;
                         spsEvent = MODE_DONE;
                     }
@@ -2883,7 +2933,7 @@ void module_sps_move_to_profile(void)
                         break;
                     }
                 }
-                else if (piston_timer >= 180000) 
+                else if (piston_timer >= 30000) 
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Piston time-out and task invalid.\n");
                     PIS_Get_Length(&Length);
@@ -2901,10 +2951,10 @@ void module_sps_move_to_profile(void)
                 }
 
                 /* piston task delay 1000ms */
-                //if (period >= xDelay10000ms)
-                //{
+                if (period >= xDelay10000ms)
+                {
                     vTaskDelay(piston_period);
-                //}
+                }
                 piston_timer += piston_period;
 
             } while (piston_move && period >= xDelay10000ms);
@@ -2951,6 +3001,7 @@ void module_sps_move_to_profile(void)
     ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_profile, FreeRTOS HEAP SIZE = %u Bytes\n\n", size);
 
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Task->finished\n\n");
+    vTaskDelay(xDelay10000ms);
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
 }
