@@ -643,7 +643,7 @@ void task_gps(void)
         xTimer = NULL;
     }
     ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Task is deleting...\n");
-    vDelay(xDelay1000ms);
+    vTaskDelay(xDelay1000ms);
     vTaskDelete(NULL);
 }
 
