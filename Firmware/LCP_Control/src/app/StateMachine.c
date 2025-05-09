@@ -1006,6 +1006,10 @@ void module_sps_idle(void)
 
 void module_sps_move_to_park(void)
 {
+    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Task->started\n");
+    vTaskDelay(xDelay10000ms); // wait for 10 seconds
+
+
     float Volume = 0.0;
     float Length = 0.0;
     float Density = 0.0;
@@ -1604,6 +1608,9 @@ void module_sps_move_to_park(void)
 
 void module_sps_park(void)
 {
+    ARTEMIS_DEBUG_PRINTF("SPS :: park, Task->started\n");
+    vTaskDelay(xDelay10000ms); // wait for 10 seconds
+    
     /* set crush depth to false */
     crush_depth = false;
 
@@ -2199,6 +2206,9 @@ void module_sps_park(void)
 
 void module_sps_move_to_profile(void)
 {
+    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Task->started\n");
+    vTaskDelay(xDelay10000ms); // wait for 10 seconds
+
     crush_depth = false;
     float Volume = 0.0;
     float Length = 0.0;
@@ -2728,6 +2738,8 @@ void module_sps_move_to_profile(void)
 
 void module_sps_profile(void)
 {
+    ARTEMIS_DEBUG_PRINTF("SPS :: profile, Task->started\n");
+    vTaskDelay(xDelay10000ms); // wait for 10 seconds
     // --- Prepare the static profile data structure for this cycle ---
     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Resetting static profile data structure for profile number %d\n", prof_number);
     DATA_reset(&current_profile_data);
@@ -3516,6 +3528,9 @@ void module_sps_profile(void)
 
 void module_sps_move_to_surface(void)
 {
+    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Task->started\n");
+    vTaskDelay(xDelay10000ms); // Wait for the task to start
+
     uint32_t piston_period = xDelay1000ms;
     uint32_t piston_timer = 0;
     bool piston_move = false;
@@ -3896,6 +3911,9 @@ void module_sps_move_to_surface(void)
  */
 void module_sps_tx(void)
 {
+    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Starting transmission state.\n");
+    vTaskDelay(xDelay10000ms); // Allow time for any previous tasks to finish
+    
     Event_e spsEvent = MODE_IDLE; // Default next state
     QueuedDataEntry_t *current_item = NULL;
     bool fatal_error_occurred = false;
