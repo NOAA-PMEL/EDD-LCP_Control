@@ -148,6 +148,9 @@ static int16_t parse_AT(char *rxData, char *pattern, uint16_t len);
 static uint16_t parse_data(char *inData, uint16_t *outData);
 static i9603n_result_t module_i9603n_read_AT(uint16_t *len);
 
+static volatile bool sat_TaskLive = false;
+static volatile bool tx_TaskLive = false;
+
 #endif
 //*****************************************************************************
 //
@@ -316,6 +319,11 @@ bool GET_Iridium_satellite (void)
     return retVal;
 }
 
+bool Sat_running(void)
+{
+    return sat_TaskLive;
+}
+
 void task_Iridium_satellite_visibility (TaskHandle_t *xSatellite)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_Iridium_satellite,
@@ -326,6 +334,7 @@ void task_Iridium_satellite_visibility (TaskHandle_t *xSatellite)
 
 void task_Iridium_satellite (void)
 {
+    sat_TaskLive = true;
     /* 1 seocnds period delay */
     uint32_t period = xDelay1000ms;
     ARTEMIS_DEBUG_PRINTF("Iridium :: Satellite delay PERIOD=%dms, %isec\n", period, SATELLITE_TIMER);
@@ -372,6 +381,8 @@ void task_Iridium_satellite (void)
         vTaskDelay(period);
     }
     /* delete the task */
+    ARTEMIS_DEBUG_PRINTF("Iridium :: Satellite Task Self-Deleting...\n");
+    sat_TaskLive = false;
     vTaskDelete(NULL);
 }
 
@@ -408,8 +419,14 @@ void SET_Iridium_delay_rate(float rate)
     }
 }
 
+bool Iridium_running(void)
+{
+    return tx_TaskLive;
+}
+
 void task_Iridium (void)
 {
+    tx_TaskLive = true;
     /* default 5 seocnds period delay */
     uint32_t period = xDelay1000ms/iridium_delay_rate;
     ARTEMIS_DEBUG_PRINTF("Iridium :: Delay PERIOD=%ums, Max Tries=%u\n", period, IRIDIUM_TRIES);
@@ -535,7 +552,8 @@ void task_Iridium (void)
     }
 
     /* delete the task */
-    ARTEMIS_DEBUG_PRINTF("Iridium :: Task Deleted\n");
+    ARTEMIS_DEBUG_PRINTF("Iridium :: Task Self-Deleting...\n");
+    tx_TaskLive = false;
     vTaskDelete(NULL);
 }
 

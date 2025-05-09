@@ -111,5 +111,6 @@ void SENS_uninitialize(void);
 void SENS_Test(void);
 
 void killGPS(void);
+bool GPS_running(void);
 
 #endif // SENSORS_H

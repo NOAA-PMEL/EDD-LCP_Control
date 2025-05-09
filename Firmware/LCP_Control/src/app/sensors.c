@@ -1,3 +1,5 @@
+// sensors.c
+
 #include "sensors.h"
 #include "depth.h"
 #include "temperature.h"
@@ -35,6 +37,8 @@ static void EmptyEventQueue(QueueHandle_t eventQueue);
 static volatile bool xGPS_run   = true;
 static volatile bool xTemp_run  = false;
 static volatile bool xDepth_run = false;
+
+static volatile bool TaskLive_GPS = false;
 
 /* timer callback function */
 void xGPSTimer(TimerHandle_t xTimer)
@@ -213,6 +217,11 @@ bool SENS_get_gps(SensorGps_t *gps)
     retVal = true;
     taskEXIT_CRITICAL();
     return retVal;
+}
+
+bool GPS_running(void)
+{
+    return TaskLive_GPS;
 }
 
 static void EmptyEventQueue(QueueHandle_t eventQueue)
@@ -562,6 +571,8 @@ void task_temperature(void)
 
 void task_gps(void)
 {
+    TaskLive_GPS = true;
+    ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Task is starting...\n");
     assert(sensor_data.gps.rate != 0);
 
     GPS_Data_t gps = {0};
@@ -644,6 +655,7 @@ void task_gps(void)
     }
     ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Task is deleting...\n");
     vTaskDelay(xDelay1000ms);
+    TaskLive_GPS = false;
     vTaskDelete(NULL);
 }
 
