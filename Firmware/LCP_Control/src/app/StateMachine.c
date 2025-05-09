@@ -4634,7 +4634,8 @@ void module_sps_tx(void)
                                 uint16_t wait_time = 10; // Default wait time
                                 if (recv[0] == 38) 
                                 { // Traffic management
-                                    uint16_t traffic_buf[8] = {0}; uint8_t traffic_len = i9603n_traffic_mgmt_time(traffic_buf);
+                                    uint16_t traffic_buf[8] = {0}; 
+                                    uint8_t traffic_len = i9603n_traffic_mgmt_time(traffic_buf);
                                     if(traffic_len > 0 && traffic_buf[0] == 0) 
                                     {
                                         wait_time = traffic_buf[1];
@@ -4819,8 +4820,9 @@ void module_sps_tx(void)
                 // Re-fetch item pointer as the queue implementation might use it directly
                 // (or ensure MEM_queue_increment_attempt works correctly on the handle)
                 current_item = MEM_queue_get_next();
-                if (current_item == NULL) 
-                { // Should not happen if count > 0 but defensive check
+                
+                if (current_item == NULL) // Should not happen if count > 0 but defensive check 
+                { 
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, ERROR: Head item became NULL after failed page attempt!\n");
                     fatal_error_occurred = true;
                     break; // Exit paging loop immediately
@@ -4943,81 +4945,94 @@ cleanup_and_exit:
 // *** NEW COMBINED STATIC HELPER FUNCTION ***
 /**
  * @brief Prepares and packs one page of data from a QueuedDataEntry item for Iridium transmission.
- * * @param iridium_buffer Pointer to the output buffer for the packed Iridium message.
+ * 
+ * @param iridium_buffer Pointer to the output buffer for the packed Iridium message.
  * @param item Pointer to the QueuedDataEntry item containing the data.
  * @param samples_already_processed The number of samples from this item already processed/packed in previous pages.
  * @param page_num The current page number being generated for this item.
  * @param[out] samples_packed_in_page Pointer to store the number of samples included in this generated page.
  * @return uint16_t The total number of bytes packed into iridium_buffer (including header), or 0 on error/completion.
  */
- static uint16_t prepare_transmit_page(uint8_t *iridium_buffer, 
-    QueuedDataEntry_t *item, 
-    uint16_t samples_already_processed, 
-    uint8_t page_num,
-    uint16_t *samples_packed_in_page) 
+static uint16_t prepare_transmit_page( uint8_t *iridium_buffer, 
+                                        QueuedDataEntry_t *item, 
+                                        uint16_t samples_already_processed, 
+                                        uint8_t page_num,
+                                        uint16_t *samples_packed_in_page) 
 {
-// --- Input Validation ---
-if (!iridium_buffer || !item || !samples_packed_in_page) {
-ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: ERROR - Invalid arguments.\n");
-if (samples_packed_in_page) *samples_packed_in_page = 0;
-return 0;
-}
 
-*samples_packed_in_page = 0; // Default output
-uint16_t total_samples = item->num_samples;
+    // --- Input Validation ---
+    if (!iridium_buffer || !item || !samples_packed_in_page) 
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: ERROR - Invalid arguments.\n");
+        if (samples_packed_in_page) 
+        { 
+            *samples_packed_in_page = 0;
+        }
+        
+        return 0;
+    }
 
-// --- Calculate Samples for this Page ---
-if (samples_already_processed >= total_samples) {
-ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: No more samples needed for item %u.\n", item->profile_number);
-return 0; // All samples already processed
-}
-uint16_t remaining_samples = total_samples - samples_already_processed;
-uint16_t samples_this_page = (remaining_samples > MEASUREMENT_MAX) ? MEASUREMENT_MAX : remaining_samples;
+    *samples_packed_in_page = 0; // Default output
+    uint16_t total_samples = item->num_samples;
 
-if (samples_this_page == 0) {
-ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: Calculated zero samples for page %u of item %u.\n", page_num, item->profile_number);
-return 0; 
-}
+    // --- Calculate Samples for this Page ---
+    if (samples_already_processed >= total_samples) 
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: No more samples needed for item %u.\n", item->profile_number);
+        return 0; // All samples already processed
+    }
 
-// --- Prepare sData for pack_measurements_irid ---
-sData current_sData; // Local struct for page info
-current_sData.profNumber = item->profile_number; 
-current_sData.modeType = item->is_park_data ? LCP_PARK_MODE : LCP_PROFILE_MODE; 
-current_sData.pageNumber = page_num;
-current_sData.mLength = (uint8_t)samples_this_page; // Length for *this page*
+    uint16_t remaining_samples = total_samples - samples_already_processed;
+    uint16_t samples_this_page = (remaining_samples > MEASUREMENT_MAX) ? MEASUREMENT_MAX : remaining_samples;
 
-ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: Preparing Page %u for %s %u: %u samples (processed %u / total %u)\n",
-current_sData.pageNumber, item->is_park_data ? "Park" : "Profile", item->profile_number,
-samples_this_page, samples_already_processed, total_samples);
+    if (samples_this_page == 0) 
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: Calculated zero samples for page %u of item %u.\n", page_num, item->profile_number);
+        return 0; 
+    }
 
-// --- Create Temporary Data_t View ---
-// This view points to the data within the QueuedDataEntry_t item 
-// and sets the read offset for pack_measurements_irid.
-Data_t temp_data_view;
-memset(&temp_data_view, 0, sizeof(Data_t)); // Important: Initialize to zero
-temp_data_view.data.pressure = item->pressure_measurements;     
-temp_data_view.data.temperature = item->temp_measurements;  
-temp_data_view.p = &item->profile_metadata; // Point to the stored metadata             
-temp_data_view.cbuf.read = samples_already_processed; // !!! Start reading from this offset !!!
-temp_data_view.cbuf.written = item->num_samples;    // Total samples available in the item
-temp_data_view.cbuf.length = DATA_MAX_SAMPLES;      // Max capacity of arrays in item
-temp_data_view.pNumber = item->profile_number;      // Use item's number       
-temp_data_view.wLength = item->num_samples;         // Use item's sample count
-// rLength is managed internally by DATA_get_converted called by pack_measurements_irid
+    // --- Prepare sData for pack_measurements_irid ---
+    sData current_sData; // Local struct for page info
+    current_sData.profNumber = item->profile_number; 
+    current_sData.modeType = item->is_park_data ? LCP_PARK_MODE : LCP_PROFILE_MODE; 
+    current_sData.pageNumber = page_num;
+    current_sData.mLength = (uint8_t)samples_this_page; // Length for *this page*
 
-// --- Call Existing Packing Function ---
-// Uses the temporary view to read the correct segment of samples.
-uint16_t nrBytes = pack_measurements_irid(&temp_data_view, temp_data_view.p, &current_sData, iridium_buffer);
+    ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: Preparing Page %u for %s %u: %u samples (processed %u / total %u)\n",
+    current_sData.pageNumber, item->is_park_data ? "Park" : "Profile", item->profile_number,
+    samples_this_page, samples_already_processed, total_samples);
 
-if (nrBytes > 0) {
-*samples_packed_in_page = samples_this_page; 
-ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: Packed %u bytes for page %u (%u samples).\n", nrBytes, current_sData.pageNumber, *samples_packed_in_page);
-} else {
-ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: ERROR - pack_measurements_irid returned 0 bytes for page %u.\n", current_sData.pageNumber);
-*samples_packed_in_page = 0;
-}
+    // --- Create Temporary Data_t View ---
+    // This view points to the data within the QueuedDataEntry_t item 
+    // and sets the read offset for pack_measurements_irid.
+    Data_t temp_data_view;
+    memset(&temp_data_view, 0, sizeof(Data_t));                     // Important: Initialize to zero
+    temp_data_view.data.pressure = item->pressure_measurements;     
+    temp_data_view.data.temperature = item->temp_measurements;  
+    temp_data_view.p = &item->profile_metadata;                     // Point to the stored metadata             
+    temp_data_view.cbuf.read = samples_already_processed;           // !!! Start reading from this offset !!!
+    temp_data_view.cbuf.written = item->num_samples;                // Total samples available in the item
+    temp_data_view.cbuf.length = DATA_MAX_SAMPLES;                  // Max capacity of arrays in item
+    temp_data_view.pNumber = item->profile_number;                  // Use item's number       
+    temp_data_view.wLength = item->num_samples;                     // Use item's sample count
+    // rLength is managed internally by DATA_get_converted called by pack_measurements_irid
 
-return nrBytes;
+    // --- Call Existing Packing Function ---
+    // Uses the temporary view to read the correct segment of samples.
+    uint16_t nrBytes = pack_measurements_irid(&temp_data_view, temp_data_view.p, &current_sData, iridium_buffer);
+
+    if (nrBytes > 0) 
+    {
+        *samples_packed_in_page = samples_this_page; 
+        ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: Packed %u bytes for page %u (%u samples).\n", nrBytes, current_sData.pageNumber, *samples_packed_in_page);
+    } 
+    else 
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: prepare_transmit_page: ERROR - pack_measurements_irid returned 0 bytes for page %u.\n", current_sData.pageNumber);
+        *samples_packed_in_page = 0;
+    }
+
+    return nrBytes;
 }
 
 void module_sps_rx(void)
