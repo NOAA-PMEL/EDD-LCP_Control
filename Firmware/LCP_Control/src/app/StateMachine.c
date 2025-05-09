@@ -3985,6 +3985,7 @@ void module_sps_tx(void)
         goto cleanup_and_exit; // Use goto for cleaner exit
     }
 
+    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium powered on and ready.\n");
 
     // --- Main Transmission Loop ---
     // Processes items sequentially. Exits if queue is empty or any item fails persistently.
@@ -4024,6 +4025,7 @@ void module_sps_tx(void)
             uint8_t current_page_buffer[IRID_DATA_OUT];
 
             // --- Pack Page ---
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Packing data...\n");
             memset(current_page_buffer, 0, IRID_DATA_OUT);
             uint16_t txbytes = prepare_transmit_page(current_page_buffer,
                                                      current_item,
@@ -4052,6 +4054,7 @@ void module_sps_tx(void)
             }
 
             // --- Transmission Attempt Loop (retries CURRENT PAGE on temporary failure) ---
+            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Attempting to transmit page...\n");
             bool retry_page_internally = true; // Flag to control retries for THIS page
             while (retry_page_internally && !fatal_error_occurred)
             {
