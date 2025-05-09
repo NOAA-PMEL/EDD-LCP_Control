@@ -756,7 +756,7 @@ void module_pds_systemcheck(void)
         SENS_task_gps(&xGps);
 
         SensorGps_t gps;
-        GPS_task_running = false;
+        bool GPS_task_running = false;
         bool run = true;
         uint8_t fix = 0;
         
@@ -3756,7 +3756,7 @@ void module_sps_move_to_surface(void)
     xLastWakeTime = xTaskGetTickCount();
     while (run)
     {
-        GPS_task_running = SENS_taskStatus(); // check if the GPS task is running
+        GPS_task_running = GPS_running(); // check if the GPS task is running
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS task->state = %s\n", GPS_task_running ? "running" : "not running");
         if ( GPS_task_running )
         {
