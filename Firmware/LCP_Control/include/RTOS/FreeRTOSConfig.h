@@ -157,6 +157,7 @@ extern "C"
 #define xDelay2000ms                            pdMS_TO_TICKS(2000UL)
 #define xDelay5000ms                            pdMS_TO_TICKS(5000UL)
 #define xDelay10000ms                           pdMS_TO_TICKS(10000UL)
+#define xDelay15000ms                           pdMS_TO_TICKS(15000UL)
 #define xDelay30000ms                           pdMS_TO_TICKS(30000UL)
 // add 20 seconds:
 #define xDelay20000ms                           pdMS_TO_TICKS(20000UL)

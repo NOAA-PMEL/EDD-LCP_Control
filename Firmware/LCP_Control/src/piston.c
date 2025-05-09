@@ -417,7 +417,7 @@ void task_move_piston_to_length(void)
                 || isnan(length)   || isinf(length) 
                 || fabs(length - last_length) < 0.001) { // check for stall condition: Invalid Float for length/last_length or no movement
                 stall_count++; // increment stall count
-                //vTaskDelay(xDelay250ms);
+                vTaskDelay(xDelay250ms);
                 if (isnan(length) || isinf(length)) {
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Invalid length value detected\n");
                 }
