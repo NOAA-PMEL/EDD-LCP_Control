@@ -50,9 +50,12 @@ static void module_pis_information(void)
     ARTEMIS_DEBUG_PRINTF("System Identification\t: ");
 
     artemis_piston_i2c_read(addr, data, 8);
-    for (uint8_t i=0; i<8; i++){
+
+    for (uint8_t i=0; i<8; i++)
+    {
         ARTEMIS_DEBUG_PRINTF("%c", (char)data[i]);
     }
+    
     ARTEMIS_DEBUG_PRINTF("\n");
     /* wait for 50ms */
     am_hal_systick_delay_us(50000);
@@ -120,6 +123,7 @@ void PIS_task_delete()
 
 void task_move_piston_to_zero(void)
 {
+    LiveTask = true;
     assert(piston.rtos.rate != 0);
     uint32_t period = xDelay5000ms/piston.rtos.rate;
     float length = 0.0;
@@ -184,11 +188,14 @@ void task_move_piston_to_zero(void)
     taskEXIT_CRITICAL();
 
     vTaskDelay(xDelay100ms);
+    ARTEMIS_DEBUG_PRINTF("PISTON :: task_move_piston_to_zero self-deleting...\n");
+    LiveTask = false;
     vTaskDelete(NULL);
 }
 
 void task_move_piston_to_full(void)
 {
+    LiveTask = true;
     assert(piston.rtos.rate != 0);
     uint32_t period = xDelay5000ms/piston.rtos.rate;
     float length = 0.0;
@@ -253,11 +260,14 @@ void task_move_piston_to_full(void)
     taskEXIT_CRITICAL();
 
     vTaskDelay(xDelay100ms);
+    ARTEMIS_DEBUG_PRINTF("PISTON :: task_move_piston_to_full self-deleting...\n");
+    LiveTask = false;
     vTaskDelete(NULL);
 }
 
 void task_reset_piston_to_full(void)
 {
+    LiveTask = true;
     assert(piston.rtos.rate != 0);
     uint32_t period = xDelay5000ms/piston.rtos.rate;
     float length = 0.0;
@@ -321,6 +331,8 @@ void task_reset_piston_to_full(void)
     taskEXIT_CRITICAL();
 
     vTaskDelay(xDelay100ms);
+    ARTEMIS_DEBUG_PRINTF("PISTON :: task_reset_piston_to_full self-deleting...\n");
+    LiveTask = false;
     vTaskDelete(NULL);
 }
 
@@ -342,11 +354,11 @@ void task_move_piston_to_length(void)
         vTaskDelay(xDelay1000ms);
 
     }
-    vTaskDelay(xDelay50ms);
+
     /** Start the move */
     PIS_move_to_length(piston.setpoint_l);
     /** wait 500ms after shooting an I2C command */
-    vTaskDelay(xDelay250ms);
+    vTaskDelay(xDelay500ms);
 
     /** Start reading until we hit the volume */
     pistonRun = true;
@@ -450,6 +462,7 @@ void task_move_piston_to_length(void)
                                     length, (length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
     }
     vTaskDelay(xDelay100ms);
+    ARTEMIS_DEBUG_PRINTF("PISTON :: task_move_piston_to_length self-deleting...\n");
     LiveTask = false;
     vTaskDelete(NULL);
 }
@@ -476,6 +489,7 @@ bool PIS_Get_Length(float *length)
 
 void task_move_piston_to_volume(void)
 {
+    LiveTask = true;
     assert(piston.rtos.rate != 0);
     uint32_t period = xDelay5000ms/piston.rtos.rate;
     float volume = 0.0;
@@ -494,7 +508,7 @@ void task_move_piston_to_volume(void)
     vTaskDelay(xDelay50ms);
     PIS_move_to_volume(piston.setpoint_v);
     /** wait 500ms after shooting an I2C command */
-    vTaskDelay(xDelay250ms);
+    vTaskDelay(xDelay500ms);
 
     /** Start reading until we hit the volume */
     pistonRun = true;
@@ -572,8 +586,9 @@ void task_move_piston_to_volume(void)
                                     volume, (volume - piston.setpoint_v), PISTON_VOLUME_DIFF_MAX);
     }
     vTaskDelay(xDelay50ms);
+    ARTEMIS_DEBUG_PRINTF("PISTON :: task_move_piston_to_volume self-deleting...\n");
+    LiveTask = false;
     vTaskDelete(NULL);
-    
 }
 
 void PIS_set_piston_rate(uint8_t rate)
