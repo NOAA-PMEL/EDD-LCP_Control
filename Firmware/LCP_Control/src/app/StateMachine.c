@@ -1364,16 +1364,18 @@ void module_sps_move_to_park(void)
                         }
 
                         /* check if piston is still moving then reset it and stop */
-                        if (piston_move)
-                        {
+                        // just do this no matter what
+                        //if (piston_move)
+                        //{
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
                             PIS_task_delete(); // Signal to exit loop
+                            PIS_Reset();
                             vTaskDelay(xDelay15000ms); // Wait for the task to exit the loop and delete itself
                             PIS_stop();
                             piston_move = false;
                             piston_timer = 0;
-                            vTaskDelay(period);
-                        }
+                            //vTaskDelay(period);
+                        //}
 
                         run = false;
                         spsEvent = MODE_DONE;
@@ -2488,16 +2490,18 @@ void module_sps_move_to_profile(void)
                         }
 
                          /* check if piston is still moving then reset it and stop */
-                        if (piston_move)
-                        {
+                        //if (piston_move)
+                        //{
+                        // just do this no matter what.
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
                             PIS_task_delete(); // Signal to exit loop
-                            vTaskDelay(xDelay5000ms); // Wait for the task to exit the loop and delete itself
+                            PIS_Reset();
+                            vTaskDelay(xDelay15000ms); // Wait for the task to exit the loop and delete itself
                             PIS_stop();
                             piston_move = false;
                             piston_timer = 0;
-                            vTaskDelay(period);
-                        }
+                            //vTaskDelay(period);
+                        //}
                         run = false;
                         spsEvent = MODE_DONE;
                     }
