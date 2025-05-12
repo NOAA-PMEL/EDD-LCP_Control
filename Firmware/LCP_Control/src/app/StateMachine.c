@@ -851,9 +851,7 @@ void module_pds_systemcheck(void)
 
 void STATE_Profiler(void)
 {
-#ifdef TEST
-    /* do nothing */
-#else
+
     /* wait for a global event */
     while (1)
     {
@@ -866,7 +864,7 @@ void STATE_Profiler(void)
             break;
         }
     }
-#endif
+
 
     /* create a local task event queue */
     spsEventQueue = xQueueCreate(2, sizeof(Event_e));
@@ -1026,10 +1024,6 @@ void module_sps_move_to_park(void)
 
     /* set crush depth to false */
     crush_depth = false;
-
-#ifdef TEST
-    /* do nothing */
-#else
 
     /*Check if it is time to zero the piston encoder counts, if yes, then zero cal the piston*/
     if( pistonzero_number >= PISTON_ZEROCAL_COUNTER )
@@ -1191,16 +1185,6 @@ void module_sps_move_to_park(void)
     }
     vTaskDelay(xDelay5000ms); 
 
-#endif
-
-#ifdef TEST
-    /** Start sampling depth @ 9Hz */
-    float s_rate = 9.0;
-    uint32_t period = xDelay1000ms/s_rate;
-    bool run = false;
-    Event_e spsEvent;
-    spsEvent = MODE_DONE;
-#else
     /** Start sampling depth @ 2Hz or settable */
     float s_rate = MOVE_TO_PARK_SAMPLE_RATE;
     Event_e spsEvent;
@@ -1226,8 +1210,6 @@ void module_sps_move_to_park(void)
     /** check for the depth rate up to XX measurements */
     uint8_t rate_count = 0;
     float rate_avg = 0;
-
-#endif
 
     /**  Monitor depth until we get there */
     float Depth = 0.0, Rate = 0.0;
@@ -1264,10 +1246,6 @@ void module_sps_move_to_park(void)
 
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure  = %.4f bar\n", Pressure);
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth     = %.4f m, rate = %.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
-
-#ifdef TEST
-    /* do nothing */
-#else
 
         /* collect up to XX measurements
          * rate_count is the number of depth rate average */
@@ -1595,7 +1573,6 @@ void module_sps_move_to_park(void)
             vTaskDelay(xDelay5000ms);
         }
 
-#endif
         vTaskDelay(period);
     }
 
@@ -1622,10 +1599,7 @@ void module_sps_park(void)
     current_park_data.pNumber = park_number; // Explicitly set the profile number for this cycle
     // --- End data preparation ---
 
-#ifdef TEST
-    /** Sample at 9Hz */
-    float s_rate = 9.0;
-#else
+
 
     float s_rate = 0;
     uint32_t park_time = 0;
@@ -1648,8 +1622,6 @@ void module_sps_park(void)
     SENS_set_depth_rate(s_rate);
     SENS_set_temperature_rate(s_rate);
 
-#endif
-
     /* local variable to calculate the waiting time */
     uint32_t wait_time = 0;
 
@@ -1669,12 +1641,6 @@ void module_sps_park(void)
         SENS_sensor_depth_on();
     }
 
-#ifdef TEST
-    SENS_task_sample_depth_continuous(&xDepth);
-    float Temperature = -5.0;
-    uint16_t read = 0;
-#else
-
     if (park_period >= xDelay10000ms)
     {
         /*do not start sensors task yet*/
@@ -1689,7 +1655,6 @@ void module_sps_park(void)
     /** check for the depth rate up to XX measurements */
     uint8_t rate_count = 0;
     float rate_avg = 0;
-#endif
 
     /** Monitor Depth and Temperature and store these */
     float Depth = 0.0, Rate = 0.0;
@@ -1698,7 +1663,7 @@ void module_sps_park(void)
     rtc_time time;
 
     char *filename = datalogger_park_create_file(park_number);
-    vTaskDelay(xDelay100ms);
+    vTaskDelay(xDelay1000ms);
 
     /** Set piston variables */
     TaskHandle_t xPiston = NULL;
@@ -1709,7 +1674,7 @@ void module_sps_park(void)
     float Density = 0.0;
     float Length = 0.0;
     bool piston_move = false;
-    bool piston_task_running = false;
+    bool piston_task_running = false; // to check the piston task running flag
     float length_update = park_piston_length;
     uint8_t park_pistonmin_try = 0;
 
@@ -1726,11 +1691,11 @@ void module_sps_park(void)
         {
             /* turn on the sensors */
             //SENS_task_temperature_on(&xTemp);
-            datalogger_power_on();
+            //datalogger_power_on();
             vTaskDelay(xDelay500ms);
             SENS_sensor_temperature_on();
             SENS_sensor_depth_on();
-            vTaskDelay(xDelay10ms);
+            vTaskDelay(xDelay100ms);
 
             /* start the sensors task */
             SENS_task_park_sensors(&xDepth, &xTemp);
@@ -1746,9 +1711,8 @@ void module_sps_park(void)
         else
         {
             SENS_get_depth(&Depth, &Pressure, &Rate);
-#ifndef TEST
             SENS_get_temperature(&Temperature);
-#endif
+
         }
 
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure    = %0.4f bar\n", Pressure);
@@ -1764,9 +1728,6 @@ void module_sps_park(void)
             DATA_add(&current_park_data, epoch, Pressure, Temperature, park_number); // changed to use current_park_data
             datalogger_park_mode(filename, Pressure, Temperature, &time);
             start_time = false;
-#ifdef TEST
-            read++;
-#endif
         }
 
         /* Average Data, and store samples */
@@ -1774,13 +1735,10 @@ void module_sps_park(void)
         samples_t[samples] = Temperature;
         samples++;
 
-#ifdef TEST
-        if (samples > 1)
-#else
+
         if (samples > 9)
-#endif
         {
-            datalogger_power_on();
+            //datalogger_power_on();
             vTaskDelay(xDelay500ms);
             float var, avg_p, avg_t;
             float std = std_div(samples_p, samples, &var, &avg_p);
@@ -1792,29 +1750,12 @@ void module_sps_park(void)
             DATA_add(&current_park_data, epoch, avg_p, avg_t, park_number); // changed to use current_park_data
             samples = 0;
 
-#ifdef TEST
-            read++;
-            ARTEMIS_DEBUG_PRINTF("SPS :: park, sending measurements = %u\n", read);
-#else
             datalogger_park_mode(filename, avg_p, avg_t, &time);
             // Power off datalogger after logging data until next collection
             //datalogger_power_off();
             
-#endif
             /* just for testing */
         }
-
-#ifdef TEST
-        /* delete this in real test */
-        if (read >= 50)
-        {
-            run = false;
-            SENS_task_delete(xDepth);
-            SENS_sensor_depth_off();
-            spsEvent = MODE_DONE;
-        }
-        /* delete */
-#else
 
         if (Depth >= PARK_DEPTH-PARK_DEPTH_ERR && Depth <= PARK_DEPTH+PARK_DEPTH_ERR)
         {
@@ -1825,8 +1766,8 @@ void module_sps_park(void)
         else
         {
             // When leaving the target depth range, turn datalogger back on
-            datalogger_power_on();
-            vTaskDelay(xDelay500ms);
+            //datalogger_power_on();
+            vTaskDelay(xDelay2000ms);
             
             /* collect up to PARK_DEPTH_RATE_COUNTER measurements */
             rate_avg += Rate;
@@ -2147,7 +2088,6 @@ void module_sps_park(void)
             run = false;
             break;
         }
-#endif
         /* park depth timer */
         wait_time += park_period;
         if (wait_time >= park_time && !crush_depth)
@@ -2216,10 +2156,6 @@ void module_sps_move_to_profile(void)
     float Length = 0.0;
     float Density = 0.0;
     float length_update = 0.0;
-
-#ifdef TEST
-    /* do nothing */
-#else
 
     /** Set prof_piston_length */
     /* for now , pressure and temperature variables are zeros for compressibility and thermal expansion */
@@ -2335,14 +2271,6 @@ void module_sps_move_to_profile(void)
         SENS_task_sample_depth_continuous(&xDepth);
     }
 
-#endif
-
-#ifdef TEST
-    bool run = false;
-    Event_e spsEvent;
-    spsEvent = MODE_DONE;
-#else
-
     /** Monitor Depth, when depth reached, mode is complete */
     Event_e spsEvent;
 
@@ -2357,8 +2285,6 @@ void module_sps_move_to_profile(void)
     uint8_t to_profile_pistonmin_try = 0;
 
     /* variables for checking if the LCP hit the bottom for PISTON_MOVEMENT_ON_BOTTOM (inches) movement */
-    //PIS_Get_Length(&Length);
-    //vTaskDelay(piston_period);
     ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_profile, << Setting Length %.4fin to piston_on_bottom_length variable >>\n\n", length_update);
     float piston_on_bottom_length = length_update;
     float length_update_last_adjusted = length_update;
@@ -2397,10 +2323,6 @@ void module_sps_move_to_profile(void)
             /* check if rate is positive, negative or stable */
             if (averaged_rate >= SYSTEM_FALL_RATE_MIN)
             {
-                /* do nothing for now, */
-                //ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Rate is positive and >= %.4fm/%.1fs\n", SYSTEM_FALL_RATE_MIN, (float)(1/s_rate));
-                //ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Rate is positive\n");
-
                 /* keep updating the piston_on_bottom_length to length_update */
                 piston_on_bottom_length = length_update;
             }
@@ -2452,7 +2374,7 @@ void module_sps_move_to_profile(void)
 
                     spsEvent = MODE_DONE;
                     run = false;
-                    /* I guess break the loop*/
+                    /* break the loop*/
                     break;
                 }
 
@@ -2728,8 +2650,6 @@ void module_sps_move_to_profile(void)
         vTaskDelay(period);
     }
 
-#endif
-
     /* check Heap size */
     uint32_t size = xPortGetFreeHeapSize();
     ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_profile, FreeRTOS HEAP SIZE = %u Bytes\n\n", size);
@@ -2758,15 +2678,6 @@ void module_sps_profile(void)
     uint32_t surface_timer = 0;
     bool surface_piston = false;
 
-#ifdef TEST
-    /** Start Depth and Temperature Sensor @ 9Hz */
-    float s_rate = 9.0;
-    uint32_t period = xDelay1000ms/s_rate;
-    SENS_set_depth_rate(s_rate);
-    SENS_sensor_gps_off();
-    TaskHandle_t xDepth = NULL;
-    SENS_sensor_depth_on();
-#else
     /** Start Depth and Temperature Sensor @ 1Hz */
     float s_rate = PROFILE_RATE;
     uint32_t period = xDelay1000ms/s_rate;
@@ -2779,11 +2690,6 @@ void module_sps_profile(void)
     TaskHandle_t xDepth = NULL;
     TaskHandle_t xTemp  = NULL;
     vTaskDelay(xDelay100ms);
-#endif
-
-#ifdef TEST
-    /* do nothing */
-#else
 
     /** Calculate length for profiling at 0.1m/s upward , do length adjustment */
     if (prof_piston_length == 0.0)
@@ -2886,16 +2792,9 @@ void module_sps_profile(void)
         piston_timer += piston_period;
     }
     vTaskDelay(xDelay5000ms);
-#endif
 
-#ifdef TEST
-    SENS_task_sample_depth_continuous(&xDepth);
-    float Temperature = 20.0;
-    uint16_t read = 0;
-#else
     SENS_task_profile_sensors(&xDepth, &xTemp);
     float Temperature = 0.0;
-#endif
 
     /** Start recording samples */
     float Depth = 0.0, Rate = 0.0;
@@ -2912,10 +2811,7 @@ void module_sps_profile(void)
     float samples_t = 0.0;
     uint16_t samples = 0;
 
-    ///* average 10 pressure, temperature values and store */
-    //float samples_p[10] = {0};
-    //float samples_t[10] = {0};
-    //uint8_t samples = 0;
+    /* average 10 pressure, temperature values and store */
     bool start_time = true;
     bool run = true;
     bool start_fall = true;
@@ -2930,11 +2826,9 @@ void module_sps_profile(void)
     while (run)
     {
         SENS_get_depth(&Depth, &Pressure, &Rate);
-#ifdef TEST
-        /* do nothing */
-#else
+
         SENS_get_temperature(&Temperature);
-#endif
+
         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure    = %0.4f bar\n", Pressure);
         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Depth       = %0.4f m, rate = %0.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature = %0.4f °C\n", Temperature);
@@ -2942,9 +2836,6 @@ void module_sps_profile(void)
         artemis_rtc_get_time(&time);
         uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
         ARTEMIS_DEBUG_PRINTF("SPS :: profile, Epoch       = %ld \n", epoch);
-
-        ///* collect all values in the datalogger */
-        //datalogger_profile_mode(filename, Depth, Temperature, &time);
 
         /* store first sample with start time */
         if (start_time == true)
@@ -2954,48 +2845,13 @@ void module_sps_profile(void)
             start_time = false;
             bin_pressure = ceil(Pressure * 10) / 10;
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, profile start bin = %0.4f bar\n", bin_pressure);
-#ifdef TEST
-            read++;
-#endif
         }
 
         /* Average Data, and store samples */
-        //samples_p[samples] = Pressure;
-        //samples_t[samples] = Temperature;
         samples_p += Pressure;
         samples_t += Temperature;
         samples++;
 
-#ifdef TEST
-        if (samples > 1)
-        {
-            /* update the bin_pressure variable */
-            bin_pressure = bin_pressure - 0.1;
-
-            float avg_p = (float) samples_p / samples;
-            float avg_t = (float) samples_t / samples;
-
-            /* Note : commented out the buffer for temperature and pressure , used for calculating the variance and the std_div */
-
-            //float var, avg_p, avg_t;
-            //float std = std_div(samples_p, samples, &var, &avg_p);
-            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
-            //std = std_div(samples_t, samples, &var, &avg_t);
-            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
-
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
-
-            /* store averaged data locally */
-            //DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
-            DATA_add(&current_profile_data, epoch, avg_p, avg_t, prof_number); // Changed to use the static profile data structure
-            samples = 0;
-            samples_p = 0;
-            samples_t = 0;
-            read++;
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, sending measurements = %u\n", read);
-        }
-#else
-        //if (samples > 9)
         /* Note : This routine bins the data into 1m averages that can move up and down if the LCP sinks durring the profile.  WARNING MAY RESULT IN > 230 SBD MEASUREMENTS */
         if (Pressure <= (bin_pressure - 0.1))
         {
@@ -3004,14 +2860,6 @@ void module_sps_profile(void)
 
             float avg_p = (float) samples_p / samples;
             float avg_t = (float) samples_t / samples;
-
-            /* Note : commented out the buffer for temperature and pressure , used for calculating the variance and the std_div */
-
-            //float var, avg_p, avg_t;
-            //float std = std_div(samples_p, samples, &var, &avg_p);
-            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
-            //std = std_div(samples_t, samples, &var, &avg_t);
-            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
 
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
 
@@ -3031,14 +2879,6 @@ void module_sps_profile(void)
             float avg_p = (float) samples_p / samples;
             float avg_t = (float) samples_t / samples;
 
-            /* Note : commented out the buffer for temperature and pressure , used for calculating the variance and the std_div */
-
-            //float var, avg_p, avg_t;
-            //float std = std_div(samples_p, samples, &var, &avg_p);
-            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
-            //std = std_div(samples_t, samples, &var, &avg_t);
-            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
-
             ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
 
             /* store averaged data locally */
@@ -3049,83 +2889,6 @@ void module_sps_profile(void)
 
             datalogger_profile_mode(filename, avg_p, avg_t, &time);
         }
-/*
-
-       //Note : This routine bins the data into 1m averages that can only move up, if the LCP sinks during the profile the data is ignored.
-        if (Pressure <= (bin_pressure - 0.1))
-        {
-            // update the bin_pressure variable
-            bin_pressure = bin_pressure - 0.1;
-
-            float avg_p = (float) samples_p / samples;
-            float avg_t = (float) samples_t / samples;
-
-            // Note : commented out the buffer for temperature and pressure , used for calculating the variance and the std_div
-
-            //float var, avg_p, avg_t;
-            //float std = std_div(samples_p, samples, &var, &avg_p);
-            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
-            //std = std_div(samples_t, samples, &var, &avg_t);
-            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
-
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
-
-            // store averaged data locally
-            //DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
-            DATA_add(&current_profile_data, epoch, avg_p, avg_t, prof_number); // Changed to use the static profile data structure
-            samples = 0;
-            samples_p = 0;
-            samples_t = 0;
-            start_fall = true;
-
-            datalogger_profile_mode(filename, avg_p, avg_t, &time);
-        }
-        if (Pressure >= bin_pressure && start_fall == true)
-        {
-            float avg_p = (float) samples_p / samples;
-            float avg_t = (float) samples_t / samples;
-
-            // Note : commented out the buffer for temperature and pressure , used for calculating the variance and the std_div
-
-            //float var, avg_p, avg_t;
-            //float std = std_div(samples_p, samples, &var, &avg_p);
-            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
-            //std = std_div(samples_t, samples, &var, &avg_t);
-            //ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature Variance = %0.4f, Std_Div = %0.4f\n", var, std);
-
-            ARTEMIS_DEBUG_PRINTF("SPS :: profile, Temperature and Pressure -> number of samples = %u\n", samples);
-
-            //store averaged data locally
-            //DATA_add(&prof, epoch, avg_p, avg_t, prof_number);
-            DATA_add(&current_profile_data, epoch, avg_p, avg_t, prof_number); // Changed to use the static profile data structure
-            samples = 0;
-            samples_p = 0;
-            samples_t = 0;
-            start_fall = false;
-
-            datalogger_profile_mode(filename, avg_p, avg_t, &time);
-        }
-        if (Pressure >= bin_pressure && start_fall == false)
-        {
-            samples = 0;
-            samples_p = 0;
-            samples_t = 0;
-        }
-*/
-#endif
-
-#ifdef TEST
-        /* delete this */
-        if (read >= 50)
-        {
-            run = false;
-            SENS_task_delete(xDepth);
-            vTaskDelay(xDelay500ms);
-            SENS_sensor_depth_off();
-            spsEvent = MODE_DONE;
-        }
-        /* delete this end */
-#else
 
         /* collect up to PROFILE_DEPTH_RATE_COUNTER measurements */
         rate_avg += Rate;
@@ -3266,31 +3029,6 @@ void module_sps_profile(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Depth=%.4f is @critial piston position >>\n", Depth);
                         length_update = CRUSH_DEPTH_PISTON_POSITION;
-
-                        ///* set a timer for 5 mins ? , period = xDelay1000ms , it can change in case of TEST */
-                        //crit_depth_piston_pos_time += period;
-                        //ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Critical Depth Piston Position Timer = %f seconds >>\n", (float) crit_depth_piston_pos_time/period);
-                        //if (crit_depth_piston_pos_time >= period*SYSTEM_CDPP_TIMER)
-                        //{
-                        //    /* set to previous adjusted length update */
-                        //    prof_piston_length = length_update_last_adjusted;
-                        //
-                        //    /* send it to -> Critical Park State */
-                        //    ARTEMIS_DEBUG_PRINTF("\n<< SPS :: profile, Critical Depth Piston Position Time out %f mins >>\n", (float) SYSTEM_CDPP_TIMER/60);
-                        //    critical_park_state = true;
-                        //    crit_depth_piston_pos_time = 0;
-                        //    spsEvent = MODE_CRIT_TO_PARK;
-
-                        //    /* turn off the sensors */
-                        //    SENS_task_delete(xTemp);
-                        //    SENS_sensor_temperature_off();
-                        //    SENS_task_delete(xDepth);
-                        //    SENS_sensor_depth_off();
-                        //    piston_move = false;
-                        //    run = false;
-                        //    /* break here */
-                        //    break;
-                        //}
                     }
                 }
 
@@ -3453,12 +3191,8 @@ void module_sps_profile(void)
                 ARTEMIS_DEBUG_PRINTF("\nSPS :: profile, FreeRTOS HEAP SIZE A = %u Bytes\n\n", sizeA);
                 
                 /* Move piston all the way to the surface setting */
-                // #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
-                //     /* set piston to 10.5in */
-                //     length_update = 10.5;
-                // #else
                 length_update = PISTON_MOVE_TO_SURFACE;
-                //#endif
+
                 vTaskDelay(piston_period);
                 PIS_set_length(PISTON_MOVE_TO_SURFACE);
                 PIS_task_move_length(&xPiston);
@@ -3510,7 +3244,7 @@ void module_sps_profile(void)
             run = false;
             spsEvent = MODE_DONE;
         }
-#endif
+
         vTaskDelay(period);
         piston_timer += period;
     }
@@ -3756,12 +3490,6 @@ void module_sps_move_to_surface(void)
     uint32_t period = xDelay1000ms/s_rate;
     SENS_set_gps_rate(s_rate);
 
-#ifdef TEST
-    /* do nothing */
-    SENS_sensor_gps_off();
-    Event_e spsEvent;
-    spsEvent = MODE_DONE;
-#else
     SENS_sensor_gps_on();
     bool GPS_task_running = false;
     TaskHandle_t xGps = NULL;
@@ -3839,7 +3567,7 @@ void module_sps_move_to_surface(void)
         vTaskDelayUntil(&xLastWakeTime, period);
         gpsTimer += period;
     }
-#endif
+
     /* wait for 1 seconds here */
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, task->finished\n");
     vTaskDelay(xDelay1000ms);

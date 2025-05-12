@@ -238,9 +238,6 @@ void SENS_task_delete(TaskHandle_t xHandle)
 {
     TaskStatus_t xTaskDetails;
     Event_e xtdEvent = IDLE;
-    /* turn off LEDs */
-    //am_hal_gpio_output_set(AM_BSP_GPIO_LED_BLUE);
-    //am_hal_gpio_output_set(AM_BSP_GPIO_LED_GREEN);
     /* check the task state */
     while (1)
     {

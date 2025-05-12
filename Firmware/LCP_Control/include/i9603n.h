@@ -35,11 +35,9 @@
  #include <stdint.h>
  #include <stdbool.h>
  
- //*****************************************************************************
- //
- // FreeRTOS include files.
- //
- //*****************************************************************************
+  /************************************************************************
+ *						FREERTOS INCLUDES
+ ************************************************************************/
  #include "FreeRTOS.h"
  #include "FreeRTOSConfig.h"
  #include "event_groups.h"
@@ -122,19 +120,6 @@
  bool Sat_running(void);
  bool GET_Iridium_satellite (void);
  void SET_Iridium_delay_rate(float rate);
- 
- //#ifndef TEST
- ////*****************************************************************************
- ////
- //// Static Function Prototypes
- ////
- ////*****************************************************************************
- //static bool module_i9603n_power_on(void);
- //static void module_i9603n_power_off(void);
- //static bool module_i9603n_check_net_available(void);
- //static bool module_i9603n_send(uint8_t *msg, uint16_t len);
- //STATIC i9603n_result_t module_i9603n_read_at(void);
- //#endif
  
  #endif // I9603N_H
  
