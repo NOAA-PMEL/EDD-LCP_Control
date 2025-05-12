@@ -3933,59 +3933,52 @@ void module_sps_tx(void)
     MEM_log_memory_status("SPS :: tx start");
 
 
-    // --- Initialize Iridium ---
-    if (!iridium_init)
-    {
-        i9603n_initialize();
-        iridium_init = true;
-        vTaskDelay(xDelay1000ms);
-#ifdef TEST
-        datalogger_test_sbd_messages_init();
-#endif
-    }
-
-    /* turn on the iridium module and wait for it be charged */
-    uint8_t wait = 0;
-    uint8_t tries = 0;
-    while (wait < 2 && tries < 2)
-    {
-        bool retVal = i9603n_on();
-        if (!retVal)
-        {
-            wait++;
-            if (wait >= 2)
-            {
+    // --- Initialize Iridium (Only if not already initialized) ---
+    if (!iridium_init) {
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium not yet initialized.\n");
+        // --- Power On Iridium ---
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Powering on Iridium...\n");
+        i9603n_initialize_power(); // initializes the supercap pins.
+    
+        while (tries < 2 && !fatal_error_occurred) {
+            if (i9603n_on()) {
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium powered on.\n");
+                vTaskDelay(xDelay1000ms); // Allow modem time to boot
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Initializing Iridium modem...\n");
+                i9603n_initialize(); // Initialize Iridium modem
+                vTaskDelay(xDelay1000ms); // Allow modem time to initialize
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium modem initialized.\n");
+                iridium_init = true; // Set flag to indicate initialization
+                iridium_ready = true;
+                tries = 0; // Reset tries for power on
+                break;
+            } else {
                 tries++;
-                i9603n_off();
-                vTaskDelay(xDelay1000ms);
-                wait = 0;
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium power on attempt %u failed. Retrying...\n", tries);
+                i9603n_off(); // Ensure it's fully off before retry
+                vTaskDelay(xDelay2000ms);
             }
         }
-        else
-        {
-            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium looks fine\n");
-            tries = 0;
-            iridium_ready = true; // Set to true to indicate success
-            break;
+    } else {
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium already initialized.\n");
+        // --- Power On Iridium ---
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Powering on Iridium...\n");
+    
+        while (tries < 2 && !fatal_error_occurred) {
+            if (i9603n_on()) {
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium powered on.\n");
+                vTaskDelay(xDelay1000ms); // Allow modem time to boot
+                iridium_ready = true;
+                tries = 0; // Reset tries for power on
+                break;
+            } else {
+                tries++;
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium power on attempt %u failed. Retrying...\n", tries);
+                i9603n_off(); // Ensure it's fully off before retry
+                vTaskDelay(xDelay2000ms);
+            }
         }
     }
-
-    if (tries >= 2)
-    {
-        i9603n_off();
-
-#if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
-        /* reset test profile */
-        datalogger_read_test_profile(true);
-#endif
-        spsEvent = MODE_IDLE;
-        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium not charged, try again\n");
-        //SendEvent(spsEventQueue, &spsEvent);
-        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Task->finished abruptly, NOT transmitting today\n");
-        //vTaskDelete(NULL);
-        iridium_ready = false; // Set to false to indicate failure
-    }
-    vTaskDelay(xDelay1000ms);
 
     
     if (!iridium_ready) {

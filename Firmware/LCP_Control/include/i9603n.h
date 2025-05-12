@@ -85,6 +85,7 @@
  ************************************************************************/
  
  void i9603n_initialize(void);
+ void i9603n_initialize_power(void);
  void i9603n_uninitialize(void);
  bool i9603n_on(void);
  void i9603n_off(void);

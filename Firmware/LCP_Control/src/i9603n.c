@@ -157,13 +157,17 @@ static volatile bool tx_TaskLive = false;
 // Global Functions
 //
 //*****************************************************************************
+void i9603n_initialize_power(void)
+{
+    /** Initialize the power circuitry */
+    artemis_sc_initialize();
+}
+
 void i9603n_initialize(void)
 {
     /** Initalize the 9603n UART & IO */
     artemis_i9603n_initialize();
 
-    /** Initialize the power circuitry */
-    artemis_sc_initialize();
 
 #ifdef TEST_SBD_MSG
 
