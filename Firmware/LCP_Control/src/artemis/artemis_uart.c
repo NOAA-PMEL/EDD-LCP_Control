@@ -63,9 +63,10 @@ void artemis_uart_initialize(artemis_uart_t *uart, uint32_t baudrate)
     }
 #endif
 
+    uHandle = uart->handle;
     NVIC_EnableIRQ((IRQn_Type)(UART1_IRQn));
     am_hal_interrupt_master_enable();
-    uHandle = uart->handle;
+    
     ARTEMIS_DEBUG_PRINTF("Iridium :: initialized\n");
 }
 
