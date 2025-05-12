@@ -3947,7 +3947,7 @@ void module_sps_tx(void)
                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Initializing Iridium modem...\n");
                 i9603n_initialize(); // Initialize Iridium modem
                 vTaskDelay(xDelay1000ms); // Allow modem time to initialize
-                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium modem initialized.\n");
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium modem initialization complete.\n");
                 iridium_init = true; // Set flag to indicate initialization
                 iridium_ready = true;
                 tries = 0; // Reset tries for power on
