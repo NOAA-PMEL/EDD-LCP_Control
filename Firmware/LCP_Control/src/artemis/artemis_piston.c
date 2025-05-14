@@ -205,30 +205,29 @@ uint16_t artemis_piston_i2c_read_data(uint8_t *pBuf)
 
     if(len > 0)
     {
-    artemis_stream_reset(&txstream);
-    artemis_stream_reset(&rxstream);
+        artemis_stream_reset(&txstream);
+        artemis_stream_reset(&rxstream);
 
-    /** Send the command to retreive data @addr 0xFF */
-    artemis_stream_put(&txstream, ARTEMIS_PISTON_I2C_DATA_REG);
-    artemis_i2c_send(i2c, false, &txstream);
+        /** Send the command to retreive data @addr 0xFF */
+        artemis_stream_put(&txstream, ARTEMIS_PISTON_I2C_DATA_REG);
+        artemis_i2c_send(i2c, false, &txstream);
 
-    while(len > 0)
-    {
-        if(len > ARTEMIS_PISTON_BUFFER_LENGTH)
+        while(len > 0)
         {
-            artemis_i2c_receive(i2c, false, &rxstream, ARTEMIS_PISTON_BUFFER_LENGTH);
-            artemis_stream_read(&rxstream, pBuf, ARTEMIS_PISTON_BUFFER_LENGTH);
-            artemis_stream_reset(&rxstream);
-            pBuf += ARTEMIS_PISTON_BUFFER_LENGTH;
-            len -= ARTEMIS_PISTON_BUFFER_LENGTH;
-        } else {
-            artemis_i2c_receive(i2c, true, &rxstream, len);
-            artemis_stream_read(&rxstream, pBuf, ARTEMIS_PISTON_BUFFER_LENGTH);
-            pBuf += len;
-            len = 0;
+            if(len > ARTEMIS_PISTON_BUFFER_LENGTH)
+            {
+                artemis_i2c_receive(i2c, false, &rxstream, ARTEMIS_PISTON_BUFFER_LENGTH);
+                artemis_stream_read(&rxstream, pBuf, ARTEMIS_PISTON_BUFFER_LENGTH);
+                artemis_stream_reset(&rxstream);
+                pBuf += ARTEMIS_PISTON_BUFFER_LENGTH;
+                len -= ARTEMIS_PISTON_BUFFER_LENGTH;
+            } else {
+                artemis_i2c_receive(i2c, true, &rxstream, len);
+                artemis_stream_read(&rxstream, pBuf, ARTEMIS_PISTON_BUFFER_LENGTH);
+                pBuf += len;
+                len = 0;
+            }
         }
-    }
-
     }
 
     return (uint16_t)(pBuf - pBufStart);
