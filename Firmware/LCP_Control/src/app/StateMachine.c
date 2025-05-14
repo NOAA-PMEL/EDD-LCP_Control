@@ -1691,6 +1691,10 @@ void module_sps_park(void)
     bool run = true;
     while (run)
     {
+        // Turn on the datalogger power at the start of each cycle
+        datalogger_power_on();
+        vTaskDelay(xDelay1000ms);
+
         if (park_period >= xDelay10000ms)
         {
             /* turn on the sensors */
@@ -1714,7 +1718,6 @@ void module_sps_park(void)
         {
             SENS_get_depth(&Depth, &Pressure, &Rate);
             SENS_get_temperature(&Temperature);
-
         }
 
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure    = %0.4f bar\n", Pressure);
@@ -1737,11 +1740,14 @@ void module_sps_park(void)
         samples_t[samples] = Temperature;
         samples++;
 
+        // Power off the datalogger to save battery
+        datalogger_power_off();
+        vTaskDelay(xDelay1000ms);
 
         if (samples > 9)
         {
-            //datalogger_power_on();
-            vTaskDelay(xDelay500ms);
+            datalogger_power_on();
+            vTaskDelay(xDelay5000ms);
             float var, avg_p, avg_t;
             float std = std_div(samples_p, samples, &var, &avg_p);
             ARTEMIS_DEBUG_PRINTF("SPS :: park, Pressure Variance = %0.4f, Std_Div = %0.4f\n", var, std);
@@ -1753,6 +1759,9 @@ void module_sps_park(void)
             samples = 0;
 
             datalogger_park_mode(filename, avg_p, avg_t, &time);
+            vTaskDelay(xDelay1000ms);
+            datalogger_power_off();
+            vTaskDelay(xDelay1000ms);
         }
 
         if (Depth >= PARK_DEPTH-PARK_DEPTH_ERR && Depth <= PARK_DEPTH+PARK_DEPTH_ERR)
@@ -1762,7 +1771,8 @@ void module_sps_park(void)
         else
         {
             // When leaving the target depth range, turn datalogger back on
-            vTaskDelay(xDelay2000ms);
+            datalogger_power_on();
+            vTaskDelay(xDelay5000ms);
             
             /* collect up to PARK_DEPTH_RATE_COUNTER measurements */
             rate_avg += Rate;
@@ -1925,9 +1935,13 @@ void module_sps_park(void)
             }
         }
 
+        
         /* check on piston movement */
         if (piston_move)
         {
+            // Turn on the datalogger power during piston movement
+            datalogger_power_on();
+            vTaskDelay(xDelay1000ms);
             do
             {
                 piston_task_running = PIS_taskStatus(); // check if the piston task is running
@@ -2025,11 +2039,17 @@ void module_sps_park(void)
                 piston_timer += piston_period;
 
             } while (piston_move && park_period >= xDelay10000ms);
+            // turn off the datalogger power
+            datalogger_power_off();
+            vTaskDelay(xDelay1000ms);
         }
 
         /* emergency blow , extend piston to full */
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {
+            // Turn on the datalogger power
+            datalogger_power_on();
+            vTaskDelay(xDelay1000ms);
             /*add a CRUSH DEPTH FOS to the saved park piston length for next profile*/
             park_piston_length = length_update + 0.5;
             
@@ -2056,6 +2076,9 @@ void module_sps_park(void)
         /* check on Maximum park depth = ? */
         if (Depth >= PARK_DEPTH_MAX && !crush_depth)
         {
+            // Turn on the datalogger power
+            datalogger_power_on();
+            vTaskDelay(xDelay1000ms);
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
             {
@@ -2091,6 +2114,10 @@ void module_sps_park(void)
         wait_time += park_period;
         if (wait_time >= park_time && !crush_depth)
         {
+            // Turn on the datalogger power
+            datalogger_power_on();
+            vTaskDelay(xDelay1000ms);
+
             ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Timer out %f mins >>\n\n", (float) (wait_time/(60.0*xDelay1000ms)));
 
             /* check if piston is still moving then reset it and stop */
@@ -2126,6 +2153,10 @@ void module_sps_park(void)
         vTaskDelay(park_period);
     }
     
+    // Turn on the datalogger power
+    datalogger_power_on();
+    vTaskDelay(xDelay1000ms);
+
     // Log memory status after collection
     MEM_log_memory_status("SPS :: park end");
     
