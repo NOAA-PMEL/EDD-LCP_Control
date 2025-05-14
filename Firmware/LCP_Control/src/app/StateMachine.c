@@ -338,6 +338,7 @@ void module_pus_idle(void)
         ARTEMIS_DEBUG_PRINTF("\nPUS :: Idle, FreeRTOS HEAP SIZE = %u Bytes\n\n", size);
 
         /* turn off datalogger */
+        vTaskDelay(xDelay1000ms);
         datalogger_power_off();
         datalogger_deinit(4);
 
@@ -1693,7 +1694,7 @@ void module_sps_park(void)
     {
         // Turn on the datalogger power at the start of each cycle
         datalogger_power_on();
-        vTaskDelay(xDelay1000ms);
+        vTaskDelay(xDelay5000ms);
 
         if (park_period >= xDelay10000ms)
         {
@@ -1741,8 +1742,9 @@ void module_sps_park(void)
         samples++;
 
         // Power off the datalogger to save battery
-        datalogger_power_off();
         vTaskDelay(xDelay1000ms);
+        datalogger_power_off();
+        
 
         if (samples > 9)
         {
@@ -1761,7 +1763,6 @@ void module_sps_park(void)
             datalogger_park_mode(filename, avg_p, avg_t, &time);
             vTaskDelay(xDelay1000ms);
             datalogger_power_off();
-            vTaskDelay(xDelay1000ms);
         }
 
         if (Depth >= PARK_DEPTH-PARK_DEPTH_ERR && Depth <= PARK_DEPTH+PARK_DEPTH_ERR)
@@ -1941,7 +1942,7 @@ void module_sps_park(void)
         {
             // Turn on the datalogger power during piston movement
             datalogger_power_on();
-            vTaskDelay(xDelay1000ms);
+            vTaskDelay(xDelay5000ms);
             do
             {
                 piston_task_running = PIS_taskStatus(); // check if the piston task is running
@@ -2040,8 +2041,9 @@ void module_sps_park(void)
 
             } while (piston_move && park_period >= xDelay10000ms);
             // turn off the datalogger power
-            datalogger_power_off();
             vTaskDelay(xDelay1000ms);
+            datalogger_power_off();
+            
         }
 
         /* emergency blow , extend piston to full */
@@ -2049,7 +2051,7 @@ void module_sps_park(void)
         {
             // Turn on the datalogger power
             datalogger_power_on();
-            vTaskDelay(xDelay1000ms);
+            vTaskDelay(xDelay5000ms);
             /*add a CRUSH DEPTH FOS to the saved park piston length for next profile*/
             park_piston_length = length_update + 0.5;
             
@@ -2078,7 +2080,7 @@ void module_sps_park(void)
         {
             // Turn on the datalogger power
             datalogger_power_on();
-            vTaskDelay(xDelay1000ms);
+            vTaskDelay(xDelay5000ms);
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
             {
@@ -2116,7 +2118,7 @@ void module_sps_park(void)
         {
             // Turn on the datalogger power
             datalogger_power_on();
-            vTaskDelay(xDelay1000ms);
+            vTaskDelay(xDelay5000ms);
 
             ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Timer out %f mins >>\n\n", (float) (wait_time/(60.0*xDelay1000ms)));
 
@@ -2149,13 +2151,15 @@ void module_sps_park(void)
             vTaskDelay(piston_period);
             break;
         }
+        vTaskDelay(xDelay1000ms);
+        datalogger_power_off();
         /* task delay time */
         vTaskDelay(park_period);
     }
     
     // Turn on the datalogger power
     datalogger_power_on();
-    vTaskDelay(xDelay1000ms);
+    vTaskDelay(xDelay5000ms);
 
     // Log memory status after collection
     MEM_log_memory_status("SPS :: park end");
@@ -2644,12 +2648,7 @@ void module_sps_move_to_profile(void)
 
         /* keep checking for crush depth */
         if (Depth >= CRUSH_DEPTH && !crush_depth)
-        {
-            
-            // Ensure datalogger is on for emergency events
-            datalogger_power_on();
-            vTaskDelay(xDelay500ms);
-            
+        {   
             /*add a CRUSH DEPTH FOS to the saved move-to-profile piston length for next profile*/
             to_prof_piston_length = length_update + 0.5;
 
