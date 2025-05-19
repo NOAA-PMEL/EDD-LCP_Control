@@ -1013,7 +1013,7 @@ void module_sps_move_to_park(void)
     bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     while (previousTaskAlive)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->state = %s\n", previousTaskAlive ? "running" : "not running");
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Previous piston task is still running...\n");
         vTaskDelay(xDelay5000ms);
         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     }
@@ -1609,7 +1609,7 @@ void module_sps_park(void)
     bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     while (previousTaskAlive)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->state = %s\n", previousTaskAlive ? "running" : "not running");
+        ARTEMIS_DEBUG_PRINTF("SPS :: park, Previous piston task is still running...\n");
         vTaskDelay(xDelay5000ms);
         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     }
@@ -2199,7 +2199,7 @@ void module_sps_move_to_profile(void)
     bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     while (previousTaskAlive)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->state = %s\n", previousTaskAlive ? "running" : "not running");
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Previous piston task is still running...\n");
         vTaskDelay(xDelay5000ms);
         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     }
@@ -2715,7 +2715,7 @@ void module_sps_profile(void)
     bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     while (previousTaskAlive)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->state = %s\n", previousTaskAlive ? "running" : "not running");
+        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Previous piston task is still running...\n");
         vTaskDelay(xDelay5000ms);
         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     }
@@ -3328,7 +3328,7 @@ void module_sps_move_to_surface(void)
     bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     while (previousTaskAlive)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->state = %s\n", previousTaskAlive ? "running" : "not running");
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Previous piston task is still running...\n");
         vTaskDelay(xDelay5000ms);
         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     }
