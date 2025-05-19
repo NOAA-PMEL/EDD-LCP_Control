@@ -1649,6 +1649,7 @@ void module_sps_park(void)
     TaskHandle_t xDepth = NULL;
     TaskHandle_t xTemp  = NULL;
     vTaskDelay(xDelay100ms);
+    uint32_t epochtimer = 0;
 
     if (park_period >= xDelay10000ms)
     {
@@ -1703,6 +1704,7 @@ void module_sps_park(void)
     float samples_t[10] = {0};
     uint8_t samples = 0;
     bool start_time = true;
+    
 
     bool run = true;
     while (run)
@@ -1749,6 +1751,7 @@ void module_sps_park(void)
             DATA_add(&current_park_data, epoch, Pressure, Temperature, park_number); // changed to use current_park_data
             datalogger_park_mode(filename, Pressure, Temperature, &time);
             start_time = false;
+            epochtimer = epoch;
         }
 
         /* Average Data, and store samples */
@@ -2170,6 +2173,11 @@ void module_sps_park(void)
         datalogger_power_off();
         /* task delay time */
         vTaskDelay(park_period);
+
+        // Update the epoch timer
+        artemis_rtc_get_time(&time);
+        epochtimer = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
+        ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
     }
     
     // Turn on the datalogger power
