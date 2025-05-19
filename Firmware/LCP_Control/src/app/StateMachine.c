@@ -1010,6 +1010,13 @@ void module_sps_move_to_park(void)
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Task->started\n");
     vTaskDelay(xDelay10000ms); // wait for 10 seconds
 
+    bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    while (previousTaskAlive)
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->state = %s\n", previousTaskAlive ? "running" : "not running");
+        vTaskDelay(xDelay5000ms);
+        previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    }
 
     float Volume = 0.0;
     float Length = 0.0;
@@ -1598,6 +1605,14 @@ void module_sps_park(void)
 {
     ARTEMIS_DEBUG_PRINTF("SPS :: park, Task->started\n");
     vTaskDelay(xDelay10000ms); // wait for 10 seconds
+
+    bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    while (previousTaskAlive)
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->state = %s\n", previousTaskAlive ? "running" : "not running");
+        vTaskDelay(xDelay5000ms);
+        previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    }
     
     /* set crush depth to false */
     crush_depth = false;
@@ -2181,6 +2196,14 @@ void module_sps_move_to_profile(void)
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Task->started\n");
     vTaskDelay(xDelay10000ms); // wait for 10 seconds
 
+    bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    while (previousTaskAlive)
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->state = %s\n", previousTaskAlive ? "running" : "not running");
+        vTaskDelay(xDelay5000ms);
+        previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    }
+
     crush_depth = false;
     float Volume = 0.0;
     float Length = 0.0;
@@ -2401,9 +2424,8 @@ void module_sps_move_to_profile(void)
                         piston_timer = 0;
                         vTaskDelay(period);
                     }
-
-                    spsEvent = MODE_DONE;
                     run = false;
+                    spsEvent = MODE_DONE;
                     /* break the loop*/
                     break;
                 }
@@ -2689,6 +2711,15 @@ void module_sps_profile(void)
 {
     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Task->started\n");
     vTaskDelay(xDelay10000ms); // wait for 10 seconds
+
+    bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    while (previousTaskAlive)
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Piston task->state = %s\n", previousTaskAlive ? "running" : "not running");
+        vTaskDelay(xDelay5000ms);
+        previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    }
+
     // --- Prepare the static profile data structure for this cycle ---
     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Resetting static profile data structure for profile number %d\n", prof_number);
     DATA_reset(&current_profile_data);
@@ -3290,9 +3321,17 @@ void module_sps_profile(void)
 }
 
 void module_sps_move_to_surface(void)
-{
+{   
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Task->started\n");
     vTaskDelay(xDelay10000ms); // Wait for the task to start
+
+    bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    while (previousTaskAlive)
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Piston task->state = %s\n", previousTaskAlive ? "running" : "not running");
+        vTaskDelay(xDelay5000ms);
+        previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    }
 
     uint32_t piston_period = xDelay1000ms;
     uint32_t piston_timer = 0;
