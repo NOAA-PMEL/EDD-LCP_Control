@@ -69,7 +69,9 @@ def unpack_measurements(buf, mlength):
                 T_raw |= (1 << ((TEMPERATURE_BITS_FIRMWARE - 1) - j))
             bitpos += 1
         
-        temperature_val = (T_raw - 500.0) / 100.0
+        # older, 0.01 temp values
+        # temperature_val = (T_raw - 500.0) / 100.0
+        temperature_val = (T_raw / 1000.0) - 5.0
         t.append(temperature_val)
 
         # --- Unpack Pressure (12 bits) ---

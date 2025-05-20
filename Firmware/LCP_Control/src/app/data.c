@@ -226,7 +226,7 @@ return (float) depth / 10.0f;
 * @return float Actual float representation of temperature
 * @shit -5° to the left (fitting values within 12 bits (-5 to 35.59)
 */
-// FIX THIS TO USE 16 BITS
+/*
 static float module_convert_uint16_t_to_temperature(uint16_t temp)
 {
     int16_t t = temp - 500;
@@ -234,7 +234,7 @@ static float module_convert_uint16_t_to_temperature(uint16_t temp)
     fTemp /= 100;
     return fTemp;
 }
- 
+*/
 /**
 * @brief Convert pressure to uint16_t
 * 
