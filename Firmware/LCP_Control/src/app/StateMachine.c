@@ -1625,6 +1625,8 @@ void module_sps_park(void)
     float s_rate = 0;
     //uint32_t park_time = 0;
 
+    rtc_time time;
+
     artemis_rtc_get_time(&time);
     uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
     ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
@@ -1688,7 +1690,7 @@ void module_sps_park(void)
     float Depth = 0.0, Rate = 0.0;
     float Pressure = 0.0;
     Event_e spsEvent;
-    rtc_time time;
+    
 
     char *filename = datalogger_park_create_file(park_number);
     vTaskDelay(xDelay1000ms);
