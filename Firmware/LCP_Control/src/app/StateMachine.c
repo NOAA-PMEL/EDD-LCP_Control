@@ -1631,6 +1631,7 @@ void module_sps_park(void)
     uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
     ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
     uint32_t epochtimer = 0;
+    uint32_t endepoch_time = 0;
 
     if (park_number == 0)
     {
@@ -1638,7 +1639,7 @@ void module_sps_park(void)
         s_rate = PARK_RATE_FAST;
         //park_time = (xDelay1000ms * PARK_TIME_FIRST);
         ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME_FIRST = %.2f mins >\n\n", (float)(PARK_TIME_FIRST/60));
-        uint32_t endepoch_time = (PARK_TIME_FIRST + epoch);
+        endepoch_time = (PARK_TIME_FIRST + epoch);
     }
     else
     {
@@ -1646,7 +1647,7 @@ void module_sps_park(void)
         s_rate = PARK_RATE;
         //park_time = (xDelay1000ms * PARK_TIME);
         ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %.2f mins >\n\n", (float)(PARK_TIME/60));
-        uint32_t endepoch_time = (PARK_TIME + epoch);
+        endepoch_time = (PARK_TIME + epoch);
     }
 
     SENS_set_depth_rate(s_rate);
