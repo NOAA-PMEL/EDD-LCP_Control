@@ -260,18 +260,23 @@ STATIC float module_convert_uint16_t_to_pressure(uint16_t pressure)
 * @brief Convert temperature to uint16_t
 * 
 * Converts the S9 OEM Temperature value to fit in a unsigned 16-bit uint.
-* shitfing +5° so that (-5 to 35.59) can fit within 12-bits of 16 bits, precision 0.01
-* temp (uint16_t) = (temp (float) + 5.0) * 100
-* 
 * @param temp Temperature
 * @return int16_t Converted value;
 */
 STATIC uint16_t module_convert_temperature_to_uint16_t(float temp)
 {
+    /* // Old Code, 0.01 precision
     temp = round(temp * 1000) / 1000;
     temp *= 100;
     temp += 500;
     return (uint16_t) (temp);
+    */
+
+    /* New Code, 0.001 precision */
+    float processed_temp = (temp + 5.0f) * 1000f;       // Shift to the right by 5 degrees and multiply by 1000 (0.001 precision)
+    processed_temp = roundf(processed_temp);            // Round to nearest integer
+    return (uint16_t) processed_temp;                   // return the value cast to uint16_t
+
 }
  
 //void create_header_irid(uint8_t *df, pData *P, uint8_t mode_type, uint8_t profNumber, uint8_t pageNumber)
