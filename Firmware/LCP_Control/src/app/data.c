@@ -273,7 +273,7 @@ STATIC uint16_t module_convert_temperature_to_uint16_t(float temp)
     */
 
     /* New Code, 0.001 precision */
-    float processed_temp = (temp + 5.0f) * 1000f;       // Shift to the right by 5 degrees and multiply by 1000 (0.001 precision)
+    float processed_temp = (temp + 5.0f) * 1000.0f;       // Shift to the right by 5 degrees and multiply by 1000 (0.001 precision)
     processed_temp = roundf(processed_temp);            // Round to nearest integer
     return (uint16_t) processed_temp;                   // return the value cast to uint16_t
 
