@@ -1623,33 +1623,40 @@ void module_sps_park(void)
     current_park_data.pNumber = park_number; // Explicitly set the profile number for this cycle
 
     float s_rate = 0;
-    uint32_t park_time = 0;
+    //uint32_t park_time = 0;
+
+    artemis_rtc_get_time(&time);
+    uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
+    ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
+    uint32_t epochtimer = 0;
 
     if (park_number == 0)
     {
         /** Start s_rate sampling of sensors for PARK_TIME_FIRST minutes */
         s_rate = PARK_RATE_FAST;
-        park_time = (xDelay1000ms * PARK_TIME_FIRST);
+        //park_time = (xDelay1000ms * PARK_TIME_FIRST);
         ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME_FIRST = %.2f mins >\n\n", (float)(PARK_TIME_FIRST/60));
+        uint32_t endepoch_time = (PARK_TIME_FIRST + epoch);
     }
     else
     {
         /** Start s_rate sampling of sensors for PARK_TIME minutes */
         s_rate = PARK_RATE;
-        park_time = (xDelay1000ms * PARK_TIME);
+        //park_time = (xDelay1000ms * PARK_TIME);
         ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %.2f mins >\n\n", (float)(PARK_TIME/60));
+        uint32_t endepoch_time = (PARK_TIME + epoch);
     }
 
     SENS_set_depth_rate(s_rate);
     SENS_set_temperature_rate(s_rate);
 
     /* local variable to calculate the waiting time */
-    uint32_t wait_time = 0;
+    //uint32_t wait_time = 0;
     uint32_t park_period = xDelay1000ms/s_rate;
     TaskHandle_t xDepth = NULL;
     TaskHandle_t xTemp  = NULL;
     vTaskDelay(xDelay100ms);
-    uint32_t epochtimer = 0;
+    
 
     if (park_period >= xDelay10000ms)
     {
@@ -1742,7 +1749,7 @@ void module_sps_park(void)
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Depth       = %0.4f m, rate = %0.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Temperature = %0.4f °C\n", Temperature);
         artemis_rtc_get_time(&time);
-        uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
+        epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
 
         /* store first sample with start time */
@@ -2126,19 +2133,26 @@ void module_sps_park(void)
             ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Reached maximum Park Depth >>\n\n");
             vTaskDelay(piston_period);
             spsEvent = MODE_DONE;
-            wait_time = 0;
+            //wait_time = 0;
             run = false;
             break;
         }
         /* park depth timer */
-        wait_time += park_period;
-        if (wait_time >= park_time && !crush_depth)
+        //wait_time += park_period;
+        // Update the epoch timer
+        artemis_rtc_get_time(&time);
+        epochtimer = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
+        ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
+
+        //if (wait_time >= park_time && !crush_depth)
+        if (epochtimer >= endepoch_time && !crush_depth)
         {
             // Turn on the datalogger power
             datalogger_power_on();
             vTaskDelay(xDelay2000ms);
 
-            ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Timer out %f mins >>\n\n", (float) (wait_time/(60.0*xDelay1000ms)));
+            //ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Timer out %f mins >>\n\n", (float) (wait_time/(60.0*xDelay1000ms)));
+            ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Time out Epoch = %ld >>\n\n", epochtimer);
 
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
