@@ -59,46 +59,60 @@ static uint8_t flash_read_buffer[MAX_FLASH_ENTRY_SIZE];  // Buffer for reading d
 
 /**
  * @brief Initialize the flash queue metadata and mutex.
- * Does NOT erase flash on initialization anymore. Assumes flash content
- * might be stale and relies on read/write logic to manage it.
+ * Erases the flash region on initialization.
+ * Halts the program if flash erase fails, after displaying an error.
  */
 void MEM_init_flash_queue(void) {
     flash_mutex = xSemaphoreCreateMutex();
-    
+
     if (flash_mutex == NULL) 
     {
-        ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Failed to create flash mutex!\n");
-        // Handle error: perhaps block initialization or enter error state
-        return;
+        ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: CRITICAL ERROR - Failed to create flash mutex! Halting.\n");
+        // If mutex creation fails, the system is in a bad state. Halt.
+        while(1); // Halt
     }
 
-    // --- Erase operation removed ---
-    // ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Erasing flash region managed by driver (Offset: %u, Size: %u bytes)...\n",
-    //                      FLASH_TX_QUEUE_RELATIVE_START_OFFSET, FLASH_TX_QUEUE_SIZE);
-    // int erase_ret = flash_erase(FLASH_TX_QUEUE_RELATIVE_START_OFFSET, FLASH_TX_QUEUE_SIZE);
-    // if (erase_ret == FLASH_SUCCESS) {
-    //     ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Flash region erased successfully.\n");
-    // } else {
-    //     ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: ERROR - Failed to erase flash region! ret=%d\n", erase_ret);
-    //     // Handle error: Initialization failed, flash might be unusable.
-    //     // Consider releasing the mutex if initialization fails permanently.
-    //     // vSemaphoreDelete(flash_mutex);
-    //     // flash_mutex = NULL;
-    //     // return; // Stop initialization if erase fails (REMOVED - no longer erasing)
-    // }
-    ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Skipping erase on initialization.\n");
+    ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Attempting to erase flash region (Offset: %u, Size: %u bytes)...\n",
+                            FLASH_TX_QUEUE_RELATIVE_START_OFFSET, FLASH_TX_QUEUE_SIZE);
 
-    // Reset in-memory metadata variables (using relative offsets)
-    // TODO: Implement logic here to scan flash and find the actual head/tail/count
-    //       based on valid magic numbers if persistence across resets is needed.
-    //       For now, assume it starts empty for the current run.
-    flash_queue_head_offset = FLASH_TX_QUEUE_RELATIVE_START_OFFSET; // Start at relative offset 0
-    flash_queue_tail_offset = FLASH_TX_QUEUE_RELATIVE_START_OFFSET; // Start at relative offset 0
-    flash_queue_count = 0;
+    int erase_ret = flash_erase(FLASH_TX_QUEUE_RELATIVE_START_OFFSET, FLASH_TX_QUEUE_SIZE);
 
-    flash_initialized = true;
-    ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Flash queue metadata reset (assumed empty).\n");
-}
+    if (erase_ret == FLASH_SUCCESS) {
+        ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Flash region erased successfully.\n");
+        // Reset in-memory metadata variables
+        flash_queue_head_offset = FLASH_TX_QUEUE_RELATIVE_START_OFFSET;
+        flash_queue_tail_offset = FLASH_TX_QUEUE_RELATIVE_START_OFFSET;
+        flash_queue_count = 0;
+        flash_initialized = true;
+        ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: Flash queue metadata reset and initialized.\n");
+    } else {
+        // CRITICAL ERROR: Flash erase failed. Program cannot safely continue if flash queue is required.
+        ARTEMIS_DEBUG_PRINTF("\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        ARTEMIS_DEBUG_PRINTF("MEMORY INIT FLASH: CRITICAL SYSTEM HALT!\n");
+        ARTEMIS_DEBUG_PRINTF("REASON: Failed to erase flash region for data queue.\n");
+        ARTEMIS_DEBUG_PRINTF("Flash erase error code: %d\n", erase_ret);
+        ARTEMIS_DEBUG_PRINTF("The LCP cannot continue normal operation without a functional flash queue.\n");
+        ARTEMIS_DEBUG_PRINTF("Please check hardware and reset the device.\n");
+        ARTEMIS_DEBUG_PRINTF("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n");
+        
+        flash_initialized = false; // Mark as not initialized
+
+        // Optional: Turn on an error LED if easily accessible from here
+        // e.g., am_hal_gpio_output_set(AM_BSP_GPIO_LED_RED); // Or clear, depending on polarity
+
+        // Halt the system
+        // Disable interrupts to prevent further scheduler activity if in RTOS context
+        portDISABLE_INTERRUPTS(); // If FreeRTOS is running or might be soon
+        // For a bare-metal equivalent or very early init:
+        // __disable_irq();
+
+        while(1)
+        {
+            // Infinite loop to halt the processor.
+            // A watchdog, if active and not serviced, might eventually reset the system.
+        }
+    }
+    }
 
 /**
  * @brief Initialize the static transmission queue

@@ -1,19 +1,22 @@
 /******************************************************************************
  *
- * ble_freertos_tag.ld - Linker script for applications using startup_gnu.c
+ * freertos_lowpower.ld - Linker script for applications using startup_gnu.c
  *
  *****************************************************************************/
 ENTRY(Reset_Handler)
 
 MEMORY
 {
-    /* Starts at 0x0C000, ends at 0x65FFF */
-    ROMEM (rx) : ORIGIN = 0x0000C000, LENGTH = 360K
+    /* Application code and read-only data */
+    /* Starts at 0xC000, ends at 0x6FFFF (400K) */
+    ROMEM (rx) : ORIGIN = 0x0000C000, LENGTH = 400K
 
-    /* Starts immediately after ROMEM at 0x66000, ends at 0xFBFFF */
-    NVSTORAGE (rx) : ORIGIN = 0x00066000, LENGTH = 600K
+    /* Non-volatile storage for the data queue */
+    /* Starts immediately after ROMEM at 0x70000, ends at 0xEFFFF (512K) */
+    /* This fits within the total flash (ends at 0xFFFFF) */
+    NVSTORAGE (rw) : ORIGIN = 0x00070000, LENGTH = 512K /* Marked (rw) just to define region */
 
-    /* Starts much later, no overlap */
+    /* SRAM */
     RWMEM (rwx) : ORIGIN = 0x10000000, LENGTH = 384K
 }
 

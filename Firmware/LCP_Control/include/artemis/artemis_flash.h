@@ -28,7 +28,7 @@
 // Define start and size of NVSTORAGE managed by this driver
 // NOTE: FLASH_NVSTORAGE_START is the *absolute* start address in the MCU memory map.
 //       Offsets passed to driver functions should be relative to this start (i.e., 0 to FLASH_NVSTORAGE_SIZE-1).
-#define FLASH_NVSTORAGE_START 0x0008C000 // Per the linker file, this is the start of the NVSTORAGE region.
+#define FLASH_NVSTORAGE_START 0x00070000 // Per the linker file, this is the start of the NVSTORAGE region.
 #define FLASH_NVSTORAGE_SIZE  (512 * 1024)
 
 // Flash alignment constraints
