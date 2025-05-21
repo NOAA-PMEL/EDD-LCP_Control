@@ -1754,6 +1754,7 @@ void module_sps_park(void)
         artemis_rtc_get_time(&time);
         epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
         ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
+        
 
         /* store first sample with start time */
         if (start_time)
@@ -1791,6 +1792,9 @@ void module_sps_park(void)
             datalogger_park_mode(filename, avg_p, avg_t, &time);
             vTaskDelay(xDelay1000ms);
             datalogger_power_off();
+
+            artemis_rtc_get_time(&time);
+            epochtimer = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
         }
 
         if (Depth >= PARK_DEPTH-PARK_DEPTH_ERR && Depth <= PARK_DEPTH+PARK_DEPTH_ERR)
@@ -2142,10 +2146,6 @@ void module_sps_park(void)
         }
         /* park depth timer */
         //wait_time += park_period;
-        // Update the epoch timer
-        artemis_rtc_get_time(&time);
-        epochtimer = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
-        ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
 
         //if (wait_time >= park_time && !crush_depth)
         if (epochtimer >= endepoch_time && !crush_depth)
@@ -2191,10 +2191,6 @@ void module_sps_park(void)
         /* task delay time */
         vTaskDelay(park_period);
 
-        // Update the epoch timer
-        artemis_rtc_get_time(&time);
-        epochtimer = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
-        ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
     }
     
     // Turn on the datalogger power
