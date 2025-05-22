@@ -122,9 +122,7 @@ void MEM_init_flash_queue(void) {
 }
 
 // RAM Queue functions (MEM_init_transmission_queue, MEM_queue_add, etc.)
-// remain largely the same as they primarily manage the RAM queue and then
 // call MEM_store_to_flash or MEM_load_from_flash.
-// The provided versions are mostly fine, so I'll keep them brief here for relevance.
 
 void MEM_init_transmission_queue(void) {
     transmission_queue.count = 0;
@@ -140,47 +138,253 @@ void MEM_init_transmission_queue(void) {
 }
 
 bool MEM_queue_add(Data_t *data_to_queue, bool is_park) {
-    if (data_to_queue == NULL || data_to_queue->p == NULL) { /* ... */ return false; }
-    if (!flash_initialized) { ARTEMIS_DEBUG_PRINTF("MEMORY ADD: Flash subsystem not initialized!\n"); return false; }
+    if (data_to_queue == NULL || data_to_queue->p == NULL) 
+    {
+         ARTEMIS_DEBUG_PRINTF("MEMORY ADD: Invalid input data pointer.\n");
+        return false;
+    }
+
+    // Check if flash is initialized (should be called after MEM_init...)
+    if(!flash_initialized) 
+    {
+        ARTEMIS_DEBUG_PRINTF("MEMORY ADD: Flash queue not initialized!\n");
+        return false; // Or handle error appropriately
+    }
 
     bool result = false;
-    if (xSemaphoreTake(transmission_queue.mutex, portMAX_DELAY) == pdTRUE) {
-        if (transmission_queue.count < transmission_queue.capacity) {
-            // ... (Copy data to RAM queue - code omitted for brevity, same as provided) ...
+
+    // Try to add to RAM queue first
+    if (xSemaphoreTake(transmission_queue.mutex, portMAX_DELAY) == pdTRUE) 
+    {
+        if (transmission_queue.count < transmission_queue.capacity) 
+        {
+            // Copy data into the static queue array slot
             uint8_t insert_index = transmission_queue.tail;
             QueuedDataEntry_t *entry = &transmission_queue.profiles[insert_index];
             entry->profile_number = data_to_queue->pNumber;
             entry->is_park_data = is_park;
             entry->num_samples = data_to_queue->wLength;
             entry->attempt_count = 0;
+            
+            // Copy the profile metadata (pData) into the entry
             memcpy(&entry->profile_metadata, data_to_queue->p, sizeof(pData));
+            
             uint16_t samples_to_copy = (entry->num_samples > DATA_MAX_SAMPLES) ? DATA_MAX_SAMPLES : entry->num_samples;
-            if (data_to_queue->data.pressure != NULL) { memcpy(entry->pressure_measurements, data_to_queue->data.pressure, samples_to_copy * sizeof(float)); }
-            else { memset(entry->pressure_measurements, 0, DATA_MAX_SAMPLES * sizeof(float)); }
-            if (data_to_queue->data.temperature != NULL) { memcpy(entry->temp_measurements, data_to_queue->data.temperature, samples_to_copy * sizeof(float)); }
-            else { memset(entry->temp_measurements, 0, DATA_MAX_SAMPLES * sizeof(float)); }
-            transmission_queue.tail = (transmission_queue.tail + 1) % transmission_queue.capacity;
-            transmission_queue.count++;
+            
+            // Ensure the measurements arrays are large enough to hold the data
+            if (data_to_queue->data.pressure != NULL) 
+            { 
+                memcpy(entry->pressure_measurements, data_to_queue->data.pressure, samples_to_copy * sizeof(float)); // Copy pressure data
+            }
+            else 
+            { 
+                memset(entry->pressure_measurements, 0, DATA_MAX_SAMPLES * sizeof(float)); // Fill with zeros if NULL
+            }
+            if (data_to_queue->data.temperature != NULL) 
+            { 
+                memcpy(entry->temp_measurements, data_to_queue->data.temperature, samples_to_copy * sizeof(float)); // Copy temperature data
+            }
+            else 
+            { 
+                memset(entry->temp_measurements, 0, DATA_MAX_SAMPLES * sizeof(float)); // Fill with zeros if NULL 
+            }
+            
+            transmission_queue.tail = (transmission_queue.tail + 1) % transmission_queue.capacity; // Circular increment
+            transmission_queue.count++; // Increment count
+            
             result = true;
             ARTEMIS_DEBUG_PRINTF("MEMORY ADD: Added %s %u to RAM queue. Count: %u\n", is_park ? "Park" : "Profile", entry->profile_number, transmission_queue.count);
         }
         xSemaphoreGive(transmission_queue.mutex);
-    } else { /* ... */ return false; }
+    } else 
+    { 
+        return false; 
+    }
 
-    if (!result) { // RAM queue was full
+    if (!result) 
+    { // RAM queue was full
         ARTEMIS_DEBUG_PRINTF("MEMORY ADD: RAM queue full. Attempting to store %s %u to flash.\n", is_park ? "Park" : "Profile", data_to_queue->pNumber);
         result = MEM_store_to_flash(data_to_queue, is_park);
     }
     return result;
 }
 
-QueuedDataEntry_t* MEM_queue_get_next(void) { /* ... same as provided ... */ return NULL;}
-void MEM_queue_mark_transmitted(void) { /* ... same as provided, calls MEM_load_from_flash ... */ }
-void MEM_queue_increment_attempt(void) { /* ... same as provided ... */ }
-bool MEM_queue_max_attempts_reached(uint8_t max_attempts) { /* ... same as provided ... */ return false;}
-uint8_t MEM_queue_get_count(void) { /* ... same as provided ... */ return 0;}
-bool MEM_queue_reset_attempts(void) { /* ... same as provided ... */ return false;}
+/**
+* @brief Get the next profile entry to transmit from the RAM queue.
+*
+* @return Pointer to the next QueuedDataEntry_t, or NULL if queue is empty.
+* Pointer is valid only until MEM_queue_mark_transmitted is called.
+*/
+QueuedDataEntry_t* MEM_queue_get_next(void) 
+{
+    QueuedDataEntry_t* entry = NULL;
 
+    if (xSemaphoreTake(transmission_queue.mutex, portMAX_DELAY) == pdTRUE) 
+    {
+        if (transmission_queue.count > 0) // 
+        {
+            entry = &transmission_queue.profiles[transmission_queue.head];
+        }
+        
+        xSemaphoreGive(transmission_queue.mutex);
+    } 
+    else 
+    {
+        ARTEMIS_DEBUG_PRINTF("MEMORY GET: Failed to take queue semaphore.\n");
+    }
+
+    return entry; // Returns NULL if queue is empty or mutex fails
+}
+ 
+
+/**
+* @brief Mark the head profile as successfully transmitted, remove from RAM queue,
+* and attempt to load the next entry from flash (if available and space exists).
+*/
+void MEM_queue_mark_transmitted(void) {
+    bool load_from_flash = false;
+    uint8_t removed_profile_num = 0; // For logging
+
+    // --- Part 1: Update RAM Queue ---
+    if (xSemaphoreTake(transmission_queue.mutex, portMAX_DELAY) == pdTRUE) 
+    {
+
+        if (transmission_queue.count > 0) // Check if queue is not empty
+        { 
+            removed_profile_num = transmission_queue.profiles[transmission_queue.head].profile_number; // Store for logging
+
+            // Clear the entry at head (debugging)
+            // memset(&transmission_queue.profiles[transmission_queue.head], 0, sizeof(QueuedDataEntry_t)); // Can be large
+
+            transmission_queue.head = (transmission_queue.head + 1) % transmission_queue.capacity;
+            transmission_queue.count--;
+            load_from_flash = true; // Signal to check flash
+
+            ARTEMIS_DEBUG_PRINTF("MEMORY MARK TX: Marked %u as transmitted. RAM Queue Count: %u\n",
+                                removed_profile_num, transmission_queue.count);
+        } 
+        else 
+        {
+                ARTEMIS_DEBUG_PRINTF("MEMORY MARK TX: Queue empty, nothing to mark.\n");
+        }
+
+        xSemaphoreGive(transmission_queue.mutex);
+    } 
+    else 
+    {
+        ARTEMIS_DEBUG_PRINTF("MEMORY MARK TX: Failed to take queue semaphore.\n");
+    }
+
+     // --- Part 2: Attempt to Load from Flash ---
+     // Done outside the RAM queue semaphore to avoid holding it while doing flash I/O
+    if(load_from_flash) {
+        MEM_load_from_flash(); // Attempt to fill the potentially freed slot
+    }
+}
+
+/**
+* @brief Increment the transmission attempt counter for the current profile at the head.
+*/
+void MEM_queue_increment_attempt(void) {
+    if (xSemaphoreTake(transmission_queue.mutex, portMAX_DELAY) == pdTRUE) 
+    {
+        if (transmission_queue.count > 0) 
+        {
+            transmission_queue.profiles[transmission_queue.head].attempt_count++;
+            ARTEMIS_DEBUG_PRINTF("MEMORY INC ATTEMPT: Incremented attempt count to %u for profile %u\n",
+                            transmission_queue.profiles[transmission_queue.head].attempt_count,
+                            transmission_queue.profiles[transmission_queue.head].profile_number);
+        } 
+        else 
+        {
+            ARTEMIS_DEBUG_PRINTF("MEMORY INC ATTEMPT: Queue empty.\n");
+        }
+        
+        xSemaphoreGive(transmission_queue.mutex);
+    } 
+    else 
+    {
+        ARTEMIS_DEBUG_PRINTF("MEMORY INC ATTEMPT: Failed to take queue semaphore.\n");
+    }
+}
+
+/**
+* @brief Check if the current profile at the head has reached maximum transmission attempts.
+*
+* @param max_attempts Maximum number of attempts allowed.
+* @return true if max attempts reached, false otherwise or if queue empty.
+*/
+bool MEM_queue_max_attempts_reached(uint8_t max_attempts) {
+    bool reached = false;
+
+    if (xSemaphoreTake(transmission_queue.mutex, portMAX_DELAY) == pdTRUE) 
+    {
+        if (transmission_queue.count > 0) 
+        {
+                // Check if the current profile at the head has reached max transmission attempts
+                reached = (transmission_queue.profiles[transmission_queue.head].attempt_count >= max_attempts);
+        }
+
+        xSemaphoreGive(transmission_queue.mutex); // Release semaphore
+    } 
+    else 
+    {
+        ARTEMIS_DEBUG_PRINTF("MEMORY MAX ATTEMPT: Failed to take queue semaphore.\n");
+    }
+
+    return reached;
+}
+
+/**
+* @brief Get the number of profiles currently in the RAM queue.
+*
+* @return Number of profiles in the RAM queue.
+*/
+uint8_t MEM_queue_get_count(void) {
+    uint8_t count = 0;
+    
+    if (xSemaphoreTake(transmission_queue.mutex, portMAX_DELAY) == pdTRUE) 
+    {
+        count = transmission_queue.count;
+        xSemaphoreGive(transmission_queue.mutex);
+    } 
+    else 
+    {
+        ARTEMIS_DEBUG_PRINTF("MEMORY GET COUNT: Failed to take queue semaphore.\n");
+    }
+
+    return count;
+}
+
+/**
+* @brief Reset the transmission attempt counter for the current profile at the head.
+*
+* @return true if successful, false otherwise or if queue empty.
+*/
+bool MEM_queue_reset_attempts(void) {
+    bool success = false;
+
+    if (xSemaphoreTake(transmission_queue.mutex, portMAX_DELAY) == pdTRUE) 
+    {
+        if (transmission_queue.count > 0) 
+        {
+            transmission_queue.profiles[transmission_queue.head].attempt_count = 0;
+            ARTEMIS_DEBUG_PRINTF("MEMORY RESET ATTEMPT: Reset attempt count for profile %u\n",
+                            transmission_queue.profiles[transmission_queue.head].profile_number);
+            success = true;
+        } 
+        else 
+        {
+            ARTEMIS_DEBUG_PRINTF("MEMORY RESET ATTEMPT: Queue empty.\n");
+        }
+        xSemaphoreGive(transmission_queue.mutex);
+    } 
+    else 
+    {
+        ARTEMIS_DEBUG_PRINTF("MEMORY RESET ATTEMPT: Failed to take queue semaphore.\n");
+    }
+    return success;
+}
 
 /**
  * @brief Stores data to flash memory using linear storage.
@@ -203,7 +407,8 @@ bool MEM_store_to_flash(Data_t *data_to_store, bool is_park) {
     uint32_t actual_data_plus_header_size = sizeof(FlashEntryHeader_t) + sizeof(pData) + (2 * num_samples_to_store * sizeof(float));
     uint32_t entry_storage_page_size = MAX_FLASH_ENTRY_SIZE; // Each entry uses a full page
 
-    if (actual_data_plus_header_size > entry_storage_page_size) {
+    if (actual_data_plus_header_size > entry_storage_page_size) 
+    {
         ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: ERROR - Actual data size with header (%u bytes) exceeds flash entry storage page size (%u bytes).\n",
                              (unsigned int)actual_data_plus_header_size, (unsigned int)entry_storage_page_size);
         return false;
@@ -211,19 +416,23 @@ bool MEM_store_to_flash(Data_t *data_to_store, bool is_park) {
 
     if (xSemaphoreTake(flash_mutex, portMAX_DELAY) == pdTRUE) {
         // --- Linear Storage Full Check ---
-        if ((flash_queue_tail_offset + entry_storage_page_size) > FLASH_TX_QUEUE_SIZE) {
+        if ((flash_queue_tail_offset + entry_storage_page_size) > FLASH_TX_QUEUE_SIZE) 
+        {
             ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: ERROR - Flash storage full. Cannot store new entry.\n");
             ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Tail at %u, Entry page size %u, Total flash capacity %u.\n",
                                  (unsigned int)flash_queue_tail_offset, (unsigned int)entry_storage_page_size, (unsigned int)FLASH_TX_QUEUE_SIZE);
             result = false; // Flash is full
-        } else {
+        } 
+        else 
+        {
             uint32_t current_write_offset = flash_queue_tail_offset; // Relative offset for this new page
 
             ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Erasing page at RELATIVE offset %u (size %u) before writing.\n",
                                  (unsigned int)current_write_offset, (unsigned int)entry_storage_page_size);
             int erase_ret = flash_erase(current_write_offset, entry_storage_page_size); // Erase one page
 
-            if (erase_ret == FLASH_SUCCESS) {
+            if (erase_ret == FLASH_SUCCESS) 
+            {
                 // Prepare the 8KB buffer
                 memset(flash_write_buffer, 0xFF, entry_storage_page_size); // Pre-fill page with erased state
 
@@ -237,17 +446,23 @@ bool MEM_store_to_flash(Data_t *data_to_store, bool is_park) {
                 uint8_t *ptr = flash_write_buffer + sizeof(FlashEntryHeader_t);
                 memcpy(ptr, data_to_store->p, sizeof(pData)); ptr += sizeof(pData);
                 
-                if (data_to_store->data.pressure != NULL) {
+                if (data_to_store->data.pressure != NULL) 
+                {
                     memcpy(ptr, data_to_store->data.pressure, num_samples_to_store * sizeof(float));
-                } else {
-                     ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Warning - Pressure data pointer was NULL. Filling with zeros.\n");
+                } 
+                else 
+                {
+                    ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Warning - Pressure data pointer was NULL. Filling with zeros.\n");
                     memset(ptr, 0, num_samples_to_store * sizeof(float)); // Or 0xFF if preferred for unwritten samples
                 }
                 ptr += num_samples_to_store * sizeof(float);
                 
-                if (data_to_store->data.temperature != NULL) {
+                if (data_to_store->data.temperature != NULL) 
+                {
                     memcpy(ptr, data_to_store->data.temperature, num_samples_to_store * sizeof(float));
-                } else {
+                } 
+                else 
+                {
                     ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Warning - Temperature data pointer was NULL. Filling with zeros.\n");
                     memset(ptr, 0, num_samples_to_store * sizeof(float)); // Or 0xFF
                 }
@@ -259,17 +474,22 @@ bool MEM_store_to_flash(Data_t *data_to_store, bool is_park) {
 
                 int write_ret = flash_write(flash_write_buffer, entry_storage_page_size, current_write_offset);
 
-                if (write_ret == FLASH_SUCCESS) {
+                if (write_ret == FLASH_SUCCESS) 
+                {
                     flash_queue_tail_offset += entry_storage_page_size;
                     flash_queue_count++;
                     result = true;
                     ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: Write successful. Flash Count: %u, New Tail Offset: %u\n",
                                          (unsigned int)flash_queue_count, (unsigned int)flash_queue_tail_offset);
-                } else {
+                } 
+                else 
+                {
                     ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: flash_write failed! ret=%d. Page was erased but data not written.\n", write_ret);
                     result = false;
                 }
-            } else {
+            } 
+            else 
+            {
                 ARTEMIS_DEBUG_PRINTF("MEM STORE FLASH: flash_erase failed at offset %u! ret=%d\n", (unsigned int)current_write_offset, erase_ret);
                 result = false;
             }
