@@ -28,16 +28,12 @@
 #include "artemis_debug.h" // For ARTEMIS_DEBUG_PRINTF
 #include "am_hal_flash.h" // For AM_HAL_FLASH functions and macros
 
-// Define Flash page size for Apollo3 (consult datasheet/HAL if different)
-// Typically 8KB pages for Apollo3 main flash.
+// Define Flash page size for Apollo3
 #define FLASH_PAGE_SIZE (AM_HAL_FLASH_PAGE_SIZE) // Use HAL definition (usually 8192)
 
 // Static buffer for read-back verification in flash_write
 // Sized to the maximum page size to handle any write size up to a full page.
 static uint8_t flash_verify_buffer[FLASH_PAGE_SIZE];
-
-// Removed hardcoded INSTANCE_0_BASE_ADDRESS and INSTANCE_1_BASE_ADDRESS
-// as page calculation now relies on HAL macros AM_HAL_FLASH_ADDR2INST and AM_HAL_FLASH_ADDR2PAGE.
 
 /**
 * @brief Validate if the given relative offset and size are within the NVSTORAGE bounds.
