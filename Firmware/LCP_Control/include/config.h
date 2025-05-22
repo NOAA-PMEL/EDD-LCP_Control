@@ -111,7 +111,7 @@
 /** Ocean , set the values accordingly */
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
-#define POPUP_DATE                          (1767225600)    //Epoch, date and time when LCP pops up
+#define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 2.0f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 2.0f )
@@ -121,8 +121,9 @@
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
 #define PARK_RATE_FIRST                     ( SYSTEM_PROFILER_PARK_RATE_FIRST )
 #define PARK_TIME                           ( SYSTEM_PROFILER_PARK_DURATION_SEC )
+#define PARK_TIME_INCREMENT                 ( 0.0f )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( SYSTEM_DENSITY_SEAWATER )
-#define PROFILE_FIRST_DATE                  (1748001600)   // Epoch, date and time of the start of the first profile
+#define PROFILE_FIRST_DATE                  ( 1748001600 )   // Epoch, date and time of the start of the first profile
 #define PROFILE_DEPTH                       ( SYSTEM_PROFILER_PROFILE_DEPTH )
 #define PROFILE_DEPTH_ERR                   ( SYSTEM_PROFILER_PROFILE_DEPTH_ERR )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
@@ -136,7 +137,7 @@
 /** TEST profile1 */
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
-#define POPUP_DATE                          (1767225600)    //Epoch, date and time when LCP pops up
+#define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )       // pressure reading ( 0.0101f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 4.0f )
@@ -148,9 +149,10 @@
 #define PARK_RATE_FIRST                      ( 1.0f / 6.0f )
 #define PARK_TIME_FIRST                     ( 18.0f * 60.0f )    /* 18 mins */
 #define PARK_TIME                           ( 180.0f * 60.0f )   /* 180 mins */
+#define PARK_TIME_INCREMENT                 ( 0.0f )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )
-#define PROFILE_FIRST_DATE                  (1748001600)   // Epoch, date and time of the start of the first profile
+#define PROFILE_FIRST_DATE                  ( 1748001600 )   // Epoch, date and time of the start of the first profile
 #define PROFILE_DEPTH                       ( 165.0f )
 #define PROFILE_DEPTH_ERR                   ( 1.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
@@ -165,7 +167,7 @@
 /** TEST profile2 */
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
-#define POPUP_DATE                          (1767225600)    //Epoch, date and time when LCP pops up
+#define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )    // pressure reading ( 0.0101f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 4.0f )
@@ -177,9 +179,10 @@
 #define PARK_RATE_FIRST                      ( 1.0f )
 #define PARK_TIME_FIRST                     ( 1.0f * 60.0f )    /* 1 min, this is only used to increment PROFILE_FIRST_DATE forward if it is set to before the time at the start of the 1st park*/
 #define PARK_TIME                           ( 3.0f * 60.0f )    /* 3 mins */
+#define PARK_TIME_INCREMENT                 ( 0.0f )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )
-#define PROFILE_FIRST_DATE                  (1748001600)   // Epoch, date and time of the start of the first profile
+#define PROFILE_FIRST_DATE                  ( 1748001600 )   // Epoch, date and time of the start of the first profile
 #define PROFILE_DEPTH                       ( 165.0f )
 #define PROFILE_DEPTH_ERR                   ( 1.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
@@ -194,7 +197,7 @@
 /** TANK Testing */
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
-#define POPUP_DATE                          (1767225600)    //Epoch, date and time when LCP pops up
+#define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.0f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 1.0f )
@@ -206,9 +209,10 @@
 #define PARK_RATE_FIRST                      ( SYSTEM_PROFILER_PARK_RATE_FIRST )
 #define PARK_TIME_FIRST                     ( 1.0f * 60.0f )    /* 1 min */
 #define PARK_TIME                           ( 180.0f * 60.0f )    /* 3 mins */
+#define PARK_TIME_INCREMENT                 ( 0.0f )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( 1010.2f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 0.5f )
-#define PROFILE_FIRST_DATE                  (1748001600)   // Epoch, date and time of the start of the first profile
+#define PROFILE_FIRST_DATE                  ( 1748001600 )   // Epoch, date and time of the start of the first profile
 #define PROFILE_DEPTH                       ( 3.7f ) //( 4.5f )
 #define PROFILE_DEPTH_ERR                   ( 0.1f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
@@ -223,7 +227,7 @@
 /** Puget Sound Testing */
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
-#define POPUP_DATE                          (1767225600)    //Epoch, date and time when LCP pops up
+#define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 4.0f )
@@ -235,9 +239,10 @@
 #define PARK_RATE_FIRST                      ( 1.0f / 60.0f  )
 #define PARK_TIME_FIRST                     ( 60.0f * 60.0f )    /* 1 hr */
 #define PARK_TIME                           ( 180.0f * 60.0f )    /* 3 hrs */
+#define PARK_TIME_INCREMENT                 ( 0.0f )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( 1024.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 0.09f )
-#define PROFILE_FIRST_DATE                  (1748001600)   // Epoch, date and time of the start of the first profile
+#define PROFILE_FIRST_DATE                  ( 1748001600 )   // Epoch, date and time of the start of the first profile
 #define PROFILE_DEPTH                       ( 165.0f ) //( 4.5f )
 #define PROFILE_DEPTH_ERR                   ( 1.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
@@ -263,6 +268,7 @@
 #define PARK_RATE                           ( )
 #define PARK_TIME_FIRST                     ( )
 #define PARK_TIME                           ( )
+#define PARK_TIME_INCREMENT                 ( )
 #define PARK_DENSITY                        ( )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( )
 #define PROFILE_FIRST_DATE                  ( )

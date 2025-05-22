@@ -1633,13 +1633,15 @@ void module_sps_park(void)
     ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
     uint32_t epochtimer = 0;
 
+    bool popup = false;
+
     if (park_number == 0)
     {
         if(POPUP)
         {
             /*Stay on Bottom taking a measurment per the popup rate until the Popup date*/
             s_rate = POPUP_RATE;
-            bool popup = true;
+            popup = true;
             endepoch_time = POPUP_DATE;
             ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < POPUP Date Epoch = %.2f>\n\n", endepoch_time);
         }
@@ -1673,7 +1675,7 @@ void module_sps_park(void)
         s_rate = PARK_RATE;
         //park_time = (xDelay1000ms * PARK_TIME);
         ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %.2f mins >\n\n", (float)(PARK_TIME/60));
-        endepoch_time = (PARK_TIME + endepoch_time);
+        endepoch_time = (PARK_TIME_INCREMENT + PARK_TIME + endepoch_time);
     }
 
     SENS_set_depth_rate(s_rate);
