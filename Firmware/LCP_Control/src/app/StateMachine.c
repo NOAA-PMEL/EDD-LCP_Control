@@ -4125,25 +4125,25 @@ void module_sps_tx(void)
 
         // After each transfer attempt, re-initialize the SC power
         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Cycling Iridium power...\n");
-        module_i9603_power_off(); // Power off the modem
+        i9603n_off(); // Power off the modem
         vTaskDelay(xDelay1000ms); // Allow time for power off
         iridium_ready = false; // Reset flag to indicate power off
         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium powered off.\n");
         uint8_t powercycle_tries = 0;
         while (powercycle_tries < 3) {
-            if (!(module_i9603_power_on()))
-            {
-                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium power on attempt %u failed. Retrying...\n", powercycle_tries + 1);
-                powercycle_tries++;
-                fatal_error_occurred = true; // Set flag to indicate power cycle failure
-                vTaskDelay(xDelay2000ms); // Wait before retrying
-            } 
-            else 
+            if ( i9603n_on() )
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium powered on after power cycle.\n");
                 fatal_error_occurred = false; // Set flag to indicate initialization
                 iridium_ready = true; // Set flag to indicate power on success
                 break; // Exit power cycle loop
+            } 
+            else 
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium power on attempt %u failed. Retrying...\n", powercycle_tries + 1);
+                powercycle_tries++;
+                fatal_error_occurred = true; // Set flag to indicate power cycle failure
+                vTaskDelay(xDelay2000ms); // Wait before retrying
             }
         }
 
