@@ -175,7 +175,7 @@
 #define PARK_DEPTH_MAX                      ( 190.0f )
 #define PARK_RATE                           ( 1.0f /3.0f )
 #define PARK_RATE_FIRST                      ( 1.0f )
-#define PARK_TIME_FIRST                     ( 1.0f * 60.0f )    /* 1 min */
+#define PARK_TIME_FIRST                     ( 1.0f * 60.0f )    /* 1 min, this is only used to increment PROFILE_FIRST_DATE forward if it is set to before the time at the start of the 1st park*/
 #define PARK_TIME                           ( 3.0f * 60.0f )    /* 3 mins */
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )

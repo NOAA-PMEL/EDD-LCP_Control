@@ -1639,17 +1639,15 @@ void module_sps_park(void)
         {
             /*Stay on Bottom taking a measurment per the popup rate until the Popup date*/
             s_rate = POPUP_RATE;
+            bool popup = true;
             endepoch_time = POPUP_DATE;
             ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < POPUP Date Epoch = %.2f>\n\n", endepoch_time);
-
-            /*XXXXXXXX now set the park depth and error band to match the current depth, assuming the LCP in on the bottom*/ 
-
         }
         else
         {
             //park_time = (xDelay1000ms * PARK_TIME_FIRST);
             ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_DATE_FIRST = %.2f mins >\n\n", PROFILE_FIRST_DATE);
-            endepoch_time = (PROFILE_FIRST_DATE);
+            endepoch_time = PROFILE_FIRST_DATE;
             bool start = true;
             while(start)
             {
@@ -1724,6 +1722,9 @@ void module_sps_park(void)
     char *filename = datalogger_park_create_file(park_number);
     vTaskDelay(xDelay1000ms);
 
+    /*Set the park depth target*/
+     float park_depth = PARK_DEPTH;
+
     /** Set piston variables */
     TaskHandle_t xPiston = NULL;
     PIS_set_piston_rate(1);
@@ -1742,7 +1743,6 @@ void module_sps_park(void)
     float samples_t[10] = {0};
     uint8_t samples = 0;
     bool start_time = true;
-    
 
     bool run = true;
     while (run)
@@ -1791,6 +1791,13 @@ void module_sps_park(void)
             datalogger_park_mode(filename, Pressure, Temperature, &time);
             start_time = false;
             epochtimer = epoch;
+
+            /*if POPUP STATE set the park depth to match the current depth, assuming the LCP is on the bottom*/ 
+            if(popup)
+            {
+                park_depth = Depth;
+                popup = false;
+            }
         }
 
         /* Average Data, and store samples */
@@ -1825,7 +1832,7 @@ void module_sps_park(void)
             epochtimer = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
         }
 
-        if (Depth >= PARK_DEPTH-PARK_DEPTH_ERR && Depth <= PARK_DEPTH+PARK_DEPTH_ERR)
+        if (Depth >= park_depth-PARK_DEPTH_ERR && Depth <= park_depth+PARK_DEPTH_ERR)
         {
             /* do nothing */
         }
@@ -1843,7 +1850,7 @@ void module_sps_park(void)
                 float averaged_rate = (float) (rate_avg / rate_count);
                 /* check if rate is positive, negative or stable */
 
-                if (Depth >= PARK_DEPTH+PARK_DEPTH_ERR)
+                if (Depth >= park_depth+PARK_DEPTH_ERR)
                 {
                     if (averaged_rate >= 0.0 && !piston_move && !crush_depth)
                     {
@@ -1894,7 +1901,7 @@ void module_sps_park(void)
                         vTaskDelay(xDelay5000ms);
                     }
                 }
-                else if (Depth < PARK_DEPTH-PARK_DEPTH_ERR)
+                else if (Depth < park_depth-PARK_DEPTH_ERR)
                 {
                     if (averaged_rate <= 0.0 && !piston_move && !crush_depth)
                     {
