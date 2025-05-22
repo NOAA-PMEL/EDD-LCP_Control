@@ -156,6 +156,7 @@ static volatile bool iridium_init = false;
 
 static volatile uint8_t prof_number = 0; // limited to 255 profiles
 static volatile uint8_t park_number = 0; // limited to 255 parks
+static volatile uint32_t endepoch_time = 0;
 static volatile uint8_t m_prof_number = 0;
 static volatile uint16_t m_prof_length = 0;
 static volatile uint8_t m_park_number = 0;
@@ -1631,15 +1632,42 @@ void module_sps_park(void)
     uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
     ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
     uint32_t epochtimer = 0;
-    uint32_t endepoch_time = 0;
 
     if (park_number == 0)
     {
-        /** Start s_rate sampling of sensors for PARK_TIME_FIRST minutes */
-        s_rate = PARK_RATE_FAST;
-        //park_time = (xDelay1000ms * PARK_TIME_FIRST);
-        ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME_FIRST = %.2f mins >\n\n", (float)(PARK_TIME_FIRST/60));
-        endepoch_time = (PARK_TIME_FIRST + epoch);
+        if(POPUP)
+        {
+            /*Stay on Bottom taking a measurment per the popup rate until the Popup date*/
+            s_rate = POPUP_RATE;
+            endepoch_time = POPUP_DATE;
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < POPUP Date Epoch = %.2f>\n\n", endepoch_time);
+
+            /*XXXXXXXX now set the park depth and error band to match the current depth, assuming the LCP in on the bottom*/ 
+
+        }
+        else
+        {
+            //park_time = (xDelay1000ms * PARK_TIME_FIRST);
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_DATE_FIRST = %.2f mins >\n\n", PROFILE_FIRST_DATE);
+            endepoch_time = (PROFILE_FIRST_DATE);
+            bool start = true;
+            while(start)
+            {
+                artemis_rtc_get_time(&time);
+                epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
+                if(endepoch_time < epoch)
+                {
+                    endepoch_time += PARK_TIME_FIRST;
+                }
+                else
+                {
+                    start = false;
+                }
+            }
+
+            /** Start s_rate sampling of sensors for PARK_TIME_FIRST minutes */
+            s_rate = PARK_RATE_FIRST;
+        }
     }
     else
     {
@@ -1647,7 +1675,7 @@ void module_sps_park(void)
         s_rate = PARK_RATE;
         //park_time = (xDelay1000ms * PARK_TIME);
         ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %.2f mins >\n\n", (float)(PARK_TIME/60));
-        endepoch_time = (PARK_TIME + epoch);
+        endepoch_time = (PARK_TIME + endepoch_time);
     }
 
     SENS_set_depth_rate(s_rate);
