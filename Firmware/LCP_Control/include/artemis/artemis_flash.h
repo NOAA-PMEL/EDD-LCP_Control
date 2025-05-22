@@ -2,14 +2,15 @@
 * @brief Flash memory library
 *
 * @author Joseph Kurina, joseph.kurina@noaa.gov
-* @date January 17, 2025 (Revised April 24, 2025)
-* @version 0.0.2
+* @date January 17, 2025 (Revised May 22, 2025)
+* @version 0.0.3
 *
 * @copyright National Oceanic and Atmospheric Administration
 * @copyright Pacific Marine Environmental Lab
 * @copyright Environmental Development Division
 *
 * @note
+* NVSTORAGE_START aligned with Flash Instance 1.
 *
 * @bug  No known bugs
 */
@@ -28,8 +29,9 @@
 // Define start and size of NVSTORAGE managed by this driver
 // NOTE: FLASH_NVSTORAGE_START is the *absolute* start address in the MCU memory map.
 //       Offsets passed to driver functions should be relative to this start (i.e., 0 to FLASH_NVSTORAGE_SIZE-1).
-#define FLASH_NVSTORAGE_START 0x00070000 // Per the linker file, this is the start of the NVSTORAGE region.
-#define FLASH_NVSTORAGE_SIZE  (512 * 1024)
+//       This is now set to the start of Flash Instance 1.
+#define FLASH_NVSTORAGE_START 0x00080000 
+#define FLASH_NVSTORAGE_SIZE  (512 * 1024)   // Size of one flash instance
 
 // Flash alignment constraints
 #define FLASH_ALIGNMENT 4

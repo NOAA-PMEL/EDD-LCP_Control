@@ -8,13 +8,12 @@ ENTRY(Reset_Handler)
 MEMORY
 {
     /* Application code and read-only data */
-    /* Starts at 0xC000, ends at 0x6FFFF (400K) */
-    ROMEM (rx) : ORIGIN = 0x0000C000, LENGTH = 400K
+    /* Starts at 0xC000, ends at 0x7FFFF (End of Flash Instance 0) */
+    ROMEM (rx) : ORIGIN = 0x0000C000, LENGTH = 0x00074000 /* 464K */
 
     /* Non-volatile storage for the data queue */
-    /* Starts immediately after ROMEM at 0x70000, ends at 0xEFFFF (512K) */
-    /* This fits within the total flash (ends at 0xFFFFF) */
-    NVSTORAGE (rw) : ORIGIN = 0x00070000, LENGTH = 512K /* Marked (rw) just to define region */
+    /* Starts at 0x80000 (Start of Flash Instance 1), ends at 0xFFFFF (End of Flash Instance 1) */
+    NVSTORAGE (rw) : ORIGIN = 0x00080000, LENGTH = 0x00080000 /* 512K */
 
     /* SRAM */
     RWMEM (rwx) : ORIGIN = 0x10000000, LENGTH = 384K
