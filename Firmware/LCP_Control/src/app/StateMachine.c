@@ -4047,7 +4047,7 @@ void module_sps_tx(void)
                         } 
                     }
                 } // end transfer_run loop
-
+                
             } // End Transmission Attempt Loop (retry_page_internally)
 
             // --- Handle outcome for the CURRENT PAGE ---
@@ -4122,6 +4122,30 @@ void module_sps_tx(void)
         // If we get here, the item was successful, and the main loop continues to the next item.
         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Successfully processed item %u. Checking for next item...\n", current_item->profile_number);
         vTaskDelay(xDelay1000ms); // Delay before processing next item
+
+        // After each transfer attempt, re-initialize the SC power
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Cycling Iridium power...\n");
+        module_i9603_power_off(); // Power off the modem
+        vTaskDelay(xDelay1000ms); // Allow time for power off
+        iridium_ready = false; // Reset flag to indicate power off
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium powered off.\n");
+        uint8_t powercycle_tries = 0;
+        while (powercycle_tries < 3) {
+            if (!(module_i9603_power_on()))
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium power on attempt %u failed. Retrying...\n", powercycle_tries + 1);
+                powercycle_tries++;
+                fatal_error_occurred = true; // Set flag to indicate power cycle failure
+                vTaskDelay(xDelay2000ms); // Wait before retrying
+            } 
+            else 
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium powered on after power cycle.\n");
+                fatal_error_occurred = false; // Set flag to indicate initialization
+                iridium_ready = true; // Set flag to indicate power on success
+                break; // Exit power cycle loop
+            }
+        }
 
     } // End Main Transmission Loop
 
