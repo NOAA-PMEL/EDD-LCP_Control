@@ -1687,7 +1687,7 @@ void module_sps_park(void)
             }
     }
 
-    ARTEMIS_DEBUG_PRINTF("SPS :: park, s_rate = %.2f\n", s_rate);
+    ARTEMIS_DEBUG_PRINTF("SPS :: park, s_rate = %.6f\n", s_rate);
     ARTEMIS_DEBUG_PRINTF("SPS :: park, setting depth rate.\n");
     SENS_set_depth_rate(s_rate);
     ARTEMIS_DEBUG_PRINTF("SPS :: park, setting temperature rate.\n");

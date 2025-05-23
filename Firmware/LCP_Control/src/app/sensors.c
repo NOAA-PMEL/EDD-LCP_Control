@@ -370,7 +370,7 @@ void SENS_set_depth_rate(float rate)
 {
     if( (rate > 0) && (rate < SENSOR_MAX_DEPTH_RATE) )
     {
-        ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth, Setting rate = %.3fHz\n", rate);
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth, Setting rate = %.6fHz\n", rate);
         sensor_data.depth.rate = rate;
     }
 }
@@ -379,7 +379,7 @@ void SENS_set_temperature_rate(float rate)
 {
     if( (rate > 0) && (rate < SENSOR_MAX_TEMPERATURE_RATE))
     {
-        ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, Setting rate = %.3fHz\n", rate);
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, Setting rate = %.6fHz\n", rate);
         sensor_data.temperature.rate = rate;
     }
 }
