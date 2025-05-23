@@ -110,7 +110,7 @@
 #if defined(__TEST_OCEAN__)
 /** Ocean , set the values accordingly */
 
-#define TEST                                ( false )   //flag to use when setting park time if using a bench test pressure profile
+#define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
@@ -123,8 +123,9 @@
 #define PARK_DEPTH_ERR                      ( SYSTEM_PROFILER_PARK_DEPTH_ERR )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
 #define PARK_RATE_FIRST                     ( SYSTEM_PROFILER_PARK_RATE_FIRST )
-#define PARK_TIME                           ( SYSTEM_PROFILER_PARK_DURATION_SEC )
-#define PARK_TIME_INCREMENT                 ( 0.0f )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
+#define PARK_TIME_FIRST                     ( 3600 )    /* 1 hr */
+#define PARK_TIME                           ( 10800 )
+#define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( SYSTEM_DENSITY_SEAWATER )
 #define PROFILE_FIRST_DATE                  ( 1748001600 )   // Epoch, date and time of the start of the first profile
 #define PROFILE_DEPTH                       ( SYSTEM_PROFILER_PROFILE_DEPTH )
@@ -138,7 +139,7 @@
 
 #elif defined(__TEST_PROFILE_1__)
 /** TEST profile1 */
-#define TEST                                ( true )   //flag to use when setting park time if using a bench test pressure profile
+#define BENCH_PROFILE                       ( true )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
@@ -152,9 +153,9 @@
 #define PARK_DEPTH_MAX                      ( 190.0f )
 #define PARK_RATE                           ( 1.0f / 60.0f )
 #define PARK_RATE_FIRST                      ( 1.0f / 6.0f )
-#define PARK_TIME_FIRST                     ( 18.0f * 60.0f )    /* 18 mins */
-#define PARK_TIME                           ( 180.0f * 60.0f )   /* 180 mins */
-#define PARK_TIME_INCREMENT                 ( 0.0f )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
+#define PARK_TIME_FIRST                     ( 1080 )    /* 18 mins */
+#define PARK_TIME                           ( 10800 )   /* 180 mins */
+#define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )
 #define PROFILE_FIRST_DATE                  ( 1748001600 )   // Epoch, date and time of the start of the first profile
@@ -170,7 +171,7 @@
 
 #elif defined(__TEST_PROFILE_2__)
 /** TEST profile2 */
-#define TEST                                ( true )   //flag to use when setting park time if using a bench test pressure profile
+#define BENCH_PROFILE                       ( true )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
@@ -183,10 +184,10 @@
 #define PARK_DEPTH_ERR                      ( 10.0f )
 #define PARK_DEPTH_MAX                      ( 190.0f )
 #define PARK_RATE                           ( 1.0f /3.0f )
-#define PARK_RATE_FIRST                      ( 1.0f )
-#define PARK_TIME_FIRST                     ( 1.0f * 60.0f )    /* 1 min, this is only used to increment PROFILE_FIRST_DATE forward if it is set to before the time at the start of the 1st park*/
-#define PARK_TIME                           ( 3.0f * 60.0f )    /* 3 mins */
-#define PARK_TIME_INCREMENT                 ( 0.0f )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
+#define PARK_RATE_FIRST                     ( 1.0f )
+#define PARK_TIME_FIRST                     ( 60 )    /* 1 min, this is only used to increment PROFILE_FIRST_DATE forward if it is set to before the time at the start of the 1st park*/
+#define PARK_TIME                           ( 180 )    /* 3 mins */
+#define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )
 #define PROFILE_FIRST_DATE                  ( 1747936750 )   // Epoch, date and time of the start of the first profile
@@ -202,7 +203,7 @@
 
 #elif defined(__TEST_TANK__)
 /** TANK Testing */
-#define TEST                                ( false )   //flag to use when setting park time if using a bench test pressure profile
+#define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
@@ -216,9 +217,9 @@
 #define PARK_DEPTH_MAX                      ( 6.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
 #define PARK_RATE_FIRST                      ( SYSTEM_PROFILER_PARK_RATE_FIRST )
-#define PARK_TIME_FIRST                     ( 1.0f * 60.0f )    /* 1 min */
-#define PARK_TIME                           ( 180.0f * 60.0f )    /* 3 mins */
-#define PARK_TIME_INCREMENT                 ( 0.0f )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
+#define PARK_TIME_FIRST                     ( 60 )    /* 1 min */
+#define PARK_TIME                           ( 10800 )    /* 3 mins */
+#define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( 1010.2f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 0.5f )
 #define PROFILE_FIRST_DATE                  ( 1748001600 )   // Epoch, date and time of the start of the first profile
@@ -234,7 +235,7 @@
 
 #elif defined(__TEST_PS__)
 /** Puget Sound Testing */
-#define TEST                                ( false )   //flag to use when setting park time if using a bench test pressure profile
+#define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
@@ -248,9 +249,9 @@
 #define PARK_DEPTH_MAX                      ( 200.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
 #define PARK_RATE_FIRST                      ( 1.0f / 60.0f  )
-#define PARK_TIME_FIRST                     ( 60.0f * 60.0f )    /* 1 hr */
-#define PARK_TIME                           ( 180.0f * 60.0f )    /* 3 hrs */
-#define PARK_TIME_INCREMENT                 ( 0.0f )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
+#define PARK_TIME_FIRST                     ( 3600 )    /* 1 hr */
+#define PARK_TIME                           ( 10800 )    /* 3 hrs */
+#define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( 1024.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 0.09f )
 #define PROFILE_FIRST_DATE                  ( 1748001600 )   // Epoch, date and time of the start of the first profile

@@ -1653,12 +1653,12 @@ void module_sps_park(void)
             s_rate = POPUP_RATE;
             popup = true;
             endepoch_time = POPUP_DATE;
-            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < POPUP Date Epoch = %d>\n\n", endepoch_time);
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < POPUP Date Epoch = %ld>\n\n", endepoch_time);
         }
         else
         {
             //park_time = (xDelay1000ms * PARK_TIME_FIRST);
-            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_DATE_FIRST = %d mins >\n\n", PROFILE_FIRST_DATE);
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_DATE_FIRST Epoch = %ld >\n\n", PROFILE_FIRST_DATE);
             endepoch_time = PROFILE_FIRST_DATE;
             bool start = true;
             while(start)
@@ -1673,7 +1673,7 @@ void module_sps_park(void)
                     start = false;
                 }
             }
-            if(TEST)
+            if(BENCH_PROFILE)
             {
                 endepoch_time = epoch + PARK_TIME_FIRST;
             }
@@ -1687,9 +1687,9 @@ void module_sps_park(void)
         /** Start s_rate sampling of sensors for PARK_TIME minutes */
         s_rate = PARK_RATE;
         //park_time = (xDelay1000ms * PARK_TIME);
-        ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %.2f mins >\n\n", PARK_TIME/60.0f);
+        ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %d sec >\n\n", PARK_TIME);
         endepoch_time = (PARK_TIME_INCREMENT + PARK_TIME + endepoch_time);
-        if(TEST)
+        if(BENCH_PROFILE)
             {
                 endepoch_time = epoch + PARK_TIME;
             }
