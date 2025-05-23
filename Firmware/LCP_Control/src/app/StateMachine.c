@@ -1674,16 +1674,20 @@ void module_sps_park(void)
         /** Start s_rate sampling of sensors for PARK_TIME minutes */
         s_rate = PARK_RATE;
         //park_time = (xDelay1000ms * PARK_TIME);
-        ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %.2f mins >\n\n", (float)(PARK_TIME/60));
+        ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %.2f mins >\n\n", PARK_TIME/60.0f);
         endepoch_time = (PARK_TIME_INCREMENT + PARK_TIME + endepoch_time);
     }
 
+    ARTEMIS_DEBUG_PRINTF("SPS :: park, s_rate = %.2f\n", s_rate);
+    ARTEMIS_DEBUG_PRINTF("SPS :: park, setting depth rate.\n");
     SENS_set_depth_rate(s_rate);
+    ARTEMIS_DEBUG_PRINTF("SPS :: park, setting temperature rate.\n");
     SENS_set_temperature_rate(s_rate);
 
     /* local variable to calculate the waiting time */
     //uint32_t wait_time = 0;
     uint32_t park_period = xDelay1000ms/s_rate;
+    ARTEMIS_DEBUG_PRINTF("SPS :: park, park_period = %u ms\n", park_period);
     TaskHandle_t xDepth = NULL;
     TaskHandle_t xTemp  = NULL;
     vTaskDelay(xDelay100ms);
