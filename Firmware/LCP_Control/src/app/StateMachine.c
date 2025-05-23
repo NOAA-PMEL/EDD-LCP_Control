@@ -1660,19 +1660,11 @@ void module_sps_park(void)
             //park_time = (xDelay1000ms * PARK_TIME_FIRST);
             ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_DATE_FIRST Epoch = %ld >\n\n", PROFILE_FIRST_DATE);
             endepoch_time = PROFILE_FIRST_DATE;
-            bool start = true;
-            while(start)
+            while(endepoch_time < epoch) 
             {
-                /*Increment endepoch by PARK_TIME_FIRST if accidently set to earlier than current time*/
-                if(endepoch_time < epoch)
-                {
-                    endepoch_time += PARK_TIME_FIRST;
-                }
-                else
-                {
-                    start = false;
-                }
+                endepoch_time += PARK_TIME_FIRST;
             }
+            
             if(BENCH_PROFILE)
             {
                 endepoch_time = epoch + PARK_TIME_FIRST;
