@@ -1643,12 +1643,12 @@ void module_sps_park(void)
             s_rate = POPUP_RATE;
             popup = true;
             endepoch_time = POPUP_DATE;
-            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < POPUP Date Epoch = %.2f>\n\n", endepoch_time);
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < POPUP Date Epoch = %d>\n\n", endepoch_time);
         }
         else
         {
             //park_time = (xDelay1000ms * PARK_TIME_FIRST);
-            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_DATE_FIRST = %.2f mins >\n\n", PROFILE_FIRST_DATE);
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_DATE_FIRST = %d mins >\n\n", PROFILE_FIRST_DATE);
             endepoch_time = PROFILE_FIRST_DATE;
             bool start = true;
             while(start)
