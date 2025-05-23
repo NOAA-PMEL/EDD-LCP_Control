@@ -85,7 +85,7 @@
 #define PISTON_POSITION_MAXIMUM             ( 11.6f )      /* Piston position maximum in inches at full extension*/
 #define PISTON_POSITION_ATFULLRESET         ( 11.65f )      /* Piston position maximum in inches at full extension IMPORTANT NEEDS TO MATCH PISTON CONTROL VARIABLE: SYS_ENCODER_LENGTH_DEFAULT*/
 #define PISTON_POSITION_MINIMUM             ( 0.1f )        /* Piston position minimum in inches */
-#define PISTON_ZEROCAL_COUNTER              ( 35 )          /*Number of profiles between zeroing the piston encoder*/
+#define PISTON_ZEROCAL_COUNTER              ( 35 )          /*Number of profiles between zeroing the piston encoder NEVER SET = 0! */
 #define PISTON_FULLCAL_COUNTER              ( 10 )          /*Number of profiles between reseting the max encoder values at full piston extent*/
 #define CRUSH_DEPTH_PISTON_POSITION         ( 5.00f )       /* Piston position maximum in inches */
 #define CRITICAL_PISTON_POSITON_DEPTH       ( 45.0f )       /* Critical depth where piston length must not exceed 5.25 inches */
@@ -109,6 +109,9 @@
 /** Test Profiles */
 #if defined(__TEST_OCEAN__)
 /** Ocean , set the values accordingly */
+
+#define TEST                                ( false )   //flag to use when setting park time if using a bench test pressure profile
+#define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
@@ -135,6 +138,8 @@
 
 #elif defined(__TEST_PROFILE_1__)
 /** TEST profile1 */
+#define TEST                                ( true )   //flag to use when setting park time if using a bench test pressure profile
+#define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
@@ -165,6 +170,8 @@
 
 #elif defined(__TEST_PROFILE_2__)
 /** TEST profile2 */
+#define TEST                                ( true )   //flag to use when setting park time if using a bench test pressure profile
+#define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
@@ -195,6 +202,8 @@
 
 #elif defined(__TEST_TANK__)
 /** TANK Testing */
+#define TEST                                ( false )   //flag to use when setting park time if using a bench test pressure profile
+#define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
@@ -225,6 +234,8 @@
 
 #elif defined(__TEST_PS__)
 /** Puget Sound Testing */
+#define TEST                                ( false )   //flag to use when setting park time if using a bench test pressure profile
+#define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
@@ -253,33 +264,6 @@
 #define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
 #define PISTON_MOVEMENT_ON_BOTTOM           ( 0.50f )    /* 0.70 inch piston length if we hit the bottom */
 
-
-#elif defined(__TEST_LAKE__)
-/** LAKE Testing */
-#define POPUP                               ( )   
-#define POPUP_RATE                          ( )   
-#define POPUP_DATE                          ( )   
-#define BALLAST_DEPTH_SAMPLE_RATE           ( )
-#define BALLAST_DEPTH_PROFILE               ( )
-#define MOVE_TO_PARK_SAMPLE_RATE            ( )
-#define PARK_DEPTH                          ( )
-#define PARK_DEPTH_ERR                      ( )
-#define PARK_DEPTH_MAX                      ( )
-#define PARK_RATE                           ( )
-#define PARK_TIME_FIRST                     ( )
-#define PARK_TIME                           ( )
-#define PARK_TIME_INCREMENT                 ( )
-#define PARK_DENSITY                        ( )
-#define MOVE_TO_PROFILE_SAMPLE_RATE         ( )
-#define PROFILE_FIRST_DATE                  ( )
-#define PROFILE_DEPTH                       ( )
-#define PROFILE_DEPTH_ERR                   ( )
-#define PROFILE_RATE                        ( )
-#define TO_PROFILE_DENSITY                  ( )
-#define PROFILE_DENSITY                     ( )
-#define CRUSH_DEPTH                         ( )
-#define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
-#define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
 
 #else
     #error "<<< ERROR:: Please select at least one TEST Profile in the artemis_debug.h !!! >>>"

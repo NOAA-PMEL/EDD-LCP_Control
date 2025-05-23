@@ -156,6 +156,8 @@ static volatile bool iridium_init = false;
 
 static volatile uint8_t prof_number = 0; // limited to 255 profiles
 static volatile uint8_t park_number = 0; // limited to 255 parks
+static volatile float park_depth = 0;
+static volatile float profile_depth = 0;
 static volatile uint32_t endepoch_time = 0;
 static volatile uint8_t m_prof_number = 0;
 static volatile uint16_t m_prof_length = 0;
@@ -1116,7 +1118,10 @@ void module_sps_move_to_park(void)
     /* for now , pressure and temperature variables are zeros for compressibility and thermal expansion */
     
     if (park_piston_length == 0.0)
-    {
+    { 
+        /*Set the park depth target*/
+        park_depth = PARK_DEPTH;
+        
         CTRL_set_lcp_density(PARK_DENSITY);
         park_piston_length = CTRL_calculate_piston_position(0.0, 0.0);
         length_update = park_piston_length;
@@ -1296,6 +1301,11 @@ void module_sps_move_to_park(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, LCP presumably hitting the bottom >>\n\n");
 
+                    if(MOORED)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_park, Moored mode: setting park_depth to bottom depth %.4f m >>\n\n", Depth);
+                        park_depth = Depth;
+                    }
                     /* set previous adjusted length update */
                     park_piston_length = length_update_last_adjusted;
                     /* move to the next state */
@@ -1429,7 +1439,7 @@ void module_sps_move_to_park(void)
         }
 
         /* check on depth to reach */
-        if (Depth >= PARK_DEPTH && !crush_depth)
+        if (Depth >= park_depth && !crush_depth)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Pressure Reached = %0.4f bar\n", Pressure);
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Reached    = %0.4f m, rate = %0.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
@@ -1639,7 +1649,7 @@ void module_sps_park(void)
     {
         if(POPUP)
         {
-            /*Stay on Bottom taking a measurment per the popup rate until the Popup date*/
+            /*Stay on Bottom taking a measurement per the popup rate until the Popup date*/
             s_rate = POPUP_RATE;
             popup = true;
             endepoch_time = POPUP_DATE;
@@ -1653,8 +1663,7 @@ void module_sps_park(void)
             bool start = true;
             while(start)
             {
-                artemis_rtc_get_time(&time);
-                epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
+                /*Increment endepoch by PARK_TIME_FIRST if accidently set to earlier than current time*/
                 if(endepoch_time < epoch)
                 {
                     endepoch_time += PARK_TIME_FIRST;
@@ -1663,6 +1672,10 @@ void module_sps_park(void)
                 {
                     start = false;
                 }
+            }
+            if(TEST)
+            {
+                endepoch_time = epoch + PARK_TIME_FIRST;
             }
 
             /** Start s_rate sampling of sensors for PARK_TIME_FIRST minutes */
@@ -1676,6 +1689,10 @@ void module_sps_park(void)
         //park_time = (xDelay1000ms * PARK_TIME);
         ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %.2f mins >\n\n", (float)(PARK_TIME/60));
         endepoch_time = (PARK_TIME_INCREMENT + PARK_TIME + endepoch_time);
+        if(TEST)
+            {
+                endepoch_time = epoch + PARK_TIME;
+            }
     }
 
     SENS_set_depth_rate(s_rate);
@@ -1723,9 +1740,6 @@ void module_sps_park(void)
 
     char *filename = datalogger_park_create_file(park_number);
     vTaskDelay(xDelay1000ms);
-
-    /*Set the park depth target*/
-     float park_depth = PARK_DEPTH;
 
     /** Set piston variables */
     TaskHandle_t xPiston = NULL;
@@ -2272,6 +2286,10 @@ void module_sps_move_to_profile(void)
     /* for now , pressure and temperature variables are zeros for compressibility and thermal expansion */
     if (to_prof_piston_length == 0.0)
     {
+        
+        /*Set the profile depth target*/
+        profile_depth = PROFILE_DEPTH;
+        
         CTRL_set_lcp_density(TO_PROFILE_DENSITY);
         to_prof_piston_length = CTRL_calculate_piston_position(0.0, 0.0);
 
@@ -2452,6 +2470,12 @@ void module_sps_move_to_profile(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, LCP presumably hitting the bottom >>\n\n");
 
+                     if(MOORED)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Moored mode: setting profile_depth to bottom depth %.4f m >>\n\n", Depth);
+                        profile_depth = Depth;
+                    }
+
                     /* set previous adjusted length update */
                     to_prof_piston_length = length_update_last_adjusted;
                     /* move to the next state */
@@ -2590,7 +2614,7 @@ void module_sps_move_to_profile(void)
         }
 
         /* check on depth to reach */
-        if (Depth >= PROFILE_DEPTH-PROFILE_DEPTH_ERR && !crush_depth)
+        if (Depth >= profile_depth-PROFILE_DEPTH_ERR && !crush_depth)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Pressure Reached = %0.4f bar\n", Pressure);
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth Reached    = %0.4f m, rate = %0.4fm/%.1fs\n", Depth, Rate, (float)(1/s_rate));
@@ -2853,7 +2877,7 @@ void module_sps_profile(void)
     PIS_set_piston_rate(1);
 
     /* check the length_update if it is greater than CRUSH_DEPTH_PISTON_POSITION (5.25in) */
-    if (length_update > CRUSH_DEPTH_PISTON_POSITION && (PROFILE_DEPTH-PROFILE_DEPTH_ERR) >= CRITICAL_PISTON_POSITON_DEPTH)
+    if (length_update > CRUSH_DEPTH_PISTON_POSITION && (PROFILE_DEPTH - PROFILE_DEPTH_ERR) >= CRITICAL_PISTON_POSITON_DEPTH)
     {
         length_update = CRUSH_DEPTH_PISTON_POSITION;
     }
