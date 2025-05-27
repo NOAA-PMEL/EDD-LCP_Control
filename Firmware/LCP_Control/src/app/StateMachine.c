@@ -1608,6 +1608,7 @@ void module_sps_move_to_park(void)
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, FreeRTOS HEAP SIZE = %u Bytes\n\n", size);
 
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Task->finished\n\n");
+    PIS_task_delete(); // Always delete the piston task at the end of the move_to_park state
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
 }
