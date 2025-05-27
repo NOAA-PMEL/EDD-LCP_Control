@@ -146,6 +146,10 @@ void task_move_piston_to_zero(void)
     pistonRun = true;
     bool fullFlag = false;
     uint8_t count_reset = 0;
+    uint8_t reset = 0;
+
+    uint8_t stall_count = 0;
+    uint8_t stall_count_max = 38;
 
     while(pistonRun)
     {
@@ -158,27 +162,59 @@ void task_move_piston_to_zero(void)
             if (fullFlag)
             {
                 pistonRun = false;
-            }
-            count_reset++;
-            if (count_reset > 4)
-            {
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
-                vTaskDelay(xDelay250ms);
-                PIS_Reset();
-                vTaskDelay(period);
-                PIS_move_to_zero();
-                vTaskDelay(period);
                 count_reset = 0;
+                reset = 0;
+            }
+            else
+            {
+                count_reset++;
+                if (count_reset > 4)
+                {
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
+                    vTaskDelay(xDelay250ms);
+                    PIS_Reset();
+                    vTaskDelay(period);
+                    PIS_move_to_zero();
+                    vTaskDelay(period);
+                    count_reset = 0;
+                    reset++;
+                        
+                    if(reset > 2)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("PISTON :: Reset Timeout\n");
+                        pistonRun = false;
+                        count_reset = 0;
+                        reset = 0;
+                    }
+                }
             }
         }
         else
         {
-            vTaskDelay(xDelay250ms);
+            if (stall_count > stall_count_max) 
+            {
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
+                PIS_Reset();                    // reset the board
+                vTaskDelay(xDelay1000ms);       // wait for reset to complete
+                pistonRun = false;              // exit the loop
+                stall_count = 0;                // reset stall count
+                count_reset = 0;
+                reset = 0;
+            }  
+            stall_count++;
+            ARTEMIS_DEBUG_PRINTF("PISTON :: Stall Count = %d\n", stall_count); 
+
+            //vTaskDelay(xDelay250ms);
             //length = module_pis_get_length();
             //ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
-            fullFlag = module_pis_read_if_zero();
+            //fullFlag = module_pis_read_if_zero();
         }
-        vTaskDelay(xDelay500ms);
+
+        if (pistonRun)
+        {
+            vTaskDelay(period);
+        }
     }
 
     /* get the length and update it */
@@ -218,39 +254,73 @@ void task_move_piston_to_full(void)
     pistonRun = true;
     bool fullFlag = false;
     uint8_t count_reset = 0;
+    uint8_t reset = 0;
 
+    uint8_t stall_count = 0;
+    uint8_t stall_count_max = 38;
 
     while(pistonRun)
     {
         /** Read the piston memory to see if we're done */
         if(module_pis_trv_eng() == false)
         {
-            count_reset++;
             vTaskDelay(xDelay250ms);
             fullFlag = module_pis_read_if_full();
             if (fullFlag)
             {
                 pistonRun = false;
-            }
-            if (count_reset > 4)
-            {
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
-                vTaskDelay(xDelay250ms);
-                PIS_Reset();
-                vTaskDelay(period);
-                PIS_move_to_full();
-                vTaskDelay(period);
                 count_reset = 0;
+                reset = 0;
+            }
+            else
+            {
+                count_reset++;
+                if (count_reset > 4)
+                {
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
+                    vTaskDelay(xDelay250ms);
+                    PIS_Reset();
+                    vTaskDelay(period);
+                    PIS_move_to_full();
+                    vTaskDelay(period);
+                    count_reset = 0;
+                    reset++;
+                    if(reset > 2)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("PISTON :: Reset Timeout\n");
+                        pistonRun = false;
+                        count_reset = 0;
+                        reset = 0;
+                    }
+                }
             }
         }
         else
         {
-            vTaskDelay(xDelay250ms);
+            if (stall_count > stall_count_max) 
+            {
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
+                PIS_Reset();                    // reset the board
+                vTaskDelay(xDelay1000ms);       // wait for reset to complete
+                pistonRun = false;              // exit the loop
+                stall_count = 0;                // reset stall count
+                count_reset = 0;
+                reset = 0;
+            }
+            stall_count++;
+            ARTEMIS_DEBUG_PRINTF("PISTON :: Stall Count = %d\n", stall_count);
+            
+            //vTaskDelay(xDelay250ms);
             //length = module_pis_get_length();
             //ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
-            fullFlag = module_pis_read_if_full();
+            //fullFlag = module_pis_read_if_full();
         }
-        vTaskDelay(xDelay500ms);
+
+        if (pistonRun)
+        {
+            vTaskDelay(period);
+        }
     }
 
     /* get the length and update it */
@@ -290,38 +360,74 @@ void task_reset_piston_to_full(void)
     pistonRun = true;
     bool fullFlag = false;
     uint8_t count_reset = 0;
+    uint8_t reset = 0;
+
+    uint8_t stall_count = 0;
+    uint8_t stall_count_max = 38;
 
     while(pistonRun)
     {
         /** Read the piston memory to see if we're done */
         if(module_pis_trv_eng() == false)
         {
-            count_reset++;
             vTaskDelay(xDelay250ms);
             fullFlag = module_pis_read_if_fullreset();
             if (fullFlag)
             {
                 pistonRun = false;
-            }
-            if (count_reset > 4)
-            {
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
-                PIS_Reset();
-                vTaskDelay(xDelay1000ms);
-                //vTaskDelay(period);
-                PIS_reset_to_full();
-                vTaskDelay(period);
                 count_reset = 0;
+                reset = 0;
+            }
+            else
+            {
+                count_reset++;
+                if (count_reset > 4)
+                {
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
+                    PIS_Reset();
+                    vTaskDelay(xDelay1000ms);
+                    //vTaskDelay(period);
+                    PIS_reset_to_full();
+                    vTaskDelay(period);
+                    count_reset = 0;
+                    reset++;
+
+                    if(reset > 2)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("PISTON :: Reset Timeout\n");
+                        pistonRun = false;
+                        count_reset = 0;
+                        reset = 0;
+                    }
+                }
             }
         }
         else
         {
-            vTaskDelay(xDelay250ms);
+            if (stall_count > stall_count_max) 
+            {
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
+                PIS_Reset();                    // reset the board
+                vTaskDelay(xDelay1000ms);       // wait for reset to complete
+                pistonRun = false;              // exit the loop
+                stall_count = 0;                // reset stall count
+                count_reset = 0;
+                reset = 0;
+            }
+            stall_count++;
+            ARTEMIS_DEBUG_PRINTF("PISTON :: Stall Count = %d\n", stall_count);
+            
+            //vTaskDelay(xDelay250ms);
             //length = module_pis_get_length();
             //ARTEMIS_DEBUG_PRINTF("PISTON :: Length in moving = %0.5f\n", length);
-            fullFlag = module_pis_read_if_fullreset();
+            //fullFlag = module_pis_read_if_fullreset();
         }
-        vTaskDelay(xDelay500ms);
+        
+        if (pistonRun)
+        {
+            vTaskDelay(period);
+        }
     }
 
     /* get the length and update it */
@@ -363,10 +469,10 @@ void task_move_piston_to_length(void)
     /** Start reading until we hit the volume */
     pistonRun = true;
     uint8_t count_reset = 0;
+    uint8_t reset = 0;
 
     uint8_t stall_count = 0;
     uint8_t stall_count_max = 38;
-    float last_length = -1.0;
 
     while(pistonRun)
     {
@@ -386,6 +492,7 @@ void task_move_piston_to_length(void)
                 ARTEMIS_DEBUG_PRINTF("PISTON :: Length reached\n");
                 pistonRun = false;
                 count_reset = 0;
+                reset = 0;
             }
             else
             {
@@ -401,23 +508,39 @@ void task_move_piston_to_length(void)
                     PIS_move_to_length(piston.setpoint_l);
                     vTaskDelay(period);
                     count_reset = 0;
+                    reset++;
+
+                    if(reset > 2)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("PISTON :: Reset Timeout\n");
+                        pistonRun = false;
+                        count_reset = 0;
+                        reset = 0;
+                    }
                 }
             }
         }
         else
         {
-            if (stall_count > stall_count_max) {
+            if (stall_count > stall_count_max) 
+            {
                 ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
                 ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
                 PIS_Reset();                    // reset the board
                 vTaskDelay(xDelay1000ms);       // wait for reset to complete
                 pistonRun = false;              // exit the loop
                 stall_count = 0;                // reset stall count
+                count_reset = 0;
+                reset = 0;
             }
             stall_count++;
             ARTEMIS_DEBUG_PRINTF("PISTON :: Stall Count = %d\n", stall_count);
         }
-        vTaskDelay(period);
+
+        if (pistonRun)
+        {
+            vTaskDelay(period);
+        }
     }
 
     vTaskDelay(xDelay500ms);
@@ -490,6 +613,10 @@ void task_move_piston_to_volume(void)
     /** Start reading until we hit the volume */
     pistonRun = true;
     uint8_t count_reset = 0;
+    uint8_t reset = 0;
+
+    uint8_t stall_count = 0;
+    uint8_t stall_count_max = 38;
 
     while(pistonRun)
     {
@@ -510,6 +637,7 @@ void task_move_piston_to_volume(void)
                 ARTEMIS_DEBUG_PRINTF("PISTON :: Volume reached\n");
                 pistonRun = false;
                 count_reset = 0;
+                reset = 0;
             }
             else
             {
@@ -517,19 +645,43 @@ void task_move_piston_to_volume(void)
                 if (count_reset > 3)
                 {
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
-                    vTaskDelay(xDelay250ms);
+                    //vTaskDelay(xDelay250ms);
                     PIS_Reset();
-                    vTaskDelay(period);
+                    vTaskDelay(xDelay1000ms);
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Setting volume = %0.5f\n", piston.setpoint_v);
                     PIS_move_to_volume(piston.setpoint_v);
                     vTaskDelay(period);
                     count_reset = 0;
+                    reset++;
+
+                    if(reset > 2)
+                    {
+                        ARTEMIS_DEBUG_PRINTF("PISTON :: Reset Timeout\n");
+                        pistonRun = false;
+                        count_reset = 0;
+                        reset = 0;
+                    }
                 }
 
             }
         }
         else
         {
-            vTaskDelay(xDelay250ms);
+            if (stall_count > stall_count_max) 
+            {
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
+                PIS_Reset();                    // reset the board
+                vTaskDelay(xDelay1000ms);       // wait for reset to complete
+                pistonRun = false;              // exit the loop
+                stall_count = 0;                // reset stall count
+                count_reset = 0;
+                reset = 0;
+            }
+            stall_count++;
+            ARTEMIS_DEBUG_PRINTF("PISTON :: Stall Count = %d\n", stall_count);
+            
+            //vTaskDelay(xDelay250ms);
             //volume = module_pis_get_volume();
             //ARTEMIS_DEBUG_PRINTF("PISTON :: Volume in moving = %.3fin³\n", volume);
 
