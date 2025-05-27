@@ -1608,6 +1608,7 @@ void module_sps_move_to_park(void)
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, FreeRTOS HEAP SIZE = %u Bytes\n\n", size);
 
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Task->finished\n\n");
+    PIS_task_delete(); // Always delete the piston task at the end of the move_to_park state
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
 }
@@ -2254,6 +2255,7 @@ void module_sps_park(void)
     monitor_memory_usage();
 
     ARTEMIS_DEBUG_PRINTF("SPS :: park, Task->finished\n\n");
+    PIS_task_delete(); // Always delete the piston task at the end
     vTaskDelay(xDelay10000ms);
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
@@ -2780,6 +2782,7 @@ void module_sps_move_to_profile(void)
     ARTEMIS_DEBUG_PRINTF("\nSPS :: move_to_profile, FreeRTOS HEAP SIZE = %u Bytes\n\n", size);
 
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Task->finished\n\n");
+    PIS_task_delete(); // Always delete the piston task at the end
     vTaskDelay(xDelay10000ms);
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
@@ -3311,7 +3314,7 @@ void module_sps_profile(void)
                 length_update_surf_adjusted = length_update;
 
                 /* check if piston is still moving then reset it and stop */
-                if (piston_move)
+                //if (piston_move)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
                     PIS_task_delete(); // Signal to exit loop
@@ -3394,6 +3397,7 @@ void module_sps_profile(void)
     monitor_memory_usage();
 
     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Task->finished\n");
+    PIS_task_delete(); // Always send the delete command to the piston task
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
 }
@@ -3773,6 +3777,7 @@ void module_sps_move_to_surface(void)
     monitor_memory_usage();
 
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Task->finished\n\n");
+    PIS_task_delete(); // Always send the delete command to the piston task
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
 }
