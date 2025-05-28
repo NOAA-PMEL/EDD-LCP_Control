@@ -1659,8 +1659,8 @@ void module_sps_park(void)
         else
         {
             //park_time = (xDelay1000ms * PARK_TIME_FIRST);
-            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_DATE_FIRST Epoch = %ld >\n\n", PROFILE_FIRST_DATE);
-            endepoch_time = PROFILE_FIRST_DATE;
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_DATE_FIRST Epoch = %ld >\n\n", PROFILE_FIRST_START_DATE);
+            endepoch_time = PROFILE_FIRST_START_DATE;
             while(endepoch_time < epoch) 
             {
                 endepoch_time += PARK_TIME_FIRST;
@@ -1677,15 +1677,29 @@ void module_sps_park(void)
     }
     else
     {
-        /** Start s_rate sampling of sensors for PARK_TIME minutes */
-        s_rate = PARK_RATE;
-        //park_time = (xDelay1000ms * PARK_TIME);
-        ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %d sec >\n\n", PARK_TIME);
-        endepoch_time = (PARK_TIME_INCREMENT + PARK_TIME + endepoch_time);
-        if(BENCH_PROFILE)
+        if(epoch <= PROFILE_SECOND_END_DATE && PROFILE_SECOND )
+        {
+            /** Start s_rate sampling of sensors for PARK_TIME_SECOND minutes */
+            s_rate = PARK_RATE_SECOND;
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %d sec >\n\n", PARK_TIME_SECOND);
+            endepoch_time = (PARK_TIME_INCREMENT + PARK_TIME_SECOND + endepoch_time);
+            if(BENCH_PROFILE)
+            {
+                endepoch_time = epoch + PARK_TIME_SECOND;
+            }
+        }
+        else
+        {
+            /** Start s_rate sampling of sensors for PARK_TIME minutes */
+            s_rate = PARK_RATE;
+            //park_time = (xDelay1000ms * PARK_TIME);
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %d sec >\n\n", PARK_TIME);
+            endepoch_time = (PARK_TIME_INCREMENT + PARK_TIME + endepoch_time);
+            if(BENCH_PROFILE)
             {
                 endepoch_time = epoch + PARK_TIME;
             }
+        }
     }
 
     ARTEMIS_DEBUG_PRINTF("SPS :: park, s_rate = %.6f\n", s_rate);
