@@ -68,8 +68,8 @@ static sS9_t *pS9 = &s9;
 STATIC void module_s9_parse_msg(char *data, uint8_t len, sS9_t *p);
 STATIC void _parse_version(uint8_t *data, sS9_t *p, uint8_t rxLen);
 STATIC int16_t _parse_response(uint8_t *rData, char *pattern, uint16_t len);
-STATIC S9_result_t receive_response(uint8_t *rData, uint8_t *len);
-STATIC S9_result_t receive_response_RTOS(uint8_t *rData, uint16_t *len);
+STATIC S9_result_t receive_response(uint8_t *rData, uint8_t *len, uint16_t rDataMaxSize);
+STATIC S9_result_t receive_response_RTOS(uint8_t *rData, uint16_t *len, uint16_t rDataMaxSize);
 STATIC void _module_s9_stop_sampling(void);
 
 void S9T_init(S9_init_param *p)
@@ -157,7 +157,7 @@ void S9T_dev_info(void)
 
     /* using  MAX14830 c file, non-RTOS*/
     MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"ver\r", 4);
-    result = receive_response(verStr, &rxLen);
+    result = receive_response(verStr, &rxLen, sizeof(verStr));
     if (result == S9_RESULT_OK)
     {
         /* Debug */
@@ -263,10 +263,10 @@ float S9T_Read(float *t, float *r)
 
 #ifdef FREE_RTOS
     MAX14830_UART_Write(pS9->device.uart.port, (uint8_t *)"sample\r", 7);
-    result = receive_response_RTOS(sampleStr, &rxLen);
+    result = receive_response_RTOS(sampleStr, &rxLen, sizeof(sampleStr));
 #else
     MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t *)"sample\r", 7);
-    result = receive_response(sampleStr, &rxLen);
+    result = receive_response(sampleStr, &rxLen, sizeof(sampleStr));
 #endif
 
     if (result == S9_RESULT_OK)
