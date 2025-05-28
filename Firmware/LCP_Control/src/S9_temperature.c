@@ -106,12 +106,12 @@ void S9T_init(S9_init_param *p)
 STATIC void _module_s9_stop_sampling(void)
 {
     S9_result_t result = S9_RESULT_FAIL;
-    uint8_t sampleStr[12];
+    uint8_t sampleStr[SHORT_RESPONSE_BUFFER_SIZE];
     uint8_t rxLen = 0;
 
     //artemis_max14830_UART_Write (pS9->device.uart.port, (uint8_t*)"stop\r", 5);
     MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"stop\r", 5);
-    result = receive_response(sampleStr, &rxLen);
+    result = receive_response(sampleStr, &rxLen, sizeof(sampleStr));
     if (result == S9_RESULT_OK)
     {
         /* Debug */
@@ -127,22 +127,23 @@ STATIC void _module_s9_stop_sampling(void)
 void _module_s9_stop_sampling_RTOS(void)
 {
     S9_result_t result = S9_RESULT_FAIL;
-    uint8_t sampleStr[12];
+    // sampleStr is specifically for short responses like "OK\r\n" or "ERROR\r\n"
+    uint8_t sampleStr[SHORT_RESPONSE_BUFFER_SIZE]; // Use the defined constant for clarity
     uint16_t rxLen = 0;
 
     MAX14830_UART_Write(pS9->device.uart.port, (uint8_t*)"stop\r", 5);
-    result = receive_response_RTOS(sampleStr, &rxLen);
+    // Pass the actual size of sampleStr to receive_response_RTOS
+    result = receive_response_RTOS(sampleStr, &rxLen, sizeof(sampleStr));
     if (result == S9_RESULT_OK)
     {
-        /* Debug */
         ARTEMIS_DEBUG_PRINTF("S9 : Sampling Stopped, RTOS\n");
     }
     else
     {
-        /* Debug */
         ARTEMIS_DEBUG_PRINTF("S9 : Sampling did not stop, RTOS\n");
     }
 }
+
 
 void S9T_dev_info(void)
 {
@@ -529,145 +530,182 @@ STATIC void _parse_version(uint8_t *data, sS9_t *p, uint8_t rxLen)
     strcpy(p->info.status, tok);
 }
 
-STATIC S9_result_t receive_response(uint8_t *rData, uint8_t *len)
+STATIC S9_result_t receive_response(uint8_t *rData, uint8_t *len, uint16_t rDataMaxSize)
 {
     S9_result_t result = S9_RESULT_FAIL;
-    uint8_t msg_len = 0;
-    uint8_t rem_len = 0;
+    //uint8_t msg_len = 0;
+    //uint8_t rem_len = 0;
+    uint8_t msg_len_read;
+    uint16_t total_len_received = 0; // PREVENT OVERFLOWS
     uint8_t lBuf[256] = {0};
     bool contFlag = true;
-    uint32_t wait = 0;
+    uint32_t wait_cycles = 0;
+    const uint32_t MAX_OUTER_WAIT_CYCLES = 100000;
+    const uint32_t MAX_INNER_WAIT_CYCLES = 5000;
 
-    // maximum wait cycles
-    while(contFlag && wait < 100000)
+    if (rDataMaxSize == 0) return S9_RESULT_FAIL; // Cannot write to a zero-sized buffer
+
+    while(contFlag && wait_cycles < MAX_OUTER_WAIT_CYCLES)
     {
-        //artemis_max14830_UART_Read (pS9->device.uart.port, lBuf, &msg_len);
-        msg_len = MAX14830_UART_Read_direct (pS9->device.uart.port, lBuf);
-        //ARTEMIS_DEBUG_PRINTF("\nS9: rxlen = %u\n", msg_len);
+        msg_len_read = MAX14830_UART_Read_direct (pS9->device.uart.port, lBuf);
 
-        if(msg_len > 0)
+        if(msg_len_read > 0)
         {
-            for (uint16_t i=0; i<msg_len; i++)
-            {
-                rData[i] = lBuf[i];
-                /* Debug */
-                //ARTEMIS_DEBUG_PRINTF("%c", lBuf[i]);
-            }
-            *len = msg_len;
+            uint16_t space_left = rDataMaxSize - total_len_received - 1; // -1 for null terminator
+            uint16_t bytes_to_copy = (msg_len_read > space_left) ? space_left : msg_len_read;
 
+            if (msg_len_read > space_left) {
+                 ARTEMIS_DEBUG_PRINTF("S9: receive_response buffer nearly full. Truncating read.\n");
+            }
+
+            for (uint16_t i=0; i<bytes_to_copy; i++)
+            {
+                rData[total_len_received + i] = lBuf[i];
+            }
+            total_len_received += bytes_to_copy;
+            rData[total_len_received] = '\0';
+
+            uint32_t inner_wait_cycles_local = 0;
             do{
-                if(_parse_response(rData, "OK\r\n", *len) != -1)
+                if(_parse_response(rData, "OK\r\n", total_len_received) != -1)
                 {
-                    //ARTEMIS_DEBUG_PRINTF("\nTemp OK\n");
                     result = S9_RESULT_OK;
                 }
-                else if(_parse_response(rData, "ERROR\r\n", *len) != -1)
+                else if(_parse_response(rData, "ERROR\r\n", total_len_received) != -1)
                 {
                     result = S9_RESULT_ERROR;
                 }
-                if(result == S9_RESULT_FAIL)
+
+                if(result == S9_RESULT_FAIL && inner_wait_cycles_local < MAX_INNER_WAIT_CYCLES)
                 {
-                    //artemis_max14830_UART_Read (pS9->device.uart.port, lBuf, &rem_len);
-                    rem_len = MAX14830_UART_Read_direct (pS9->device.uart.port, lBuf);
-                    //rem_len = MAX14830_UART_Read (pS9->device.uart.port, lBuf);
-                    if (rem_len > 0)
-                    {
-                        //ARTEMIS_DEBUG_PRINTF("\nremaining Lenth happened = %u \n", rem_len);
-                        for (uint16_t i=0; i<rem_len; i++)
-                        {
-                            rData[*len+i] = lBuf[i];
-                            /* Debug */
-                            //ARTEMIS_DEBUG_PRINTF("%c", lBuf[i]);
-                        }
-                        *len += rem_len;
+                    if (total_len_received >= rDataMaxSize -1) { // Buffer is full
+                        result = S9_RESULT_FAIL; // Or a new error code like S9_RESULT_BUFFER_FULL
+                        break; 
                     }
-                    wait++;
+                    msg_len_read = MAX14830_UART_Read_direct (pS9->device.uart.port, lBuf);
+                    if (msg_len_read > 0)
+                    {
+                        space_left = rDataMaxSize - total_len_received - 1;
+                        bytes_to_copy = (msg_len_read > space_left) ? space_left : msg_len_read;
+                        
+                        if (msg_len_read > space_left) {
+                             ARTEMIS_DEBUG_PRINTF("S9: receive_response (inner) buffer nearly full. Truncating.\n");
+                        }
+
+                        for (uint16_t i=0; i<bytes_to_copy; i++)
+                        {
+                            rData[total_len_received+i] = lBuf[i];
+                        }
+                        total_len_received += bytes_to_copy;
+                        rData[total_len_received] = '\0';
+                    }
+                    inner_wait_cycles_local++;
                 }
-                else
+                else 
                 {
-                    contFlag = false;
-                    wait = 0;
+                    contFlag = false; 
+                    break; 
                 }
-                wait++;
-                //ARTEMIS_DEBUG_PRINTF("\nPrinting in S9 inner loop\n");
-                //am_hal_systick_delay_us(50);
-            } while(result == S9_RESULT_FAIL && wait < 5000);
+            } while(true); 
         }
-        //am_hal_systick_delay_us(50);
-        //ARTEMIS_DEBUG_PRINTF("\nPrinting in S9 outer loop\n");
+        wait_cycles++;
+        if(!contFlag) break; // Exit outer loop if inner loop determined result or timed out
     }
+    *len = (uint8_t)total_len_received; // Cast back if original API needs uint8_t for len
     return result;
 }
 
-STATIC S9_result_t receive_response_RTOS(uint8_t *rData, uint16_t *len)
+
+STATIC S9_result_t receive_response_RTOS(uint8_t *rData, uint16_t *len, uint16_t rDataMaxSize)
 {
     S9_result_t result = S9_RESULT_FAIL;
-    uint8_t msg_len = 0;
-    uint8_t rem_len = 0;
-    uint8_t lBuf[256] = {0};
+    uint16_t msg_len_read;
+    uint16_t total_len_received = 0;
+    uint8_t lBuf[256]; 
     bool contFlag = true;
-    uint32_t wait = 0;
+    uint32_t wait_cycles = 0; 
+    const uint32_t MAX_WAIT_CYCLES_OUTER = 60; 
+    const uint32_t MAX_WAIT_CYCLES_INNER = 100; 
 
-    while (contFlag)
+    if (rDataMaxSize == 0) return S9_RESULT_FAIL;
+
+    while (contFlag && wait_cycles < MAX_WAIT_CYCLES_OUTER)
     {
-        msg_len = MAX14830_UART_Read (pS9->device.uart.port, lBuf);
-        //ARTEMIS_DEBUG_PRINTF("\nS9: rxlen = %u\n", msg_len);
+        msg_len_read = MAX14830_UART_Read (pS9->device.uart.port, lBuf); // Assumes lBuf is large enough (256 bytes)
 
-        if(msg_len > 0)
+        if(msg_len_read > 0)
         {
-            for (uint16_t i=0; i<msg_len; i++)
-            {
-                rData[i] = lBuf[i];
-                /* Debug */
-                //ARTEMIS_DEBUG_PRINTF("%c", lBuf[i]);
+            uint16_t space_left = rDataMaxSize - total_len_received - 1; // -1 for null terminator
+            uint16_t bytes_to_copy = (msg_len_read > space_left) ? space_left : msg_len_read;
+            
+            if (msg_len_read > space_left) {
+                 ARTEMIS_DEBUG_PRINTF("S9: receive_response_RTOS buffer nearly full. Truncating read.\n");
             }
-            *len = msg_len;
 
+            for (uint16_t i=0; i<bytes_to_copy; i++)
+            {
+                rData[total_len_received + i] = lBuf[i];
+            }
+            total_len_received += bytes_to_copy;
+            rData[total_len_received] = '\0'; 
+
+            uint32_t inner_wait_cycles_local = 0; 
             do{
-                if(_parse_response(rData, "OK\r\n", *len) != -1)
+                if(_parse_response(rData, "OK\r\n", total_len_received) != -1)
                 {
-                    //ARTEMIS_DEBUG_PRINTF("\nTemp OK\n");
                     result = S9_RESULT_OK;
-                    break;
                 }
-                else if(_parse_response(rData, "ERROR\r\n", *len) != -1)
+                else if(_parse_response(rData, "ERROR\r\n", total_len_received) != -1)
                 {
-                    //ARTEMIS_DEBUG_PRINTF("\nTemp ERROR\n");
                     result = S9_RESULT_ERROR;
-                    break;
                 }
-                if(result == S9_RESULT_FAIL)
+                
+                if(result == S9_RESULT_FAIL && inner_wait_cycles_local < MAX_WAIT_CYCLES_INNER)
                 {
-                    rem_len = MAX14830_UART_Read (pS9->device.uart.port, lBuf);
-                    if (rem_len > 0)
-                    {
-                        //ARTEMIS_DEBUG_PRINTF("\nremaining Lenth happened = %u \n", rem_len);
-                        for (uint16_t i=0; i<rem_len; i++)
-                        {
-                            rData[*len+i] = lBuf[i];
-                            /* Debug */
-                            //ARTEMIS_DEBUG_PRINTF("%c", lBuf[i]);
-                        }
-                        *len += rem_len;
+                    if (total_len_received >= rDataMaxSize - 1) { // Buffer is full
+                        result = S9_RESULT_FAIL; 
+                        break;
                     }
-                    wait++;
-                }
-                else
-                {
-                    contFlag = false;
-                    wait = 0;
-                }
-                wait++;
-                //ARTEMIS_DEBUG_PRINTF("\nPrinting in S9 inner loop\n");
-                //am_hal_systick_delay_us(50);
-            } while(result == S9_RESULT_FAIL && wait < 5000);
-        }
+                    uint16_t rem_len_read = MAX14830_UART_Read (pS9->device.uart.port, lBuf);
+                    if (rem_len_read > 0)
+                    {
+                        space_left = rDataMaxSize - total_len_received - 1;
+                        bytes_to_copy = (rem_len_read > space_left) ? space_left : rem_len_read;
 
-        if ( result == S9_RESULT_OK || result == S9_RESULT_ERROR )
-        {
-            break;
+                        if (rem_len_read > space_left) {
+                             ARTEMIS_DEBUG_PRINTF("S9: receive_response_RTOS (inner) buffer nearly full. Truncating.\n");
+                        }
+                        
+                        for (uint16_t i=0; i<bytes_to_copy; i++)
+                        {
+                            rData[total_len_received+i] = lBuf[i];
+                        }
+                        total_len_received += bytes_to_copy;
+                        rData[total_len_received] = '\0';
+                    }
+                    inner_wait_cycles_local++;
+                    vTaskDelay(pdMS_TO_TICKS(10)); 
+                }
+                else 
+                {
+                    contFlag = false; 
+                    break; 
+                }
+            } while(true); 
         }
-        //ARTEMIS_DEBUG_PRINTF("\nS9: stuck here ? \n");
+        
+        if (!contFlag || result == S9_RESULT_OK || result == S9_RESULT_ERROR) { // If inner loop set contFlag to false or found definitive result
+            break; 
+        }
+        
+        wait_cycles++;
+        if (msg_len_read == 0) { // Only delay if no data was read in this outer loop iteration
+             vTaskDelay(pdMS_TO_TICKS(500));
+        }
+    }
+    *len = total_len_received;
+    if(wait_cycles >= MAX_WAIT_CYCLES_OUTER && result == S9_RESULT_FAIL) {
+        ARTEMIS_DEBUG_PRINTF("S9: receive_response_RTOS outer loop timeout.\n");
     }
     return result;
 }
