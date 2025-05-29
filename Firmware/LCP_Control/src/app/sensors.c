@@ -319,7 +319,7 @@ void SENS_task_delete(TaskHandle_t xHandle)
 void SENS_task_temperature_on(TaskHandle_t *xTemp)
 {
     configASSERT(xTaskCreate((TaskFunction_t)task_temperature_on,
-                                "Temperature_Task_On", 512, NULL,
+                                "Temperature_Task_On", 1024, NULL,
                                 tskIDLE_PRIORITY + 5UL,
                                 xTemp) == pdPASS );
 }
@@ -327,7 +327,7 @@ void SENS_task_temperature_on(TaskHandle_t *xTemp)
 void SENS_task_profile_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp)
 {
     configASSERT(xTaskCreate((TaskFunction_t)task_depth,
-                                "Depth_Task", 512, NULL,
+                                "Depth_Task", 1024, NULL,
                                 tskIDLE_PRIORITY + 4UL,
                                 xDepth) == pdPASS );
 
@@ -340,7 +340,7 @@ void SENS_task_profile_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp)
 void SENS_task_park_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp)
 {
     configASSERT(xTaskCreate((TaskFunction_t)task_depth,
-                                "Depth_Task", 512, NULL,
+                                "Depth_Task", 1024, NULL,
                                 tskIDLE_PRIORITY + 4UL,
                                 xDepth) == pdPASS );
 
@@ -353,7 +353,7 @@ void SENS_task_park_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp)
 void SENS_task_sample_depth_continuous(TaskHandle_t *xDepth)
 {
     configASSERT(xTaskCreate((TaskFunction_t)task_depth,
-                                "Depth_Task", 512, NULL,
+                                "Depth_Task", 1024, NULL,
                                 tskIDLE_PRIORITY + 4UL,
                                 xDepth) == pdPASS );
 }
@@ -361,7 +361,7 @@ void SENS_task_sample_depth_continuous(TaskHandle_t *xDepth)
 void SENS_task_gps(TaskHandle_t *xGPS)
 {
     configASSERT(xTaskCreate((TaskFunction_t)task_gps,
-                                "GPS_Task", 512, NULL,
+                                "GPS_Task", 1024, NULL,
                                 tskIDLE_PRIORITY + 4UL,
                                 xGPS) == pdPASS );
 }

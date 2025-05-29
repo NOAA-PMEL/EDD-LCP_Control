@@ -23,8 +23,8 @@ extern "C" {
 #define ARTEMIS_DEBUG
 
 /** defined test profiles, tank, lake etc, uncomment one at a time */
-//#define __TEST_PROFILE_1__
-#define __TEST_PROFILE_2__
+#define __TEST_PROFILE_1__
+//#define __TEST_PROFILE_2__
 //#define __TEST_TANK__
 //#define __TEST_LAKE__
 //#define __TEST_OCEAN__

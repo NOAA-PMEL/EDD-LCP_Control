@@ -1774,6 +1774,7 @@ void module_sps_park(void)
     bool run = true;
     while (run)
     {
+        ARTEMIS_DEBUG_PRINTF("SPS :: park, Top of the While Run loop...\n");
         // Turn on the datalogger power at the start of each cycle
         datalogger_power_on();
         vTaskDelay(xDelay2000ms);
