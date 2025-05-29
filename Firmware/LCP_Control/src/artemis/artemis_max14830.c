@@ -268,7 +268,7 @@
 #define MAX14830_IOM_MODULE             ( 3 )
 #define MAX14830_NUM_SERIAL_PORTS       ( 4 )
 #define MAX14830_WRITE_TASK_PRIORITY    ( 5 )
-#define STACK_SIZE                      ( 128 )
+#define STACK_SIZE                      ( 256 ) // was 128
 #define ARTEMIS_MAX14830_BUFFER_LENGTH  ( 256 )
 
 //*****************************************************************************

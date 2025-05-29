@@ -1782,19 +1782,30 @@ void module_sps_park(void)
         if (park_period >= xDelay10000ms)
         {
             /* turn on the sensors */
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Turining temperature sensor on...");
             vTaskDelay(xDelay500ms);
             SENS_sensor_temperature_on();
+            vTaskDelay(xDelay500ms);
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Turining depth sensor on...");
             SENS_sensor_depth_on();
             vTaskDelay(xDelay100ms);
 
             /* start the sensors task */
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Starting depth and temperature tasks...");
             SENS_task_park_sensors(&xDepth, &xTemp);
+            vTaskDelay(xDelay100ms);
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Getting depth...");
             SENS_get_depth(&Depth, &Pressure, &Rate);
+            vTaskDelay(xDelay250ms);
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Getting temperature...");
             SENS_get_temperature(&Temperature);
 
             vTaskDelay(xDelay100ms);
             /* turn off the sensors */
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Shutting down temperature sensor...");
             SENS_sensor_temperature_off();
+            vTaskDelay(xDelay250ms);
+            ARTEMIS_DEBUG_PRINTF("SPS :: park, Shutting down depth sensor...");
             SENS_sensor_depth_off();
 
         }

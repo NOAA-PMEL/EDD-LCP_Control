@@ -123,6 +123,7 @@ bool DEPTH_initialize(eDEPTH_Sensor_t sensor)
 
 void DEPTH_initialize_RTOS(void)
 {
+    DEPTH_Power_ON();
     MAX14830_port_enable((eMAX18430_ComPort_t) kParam.port);
     MAX14830_Set_baudrate((eMAX18430_ComPort_t) kParam.port, kParam.baudrate);
 }
