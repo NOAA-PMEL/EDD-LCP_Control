@@ -417,7 +417,7 @@ void module_pus_surface_float(void)
             rate_count++;
             if (rate_count >= 5)
             {
-                float averaged_rate = (float) (rate_avg / (float)rate_count);
+                float averaged_rate = (float) ( (rate_avg * s_rate) / (float)rate_count );
                 /* check if rate is positive, negative or stable */
                 if (averaged_rate < 0.0)
                 {
@@ -1275,7 +1275,7 @@ void module_sps_move_to_park(void)
 	    rate_count++;
         if (rate_count >= 3)
         {
-            float averaged_rate = (float) (rate_avg / (float)rate_count);
+            float averaged_rate = (float) ( (rate_avg * s_rate) / (float)rate_count );
             /* check if rate is positive, negative or stable */
             if (averaged_rate >= SYSTEM_FALL_RATE_MIN && !crush_depth)
             {
@@ -1660,7 +1660,7 @@ void module_sps_park(void)
         else
         {
             //park_time = (xDelay1000ms * PARK_TIME_FIRST);
-            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_DATE_FIRST Epoch = %ld >\n\n", PROFILE_FIRST_START_DATE);
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_DATE_FIRST Start Epoch = %ld >\n\n", PROFILE_FIRST_START_DATE);
             endepoch_time = PROFILE_FIRST_START_DATE;
             while(endepoch_time < epoch) 
             {
@@ -1671,6 +1671,7 @@ void module_sps_park(void)
             {
                 endepoch_time = epoch + PARK_TIME_FIRST;
             }
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME_FIRST = %d sec >\n\n", PARK_TIME_FIRST);
 
             /** Start s_rate sampling of sensors for PARK_TIME_FIRST minutes */
             s_rate = PARK_RATE_FIRST;
@@ -1682,7 +1683,8 @@ void module_sps_park(void)
         {
             /** Start s_rate sampling of sensors for PARK_TIME_SECOND minutes */
             s_rate = PARK_RATE_SECOND;
-            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME = %d sec >\n\n", PARK_TIME_SECOND);
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PROFILE_SECOND_END_DATE Epoch = %ld >\n\n", PROFILE_SECOND_END_DATE);
+            ARTEMIS_DEBUG_PRINTF("\nSPS :: park, < PARK_TIME_SECOND = %d sec >\n\n", PARK_TIME_SECOND);
             endepoch_time = (PARK_TIME_INCREMENT + PARK_TIME_SECOND + endepoch_time);
             if(BENCH_PROFILE)
             {
@@ -1841,6 +1843,7 @@ void module_sps_park(void)
                 if(popup)
                 {
                     park_depth = Depth;
+                    ARTEMIS_DEBUG_PRINTF("SPS :: park, POPUP Mode PARK_DEPTH = %0.4f m\n", Depth );
                     popup = false;
                 }
             }
@@ -1889,7 +1892,7 @@ void module_sps_park(void)
                 rate_count++;
                 if (rate_count >= PARK_DEPTH_RATE_COUNTER)
                 {
-                    float averaged_rate = (float) (rate_avg / rate_count);
+                    float averaged_rate = (float) ( (rate_avg * s_rate) / (float)rate_count );
                     /* check if rate is positive, negative or stable */
 
                     if (Depth >= park_depth+PARK_DEPTH_ERR)
@@ -2472,7 +2475,7 @@ void module_sps_move_to_profile(void)
 	    rate_count++;
 	    if (rate_count >= 3)
 	    {
-            float averaged_rate = (float) (rate_avg / (float)(rate_count));
+            float averaged_rate = (float) ( (rate_avg * s_rate) / (float)rate_count );
 
             /* check if rate is positive, negative or stable */
             if (averaged_rate >= SYSTEM_FALL_RATE_MIN)
@@ -3059,7 +3062,7 @@ void module_sps_profile(void)
 	    rate_count++;
 	    if (rate_count >= PROFILE_DEPTH_RATE_COUNTER)
 	    {
-            float averaged_rate = (float) (rate_avg/rate_count);
+            float averaged_rate = (float) ( (rate_avg * s_rate) / (float)rate_count );
             if ( averaged_rate >= (-1*SYSTEM_RISE_RATE_MIN) && !piston_move)
             {
                 /* increase piston position by PARK_POSITION_INCREMENT inches */
