@@ -124,7 +124,7 @@ STATIC void _module_s9_stop_sampling(void)
     }
 }
 
-STATIC void _module_s9_stop_sampling_RTOS(void)
+void _module_s9_stop_sampling_RTOS(void)
 {
     S9_result_t result = S9_RESULT_FAIL;
     uint8_t response_buffer[SHORT_RESPONSE_BUFFER_SIZE]; // 16 bytes for "OK\r\n" or "ERROR\r\n"
