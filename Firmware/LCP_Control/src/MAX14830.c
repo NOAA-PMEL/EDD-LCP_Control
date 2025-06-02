@@ -269,7 +269,7 @@
 
 #define MAX14830_NUM_SERIAL_PORTS       ( 4 )
 #define MAX14830_WRITE_TASK_PRIORITY    ( 5 )
-#define STACK_SIZE                      ( 128 )
+#define STACK_SIZE                      ( 256 )
 
 
 //*****************************************************************************

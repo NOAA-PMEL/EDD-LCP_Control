@@ -1727,7 +1727,10 @@ void module_sps_park(void)
     else
     {
         /* turn on the sensors */
+        ARTEMIS_DEBUG_PRINTF("SPS :: park, turining on the sensors...");
+        vTaskDelay(xDelay500ms);
         SENS_sensor_temperature_on();
+        vTaskDelay(xDelay500ms);
         SENS_sensor_depth_on();
     }
 
@@ -1738,6 +1741,8 @@ void module_sps_park(void)
     else
     {
         /* start the sensors task */
+        ARTEMIS_DEBUG_PRINTF("SPS :: park, starting the sensors task...");
+        vTaskDelay(xDelay500ms);
         SENS_task_park_sensors(&xDepth, &xTemp);
     }
 
@@ -1751,7 +1756,7 @@ void module_sps_park(void)
     float Pressure = 0.0;
     Event_e spsEvent;
     
-
+    ARTEMIS_DEBUG_PRINTF("SPS :: park, creating the datalogger file for park # %d ...", park_number);
     char *filename = datalogger_park_create_file(park_number);
     vTaskDelay(xDelay1000ms);
 
@@ -1775,6 +1780,9 @@ void module_sps_park(void)
     bool start_time = true;
 
     bool run = true;
+
+    ARTEMIS_DEBUG_PRINTF("SPS :: park, initialization complete -- Beginning the Park loop...");
+
     while (run)
     {
         artemis_rtc_get_time(&time);

@@ -124,26 +124,59 @@ STATIC void _module_s9_stop_sampling(void)
     }
 }
 
-void _module_s9_stop_sampling_RTOS(void)
+STATIC void _module_s9_stop_sampling_RTOS(void)
 {
     S9_result_t result = S9_RESULT_FAIL;
-    // sampleStr is specifically for short responses like "OK\r\n" or "ERROR\r\n"
-    uint8_t sampleStr[SHORT_RESPONSE_BUFFER_SIZE]; // Use the defined constant for clarity
-    uint16_t rxLen = 0;
+    uint8_t response_buffer[SHORT_RESPONSE_BUFFER_SIZE]; // 16 bytes for "OK\r\n" or "ERROR\r\n"
+    uint16_t response_len = 0;
+    const uint8_t MAX_STOP_COMMAND_ATTEMPTS = 2; // Try sending "stop" command up to this many times
 
-    MAX14830_UART_Write(pS9->device.uart.port, (uint8_t*)"stop\r", 5);
-    // Pass the actual size of sampleStr to receive_response_RTOS
-    result = receive_response_RTOS(sampleStr, &rxLen, sizeof(sampleStr));
-    if (result == S9_RESULT_OK)
-    {
-        ARTEMIS_DEBUG_PRINTF("S9 : Sampling Stopped, RTOS\n");
-    }
-    else
-    {
-        ARTEMIS_DEBUG_PRINTF("S9 : Sampling did not stop, RTOS\n");
+    for (uint8_t attempt = 0; attempt < MAX_STOP_COMMAND_ATTEMPTS; ++attempt) {
+        if (attempt > 0) {
+            // This is a retry
+            ARTEMIS_DEBUG_PRINTF("S9: Retrying 'stop\\r' command (attempt %u of %u).\n", attempt + 1, MAX_STOP_COMMAND_ATTEMPTS);
+            
+            // Short delay before retry
+            vTaskDelay(pdMS_TO_TICKS(50)); // 50ms delay
+
+            // Attempt to clear any stale data from the MAX14830's software receive buffer for this port.
+            // This is done by repeatedly calling MAX14830_UART_Read with a timeout until it returns 0 bytes,
+            // indicating the buffer is clear or the read timed out.
+            uint8_t dummy_flush_buffer[32]; // A small buffer for draining
+            uint16_t flushed_bytes_count;
+            uint8_t flush_attempts = 0;
+            const uint8_t MAX_FLUSH_READ_ATTEMPTS = 5; // Try to read a few times to ensure buffer is drained
+
+            // Clear the stale buffer before retry
+            do {
+                flushed_bytes_count = MAX14830_UART_Read(pS9->device.uart.port, dummy_flush_buffer);
+                flush_attempts++;
+                if (flushed_bytes_count > 0) { // If we got data, yield briefly to allow ISR to refill if more is coming
+                    vTaskDelay(pdMS_TO_TICKS(10));
+                }
+            } while (flushed_bytes_count > 0 && flush_attempts < MAX_FLUSH_READ_ATTEMPTS);
+        }
+
+        // Send the "stop\r" command
+        MAX14830_UART_Write(pS9->device.uart.port, (uint8_t*)"stop\r", 5);
+        
+        // Wait for and process the response
+        result = receive_response_RTOS(response_buffer, &response_len, sizeof(response_buffer));
+
+        if (result == S9_RESULT_OK) {
+            ARTEMIS_DEBUG_PRINTF("S9: Sampling stopped successfully (attempt %u).\n", attempt + 1);
+            break; // Command successful, exit retry loop
+        } else {
+            //ARTEMIS_DEBUG_PRINTF("S9: 'stop\\r' command attempt %u failed (result: %d, len: %u).\n", attempt + 1, result, response_len);
+            // If it's the last attempt, the loop will terminate and result will reflect the failure.
+        }
+    } // End of for loop for attempts
+
+    if (result != S9_RESULT_OK) {
+        // All attempts to stop sampling failed.
+        ARTEMIS_DEBUG_PRINTF("S9: ERROR - Failed to stop sampling after %u attempts.\n", MAX_STOP_COMMAND_ATTEMPTS);
     }
 }
-
 
 void S9T_dev_info(void)
 {
@@ -220,7 +253,7 @@ void S9T_dev_info(void)
 void S9T_enable(void)
 {
     /** Enable the Power Pin */
-    S9T_ON();
+    S9T_ON(); // Why do it this way? There's no need to have a function just to call another function...
 }
 
 void S9T_disable(void)
@@ -619,93 +652,84 @@ STATIC S9_result_t receive_response(uint8_t *rData, uint8_t *len, uint16_t rData
 STATIC S9_result_t receive_response_RTOS(uint8_t *rData, uint16_t *len, uint16_t rDataMaxSize)
 {
     S9_result_t result = S9_RESULT_FAIL;
-    uint16_t msg_len_read;
+    uint16_t current_read_len;
     uint16_t total_len_received = 0;
-    uint8_t lBuf[256]; 
-    bool contFlag = true;
-    uint32_t wait_cycles = 0; 
-    const uint32_t MAX_WAIT_CYCLES_OUTER = 60; 
-    const uint32_t MAX_WAIT_CYCLES_INNER = 100; 
+    uint8_t lBuf[256]; // Temporary buffer for MAX14830_UART_Read
 
-    if (rDataMaxSize == 0) return S9_RESULT_FAIL;
+    const uint32_t MAX_TOTAL_ATTEMPTS = 60; // Max outer loop iterations
+    const uint8_t MAX_CONSECUTIVE_EMPTY_READS = 100; 
+    uint8_t consecutive_empty_reads = 0;
 
-    while (contFlag && wait_cycles < MAX_WAIT_CYCLES_OUTER)
-    {
-        msg_len_read = MAX14830_UART_Read (pS9->device.uart.port, lBuf); // Assumes lBuf is large enough (256 bytes)
+    if (rDataMaxSize == 0) {
+        if (len) *len = 0;
+        return S9_RESULT_FAIL;
+    }
 
-        if(msg_len_read > 0)
-        {
-            uint16_t space_left = rDataMaxSize - total_len_received - 1; // -1 for null terminator
-            uint16_t bytes_to_copy = (msg_len_read > space_left) ? space_left : msg_len_read;
-            
-            if (msg_len_read > space_left) {
-                 ARTEMIS_DEBUG_PRINTF("S9: receive_response_RTOS buffer nearly full. Truncating read.\n");
+    // Ensure rData is null-terminated from the start if buffer has space
+    if (rDataMaxSize > 0) {
+        rData[0] = '\0';
+    }
+    // Initialize output length
+    if (len) *len = 0;
+
+
+    for (uint32_t attempt_count = 0; attempt_count < MAX_TOTAL_ATTEMPTS; ++attempt_count) {
+        // Try to read data from the UART via MAX14830
+        current_read_len = MAX14830_UART_Read(pS9->device.uart.port, lBuf);
+
+        if (current_read_len > 0) {
+            consecutive_empty_reads = 0; // Reset counter as we received data
+
+            // Calculate space left, ensuring space for null terminator
+            uint16_t space_left_for_data = (rDataMaxSize - 1) - total_len_received;
+            if (total_len_received >= rDataMaxSize - 1) { // If buffer is already full (should ideally not happen if logic is correct)
+                space_left_for_data = 0;
             }
 
-            for (uint16_t i=0; i<bytes_to_copy; i++)
-            {
-                rData[total_len_received + i] = lBuf[i];
+            uint16_t bytes_to_copy = (current_read_len > space_left_for_data) ? space_left_for_data : current_read_len;
+
+            // We cannot use debug prints in here because they're all sent to the data-logger, which starts communicating on the I2C bus
+            // if (current_read_len > space_left_for_data) {
+            //     // ARTEMIS_DEBUG_PRINTF("S9: receive_response_RTOS buffer nearly full. Truncating.\n"); // problematic printf
+            // }
+
+            if (bytes_to_copy > 0) {
+                memcpy(rData + total_len_received, lBuf, bytes_to_copy);
+                total_len_received += bytes_to_copy;
+                rData[total_len_received] = '\0'; // Always null-terminate
             }
-            total_len_received += bytes_to_copy;
-            rData[total_len_received] = '\0'; 
 
-            uint32_t inner_wait_cycles_local = 0; 
-            do{
-                if(_parse_response(rData, "OK\r\n", total_len_received) != -1)
-                {
-                    result = S9_RESULT_OK;
-                }
-                else if(_parse_response(rData, "ERROR\r\n", total_len_received) != -1)
-                {
-                    result = S9_RESULT_ERROR;
-                }
-                
-                if(result == S9_RESULT_FAIL && inner_wait_cycles_local < MAX_WAIT_CYCLES_INNER)
-                {
-                    if (total_len_received >= rDataMaxSize - 1) { // Buffer is full
-                        result = S9_RESULT_FAIL; 
-                        break;
-                    }
-                    uint16_t rem_len_read = MAX14830_UART_Read (pS9->device.uart.port, lBuf);
-                    if (rem_len_read > 0)
-                    {
-                        space_left = rDataMaxSize - total_len_received - 1;
-                        bytes_to_copy = (rem_len_read > space_left) ? space_left : rem_len_read;
+            // Check for terminators in the accumulated data
+            if (_parse_response(rData, "OK\r\n", total_len_received) != -1) {
+                result = S9_RESULT_OK;
+                break; // Found "OK", successfully exit the attempts loop
+            } else if (_parse_response(rData, "ERROR\r\n", total_len_received) != -1) {
+                result = S9_RESULT_ERROR;
+                break; // Found "ERROR", successfully exit the attempts loop
+            }
 
-                        if (rem_len_read > space_left) {
-                             ARTEMIS_DEBUG_PRINTF("S9: receive_response_RTOS (inner) buffer nearly full. Truncating.\n");
-                        }
-                        
-                        for (uint16_t i=0; i<bytes_to_copy; i++)
-                        {
-                            rData[total_len_received+i] = lBuf[i];
-                        }
-                        total_len_received += bytes_to_copy;
-                        rData[total_len_received] = '\0';
-                    }
-                    inner_wait_cycles_local++;
-                    vTaskDelay(pdMS_TO_TICKS(10)); 
-                }
-                else 
-                {
-                    contFlag = false; 
-                    break; 
-                }
-            } while(true); 
+            // If buffer is now full and no terminator was found, fail and exit
+            if (total_len_received >= rDataMaxSize - 1) {
+                // ARTEMIS_DEBUG_PRINTF("S9: receive_response_RTOS buffer full without terminator.\n");
+                result = S9_RESULT_FAIL; // Or a specific S9_BUFFER_FULL error
+                break; 
+            }
+        } else { // current_read_len == 0 (MAX14830_UART_Read likely timed out or no data in circ buffer)
+            consecutive_empty_reads++;
+            if (consecutive_empty_reads >= MAX_CONSECUTIVE_EMPTY_READS) {
+                // ARTEMIS_DEBUG_PRINTF("S9: receive_response_RTOS timed out after multiple empty reads.\n");
+                result = S9_RESULT_FAIL; // Timeout due to no new data
+                break;
+            }
+            vTaskDelay(pdMS_TO_TICKS(50)); // e.g., 50ms delay before next attempt
         }
-        
-        if (!contFlag || result == S9_RESULT_OK || result == S9_RESULT_ERROR) { // If inner loop set contFlag to false or found definitive result
-            break; 
-        }
-        
-        wait_cycles++;
-        if (msg_len_read == 0) { // Only delay if no data was read in this outer loop iteration
-             vTaskDelay(pdMS_TO_TICKS(500));
-        }
-    }
-    *len = total_len_received;
-    if(wait_cycles >= MAX_WAIT_CYCLES_OUTER && result == S9_RESULT_FAIL) {
-        ARTEMIS_DEBUG_PRINTF("S9: receive_response_RTOS outer loop timeout.\n");
-    }
+    } // End of for loop (attempts_count)
+
+    if (len) *len = total_len_received;
+
+    // if (attempt_count >= MAX_TOTAL_ATTEMPTS && result == S9_RESULT_FAIL) {
+    //    // ARTEMIS_DEBUG_PRINTF("S9: receive_response_RTOS outer loop attempt limit reached.\n");
+    // }
+    
     return result;
 }

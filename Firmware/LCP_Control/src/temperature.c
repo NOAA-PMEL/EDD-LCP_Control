@@ -36,7 +36,8 @@ bool TEMP_initialize(TemperatureSensor_t sensor){
 
 void TEMP_initialize_RTOS(void)
 {
-    TEMP_Power_ON();
+    // TEMP_Power_ON(); // this is incredibly stupid and increases the stack usage... just call the function from here.
+    S9T_enable();
     MAX14830_port_enable((eMAX18430_ComPort_t) sParam.port);
     MAX14830_Set_baudrate((eMAX18430_ComPort_t) sParam.port, sParam.baudrate);
 

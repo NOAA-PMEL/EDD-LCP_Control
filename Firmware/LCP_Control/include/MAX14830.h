@@ -40,7 +40,7 @@
 * Typdefs
 *********************************************************************************/
 /**
- * @brief MAX14830 Port Selectin
+ * @brief MAX14830 Port Selection
  *
  */
 typedef enum
