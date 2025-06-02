@@ -184,7 +184,7 @@ float S9T_Read_R(void);
  * @return None
  */
 float S9T_Read(float *t, float *r);
-void _module_s9_stop_sampling_RTOS(void);
+STATIC void _module_s9_stop_sampling_RTOS(void);
 
 //#ifdef TEST
 //STATIC void _parse_msg(char *data, uint8_t len, sS9_t *p);
