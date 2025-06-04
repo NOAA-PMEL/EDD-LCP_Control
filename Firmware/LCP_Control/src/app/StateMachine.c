@@ -448,7 +448,7 @@ void module_pus_surface_float(void)
                 else if (averaged_rate == 0.0 && !piston_move)
                 {
                     /* decrease piston position by PARK_POSITION_INCREMENT inches */
-                    ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Depth Rate is stable, increase %fin\n", PARK_POSITION_INCREMENT2);
+                    ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Depth Rate is stable, increase %fin\n", PARK_POSITION_INCREMENT);
                     length_update += PARK_POSITION_INCREMENT;
 
                     /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
@@ -1942,7 +1942,7 @@ void module_sps_park(void)
                             length_update += PARK_POSITION_INCREMENT2;
                             ARTEMIS_DEBUG_PRINTF(
                                 "SPS :: park, Depth Rate Positive, averaged_rate=%f, increase %fin, length_update=%.4fin\n", 
-                                averaged_rate, PARK_POSITION_INCREMENT, length_update);
+                                averaged_rate, PARK_POSITION_INCREMENT2, length_update);
 
                             /* check critcal depth for piston, do not increase piston beyond 5.25in when depth greater than 50m */
                             if (length_update >= CRUSH_DEPTH_PISTON_POSITION)
