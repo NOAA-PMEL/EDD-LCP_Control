@@ -252,7 +252,7 @@ add_custom_target(bootload_asb DEPENDS asb # Depends on the asb target which cre
     # For the RHEL8 Linux system in the lab, specify python3.8 explicitly and comment out the other command.
     #COMMAND python3.8 ${ASB_UPLOADER_SCRIPT} --bin ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin --load-address-blob 0x20000 --magic-num 0xCB -o ${CMAKE_BINARY_DIR}/${TARGET_NAME} --version 0x0 --load-address-wired 0xC000 -i 6 --options 0x1 -b ${ASB_UPLOAD_BAUD} -port ${COM_PORT} -r 2 -v
     #COMMAND ${PYTHON_EXECUTABLE} ${ASB_UPLOADER_SCRIPT} --bin ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin --load-address-blob 0x20000 --magic-num 0xCB -o ${CMAKE_BINARY_DIR}/${TARGET_NAME} --version 0x0 --load-address-wired 0xC000 -i 6 --options 0x1 -b ${ASB_UPLOAD_BAUD} -port ${COM_PORT} -r 2 -v
-    COMMAND ${PYTHON_EXE} ${ASB_UPLOADER_SCRIPT} --bin ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin --load-address-blob 0x20000 --magic-num 0xCB -o ${CMAKE_BINARY_DIR}/${TARGET_NAME} --version 0x0 --load-address-wired 0xC000 -i 6 --options 0x1 -b ${ASB_UPLOAD_BAUD} -port ${COM_PORT} -r 2 -v
+    COMMAND python ${ASB_UPLOADER_SCRIPT} --bin ${CMAKE_BINARY_DIR}/${TARGET_NAME}_asb.bin --load-address-blob 0x20000 --magic-num 0xCB -o ${CMAKE_BINARY_DIR}/${TARGET_NAME} --version 0x0 --load-address-wired 0xC000 -i 6 --options 0x1 -b ${ASB_UPLOAD_BAUD} -port COM4 -r 2 -v
     
     COMMENT "Bootloading ASB via ${COM_PORT}"
     VERBATIM)
