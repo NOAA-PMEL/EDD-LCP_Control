@@ -66,7 +66,7 @@
 #define SYSTEM_PROFILER_PARK_DEPTH_ERR      ( 2.0f )
 #define SYSTEM_PROFILER_PARK_DURATION_MIN   ( 5.0f )        /* in minutes */
 #define SYSTEM_PROFILER_PARK_DURATION_SEC   ( SYSTEM_PROFILER_PARK_DURATION_MIN * 60.0f )
-#define SYSTEM_PROFILER_PARK_RATE           ( 1.0f / 600.0f ) //60.0f 
+#define SYSTEM_PROFILER_PARK_RATE           ( 1.0f / 1080.0f ) //600.0f 
 #define SYSTEM_PROFILER_PARK_RATE_FIRST      ( 1.0f / 1.0f ) //60.0f 
 
 #define VOLUME_COMPRESSIBILITY_COEFF        ( 0.0f )        /* gamma, coefficient of volume compressiblity, related to pressure */
@@ -92,7 +92,7 @@
 #define PISTON_MOVE_TO_SURFACE              ( 10.5f ) //11.0f /* Piston position move to surface in inches */
 #define PROFILE_DEPTH_RATE_COUNTER          ( 60.0f )       /* Change piston position after this number of measurements */
 #define PARK_DEPTH_RATE_COUNTER             ( 3.0f )       /* Change piston position after this number of measurements */
-#define SYSTEM_CDPP_TIMER                   ( 60.0f * 60.0f )    /* XXXX set to 60min for bench testing, revert to 4mins for field, Timer for getting stuck in critical depth piston position 300s*/
+#define SYSTEM_CDPP_TIMER                   ( 4.0f * 60.0f )    /* XXXX set to 60min for bench testing, revert to 4mins for field, Timer for getting stuck in critical depth piston position 300s*/
 #define TO_PROFILE_STATE_TIMER              ( 5.0f * 60.0f )    /* Timer for getting stuck in move_to_profile state */
 #define TO_PARK_STATE_TIMER                 ( 5.0f * 60.0f )    /* Timer for getting stuck in move_to_park state */
 
@@ -253,7 +253,7 @@
 /** Puget Sound Testing */
 #define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
-#define POPUP                               ( true )   //flag to tel LCP to sit on bottom until POPUP_DATE
+#define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define PROFILE_SECOND                      ( true )   //flag to tel LCP to first profile every PARK_TIME_SECOND, then every PARK_TIME after reaching PROFILE_SECOND_END_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
@@ -266,15 +266,15 @@
 #define PARK_DEPTH_MAX                      ( 200.0f )
 #define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
 #define PARK_RATE_FIRST                     ( 1.0f / 60.0f  )
-#define PARK_RATE_SECOND                    ( 1.0f / 300.0f )
+#define PARK_RATE_SECOND                    ( 1.0f / 540.0f )
 #define PARK_TIME_FIRST                     ( 3600 )    /* 1 hr */
 #define PARK_TIME_SECOND                    ( 10800 )    /* 3 hrs */
 #define PARK_TIME                           ( 21600 )    /* 6 hrs */
 #define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
-#define PARK_DENSITY                        ( 1024.0f )
+#define PARK_DENSITY                        ( 1040.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 0.09f )
-#define PROFILE_FIRST_FIRST_START_DATE      ( 1748001600 )   // Epoch, date and time of the start of the first profile
-#define PROFILE_SECOND_END_DATE             ( 1747943950 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
+#define PROFILE_FIRST_FIRST_START_DATE      ( 1750190400 )   // Epoch, date and time of the start of the first profile
+#define PROFILE_SECOND_END_DATE             ( 1750798800 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
 #define PROFILE_DEPTH                       ( 165.0f ) //( 4.5f )
 #define PROFILE_DEPTH_ERR                   ( 1.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
