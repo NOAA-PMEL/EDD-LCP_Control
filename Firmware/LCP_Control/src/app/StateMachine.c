@@ -721,7 +721,7 @@ void module_pds_idle(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: idle, deliberately stopping the Piston\n");
                 /* stop the piston */
-                PIS_stop();
+                //PIS_stop();
                 PIS_task_delete(); // Signal to exit loop
                 previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 while (previousTaskAlive)
@@ -1335,7 +1335,7 @@ void module_sps_move_to_park(void)
                     if (piston_move)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, deliberately stopping the Piston\n");
-                        PIS_stop();
+                        //PIS_stop();
                         PIS_task_delete(); // Signal to exit loop
                         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                         while (previousTaskAlive)
@@ -1386,7 +1386,7 @@ void module_sps_move_to_park(void)
                         //if (piston_move)
                         //{
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, deliberately stopping the Piston\n");
-                            PIS_stop();
+                            //PIS_stop();
                             PIS_task_delete(); // Signal to exit loop
                             previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                             while (previousTaskAlive)
@@ -1468,7 +1468,7 @@ void module_sps_move_to_park(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, deliberately stopping the Piston\n");
                 /* stop the piston */
-                PIS_stop();
+                //PIS_stop();
                 PIS_task_delete(); // Signal to exit loop
                 previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 while (previousTaskAlive)
@@ -1608,7 +1608,7 @@ void module_sps_move_to_park(void)
             if (piston_move)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, deliberately stopping the Piston\n");
-                PIS_stop();
+                //PIS_stop();
                 PIS_task_delete(); // Signal to exit loop
                 previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 while (previousTaskAlive)
@@ -2216,7 +2216,7 @@ void module_sps_park(void)
                 if (piston_move)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, deliberately stopping the Piston\n");
-                    PIS_stop();
+                    //PIS_stop();
                     PIS_task_delete(); // Signal to exit loop
                     previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                     while (previousTaskAlive)
@@ -2248,7 +2248,7 @@ void module_sps_park(void)
                 if (piston_move)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, deliberately stopping the Piston\n");
-                    PIS_stop();
+                    //PIS_stop();
                     PIS_task_delete(); // Signal to exit loop
                     previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                     while (previousTaskAlive)
@@ -2295,7 +2295,7 @@ void module_sps_park(void)
                 if (piston_move)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, deliberately stopping the Piston\n");
-                    PIS_stop();
+                    //PIS_stop();
                     PIS_task_delete(); // Signal to exit loop
                     previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                     while (previousTaskAlive)
@@ -2590,7 +2590,7 @@ void module_sps_move_to_profile(void)
                     if (piston_move)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
-                        PIS_stop();
+                        //PIS_stop();
                         PIS_task_delete(); // Signal to exit loop
                         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                         while (previousTaskAlive)
@@ -2647,7 +2647,7 @@ void module_sps_move_to_profile(void)
                         //{
                         // just do this no matter what.
                             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
-                            PIS_stop();
+                            //PIS_stop();
                             PIS_task_delete(); // Signal to exit loop
                             previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                             while (previousTaskAlive)
@@ -2726,7 +2726,7 @@ void module_sps_move_to_profile(void)
             if (piston_move)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
-                PIS_stop();
+                //PIS_stop();
                 PIS_task_delete(); // Signal to exit loop
                 previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 while (previousTaskAlive)
@@ -2868,7 +2868,7 @@ void module_sps_move_to_profile(void)
             if (piston_move)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, deliberately stopping the Piston\n");
-                PIS_stop();
+                //PIS_stop();
                 PIS_task_delete(); // Signal to exit loop
                 previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 while (previousTaskAlive)
@@ -3407,7 +3407,7 @@ void module_sps_profile(void)
             if (piston_move)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
-                PIS_stop();
+                //PIS_stop();
                 PIS_task_delete(); // Signal to exit loop
                 previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 while (previousTaskAlive)
@@ -3439,7 +3439,7 @@ void module_sps_profile(void)
                 //if (piston_move)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
-                    PIS_stop();
+                    //PIS_stop();
                     PIS_task_delete(); // Signal to exit loop
                     previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                     while (previousTaskAlive)
@@ -3482,7 +3482,7 @@ void module_sps_profile(void)
             if (piston_move)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, deliberately stopping the Piston\n");
-                PIS_stop();
+                //PIS_stop();
                 PIS_task_delete(); // Signal to exit loop
                 previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 while (previousTaskAlive)
@@ -3624,15 +3624,15 @@ void module_sps_move_to_surface(void)
         {
             ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, move to full deliberately stopping the Piston\n");
             /* stop the piston */
-            PIS_stop();
-                PIS_task_delete(); // Signal to exit loop
+            //PIS_stop();
+            PIS_task_delete(); // Signal to exit loop
+            previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+            while (previousTaskAlive)
+            {
+                ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Previous piston task is still running...\n");
+                vTaskDelay(xDelay5000ms);
                 previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
-                while (previousTaskAlive)
-                {
-                    ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Previous piston task is still running...\n");
-                    vTaskDelay(xDelay5000ms);
-                    previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
-                }
+            }
             vTaskDelay(piston_period);
             piston_move = false;
             piston_timer = 0;
@@ -3763,7 +3763,7 @@ void module_sps_move_to_surface(void)
     {
         ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, GPS deliberately stopping the Piston\n");
         /* stop the piston */
-        PIS_stop();
+        //PIS_stop();
         PIS_task_delete(); // Signal to exit loop
         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
         while (previousTaskAlive)
