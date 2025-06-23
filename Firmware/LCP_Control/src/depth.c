@@ -171,7 +171,7 @@ void DEPTH_Read(sDepth_Measurement_t *data)
     float pressure;
     //artemis_pa9ld_read(&pressure, &temperature);
 
-#if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+#if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)  || defined(__TEST_PROFILE_3__)
 
     /* read pressure test profile */
     datalogger_pressure(&pressure);

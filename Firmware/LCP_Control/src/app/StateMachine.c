@@ -684,7 +684,7 @@ void module_pds_idle(void)
     }
     vTaskDelay(xDelay5000ms);
 
-#if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+#if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__) || defined(__TEST_PROFILE_3__)
     /* go faster @0.5Hz*/
     float s_rate = 2.0;
 #else
@@ -3561,7 +3561,7 @@ void module_sps_move_to_surface(void)
     TaskHandle_t xPiston = NULL;
     PIS_set_piston_rate(1);
 
-    #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+    #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__) || defined(__TEST_PROFILE_3__)
         /* set piston to 10.5in */
         PIS_set_length(10.5);
     #else
@@ -4004,7 +4004,7 @@ void module_sps_tx(void)
     
     if (!iridium_ready) {
         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium failed to power on after %u tries. Exiting TX state.\n", tries);
-        #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+        #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__) || defined(__TEST_PROFILE_3__)
         // datalogger_read_test_profile(true); // Assuming this exists
         ARTEMIS_DEBUG_PRINTF("SPS :: tx, TEST mode - Reading test profile due to power fail.\n");
         #endif
@@ -4412,7 +4412,7 @@ cleanup_and_exit:
     {
         // If we exited due to failure (max attempts or otherwise), or success but more items remain, go to IDLE
         spsEvent = MODE_IDLE;
-        #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+        #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__) || defined(__TEST_PROFILE_3__)
         // This datalogger call might be better placed in the transition logic *to* IDLE state
         ARTEMIS_DEBUG_PRINTF("SPS :: tx, TEST mode - Reading test profile on exit to IDLE.\n");
         // datalogger_read_test_profile(true); // Assuming this exists
@@ -4422,7 +4422,7 @@ cleanup_and_exit:
     MEM_log_memory_status("SPS :: tx end");
 
     // Reset the test pressure profile for the next cycle
-    #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+    #if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__) || defined(__TEST_PROFILE_3__)
         /* reset test profile */
         datalogger_read_test_profile(true);
     #endif

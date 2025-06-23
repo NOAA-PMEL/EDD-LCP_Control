@@ -155,6 +155,10 @@ void datalogger_read_test_profile(bool reset)
         filename = "test_profile2.txt";
         /* read file*/
         size = datalogger_filesize(filename);
+#elif defined(__TEST_PROFILE_3__)
+        filename = "test_profile3.txt";
+        /* read file*/
+        size = datalogger_filesize(filename);
 #else
     #warning "WARNING:: DATALOGGER : No Test_Profile text file was selected"
 #endif

@@ -40,6 +40,10 @@ void artemis_debug_initialize(void)
         /* reading from the file first time and fill up the buffer */
         ARTEMIS_DEBUG_PRINTF("\n<<< TEST_PROFILE_2 Profile selected >>>\n\n");
         datalogger_read_test_profile(false);
+#elif defined(__TEST_PROFILE_3__)
+        /* reading from the file first time and fill up the buffer */
+        ARTEMIS_DEBUG_PRINTF("\n<<< TEST_PROFILE_3 Profile selected >>>\n\n");
+        datalogger_read_test_profile(false);
 #elif defined(__TEST_TANK__)
         ARTEMIS_DEBUG_PRINTF("\n<<< TEST_TANK Profile selected >>>\n\n");
 #elif defined(__TEST_LAKE__)

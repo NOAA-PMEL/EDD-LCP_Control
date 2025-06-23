@@ -297,7 +297,7 @@ void module_sensors_slow(void)
 
     profileNr++;
 
-#if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__)
+#if defined(__TEST_PROFILE_1__) || defined(__TEST_PROFILE_2__) || defined(__TEST_PROFILE_3__)
         /* reset test profile */
         datalogger_read_test_profile(true);
 #endif
