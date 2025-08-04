@@ -108,7 +108,7 @@
 
 /** Test Profiles */
 
-#elif defined(__TEST_PROFILE_1__)
+#if defined(__TEST_PROFILE_1__)
 /** TEST profile1 */
 #define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
