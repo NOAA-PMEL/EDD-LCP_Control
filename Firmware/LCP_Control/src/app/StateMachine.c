@@ -1673,7 +1673,7 @@ void module_sps_park(void)
     uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
     ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
     uint32_t epochtimer = 0;
-    uint32_t sampepoch_time = 0;
+    uint32_t sampepoch_time;  // Will be initialized after park_period calculation
 
     bool popup = false;
 
@@ -1752,6 +1752,10 @@ void module_sps_park(void)
     //uint32_t wait_time = 0;
     uint32_t park_period = xDelay1000ms/s_rate;
     ARTEMIS_DEBUG_PRINTF("SPS :: park, park_period = %u ms\n", park_period);
+    
+    // Initialize sampepoch_time to start sampling after the first period
+    sampepoch_time = epoch + (park_period / 1000);  // Convert milliseconds to seconds
+    
     TaskHandle_t xDepth = NULL;
     TaskHandle_t xTemp  = NULL;
     vTaskDelay(xDelay100ms);
@@ -1875,7 +1879,7 @@ void module_sps_park(void)
             artemis_rtc_get_time(&time);
             epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
             ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
-            sampepoch_time = epoch + park_period; 
+            sampepoch_time = epoch + (park_period / 1000);  // Convert milliseconds to seconds 
 
             /* store first sample with start time */
             if (start_time)
