@@ -191,28 +191,36 @@ void DATA_get_converted(Data_t *buf, pData *P, uint16_t *pressure, uint16_t *tem
 uint32_t get_epoch_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t min, uint8_t sec)
 {
     year = year + 2000;
-    const uint16_t daysInMonth[] = {0, 31, 59, 90, 120, 151, 181, 211, 242, 272, 303, 333};
     
-    // Calculate base epoch time
-    uint32_t epoch = (year - 1970) * 86400 * 365 + 
-                     daysInMonth[month - 1] * 86400 + 
-                     (day - 1) * 86400 +
-                     hour * 3600 + min * 60 + sec;
+    // Days in each month (non-leap year)
+    const uint16_t daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     
-    // Add leap days for years from 1972 to current year (exclusive)
-    // 1972 was the first leap year after 1970
-    for (uint16_t y = 1972; y < year; y += 4) {
-        // Check if it's a valid leap year
+    // Calculate total days since epoch (Jan 1, 1970)
+    uint32_t totalDays = 0;
+    
+    // Add days for complete years from 1970 to year-1
+    for (uint16_t y = 1970; y < year; y++) {
         if ((y % 4 == 0) && ((y % 100 != 0) || (y % 400 == 0))) {
-            epoch += 86400; // Add one day for each leap year
+            totalDays += 366; // Leap year
+        } else {
+            totalDays += 365; // Normal year
         }
     }
     
-    // If current year is a leap year and we've passed February 29th, add one more day
-    bool isCurrentYearLeap = (year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0));
-    if (isCurrentYearLeap && month > 2) {
-        epoch += 86400;
+    // Add days for complete months in the current year
+    for (uint8_t m = 1; m < month; m++) {
+        totalDays += daysInMonth[m - 1];
+        // Add extra day for February in leap years
+        if (m == 2 && ((year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0)))) {
+            totalDays += 1;
+        }
     }
+    
+    // Add remaining days
+    totalDays += (day - 1);
+    
+    // Convert to seconds and add time components
+    uint32_t epoch = totalDays * 86400 + hour * 3600 + min * 60 + sec;
     
     return epoch;
 }
