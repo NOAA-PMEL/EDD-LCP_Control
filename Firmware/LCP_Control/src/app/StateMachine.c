@@ -1875,7 +1875,7 @@ void module_sps_park(void)
             artemis_rtc_get_time(&time);
             epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
             ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
-            sampepoch_time += epoch + park_period; 
+            sampepoch_time = epoch + park_period; 
 
             /* store first sample with start time */
             if (start_time)
