@@ -107,39 +107,6 @@
 #define SATELLITE_TIMER                     ( 15 )          /* Try XX seconds for checking satellite visibility */
 
 /** Test Profiles */
-#if defined(__TEST_OCEAN__)
-/** Ocean , set the values accordingly */
-
-#define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
-#define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
-#define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
-#define PROFILE_SECOND                      ( false )   //flag to tel LCP to first profile every PARK_TIME_SECOND, then every PARK_TIME after reaching PROFILE_SECOND_END_DATE
-#define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
-#define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
-#define BALLAST_DEPTH                       ( 2.0f )
-#define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
-#define BALLAST_DEPTH_PROFILE               ( 2.0f )
-#define PARK_DEPTH                          ( SYSTEM_PROFILER_PARK_DEPTH )
-#define PARK_DEPTH_MAX                      ( SYSTEM_PROFILER_PARK_DEPTH + 10.f)
-#define PARK_DEPTH_ERR                      ( SYSTEM_PROFILER_PARK_DEPTH_ERR )
-#define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
-#define PARK_RATE_FIRST                     ( SYSTEM_PROFILER_PARK_RATE_FIRST )
-#define PARK_RATE_SECOND                    ( 1.0f / 60.0f )
-#define PARK_TIME_FIRST                     ( 3600 )    /* 1 hr */
-#define PARK_TIME_SECOND                    ( 5400 )    /* 2 mins */
-#define PARK_TIME                           ( 10800 )
-#define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
-#define PARK_DENSITY                        ( SYSTEM_DENSITY_SEAWATER )
-#define PROFILE_FIRST_START_DATE            ( 1748001600 )   // Epoch, date and time of the start of the first profile
-#define PROFILE_SECOND_END_DATE             ( 1747943950 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
-#define PROFILE_DEPTH                       ( SYSTEM_PROFILER_PROFILE_DEPTH )
-#define PROFILE_DEPTH_ERR                   ( SYSTEM_PROFILER_PROFILE_DEPTH_ERR )
-#define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
-#define TO_PROFILE_DENSITY                  ( SYSTEM_DENSITY_SEAWATER )
-#define PROFILE_DENSITY                     ( SYSTEM_NEUTRAL_BUOYANCY )
-#define CRUSH_DEPTH                         ( SYSTEM_CRUSH_LIMIT_DEPTH )
-#define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
-#define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
 
 #elif defined(__TEST_PROFILE_1__)
 /** TEST profile1 */
@@ -285,7 +252,79 @@
 #define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
 #define PISTON_MOVEMENT_ON_BOTTOM           ( 0.5f )    /* 0.5 inch piston length if we hit the bottom */
 
+#elif defined(__TEST_LAKE__)
+/** Lake Washington Dock Testing */
+#define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
+#define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
+#define POPUP                               ( true )   //flag to tel LCP to sit on bottom until POPUP_DATE
+#define PROFILE_SECOND                      ( true )   //flag to tel LCP to first profile every PARK_TIME_SECOND, then every PARK_TIME after reaching PROFILE_SECOND_END_DATE
+#define POPUP_RATE                          ( 1.0f / 60.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
+#define POPUP_DATE                          ( 1754334000 )    //Epoch, date and time when LCP pops up
+#define BALLAST_DEPTH                       ( 1.5f )
+#define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
+#define BALLAST_DEPTH_PROFILE               ( 4.0f )
+#define MOVE_TO_PARK_SAMPLE_RATE            ( 1.0f )
+#define PARK_DEPTH                          ( 7.6f )
+#define PARK_DEPTH_ERR                      ( 1.5f )
+#define PARK_DEPTH_MAX                      ( 200.0f )
+#define PARK_RATE                           ( 1.0f / 300.0f ) /* 5 min */
+#define PARK_RATE_FIRST                     ( 1.0f / 60.0f  )
+#define PARK_RATE_SECOND                    ( 1.0f / 120.0f )
+#define PARK_TIME_FIRST                     ( 120 )    /* 2 min */
+#define PARK_TIME_SECOND                    ( 1800 )    /* 30 min */
+#define PARK_TIME                           ( 3600 )    /* 1 hrs */
+#define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
+#define PARK_DENSITY                        ( 1037.0f )
+#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )
+#define PROFILE_FIRST_START_DATE            ( 1751400000 )   // Epoch, date and time of the start of the first profile
+#define PROFILE_SECOND_END_DATE             ( 1754344800 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
+#define PROFILE_DEPTH                       ( 8.5f )
+#define PROFILE_DEPTH_ERR                   ( 2.0f )
+#define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
+#define TO_PROFILE_DENSITY                  ( 1012.5f )
+#define PROFILE_DENSITY                     ( 1009.1f )
+#define CRUSH_DEPTH                         ( 220.0f )
+#define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
+#define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
+#define PISTON_MOVEMENT_ON_BOTTOM           ( 0.50f )    /* 0.70 inch piston length if we hit the bottom */
+
 #elif defined(__TEST_PS__)
+/** Puget Sound Testing */
+#define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
+#define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
+#define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
+#define PROFILE_SECOND                      ( true )   //flag to tel LCP to first profile every PARK_TIME_SECOND, then every PARK_TIME after reaching PROFILE_SECOND_END_DATE
+#define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
+#define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
+#define BALLAST_DEPTH                       ( 1.5f )
+#define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
+#define BALLAST_DEPTH_PROFILE               ( 4.0f )
+#define MOVE_TO_PARK_SAMPLE_RATE            ( 0.05f )
+#define PARK_DEPTH                          ( 160.0f ) //( 4.0f )
+#define PARK_DEPTH_ERR                      ( 15.0f )
+#define PARK_DEPTH_MAX                      ( 200.0f )
+#define PARK_RATE                           ( SYSTEM_PROFILER_PARK_RATE )
+#define PARK_RATE_FIRST                     ( 1.0f / 60.0f  )
+#define PARK_RATE_SECOND                    ( 1.0f / 540.0f )
+#define PARK_TIME_FIRST                     ( 3600 )    /* 1 hr */
+#define PARK_TIME_SECOND                    ( 10800 )    /* 3 hrs */
+#define PARK_TIME                           ( 21600 )    /* 6 hrs */
+#define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
+#define PARK_DENSITY                        ( 1038.0f )
+#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 0.09f )
+#define PROFILE_FIRST_START_DATE            ( 1751400000 )   // Epoch, date and time of the start of the first profile
+#define PROFILE_SECOND_END_DATE             ( 1751958000 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
+#define PROFILE_DEPTH                       ( 165.0f ) //( 4.5f )
+#define PROFILE_DEPTH_ERR                   ( 1.0f )
+#define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
+#define TO_PROFILE_DENSITY                  ( 1024.1f )
+#define PROFILE_DENSITY                     ( 1015.0f )
+#define CRUSH_DEPTH                         ( 220.0f )
+#define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
+#define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
+#define PISTON_MOVEMENT_ON_BOTTOM           ( 0.50f )    /* 0.70 inch piston length if we hit the bottom */
+
+#elif defined(__TEST_BERINGSEA__)
 /** Puget Sound Testing */
 #define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom

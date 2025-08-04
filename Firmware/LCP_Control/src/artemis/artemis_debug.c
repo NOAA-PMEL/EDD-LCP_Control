@@ -48,8 +48,8 @@ void artemis_debug_initialize(void)
         ARTEMIS_DEBUG_PRINTF("\n<<< TEST_TANK Profile selected >>>\n\n");
 #elif defined(__TEST_LAKE__)
         ARTEMIS_DEBUG_PRINTF("\n<<< TEST_LAKE Profile selected >>>\n\n");
-#elif defined(__TEST_OCEAN__)
-        ARTEMIS_DEBUG_PRINTF("\n<<< TEST_OCEAN Profile selected >>>\n\n");
+#elif defined(__TEST_BERINGSEA__)
+        ARTEMIS_DEBUG_PRINTF("\n<<< TEST_BERINGSEA Profile selected >>>\n\n");
 #elif defined(__TEST_PS__)
         ARTEMIS_DEBUG_PRINTF("\n<<< TEST_PS Profile selected >>>\n\n");
 #else
