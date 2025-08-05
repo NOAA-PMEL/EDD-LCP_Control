@@ -1673,7 +1673,7 @@ void module_sps_park(void)
     uint32_t epoch = get_epoch_time(time.year, time.month, time.day, time.hour, time.min, time.sec);
     ARTEMIS_DEBUG_PRINTF("SPS :: park, Epoch       = %ld\n", epoch);
     uint32_t epochtimer = 0;
-    uint32_t sampepoch_time;  // Will be initialized after park_period calculation
+    uint32_t sampepoch_time = 0;  // Will be initialized after park_period calculation
 
     bool popup = false;
 
