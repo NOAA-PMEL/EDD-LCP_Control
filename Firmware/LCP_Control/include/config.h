@@ -259,7 +259,7 @@
 #define POPUP                               ( true )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define PROFILE_SECOND                      ( true )   //flag to tel LCP to first profile every PARK_TIME_SECOND, then every PARK_TIME after reaching PROFILE_SECOND_END_DATE
 #define POPUP_RATE                          ( 1.0f / 60.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
-#define POPUP_DATE                          ( 1754334000 )    //Epoch, date and time when LCP pops up
+#define POPUP_DATE                          ( 1754355600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 4.0f )
@@ -277,7 +277,7 @@
 #define PARK_DENSITY                        ( 1037.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )
 #define PROFILE_FIRST_START_DATE            ( 1751400000 )   // Epoch, date and time of the start of the first profile
-#define PROFILE_SECOND_END_DATE             ( 1754344800 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
+#define PROFILE_SECOND_END_DATE             ( 1754362800 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
 #define PROFILE_DEPTH                       ( 8.5f )
 #define PROFILE_DEPTH_ERR                   ( 2.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
