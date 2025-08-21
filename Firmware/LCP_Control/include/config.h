@@ -110,12 +110,12 @@
 
 #if defined(__TEST_PROFILE_1__)
 /** TEST profile1 */
-#define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
+#define BENCH_PROFILE                       ( true )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( true )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define PROFILE_SECOND                      ( true )   //flag to tel LCP to first profile every PARK_TIME_SECOND, then every PARK_TIME after reaching PROFILE_SECOND_END_DATE
 #define POPUP_RATE                          ( 1.0f / 3600.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
-#define POPUP_DATE                          ( 1748930400 )    //Epoch, date and time when LCP pops up
+#define POPUP_DATE                          ( 1755504000 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )       // pressure reading ( 0.0101f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
 #define BALLAST_DEPTH_PROFILE               ( 4.0f )
@@ -132,8 +132,8 @@
 #define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )
-#define PROFILE_FIRST_START_DATE            ( 1748001600 )   // Epoch, date and time of the start of the first profile
-#define PROFILE_SECOND_END_DATE             ( 1749016800 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
+#define PROFILE_FIRST_START_DATE            ( 1755504000 )   // Epoch, date and time of the start of the first profile
+#define PROFILE_SECOND_END_DATE             ( 1758204000 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
 #define PROFILE_DEPTH                       ( 165.0f )
 #define PROFILE_DEPTH_ERR                   ( 1.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
