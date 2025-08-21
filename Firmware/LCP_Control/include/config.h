@@ -334,7 +334,7 @@
 #define POPUP_DATE                          ( 1755504000 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )
 #define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
-#define BALLAST_DEPTH_PROFILE               ( 4.0f )
+#define BALLAST_DEPTH_PROFILE               ( 4.0f ) //XXXXX Should probably add 1.2+ meters to this for cold water to counteract extra vaccum in LCP
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 0.05f )
 #define PARK_DEPTH                          ( 66.0f ) //( 4.0f )
 #define PARK_DEPTH_ERR                      ( 5.0f )
