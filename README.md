@@ -29,3 +29,50 @@ This project was started but not completed before the embedded engineer left NOA
 
 # Branch
 Develop has been merged into branch for the sake of putting information forward facing. 
+
+graph LR;
+    
+
+    subgraph Low Cost Profiler
+    
+    
+    MainController --- PistonController
+    GPS --> MainController
+    Pressure --> MainController
+    Temperature --> MainController
+    IMU --> MainController
+    Accelerometer --> MainController
+    subgraph Profiler Control
+        MainController
+        subgraph sensors
+            Pressure
+            Temperature
+            GPS 
+            IMU
+            Accelerometer
+        end
+
+        IridiumSBD --- MainController
+        subgraph Telemetry
+        IridiumSBD
+        end
+    end
+
+    subgraph Power Control ;
+    Piston --> PistonController
+    Encoder --> PistonController
+    subgraph motion
+    Encoder
+    Piston
+    end
+    Batteries --> PistonController
+    subgraph power
+    Batteries
+    end
+    BatteryFuelGauge --> PistonController
+    subgraph Sensor2
+    BatteryFuelGauge     
+    end
+    end
+    
+    end
