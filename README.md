@@ -30,6 +30,12 @@ This project was started but not completed before the embedded engineer left NOA
 # Branch
 Develop has been merged into branch for the sake of putting information forward facing. 
 
+# Low-Cost-Profiler
+Low Cost Profiler for Oceanographic Monitoring
+
+
+## Profiler System Diagram
+```mermaid
 graph LR;
     
 
@@ -76,3 +82,4 @@ graph LR;
     end
     
     end
+```
