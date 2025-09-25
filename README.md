@@ -24,11 +24,10 @@ Control PCB &amp; Firmware for Low Cost Profiler.
 This repository is home to the system controller PCB design and firmware for the low-cost profiler project.
 
 ## State of this project
-This project was started but not completed before the embedded engineer left NOAA.  Parts of the code is working, much is not.  Proceed at your own risk.
-
+The LCP has been extensilivly tested and deployed in Puget Sound and the Bering Sea in Moored mode.  The mechanical design is complete, the electronics hardware needs a goround-up re-design for lower power consumption, decreased cost, and robustness.  The Firmware needs a ground up re-write for robustnuss and readability.
 
 # Branch
-Develop has been merged into branch for the sake of putting information forward facing. 
+Ver1.0 is the active branch and encompasses the most upto date version of the project 
 
 # Low-Cost-Profiler
 Low Cost Profiler for Oceanographic Monitoring
