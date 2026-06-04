@@ -7,11 +7,11 @@
 #define G_CONST                             ( 9.80665 )
 
 #define SYS_SMALL_PISTON_DIAMETER           ( 2.25f * 1.0f ) //0.0254f      /* in inches */
-#define SYS_SMALL_PISTON_MAX_LENGTH         ( 6.0f  * 1.0f ) //0.0254f 
-#define SYS_LARGE_PISTON_DIAMETER           ( 4.50f * 1.0f ) //0.0254f 
-#define SYS_LARGE_PISTON_MAX_LENGTH         ( 6.0f  * 1.0f ) //0.0254f 
+#define SYS_SMALL_PISTON_MAX_LENGTH         ( 5.312f  * 1.0f ) //0.0254f 
+#define SYS_LARGE_PISTON_DIAMETER           ( 4.493f * 1.0f ) //0.0254f 
+#define SYS_LARGE_PISTON_MAX_LENGTH         ( 6.338f  * 1.0f ) //0.0254f 
 #define SYS_HOUSING_DIAMETER                ( 4.88f * 1.0f ) //0.0254f 
-#define SYS_HOUSING_LENGTH                  ( 35.0f * 1.0f ) //0.0254f 
+#define SYS_HOUSING_LENGTH                  ( 34.63f * 1.0f ) //0.0254f 
 
 #define SMALL_PISTON_DIAMETER               ( SYS_SMALL_PISTON_DIAMETER )
 #define SMALL_PISTON_RADIUS                 ( SYS_SMALL_PISTON_DIAMETER / 2.0f )
@@ -29,9 +29,9 @@
 #define HOUSING_RADIUS                      ( SYS_HOUSING_DIAMETER / 2.0f )
 #define HOUSING_RADIUS_SRQ                  ( HOUSING_RADIUS * HOUSING_RADIUS )
 #define HOUSING_LENGTH                      ( SYS_HOUSING_LENGTH )
-#define HOUSING_VOLUME                      ( PI * HOUSING_RADIUS_SRQ * HOUSING_LENGTH )
+#define HOUSING_VOLUME                      ( 655.75f )
 
-#define SYSTEM_MAX_VOLUME                   ( HOUSING_VOLUME + SMALL_PISTON_MAX_VOLUME + LARGE_PISTON_MAX_VOLUME + 0.01f )
+#define SYSTEM_MAX_VOLUME                   ( 777.746f )
 #define SYSTEM_MIN_VOLUME                   ( HOUSING_VOLUME - 0.01f )
 #define SYSTEM_MIN_LENGTH                   ( 0.0f )
 #define SYSTEM_MAX_LENGTH                   ( SMALL_PISTON_MAX_LENGTH + LARGE_PISTON_MAX_LENGTH )
@@ -48,7 +48,7 @@
 #define CYLINDER_DRAG_COEFF                 ( 0.81f )
 
 #define SYSTEM_VOLUME_MIN                   ( HOUSING_VOLUME )
-#define SYSTEM_VOLUME_MAX                   ( HOUSING_VOLUME + SMALL_PISTON_MAX_VOLUME )
+#define SYSTEM_VOLUME_MAX                   ( 676.872f )
 #define SYSTEM_VOLUME_RESERVE               ( LARGE_PISTON_MAX_VOLUME )
 
 #define SYSTEM_NEUTRAL_BUOYANCY             ( 1022.0f )
