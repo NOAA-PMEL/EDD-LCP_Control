@@ -96,7 +96,7 @@ static ProfilerSettings_t settings = {
     .compress_coefficient = VOLUME_COMPRESSIBILITY_COEFF,
 
     .volume = {
-        .max = SYSTEM_VOLUME_MAX,
+        .max = SYSTEM_VOLUME_SMALL_PISTON_MAX ,
         .min = SYSTEM_VOLUME_MIN,
         .reserve = SYSTEM_VOLUME_RESERVE
     },
@@ -205,14 +205,14 @@ float CTRL_calculate_piston_position(float pressure, float temp)
         volume_change = (volume_target - volume_min);
         position_change = 0.0;
     }
-    else if ( (volume_target>volume_min) && (volume_target<=SYSTEM_VOLUME_MAX) )
+    else if ( (volume_target>volume_min) && (volume_target<=SYSTEM_VOLUME_SMALL_PISTON_MAX ) )
     {
         volume_change = (volume_target - volume_min);
         position_change = volume_change/(PI*SMALL_PISTON_RADIUS_SQR);
     }
-    else if ( (volume>SYSTEM_VOLUME_MAX) && (volume<=SYSTEM_MAX_VOLUME) )
+    else if ( (volume_target>SYSTEM_VOLUME_SMALL_PISTON_MAX ) && (volume_target<=SYSTEM_MAX_VOLUME) )
     {
-        volume_change = (volume_target - SYSTEM_VOLUME_MAX);
+        volume_change = (volume_target - SYSTEM_VOLUME_SMALL_PISTON_MAX );
         position_change = (volume_change/(PI*LARGE_PISTON_RADIUS_SQR))+SMALL_PISTON_MAX_LENGTH ;
         /*reset volume change to properly reflect tuth in print statement*/
         volume_change = (volume_target - volume_min);
@@ -258,14 +258,14 @@ float CTRL_calculate_length_from_volume(float volume)
     {
         length = 0.0;
     }
-    else if ( (volume>HOUSING_VOLUME) && (volume<=SYSTEM_VOLUME_MAX) )
+    else if ( (volume>HOUSING_VOLUME) && (volume<=SYSTEM_VOLUME_SMALL_PISTON_MAX ) )
     {
         volume -= HOUSING_VOLUME;
         length = volume/(PI*SMALL_PISTON_RADIUS_SQR);
     }
-    else if ( (volume>SYSTEM_VOLUME_MAX) && (volume<=SYSTEM_MAX_VOLUME) )
+    else if ( (volume>SYSTEM_VOLUME_SMALL_PISTON_MAX ) && (volume<=SYSTEM_MAX_VOLUME) )
     {
-        volume -= SYSTEM_VOLUME_MAX;
+        volume -= SYSTEM_VOLUME_SMALL_PISTON_MAX ;
         length = (volume/(PI*LARGE_PISTON_RADIUS_SQR))+SMALL_PISTON_MAX_LENGTH ;
     }
     else if ( (volume>SYSTEM_MAX_VOLUME) )
