@@ -110,6 +110,7 @@
 
 #if defined(__TEST_PROFILE_1__)
 /** TEST profile1 */
+#define AIR                                 ( false )   //flag to tell if LCP starts fully retracted for Air Deployment
 #define BENCH_PROFILE                       ( true )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( true )   //flag to tel LCP to sit on bottom until POPUP_DATE
@@ -146,6 +147,7 @@
 
 #elif defined(__TEST_PROFILE_2__)
 /** TEST profile2 */
+#define AIR                                 ( false )   //flag to tell if LCP starts fully retracted for Air Deployment
 #define BENCH_PROFILE                       ( true )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
@@ -182,6 +184,7 @@
 
 #elif defined(__TEST_PROFILE_3__)
 /** TEST profile3 */
+#define AIR                                 ( true )   //flag to tell if LCP starts fully retracted for Air Deployment
 #define BENCH_PROFILE                       ( true )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
@@ -195,12 +198,12 @@
 #define PARK_DEPTH                          ( 10.0f )
 #define PARK_DEPTH_ERR                      ( 1.0f )
 #define PARK_DEPTH_MAX                      ( 190.0f )
-#define PARK_RATE                           ( 1.0f )
+#define PARK_RATE                           ( 1.0f / 2.0f )
 #define PARK_RATE_FIRST                     ( 1.0f )
 #define PARK_RATE_SECOND                    ( 1.0f / 2.0f )
-#define PARK_TIME_FIRST                     ( 30 )    /* 1 min, this is only used to increment PROFILE_FIRST_DATE forward if it is set to before the time at the start of the 1st park*/
+#define PARK_TIME_FIRST                     ( 25 )    /* 1 min, this is only used to increment PROFILE_FIRST_DATE forward if it is set to before the time at the start of the 1st park*/
 #define PARK_TIME_SECOND                    ( 120 )    /* 2 mins */
-#define PARK_TIME                           ( 180 )    /* 3 mins */
+#define PARK_TIME                           ( 50 )    /* 3 mins */
 #define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )
@@ -218,6 +221,7 @@
 
 #elif defined(__TEST_TANK__)
 /** TANK Testing */
+#define AIR                                 ( false )   //flag to tell if LCP starts fully retracted for Air Deployment
 #define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
@@ -225,9 +229,9 @@
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.0f )
-#define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
-#define BALLAST_DEPTH_PROFILE               ( 1.0f )
-#define MOVE_TO_PARK_SAMPLE_RATE            ( 0.5f )
+#define BALLAST_DEPTH_SAMPLE_RATE           ( 10.0f )
+#define BALLAST_DEPTH_PROFILE               ( 2.0f )
+#define MOVE_TO_PARK_SAMPLE_RATE            ( 1.0f )
 #define PARK_DEPTH                          ( 3.5f ) //( 4.0f )
 #define PARK_DEPTH_ERR                      ( 0.25f )
 #define PARK_DEPTH_MAX                      ( 6.0f )
@@ -238,15 +242,15 @@
 #define PARK_TIME_SECOND                    ( 120 )    /* 2 mins */
 #define PARK_TIME                           ( 180 )    /* 3 mins */
 #define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
-#define PARK_DENSITY                        ( 1010.2f )
-#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 0.5f )
+#define PARK_DENSITY                        ( 1010.2f ) //should be as close to real density as possible
+#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )
 #define PROFILE_FIRST_START_DATE            ( 1748001600 )   // Epoch, date and time of the start of the first profile
 #define PROFILE_SECOND_END_DATE             ( 1747943950 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
 #define PROFILE_DEPTH                       ( 3.7f ) //( 4.5f )
 #define PROFILE_DEPTH_ERR                   ( 0.1f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
-#define TO_PROFILE_DENSITY                  ( 1012.5f )
-#define PROFILE_DENSITY                     ( 1009.1f )
+#define TO_PROFILE_DENSITY                  ( 1012.5f ) //should be the highest density
+#define PROFILE_DENSITY                     ( 1009.1f ) //should be the lowest density
 #define CRUSH_DEPTH                         ( 10.0f )
 #define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 #define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
@@ -254,6 +258,7 @@
 
 #elif defined(__TEST_LAKE__)
 /** Lake Washington Dock Testing */
+#define AIR                                 ( false )   //flag to tell if LCP starts fully retracted for Air Deployment
 #define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( true )   //flag to tel LCP to sit on bottom until POPUP_DATE
@@ -261,7 +266,7 @@
 #define POPUP_RATE                          ( 1.0f / 60.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1754355600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )
-#define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
+#define BALLAST_DEPTH_SAMPLE_RATE           ( 10.0f )
 #define BALLAST_DEPTH_PROFILE               ( 4.0f )
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 1.0f )
 #define PARK_DEPTH                          ( 7.6f )
@@ -290,6 +295,7 @@
 
 #elif defined(__TEST_PS__)
 /** Puget Sound Testing */
+#define AIR                                 ( false )   //flag to tell if LCP starts fully retracted for Air Deployment
 #define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
@@ -297,7 +303,7 @@
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )
-#define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
+#define BALLAST_DEPTH_SAMPLE_RATE           ( 10.0f )
 #define BALLAST_DEPTH_PROFILE               ( 4.0f )
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 0.05f )
 #define PARK_DEPTH                          ( 160.0f ) //( 4.0f )
@@ -326,6 +332,7 @@
 
 #elif defined(__TEST_BERINGSEA__)
 /** Puget Sound Testing */
+#define AIR                                 ( false )   //flag to tell if LCP starts fully retracted for Air Deployment
 #define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
 #define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
 #define POPUP                               ( true )   //flag to tel LCP to sit on bottom until POPUP_DATE
@@ -333,7 +340,7 @@
 #define POPUP_RATE                          ( 1.0f / 1080.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1755504000 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )
-#define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f )
+#define BALLAST_DEPTH_SAMPLE_RATE           ( 10.0f )
 #define BALLAST_DEPTH_PROFILE               ( 4.0f ) //XXXXX Should probably add 1.2+ meters to this for cold water to counteract extra vaccum in LCP
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 0.05f )
 #define PARK_DEPTH                          ( 66.0f ) //( 4.0f )

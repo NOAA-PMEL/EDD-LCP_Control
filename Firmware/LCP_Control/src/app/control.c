@@ -142,11 +142,11 @@ static ProfilerSettings_t settings = {
 // Static Function Prototypes
 //
 //*****************************************************************************
-static float module_calculate_buoyancy_from_ascent_rate(float rate);
-static float module_calculate_volume_from_ascent_rate(float rate);
-static float module_calculate_buoyancy_from_descent_rate(float rate);
-static float module_calculate_volume_from_descent_rate(float rate);
-static float module_calculate_volume_from_buoyancy(float buoyancy);
+static float module_calculate_buoyancy_from_ascent_rate(float rate, float density);
+static float module_calculate_volume_from_ascent_rate(float rate, float density);
+static float module_calculate_buoyancy_from_descent_rate(float rate, float density);
+static float module_calculate_volume_from_descent_rate(float rate, float density);
+static float module_calculate_volume_from_buoyancy(float buoyancy, float density);
 
 
 float CTRL_calculate_depth(float pressure)
@@ -214,7 +214,7 @@ float CTRL_calculate_piston_position(float pressure, float temp)
     {
         volume_change = (volume_target - SYSTEM_VOLUME_SMALL_PISTON_MAX );
         position_change = (volume_change/(PI*LARGE_PISTON_RADIUS_SQR))+SMALL_PISTON_MAX_LENGTH ;
-        /*reset volume change to properly reflect tuth in print statement*/
+        /*reset volume change to properly reflect truth in print statement*/
         volume_change = (volume_target - volume_min);
     }
     else if ( (volume_target>=SYSTEM_MAX_VOLUME) )
@@ -241,7 +241,7 @@ float CTRL_calculate_volume_from_length(float length)
     else if ((length>0.0) && (length<=(SMALL_PISTON_MAX_LENGTH+LARGE_PISTON_MAX_LENGTH)))
     {
         volume += (PI*SMALL_PISTON_RADIUS_SQR*SMALL_PISTON_MAX_LENGTH);
-        volume += (PI*SMALL_PISTON_RADIUS_SQR*length);
+        volume += (PI*LARGE_PISTON_RADIUS_SQR*(length - SMALL_PISTON_MAX_LENGTH));
     }
 
     /* convert into cubic inches */
@@ -279,7 +279,7 @@ float CTRL_calculate_length_from_volume(float volume)
     return length;
 }
 
-static float module_calculate_buoyancy_from_descent_rate(float rate)
+static float module_calculate_buoyancy_from_descent_rate(float rate, float density)
 {
     float f_gravity = 0;
     float f_drag = 0;
@@ -291,7 +291,7 @@ static float module_calculate_buoyancy_from_descent_rate(float rate)
     /** Calculate the drag force @ that velocity */
     /** F_d = 1/2 (rho) * v^2 * Cd * A */
     f_drag = 0.5f;
-    f_drag *= settings.water_density;
+    f_drag *= density;
     f_drag *= (rate * rate);
     f_drag *= CYLINDER_DRAG_COEFF;
     f_drag *= ( settings.cross_section * 0.00064516 );
@@ -302,7 +302,7 @@ static float module_calculate_buoyancy_from_descent_rate(float rate)
     return f_buoyant;
 }
 
-static float module_calculate_buoyancy_from_ascent_rate(float rate)
+static float module_calculate_buoyancy_from_ascent_rate(float rate, float density)
 {
     float f_gravity = 0;
     float f_drag = 0;
@@ -314,7 +314,7 @@ static float module_calculate_buoyancy_from_ascent_rate(float rate)
     /** Calculate the drag force @ that velocity */
     /** F_d = 1/2 (rho) * v^2 * Cd * A */
     f_drag = 0.5;
-    f_drag *= settings.water_density;
+    f_drag *= density;
     f_drag *= (rate * rate);
     f_drag *= CYLINDER_DRAG_COEFF;
     f_drag *= ( settings.cross_section * 0.00064516 );
@@ -325,36 +325,36 @@ static float module_calculate_buoyancy_from_ascent_rate(float rate)
     return f_buoyant;
 }
 
-static float module_calculate_volume_from_descent_rate(float rate)
+static float module_calculate_volume_from_descent_rate(float rate, float density)
 {
-    float f_buoyant = module_calculate_buoyancy_from_descent_rate(rate);
+    float f_buoyant = module_calculate_buoyancy_from_descent_rate(rate, density);
 
     /** Calculate volume from buoyant force */
-    float volume = module_calculate_volume_from_buoyancy(f_buoyant);
+    float volume = module_calculate_volume_from_buoyancy(f_buoyant, density);
     return volume;
 }
 
-static float module_calculate_volume_from_ascent_rate(float rate)
+static float module_calculate_volume_from_ascent_rate(float rate, float density)
 {
-    float f_buoyant = module_calculate_buoyancy_from_ascent_rate(rate);
+    float f_buoyant = module_calculate_buoyancy_from_ascent_rate(rate, density);
 
     /** Calculate volume from buoyant force */
-    float volume = module_calculate_volume_from_buoyancy(f_buoyant);
+    float volume = module_calculate_volume_from_buoyancy(f_buoyant, density);
     return volume;
 }
 
-static float module_calculate_volume_from_buoyancy(float buoyancy)
+static float module_calculate_volume_from_buoyancy(float buoyancy, float density)
 {
     /** Calculate volume from buoyant force */
     /** F_buoyant = V * (rho) * g */
     /** so, V = F_buoyant / (rho) * g */
-    float volume = buoyancy / (settings.water_density * G_CONST) ;
+    float volume = buoyancy / (density * G_CONST) ;
     /* convert volume from m^3 to in^3 */
     volume *= 61023.7;
     return volume;
 }
 
-float module_ctrl_set_buoyancy_from_rate(float rate, bool falling)
+float module_ctrl_set_buoyancy_from_rate(float rate, bool falling, float density)
 {
     ARTEMIS_DEBUG_PRINTF("Setting rate = %0.3f, falling = %i\n", rate, (uint8_t)falling);
 
@@ -362,12 +362,12 @@ float module_ctrl_set_buoyancy_from_rate(float rate, bool falling)
     float volume = 0.0f;
     if(falling)
     {
-        buoyancy = module_calculate_buoyancy_from_descent_rate(rate);
-        volume = module_calculate_volume_from_descent_rate(rate);
+        buoyancy = module_calculate_buoyancy_from_descent_rate(rate, density);
+        volume = module_calculate_volume_from_descent_rate(rate, density);
         ARTEMIS_DEBUG_PRINTF("falling, buoyancy = %0.3f, volume=%0.3f\n", buoyancy, volume);
     } else {
-        buoyancy = module_calculate_buoyancy_from_ascent_rate(rate);
-        volume = module_calculate_volume_from_ascent_rate(rate);
+        buoyancy = module_calculate_buoyancy_from_ascent_rate(rate, density);
+        volume = module_calculate_volume_from_ascent_rate(rate, density);
         ARTEMIS_DEBUG_PRINTF("rising, buoyancy = %0.3f, volume=%0.3f\n", buoyancy, volume);
     }
 

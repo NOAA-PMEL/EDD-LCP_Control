@@ -38,7 +38,7 @@ typedef enum eCTRL_Error_t{
 //float module_calculate_buoyancy_from_descent_rate(float rate);
 //float module_calculate_volume_from_descent_rate(float rate);
 
-float module_ctrl_set_buoyancy_from_rate(float rate, bool falling);
+float module_ctrl_set_buoyancy_from_rate(float rate, bool falling, float density);
 
 float CTRL_calculate_lcp_density(float volume);
 float CTRL_set_lcp_density(float density);

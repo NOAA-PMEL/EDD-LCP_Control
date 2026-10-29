@@ -440,6 +440,7 @@ void module_pus_surface_float(void)
                         }
                     }
 
+                    piston_timer = 0;
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
                     piston_move = true;
@@ -461,6 +462,7 @@ void module_pus_surface_float(void)
                         }
                     }
 
+                    piston_timer = 0;
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
                     piston_move = true;
@@ -521,6 +523,7 @@ void module_pus_surface_float(void)
 
     /* it is safe to fully extend the piston if need be */
     vTaskDelay(piston_period);
+    piston_timer = 0;
     PIS_task_move_full(&xPiston);
     piston_move = true;
     vTaskDelay(xDelay5000ms);
@@ -622,13 +625,34 @@ void STATE_Predeploy(void)
 
 void module_pds_idle(void)
 {
-    /** Extend the piston fully out */
-    ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston move to park density=%.3f kg/m³\n", PARK_DENSITY);
+    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Task->started\n");
+    vTaskDelay(xDelay10000ms); // wait for 10 seconds
 
-    float Density = PARK_DENSITY;
-    float Volume = CTRL_set_lcp_density(Density);
-    float Length = CTRL_calculate_length_from_volume(Volume);
-    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
+    bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    while (previousTaskAlive)
+    {
+        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Previous piston task is still running...\n");
+        vTaskDelay(xDelay5000ms);
+        previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    }
+    vTaskDelay(xDelay2000ms);
+    
+    if (AIR)
+    {
+        ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston fully retract for AIR DEPLOY");
+        float Length = 0;
+        float Volume = CTRL_calculate_volume_from_length(Length);
+        float Density = CTRL_calculate_lcp_density(Volume)
+        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
+    }
+    else
+    {    /** Extend the piston to properly ballast the LCP for hand deployment */
+        ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston move to park density=%.3f kg/m³\n", PARK_DENSITY);
+        float Density = PARK_DENSITY;
+        float Volume = CTRL_set_lcp_density(Density);
+        float Length = CTRL_calculate_length_from_volume(Volume);
+        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
+    } 
 
     uint32_t piston_period = xDelay1000ms;
     uint32_t piston_timer = 0;
@@ -1027,6 +1051,7 @@ void module_sps_move_to_park(void)
         vTaskDelay(xDelay5000ms);
         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     }
+    vTaskDelay(xDelay2000ms);
 
     float Volume = 0.0;
     float Length = 0.0;
@@ -1344,6 +1369,7 @@ void module_sps_move_to_park(void)
                             vTaskDelay(xDelay5000ms);
                             previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                         }
+                        vTaskDelay(xDelay2000ms);
                         piston_move = false;
                         piston_timer = 0;
                         vTaskDelay(period);
@@ -1395,6 +1421,7 @@ void module_sps_move_to_park(void)
                                 vTaskDelay(xDelay5000ms);
                                 previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                             }
+                            vTaskDelay(xDelay2000ms);
                             piston_move = false;
                             piston_timer = 0;
                             //vTaskDelay(period);
@@ -1435,6 +1462,7 @@ void module_sps_move_to_park(void)
                     }
                     else
                     {
+                        piston_timer = 0;
                         park_piston_length = length_update;
                         PIS_set_length(length_update);
                         PIS_task_move_length(&xPiston);
@@ -1444,6 +1472,7 @@ void module_sps_move_to_park(void)
                 }
                 else
                 {
+                    piston_timer = 0;
                     park_piston_length = length_update;
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
@@ -1617,10 +1646,12 @@ void module_sps_move_to_park(void)
                     vTaskDelay(xDelay5000ms);
                     previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 }
+                vTaskDelay(xDelay2000ms);
                 piston_timer = 0;
                 piston_move = false;
             }
 
+            piston_timer = 0;
             vTaskDelay(piston_period);
             PIS_set_length(CRUSH_DEPTH_PISTON_POSITION);
             PIS_task_move_length(&xPiston);
@@ -1655,6 +1686,7 @@ void module_sps_park(void)
         vTaskDelay(xDelay5000ms);
         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     }
+    vTaskDelay(xDelay2000ms);
     
     /* set crush depth to false */
     crush_depth = false;
@@ -1964,6 +1996,7 @@ void module_sps_park(void)
                                 }
                             }
 
+                            piston_timer = 0;
                             park_piston_length = length_update;
                             PIS_set_length(length_update);
                             PIS_task_move_length(&xPiston);
@@ -1988,6 +2021,7 @@ void module_sps_park(void)
                                 }
                             }
 
+                            piston_timer = 0;
                             park_piston_length = length_update;
                             PIS_set_length(length_update);
                             PIS_task_move_length(&xPiston);
@@ -2037,6 +2071,7 @@ void module_sps_park(void)
                             }
                             else
                             {
+                            piston_timer = 0;
                             park_piston_length = length_update;
                             PIS_set_length(length_update);
                             PIS_task_move_length(&xPiston);
@@ -2083,6 +2118,7 @@ void module_sps_park(void)
                             }
                             else
                             {
+                            piston_timer = 0;
                             park_piston_length = length_update;
                             PIS_set_length(length_update);
                             PIS_task_move_length(&xPiston);
@@ -2229,10 +2265,12 @@ void module_sps_park(void)
                         vTaskDelay(xDelay5000ms);
                         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                     }
+                    vTaskDelay(xDelay2000ms);
                     piston_timer = 0;
                     piston_move = false;
                 }
 
+                piston_timer = 0;
                 vTaskDelay(piston_period);
                 PIS_set_length(CRUSH_DEPTH_PISTON_POSITION);
                 PIS_task_move_length(&xPiston);
@@ -2370,6 +2408,7 @@ void module_sps_move_to_profile(void)
         vTaskDelay(xDelay5000ms);
         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     }
+    vTaskDelay(xDelay2000ms);
 
     crush_depth = false;
     float Volume = 0.0;
@@ -2603,6 +2642,7 @@ void module_sps_move_to_profile(void)
                             vTaskDelay(xDelay5000ms);
                             previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                         }
+                        vTaskDelay(xDelay2000ms);
                         piston_move = false;
                         piston_timer = 0;
                         vTaskDelay(period);
@@ -2660,6 +2700,7 @@ void module_sps_move_to_profile(void)
                                 vTaskDelay(xDelay5000ms);
                                 previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                             }
+                            vTaskDelay(xDelay2000ms);
                             piston_move = false;
                             piston_timer = 0;
                             //vTaskDelay(period);
@@ -2698,6 +2739,7 @@ void module_sps_move_to_profile(void)
                     }
                     else
                     {
+                        piston_timer = 0;
                         to_prof_piston_length = length_update;
                         PIS_set_length(length_update);
                         PIS_task_move_length(&xPiston);
@@ -2707,6 +2749,7 @@ void module_sps_move_to_profile(void)
                 }
                 else
                 {
+                    piston_timer = 0;
                     to_prof_piston_length = length_update;
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
@@ -2739,6 +2782,7 @@ void module_sps_move_to_profile(void)
                     vTaskDelay(xDelay5000ms);
                     previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 }
+                vTaskDelay(xDelay2000ms);
                 piston_move = false;
                 piston_timer = 0;
                 vTaskDelay(period);
@@ -2881,10 +2925,12 @@ void module_sps_move_to_profile(void)
                     vTaskDelay(xDelay5000ms);
                     previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 }
+                vTaskDelay(xDelay2000ms);
                 piston_timer = 0;
                 piston_move = false;
             }
 
+            piston_timer = 0;
             vTaskDelay(piston_period);
             PIS_set_length(CRUSH_DEPTH_PISTON_POSITION);
             PIS_task_move_length(&xPiston);
@@ -2920,6 +2966,7 @@ void module_sps_profile(void)
         vTaskDelay(xDelay5000ms);
         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     }
+    vTaskDelay(xDelay2000ms);
 
     // --- Prepare the static profile data structure for this cycle ---
     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Resetting static profile data structure for profile number %d\n", prof_number);
@@ -2952,7 +2999,7 @@ void module_sps_profile(void)
     if (prof_piston_length == 0.0)
     {
         float v_rate = SYSTEM_RISE_RATE_SETPOINT;
-        Volume = module_ctrl_set_buoyancy_from_rate(v_rate, false);
+        Volume = module_ctrl_set_buoyancy_from_rate(v_rate, false, PROFILE_DENSITY);
         Density = CTRL_calculate_lcp_density(Volume);
         prof_piston_length = CTRL_calculate_length_from_volume(Volume);
         length_update = prof_piston_length;
@@ -3241,6 +3288,7 @@ void module_sps_profile(void)
                         }
                          else
                         {
+                            piston_timer = 0;
                             prof_piston_length = length_update;
                             PIS_set_length(length_update);
                             PIS_task_move_length(&xPiston);
@@ -3256,6 +3304,7 @@ void module_sps_profile(void)
                         }
                         else
                         {
+                            piston_timer = 0;
                             prof_piston_length = length_update;
                             PIS_set_length(length_update);
                             PIS_task_move_length(&xPiston);
@@ -3266,6 +3315,7 @@ void module_sps_profile(void)
                 }
                 else
                 {
+                    piston_timer = 0;
                     prof_piston_length = length_update;
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
@@ -3310,6 +3360,7 @@ void module_sps_profile(void)
                         }
                          else
                         {
+                            piston_timer = 0;
                             prof_piston_length = length_update;
                             PIS_set_length(length_update);
                             PIS_task_move_length(&xPiston);
@@ -3325,6 +3376,7 @@ void module_sps_profile(void)
                         }
                         else
                         {
+                            piston_timer = 0;
                             prof_piston_length = length_update;
                             PIS_set_length(length_update);
                             PIS_task_move_length(&xPiston);
@@ -3335,6 +3387,7 @@ void module_sps_profile(void)
                 }
                 else
                 {
+                    piston_timer = 0;
                     prof_piston_length = length_update;
                     PIS_set_length(length_update);
                     PIS_task_move_length(&xPiston);
@@ -3420,9 +3473,11 @@ void module_sps_profile(void)
                     vTaskDelay(xDelay5000ms);
                     previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 }
+                vTaskDelay(xDelay2000ms);
                 piston_timer = 0;
                 piston_move = false;
             }
+            piston_timer = 0;
             length_update = CRUSH_DEPTH_PISTON_POSITION;
             vTaskDelay(piston_period);
             PIS_set_length(CRUSH_DEPTH_PISTON_POSITION);
@@ -3452,6 +3507,7 @@ void module_sps_profile(void)
                         vTaskDelay(xDelay5000ms);
                         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                     }
+                    vTaskDelay(xDelay2000ms);
                     piston_timer = 0;
                     piston_move = false;   
                 } 
@@ -3460,6 +3516,7 @@ void module_sps_profile(void)
                 ARTEMIS_DEBUG_PRINTF("\nSPS :: profile, FreeRTOS HEAP SIZE A = %u Bytes\n\n", sizeA);
                 
                 /* Move piston all the way to the surface setting */
+                piston_timer = 0;
                 length_update = PISTON_MOVE_TO_SURFACE;
 
                 vTaskDelay(piston_period);
@@ -3495,6 +3552,7 @@ void module_sps_profile(void)
                     vTaskDelay(xDelay5000ms);
                     previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 }
+                vTaskDelay(xDelay2000ms);
                 piston_timer = 0;
                 piston_move = false;   
             }
@@ -3552,6 +3610,7 @@ void module_sps_move_to_surface(void)
         vTaskDelay(xDelay5000ms);
         previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
     }
+    vTaskDelay(xDelay2000ms);
 
     uint32_t piston_period = xDelay1000ms;
     uint32_t piston_timer = 0;
@@ -3718,6 +3777,7 @@ void module_sps_move_to_surface(void)
     }
     else
     {
+        piston_timer = 0;
         PIS_task_move_length(&xPiston);
         piston_move = true;
         vTaskDelay(xDelay5000ms);
