@@ -642,7 +642,7 @@ void module_pds_idle(void)
         ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston fully retract for AIR DEPLOY");
         float Length = 0;
         float Volume = CTRL_calculate_volume_from_length(Length);
-        float Density = CTRL_calculate_lcp_density(Volume)
+        float Density = CTRL_calculate_lcp_density(Volume);
         ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
     }
     else
@@ -653,12 +653,11 @@ void module_pds_idle(void)
         float Length = CTRL_calculate_length_from_volume(Volume);
         ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
     } 
-
+    
     uint32_t piston_period = xDelay1000ms;
     uint32_t piston_timer = 0;
     bool piston_move = true;
     bool piston_task_running = false;
-    bool previousTaskAlive;
     TaskHandle_t xPiston = NULL;
     PIS_set_piston_rate(1);
     PIS_set_volume(Volume);
