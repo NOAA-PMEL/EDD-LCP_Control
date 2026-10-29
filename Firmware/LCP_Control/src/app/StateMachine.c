@@ -637,22 +637,21 @@ void module_pds_idle(void)
     }
     vTaskDelay(xDelay2000ms);
     
+    /** Extend the piston to properly ballast the LCP for hand deployment */
+    ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston move to park density=%.3f kg/m³\n", PARK_DENSITY);
+    float Density = PARK_DENSITY;
+    float Volume = CTRL_set_lcp_density(Density);
+    float Length = CTRL_calculate_length_from_volume(Volume);
+    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
+
     if (AIR)
     {
         ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston fully retract for AIR DEPLOY");
-        float Length = 0;
-        float Volume = CTRL_calculate_volume_from_length(Length);
-        float Density = CTRL_calculate_lcp_density(Volume);
+        Length = 0;
+        Volume = CTRL_calculate_volume_from_length(Length);
+        Density = CTRL_calculate_lcp_density(Volume);
         ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
     }
-    else
-    {    /** Extend the piston to properly ballast the LCP for hand deployment */
-        ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston move to park density=%.3f kg/m³\n", PARK_DENSITY);
-        float Density = PARK_DENSITY;
-        float Volume = CTRL_set_lcp_density(Density);
-        float Length = CTRL_calculate_length_from_volume(Volume);
-        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
-    } 
     
     uint32_t piston_period = xDelay1000ms;
     uint32_t piston_timer = 0;
