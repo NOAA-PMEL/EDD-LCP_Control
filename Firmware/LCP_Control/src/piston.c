@@ -29,6 +29,7 @@ bool PIS_taskStatus(void)
 bool PIS_initialize(void)
 {
     /** Initialize the I2C Port */
+    piston.rtos.rate = 1; // Guarantee safe divisor
     artemis_piston_i2c_initialize(PISTON_I2C_ADDR);
     module_pis_information();
     bool success = true;
@@ -120,7 +121,7 @@ void PIS_task_move_zero(TaskHandle_t *xPiston)
 void PIS_task_delete()
 {
     pistonRun = false;
-    vTaskDelay(xDelay10000ms);
+    vTaskDelay(xDelay100ms);
 }
 
 void task_move_piston_to_zero(void)
@@ -784,10 +785,12 @@ void PIS_set_piston_rate(uint8_t rate)
 bool PIS_set_volume(float volume)
 {
     bool retVal = false;
-    if( (volume > 0) && (volume < 1000) )
+    if ((volume > 0.0f) && (volume < 1000.0f))
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Volume, set-point = %0.4f\n", volume);
+        taskENTER_CRITICAL();
         piston.setpoint_v = volume;
+        taskEXIT_CRITICAL();
         retVal = true;
     }
     return retVal;
@@ -796,10 +799,12 @@ bool PIS_set_volume(float volume)
 bool PIS_set_length(float length)
 {
     bool retVal = false;
-    if( (length >= 0) && (length < 12.0) )
+    if ((length >= 0.0f) && (length < 12.0f))
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Length, set-point = %0.4f\n", length);
+        taskENTER_CRITICAL();
         piston.setpoint_l = length;
+        taskEXIT_CRITICAL();
         retVal = true;
     }
     return retVal;
