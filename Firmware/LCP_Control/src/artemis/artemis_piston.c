@@ -115,7 +115,7 @@ void artemis_piston_i2c_initialize(uint8_t i2c_addr)
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
 
     artemis_piston_i2c_power_off();
-    am_hal_systick_delay_us(1000);
+    am_hal_systick_delay_us(50000);
     artemis_piston_i2c_power_on();
 }
 
@@ -223,7 +223,7 @@ uint16_t artemis_piston_i2c_read_data(uint8_t *pBuf)
                 len -= ARTEMIS_PISTON_BUFFER_LENGTH;
             } else {
                 artemis_i2c_receive(i2c, true, &rxstream, len);
-                artemis_stream_read(&rxstream, pBuf, ARTEMIS_PISTON_BUFFER_LENGTH);
+                artemis_stream_read(&rxstream, pBuf, len);
                 pBuf += len;
                 len = 0;
             }
@@ -243,39 +243,38 @@ void artemis_piston_i2c_read(uint8_t addr, uint8_t *data, uint16_t len)
     artemis_stream_setbuffer(&rxstream, module.rxbuffer, ARTEMIS_PISTON_BUFFER_LENGTH);
     artemis_stream_setbuffer(&txstream, module.txbuffer, ARTEMIS_PISTON_BUFFER_LENGTH);
 
-    /** Send the command to retreive data length @addr 0xFD */
-    //artemis_stream_put(&txstream, ARTEMIS_PISTON_BUFFER_LENGTH);
-
-    //i2c->address = 0x6C | 0x01;
-
-    /** Send the command to retreive data @addr 0xFF */
     artemis_stream_reset(&txstream);
     artemis_stream_reset(&rxstream);
 
-    //artemis_stream_put(&txstream, ARTEMIS_PISTON_I2C_DATA_LEN_REG);
-
-
+    // 1. Send address with stop = false (Repeated START) so slave register pointer is preserved
     artemis_stream_put(&txstream, addr);
-    //artemis_stream_put(&txstream, 0x00);
-    artemis_i2c_send(i2c, true, &txstream);
+    artemis_i2c_send(i2c, false, &txstream);
 
-    am_hal_systick_delay_us(100000); /*Increased frm 50000 to fix failure to properly read piston TRV_ENG*/
+    // 2. Reduce the 100ms blocking CPU delay down to 500us
+    am_hal_systick_delay_us(500);
 
+    // 3. Receive data from the slave
     artemis_i2c_receive(i2c, true, &rxstream, len);
-    artemis_stream_read(&rxstream, data, len);
-}
 
+    // 4. Check if bytes were actually received; fill with sentinel 0xFF if read dropped/failed
+    if (artemis_stream_read(&rxstream, data, len) < len)
+    {
+        memset(data, 0xFF, len);
+    }
+}
 
 void artemis_piston_set_write_mode(bool state)
 {
     uint8_t key = 0x00;
     uint8_t msg[2] = {0x07, 0x00};
-    if(state)
+    if (state)
     {
         key = 0xA5;
     }
     msg[1] = key;
 
     artemis_piston_i2c_send_msg(msg, 2, true);
-    am_hal_systick_delay_us(200000);
+
+    // Reduce the 200ms blocking CPU delay down to 5ms
+    am_hal_systick_delay_us(5000);
 }

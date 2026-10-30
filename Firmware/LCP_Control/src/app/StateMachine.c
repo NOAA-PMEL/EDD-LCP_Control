@@ -646,7 +646,7 @@ void module_pds_idle(void)
 
     if (AIR)
     {
-        ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston fully retract for AIR DEPLOY");
+        ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston fully retract for AIR DEPLOY\n");
         Length = 0;
         Volume = CTRL_calculate_volume_from_length(Length);
         Density = CTRL_calculate_lcp_density(Volume);
