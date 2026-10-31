@@ -134,7 +134,7 @@
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )
 #define PROFILE_FIRST_START_DATE            ( 1755504000 )   // Epoch, date and time of the start of the first profile
-#define PROFILE_SECOND_END_DATE             ( 1758204000 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
+#define PROFILE_SECOND_END_DATE             ( 1793487630 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
 #define PROFILE_DEPTH                       ( 165.0f )
 #define PROFILE_DEPTH_ERR                   ( 1.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
