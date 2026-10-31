@@ -124,12 +124,12 @@
 #define PARK_DEPTH                          ( 160.0f )
 #define PARK_DEPTH_ERR                      ( 10.0f )
 #define PARK_DEPTH_MAX                      ( 190.0f )
-#define PARK_RATE                           ( 1.0f / 60.0f )
+#define PARK_RATE                           ( 1.0f / 240.0f )
 #define PARK_RATE_FIRST                     ( 1.0f / 6.0f )
 #define PARK_RATE_SECOND                    ( 1.0f / 30.0f )
 #define PARK_TIME_FIRST                     ( 1080 )    /* 18 mins */
 #define PARK_TIME_SECOND                    ( 5400 )    /* 90 mins */
-#define PARK_TIME                           ( 10800 )   /* 180 mins */
+#define PARK_TIME                           ( 43200 )   /* 180 mins */
 #define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( 1033.0f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )

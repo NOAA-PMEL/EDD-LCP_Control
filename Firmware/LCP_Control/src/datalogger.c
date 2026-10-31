@@ -725,6 +725,9 @@ uint16_t datalogger_fw_version(void)
 void datalogger_power_on(void)
 {
 	am_hal_gpio_output_clear(module.power.pin);
+    
+    // Provide 400ms margin for OpenLog ATmega boot and SD card mount
+    am_hal_systick_delay_us(400000);
 
     ///* wait for SD card to be initiated */
     //uint8_t ret = 0;

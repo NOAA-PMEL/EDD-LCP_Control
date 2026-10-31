@@ -1,5 +1,3 @@
-// sensors.c
-
 #include "sensors.h"
 #include "depth.h"
 #include "temperature.h"
@@ -17,8 +15,6 @@
 #define SENSOR_MAX_TEMPERATURE_RATE     ( 2 )
 #define SENSOR_MAX_GPS_RATE             ( 2 )
 
-//static SemaphoreHandle_t xDepthSemaphore = NULL;
-//static SemaphoreHandle_t xTempSemaphore = NULL;
 static SemaphoreHandle_t xTDSemaphore = NULL;
 
 typedef enum {
@@ -57,10 +53,6 @@ void killGPS(void)
 }
 
 static SensorData_t sensor_data;
-//static SensorData_t sensor_data = {
-//  .depth.semaphore = &xDepthSemaphore,
-//  .temperature.semaphore = &xTempSemaphore
-//};
 
 bool SENS_initialize(void)
 {
@@ -73,7 +65,6 @@ bool SENS_initialize(void)
     artemis_rtc_initialize();
 
     /* initialize MAX14830 chip for the sensors */
-    //artemis_max14830_init();
     success = MAX14830_initialize();
 
     /* initialize pressure sensor */
@@ -91,8 +82,7 @@ bool SENS_initialize(void)
     /* Piston Board information */
     success = PIS_initialize();
 
-    /* Create a single semaphore for Temperature and
-       Pressure sensors for now */
+    /* Create a single semaphore for Temperature and Pressure sensors */
     xTDSemaphore = xSemaphoreCreateMutex();
     if (xTDSemaphore == NULL)
     {
@@ -186,7 +176,6 @@ bool SENS_get_depth(float *depth, float *pressure, float *rate)
         taskENTER_CRITICAL();
         *depth = sensor_data.depth.current;
         *rate = sensor_data.depth.ascent_rate;
-        /* get pressure as well */
         *pressure = sensor_data.pressure.current;
         retVal = true;
         taskEXIT_CRITICAL();
@@ -238,14 +227,14 @@ void SENS_task_delete(TaskHandle_t xHandle)
 {
     TaskStatus_t xTaskDetails;
     Event_e xtdEvent = IDLE;
-    /* check the task state */
+
     while (1)
     {
         vTaskGetInfo(xHandle, &xTaskDetails, pdTRUE, eInvalid);
         eTaskState eState = xTaskDetails.eCurrentState;
         const char *task_name = xTaskDetails.pcTaskName;
 
-        if ( (eState==eBlocked) || (eState==eSuspended) )
+        if ( (eState == eBlocked) || (eState == eSuspended) )
         {
             ARTEMIS_DEBUG_PRINTF("SENSORS :: %s in eBlocked state\n", task_name);
             if ( am_util_string_strcmp(task_name, "Depth_Task") == 0 )
@@ -276,15 +265,15 @@ void SENS_task_delete(TaskHandle_t xHandle)
                 break;
             }
         }
-        else if (eState==eReady)
+        else if (eState == eReady)
         {
             ARTEMIS_DEBUG_PRINTF("SENSORS :: %s in eReady state\n", task_name);
         }
-        else if (eState==eRunning)
+        else if (eState == eRunning)
         {
             ARTEMIS_DEBUG_PRINTF("SENSORS :: %s in eRunning state, wait\n", task_name);
         }
-        else if ( (eState==eDeleted) || (eState==eInvalid) )
+        else if ( (eState == eDeleted) || (eState == eInvalid) )
         {
             ARTEMIS_DEBUG_PRINTF("SENSORS :: %s->Deleted\n", task_name);
             if(xSemaphoreTake(xTDSemaphore, xDelay10ms) == pdTRUE)
@@ -314,14 +303,6 @@ void SENS_task_delete(TaskHandle_t xHandle)
         }
         vTaskDelay(xDelay50ms);
     }
-}
-
-void SENS_task_temperature_on(TaskHandle_t *xTemp)
-{
-    configASSERT(xTaskCreate((TaskFunction_t)task_temperature_on,
-                                "Temperature_Task_On", 1024, NULL,
-                                tskIDLE_PRIORITY + 5UL,
-                                xTemp) == pdPASS );
 }
 
 void SENS_task_profile_sensors(TaskHandle_t *xDepth, TaskHandle_t *xTemp)
@@ -398,73 +379,47 @@ void task_depth(void)
     sDepth_Measurement_t depth = {0};
     assert(sensor_data.depth.rate != 0);
 
-    uint32_t period = xDelay1000ms/sensor_data.depth.rate;
+    uint32_t period = xDelay1000ms / sensor_data.depth.rate;
     ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth, Setting period = %ums\n", period);
 
-    /** Create the semaphore for the depth sensor read */
-    //sensor_data.depth.semaphore = xSemaphoreCreateMutex();
-
-    /** Initialize the Depth Sensor */
-    //DEPTH_initialize(DEPTH_Keller_PA9LD);
-
-    /* Initialise the xLastWakeTime variable with the current time */
-    TickType_t xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
+    TickType_t xLastWakeTime = xTaskGetTickCount();
     Event_e dEvent = IDLE;
     xDepth_run = true;
 
-    while(xDepth_run)
+    while (xDepth_run)
     {
+        /* 1. Turn ON sensor hardware rail */
         DEPTH_Power_ON();
-        /** Delay to warm up */
-        /** @todo replace with const number */
-        /** Read the Data */
-        //DEPTH_Read(&depth);
+        vTaskDelay(pdMS_TO_TICKS(100)); // 100ms warm-up margin for Keller transducer
 
-        /** Power Off */
-        //DEPTH_Power_OFF();
-        
-        if(xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
+        if (xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
         {
-            //am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_GREEN);
             DEPTH_Read(&depth);
-            //ARTEMIS_DEBUG_PRINTF("Depth = %.4f\n", depth.Depth);
+
+            /* 2. Turn OFF sensor hardware rail immediately to save battery */
             DEPTH_Power_OFF();
 
             sensor_data.depth.previous = sensor_data.depth.current;
             sensor_data.depth.current = depth.Depth;
-            //sensor_data.depth.ascent_rate = (sensor_data.depth.current - sensor_data.depth.previous) / sensor_data.depth.rate;
             sensor_data.depth.ascent_rate = (sensor_data.depth.current - sensor_data.depth.previous);
 
-            /* get pressure as well */
             sensor_data.pressure.previous = sensor_data.pressure.current;
             sensor_data.pressure.current = depth.Pressure;
 
-            /* give away the semaphore */
             xSemaphoreGive(xTDSemaphore);
 
             dEvent = RECEIVE;
             SendEvent(xDepthEventQueue, &dEvent);
-
-            if (period >= xDelay10000ms)
-            {
-                /* delete task */
-                vTaskDelete(NULL);
-            }
         }
         else
         {
+            /* If semaphore acquisition failed, ensure power is turned off */
+            DEPTH_Power_OFF();
             ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth, semaphore not available\n");
         }
 
-        if (period >= xDelay10000ms)
-        {
-            vTaskDelayUntil(&xLastWakeTime, xDelay1000ms);
-        }
-        else
-        {
-            vTaskDelayUntil(&xLastWakeTime, period);
-        }
+        /* Sleep for the full period with hardware OFF and 0 heap churn */
+        vTaskDelayUntil(&xLastWakeTime, period);
     }
 
     dEvent = DELETE;
@@ -472,95 +427,53 @@ void task_depth(void)
     vTaskDelete(NULL);
 }
 
-void task_temperature_on(void)
-{
-    uint32_t period = xDelay500ms;
-    /* Initialise the xLastWakeTime variable with the current time */
-    TickType_t xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
-    while (1)
-    {
-        if(xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
-        {
-            SENS_sensor_temperature_on();
-            xSemaphoreGive(xTDSemaphore);
-            /* delete the task */
-            ARTEMIS_DEBUG_PRINTF("Temperature On, Task->deleted\n");
-            vTaskDelete(NULL);
-        }
-        else
-        {
-            ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature On, semaphore->not available\n");
-        }
-        vTaskDelayUntil(&xLastWakeTime, period);
-    }
-}
-
 void task_temperature(void)
 {
     assert(sensor_data.temperature.rate != 0);
     Temperature_Measurement_t temperature = {0};
 
-    uint32_t period = xDelay1000ms/sensor_data.temperature.rate;
+    uint32_t period = xDelay1000ms / sensor_data.temperature.rate;
     ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, Setting period = %ums\n", period);
 
-    /** Create the semaphore for the depth sensor read */
-    //sensor_data.temperature.semaphore = xSemaphoreCreateMutex();
-
-    /** Initialize the Depth Sensor */
-    //TEMP_initialize();
-
-    /* Initialise the xLastWakeTime variable with the current time */
-    TickType_t xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
+    TickType_t xLastWakeTime = xTaskGetTickCount();
     Event_e tEvent = IDLE;
     xTemp_run = true;
 
-    while(xTemp_run)
+    while (xTemp_run)
     {
-        /** Turn power on */
-        //TEMP_Power_ON();
-        /** Warmup for x */
-        /** @todo replace this with a macro */
-        /** Read the temperature */
-        //TEMP_Read(&temperature);
-        /** Power off */
-        //TEMP_Power_OFF();
+        /* 1. Energize COM0 power rail */
+        TEMP_Power_ON();
 
-        if(xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
+        /* 2. Hardware boot delay: SoundNine internal MCU boot */
+        vTaskDelay(pdMS_TO_TICKS(100));
+
+        /* 3. Silence auto-stream immediately after boot */
+        TEMP_stop_sampling();
+
+        if (xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
         {
-            //am_hal_gpio_output_toggle(AM_BSP_GPIO_LED_BLUE);
+            /* 4. Issue polled reading ("sample\r") */
             TEMP_Read(&temperature);
 
-            //ARTEMIS_DEBUG_PRINTF("Temperature = %.3f °C\n", temperature.temperature);
+            /* 5. Shut power rail off immediately to save energy */
+            TEMP_Power_OFF();
+
             sensor_data.temperature.current = temperature.temperature;
             xSemaphoreGive(xTDSemaphore);
 
-            /* send event */
             tEvent = RECEIVE;
             SendEvent(xTempEventQueue, &tEvent);
-
-            if (period >= xDelay10000ms)
-            {
-                /* delete task */
-                vTaskDelete(NULL);
-            }
         }
         else
         {
+            TEMP_Power_OFF();
             ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, semaphore not available\n");
         }
 
-        if (period >= xDelay10000ms)
-        {
-            vTaskDelayUntil(&xLastWakeTime, xDelay1000ms);
-        }
-        else
-        {
-            vTaskDelayUntil(&xLastWakeTime, period);
-        }
+        /* Sleep in blocked state with rail at 0V until next period */
+        vTaskDelayUntil(&xLastWakeTime, period);
     }
-    /* send event */
+
     tEvent = DELETE;
     SendEvent(xTDEventQueue, &tEvent);
     vTaskDelete(NULL);
@@ -573,22 +486,39 @@ void task_gps(void)
     assert(sensor_data.gps.rate != 0);
 
     GPS_Data_t gps = {0};
-    uint32_t period = xDelay1000ms/sensor_data.gps.rate;
+    uint32_t period = xDelay1000ms / sensor_data.gps.rate;
     ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Setting period = %ums\n", period);
 
-    ///** Create the semaphore for the gps */
-    //sensor_data.gps.semaphore = xSemaphoreCreateMutex();
-    /** Initialize the GPS */
-    //GPS_initialize();
-    //GPS_on();
-    //vTaskDelay(xDelay250ms);
+    /* 1. Energize u-blox hardware rail */
+    GPS_on();
+    vTaskDelay(pdMS_TO_TICKS(150)); // Allow u-blox internal processor to boot
 
-    /* start a timer with GPS_TIMER in minutes */
+    /* 2. Initialize communication interface */
+    GPS_initialize();
+
+    /* 3. Constrain navigation engine to Sea dynamics */
+    GPS_set_dynamic_model_sea();
+    vTaskDelay(pdMS_TO_TICKS(20));
+
+    /* 4. Inject RTC Time with 5-minute (300 sec) uncertainty tolerance */
+    GPS_inject_rtc_time_with_acc(300);
+    vTaskDelay(pdMS_TO_TICKS(20));
+
+    /* 5. Inject Last Known Position with 200 km (108 nm) uncertainty budget */
+    if (sensor_data.gps.latitude != 0.0f || sensor_data.gps.longitude != 0.0f)
+    {
+        GPS_inject_position(sensor_data.gps.latitude,
+                            sensor_data.gps.longitude,
+                            0.0f,     // Ocean surface: 0 m MSL
+                            200.0f);  // 200 km uncertainty radius
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Injected coarse position aiding (200km bound).\n");
+    }
+
+    /* Start timeout timer */
     TickType_t xTimeMinutes = GPS_TIMER * 60 * xDelay1000ms;
     TimerHandle_t xTimer = xTimerCreate("GPS_Timer", xTimeMinutes, pdFALSE, (void*)1, xGPSTimer);
     if (xTimer != NULL)
     {
-        /* Start the timer */
         configASSERT(xTimerStart(xTimer, 0) == pdPASS);
         ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Timer has started for %f Minutes\n", GPS_TIMER);
     }
@@ -598,10 +528,7 @@ void task_gps(void)
         vTaskDelete(NULL);
     }
 
-    /* Initialise the xLastWakeTime variable with the current time */
-    TickType_t xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
-
+    TickType_t xLastWakeTime = xTaskGetTickCount();
     xGPS_run = true;
     uint8_t xFix = 0;
 
@@ -623,7 +550,8 @@ void task_gps(void)
             xSemaphoreGive(sensor_data.gps.semaphore);
 
             xFix++;
-            if(xFix > 9)
+            // Stop once 3 valid fixes are confirmed to save active battery power
+            if(xFix >= 3)
             {
                 xGPS_run = false;
                 xFix = 0;
@@ -639,9 +567,8 @@ void task_gps(void)
         vTaskDelayUntil(&xLastWakeTime, period);
     }
 
-    /* stop the timer and delete it */
+    /* Stop the timer and delete it */
     if (xTimer != NULL) {
-        // Ensure timer is stopped before attempting deletion (optional safety)
         xTimerStop(xTimer, portMAX_DELAY); 
         if (xTimerDelete(xTimer, portMAX_DELAY) == pdPASS) {
             ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS Timer deleted successfully.\n");
@@ -650,6 +577,7 @@ void task_gps(void)
         }
         xTimer = NULL;
     }
+
     ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Task is deleting...\n");
     vTaskDelay(xDelay1000ms);
     TaskLive_GPS = false;
@@ -658,12 +586,10 @@ void task_gps(void)
 
 static void SendEvent(QueueHandle_t eventQueue, Event_e *event)
 {
-    /* wait for maximum 1 second, so it does not get stuck */
     xQueueSend(eventQueue, event, xDelay1000ms);
 }
 
 static void ReceiveEvent(QueueHandle_t eventQueue, Event_e *event)
 {
-    /* wait for maximum 2 seconds, so it does not get stuck */
     xQueueReceive(eventQueue, event, xDelay2000ms);
 }

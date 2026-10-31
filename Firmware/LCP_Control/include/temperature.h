@@ -34,12 +34,12 @@ typedef struct sTemperature_Measurement_t
 
 
 /**********************************************************************************
-* Function Prototypes
+- Function Prototypes
 *********************************************************************************/
 
 /** @brief Temperature Sensor Init
  *
- *	Initializes the Temperature Sensors
+ *  Initializes the Temperature Sensors
  *
  *  @return None
  */
@@ -47,7 +47,7 @@ bool TEMP_initialize(TemperatureSensor_t sensor);
 
 /** @brief Temperature Power On
  *
- *	Provide Power to the Temperature Sensor
+ *  Provide Power to the Temperature Sensor
  *
  *  @return None
  */
@@ -61,9 +61,17 @@ void TEMP_Power_ON(void);
 void TEMP_Power_OFF(void);
 
 /**
- * @brief Read the depth sensor.
+ * @brief Stop autonomous auto-sampling stream
  * 
- * Read the depth sensor and return relevant data
+ * Silences continuous streaming from the SoundNine OEM sensor so
+ * on-demand polled reads ("sample\r") can execute reliably.
+ */
+void TEMP_stop_sampling(void);
+
+/**
+ * @brief Read the temperature sensor.
+ * 
+ * Read the temperature sensor and return relevant data
  * 
  * @param data Pointer to data struct
  */

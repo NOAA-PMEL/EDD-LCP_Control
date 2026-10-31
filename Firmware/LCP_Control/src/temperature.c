@@ -71,3 +71,8 @@ void TEMP_Read(Temperature_Measurement_t *data)
     data->temperature = temperature;
     data->resistance = resistance;
 }
+
+void TEMP_stop_sampling(void)
+{
+    _module_s9_stop_sampling_RTOS();
+}
