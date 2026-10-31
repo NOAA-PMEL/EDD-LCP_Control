@@ -41,7 +41,6 @@
 #include "event_groups.h"
 #include "semphr.h"
 
-
 //*****************************************************************************
 //
 // Project Files
@@ -71,7 +70,7 @@ typedef struct s_module_t
     struct {
         uint32_t pin;
         am_hal_gpio_pincfg_t *pinConfig;
-    }power;
+    } power;
 } module_t;
 
 //*****************************************************************************
@@ -79,18 +78,7 @@ typedef struct s_module_t
 // Static Variables
 //
 //*****************************************************************************
-/**
- * @brief Module Parameters
- * 
- */
 static module_t module;
-
-//*****************************************************************************
-//
-// Static Function Prototypes
-//
-//*****************************************************************************
-
 
 //*****************************************************************************
 //
@@ -100,14 +88,16 @@ static module_t module;
 void artemis_piston_i2c_initialize(uint8_t i2c_addr)
 {
     artemis_i2c_t *i2c = &module.i2c;
-    //module.power.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_GPS_ON;
     module.power.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_PWR_CTRL_EN;
     module.power.pin = AM_BSP_GPIO_PWR_CTRL_EN;
 
     i2c->address = i2c_addr;
     i2c->iom.module = 2;
     i2c->iom.config.eInterfaceMode = AM_HAL_IOM_I2C_MODE;
-    i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_400KHZ;
+    
+    // Set to 100 kHz standard mode so slave microcontroller software ISR
+    // can reliably process incoming bytes and acknowledge frames.
+    i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_100KHZ;
     artemis_iom_initialize(&i2c->iom);
 
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM2_SCL, g_AM_BSP_GPIO_IOM2_SCL));
@@ -139,15 +129,14 @@ void artemis_piston_i2c_power_off(void)
 
 void artemis_piston_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop)
 {
-
     artemis_i2c_t *i2c = &module.i2c;
     artemis_stream_t txstream = {0};
     artemis_stream_setbuffer(&txstream, module.txbuffer, ARTEMIS_PISTON_BUFFER_LENGTH);
     artemis_stream_reset(&txstream);
 
-    while(len > 0)
+    while (len > 0)
     {
-        if(len > ARTEMIS_PISTON_BUFFER_LENGTH)
+        if (len > ARTEMIS_PISTON_BUFFER_LENGTH)
         {
             artemis_stream_write(&txstream, msg, ARTEMIS_PISTON_BUFFER_LENGTH);
             artemis_i2c_send(i2c, true, &txstream);
@@ -161,18 +150,6 @@ void artemis_piston_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop)
             len = 0;
         }
     }
-  
-//  while(len-- > 0)
-//  {
-//    artemis_stream_reset(&txstream);
-//    artemis_stream_write(&txstream, msg++, 1);
-//    if(len > 0)
-//    {
-//        artemis_i2c_send(i2c, false, &txstream);
-//    } else {
-//      artemis_i2c_send(i2c, stop, &txstream);
-//    }
-//  }
 }
 
 uint16_t artemis_piston_i2c_read_data(uint8_t *pBuf)
@@ -184,7 +161,6 @@ uint16_t artemis_piston_i2c_read_data(uint8_t *pBuf)
     artemis_stream_setbuffer(&rxstream, module.rxbuffer, ARTEMIS_PISTON_BUFFER_LENGTH);
     artemis_stream_setbuffer(&txstream, module.txbuffer, ARTEMIS_PISTON_BUFFER_LENGTH);
 
-    /** Send the command to retreive data length @addr 0xFD */
     artemis_stream_put(&txstream, ARTEMIS_PISTON_I2C_DATA_LEN_REG);
     artemis_i2c_send(i2c, false, &txstream);
 
@@ -193,36 +169,34 @@ uint16_t artemis_piston_i2c_read_data(uint8_t *pBuf)
     uint8_t u8Len[2];
     artemis_stream_read(&rxstream, u8Len, 2);
 
-
-    if(u8Len[1] == 0xFF)
+    if (u8Len[1] == 0xFF)
     {
-        /** Error, shouldn't be 0xFF */
         return 0;
     }
 
     uint16_t len = (u8Len[0] << 8) | u8Len[1];
-    //  printf("aui2c len = %u\n\n", len);
     uint8_t *pBufStart = pBuf;
 
-    if(len > 0)
+    if (len > 0)
     {
         artemis_stream_reset(&txstream);
         artemis_stream_reset(&rxstream);
 
-        /** Send the command to retreive data @addr 0xFF */
         artemis_stream_put(&txstream, ARTEMIS_PISTON_I2C_DATA_REG);
         artemis_i2c_send(i2c, false, &txstream);
 
-        while(len > 0)
+        while (len > 0)
         {
-            if(len > ARTEMIS_PISTON_BUFFER_LENGTH)
+            if (len > ARTEMIS_PISTON_BUFFER_LENGTH)
             {
                 artemis_i2c_receive(i2c, false, &rxstream, ARTEMIS_PISTON_BUFFER_LENGTH);
                 artemis_stream_read(&rxstream, pBuf, ARTEMIS_PISTON_BUFFER_LENGTH);
                 artemis_stream_reset(&rxstream);
                 pBuf += ARTEMIS_PISTON_BUFFER_LENGTH;
                 len -= ARTEMIS_PISTON_BUFFER_LENGTH;
-            } else {
+            }
+            else
+            {
                 artemis_i2c_receive(i2c, true, &rxstream, len);
                 artemis_stream_read(&rxstream, pBuf, len);
                 pBuf += len;
@@ -232,7 +206,6 @@ uint16_t artemis_piston_i2c_read_data(uint8_t *pBuf)
     }
 
     return (uint16_t)(pBuf - pBufStart);
-
 }
 
 void artemis_piston_i2c_read(uint8_t addr, uint8_t *data, uint16_t len)
@@ -247,17 +220,18 @@ void artemis_piston_i2c_read(uint8_t addr, uint8_t *data, uint16_t len)
     artemis_stream_reset(&txstream);
     artemis_stream_reset(&rxstream);
 
-    // 1. Send address with stop = false (Repeated START) so slave register pointer is preserved
+    // 1. Send register address pointer (stop = false for Repeated START)
     artemis_stream_put(&txstream, addr);
     artemis_i2c_send(i2c, false, &txstream);
 
-    // 2. Reduce the 100ms blocking CPU delay down to 500us
-    am_hal_systick_delay_us(500);
+    // 2. Allow slave micro sufficient time (5ms) to process address offset
+    // and load the internal register into its output shift register.
+    am_hal_systick_delay_us(5000);
 
     // 3. Receive data from the slave
     artemis_i2c_receive(i2c, true, &rxstream, len);
 
-    // 4. Check if bytes were actually received; fill with sentinel 0xFF if read dropped/failed
+    // 4. Fill with sentinel 0xFF if read dropped/failed
     if (artemis_stream_read(&rxstream, data, len) < len)
     {
         memset(data, 0xFF, len);
@@ -277,6 +251,13 @@ void artemis_piston_set_write_mode(bool state)
 
     artemis_piston_i2c_send_msg(msg, 2, true);
 
-    // give the slave micro enough time to latch register 0x07:
-    vTaskDelay(pdMS_TO_TICKS(20));
+    // Allow slave micro sufficient time to latch register 0x07 and exit ISR
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING)
+    {
+        vTaskDelay(pdMS_TO_TICKS(25));
+    }
+    else
+    {
+        am_hal_systick_delay_us(25000);
+    }
 }
