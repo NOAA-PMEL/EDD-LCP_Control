@@ -682,7 +682,7 @@ void task_move_piston_to_volume(void)
     LiveTask = true;
     uint32_t rate = (piston.rtos.rate > 0) ? piston.rtos.rate : 1;
     uint32_t period = xDelay5000ms / rate;
-    float length = 0.0f;
+    float volume = 0.0f;
 
     // 1. Wait up to 3s for any prior motion to settle before issuing a reset
     uint8_t wait_settle = 0;
