@@ -185,7 +185,7 @@ uint16_t artemis_piston_i2c_read_data(uint8_t *pBuf)
     artemis_stream_setbuffer(&txstream, module.txbuffer, ARTEMIS_PISTON_BUFFER_LENGTH);
 
     /** Send the command to retreive data length @addr 0xFD */
-    artemis_stream_put(&txstream, ARTEMIS_PISTON_BUFFER_LENGTH);
+    artemis_stream_put(&txstream, ARTEMIS_PISTON_I2C_DATA_LEN_REG);
     artemis_i2c_send(i2c, false, &txstream);
 
     artemis_i2c_receive(i2c, true, &rxstream, 2);
@@ -268,6 +268,7 @@ void artemis_piston_set_write_mode(bool state)
 {
     uint8_t key = 0x00;
     uint8_t msg[2] = {0x07, 0x00};
+    
     if (state)
     {
         key = 0xA5;
@@ -276,6 +277,6 @@ void artemis_piston_set_write_mode(bool state)
 
     artemis_piston_i2c_send_msg(msg, 2, true);
 
-    // Reduce the 200ms blocking CPU delay down to 5ms
-    am_hal_systick_delay_us(5000);
+    // give the slave micro enough time to latch register 0x07:
+    vTaskDelay(pdMS_TO_TICKS(20));
 }

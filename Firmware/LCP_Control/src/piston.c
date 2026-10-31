@@ -90,7 +90,7 @@ void PIS_task_move_volume(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_volume,
                                 "Piston_Task_move_volume", 512, NULL,
-                                tskIDLE_PRIORITY + 4UL,
+                                tskIDLE_PRIORITY + 3UL,
                                 xPiston) == pdPASS );
 }
 
@@ -98,7 +98,7 @@ void PIS_task_move_full(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_full,
                                 "Piston_Task_move_full", 512, NULL,
-                                tskIDLE_PRIORITY + 4UL,
+                                tskIDLE_PRIORITY + 3UL,
                                 xPiston) == pdPASS );
 }
 
@@ -106,7 +106,7 @@ void PIS_task_reset_full(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_reset_piston_to_full,
                                 "Piston_Task_reset_full", 512, NULL,
-                                tskIDLE_PRIORITY + 4UL,
+                                tskIDLE_PRIORITY + 3UL,
                                 xPiston) == pdPASS );
 }
 
@@ -114,7 +114,7 @@ void PIS_task_move_zero(TaskHandle_t *xPiston)
 {
     configASSERT(xTaskCreate((TaskFunction_t) task_move_piston_to_zero,
                                 "Piston_Task_move_zero", 512, NULL,
-                                tskIDLE_PRIORITY + 4UL,
+                                tskIDLE_PRIORITY + 3UL,
                                 xPiston) == pdPASS );
 }
 
@@ -127,14 +127,19 @@ void PIS_task_delete()
 void task_move_piston_to_zero(void)
 {
     LiveTask = true;
-    assert(piston.rtos.rate != 0);
-    uint32_t period = xDelay5000ms / piston.rtos.rate;
+    uint32_t rate = (piston.rtos.rate > 0) ? piston.rtos.rate : 1;
+    uint32_t period = xDelay5000ms / rate;
     float length = 0.0f;
 
-    // Wait up to 3s for any prior motion to settle before issuing a reset
+    // Wait up to 3s for any prior motion to settle before issuing command
     uint8_t wait_settle = 0;
-    while (module_pis_trv_status() == 1 && wait_settle < 6)
+    while (wait_settle < 6)
     {
+        int8_t trv_pre = module_pis_trv_status();
+        if (trv_pre == 0)
+        {
+            break; // Verified stopped
+        }
         ARTEMIS_DEBUG_PRINTF("PISTON :: Waiting for existing motion to finish...\n");
         vTaskDelay(pdMS_TO_TICKS(500));
         wait_settle++;
@@ -144,7 +149,7 @@ void task_move_piston_to_zero(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, motor stuck in travel, resetting slave\n");
         PIS_Reset();
-        vTaskDelay(pdMS_TO_TICKS(2500)); // Allow NVM reload
+        vTaskDelay(pdMS_TO_TICKS(2500));
     }
 
     /** Start Piston Retract to zero length */
@@ -163,12 +168,12 @@ void task_move_piston_to_zero(void)
 
         if (trv == -1)
         {
-            // Transient bus drop: ignore and continue
             ARTEMIS_DEBUG_PRINTF("PISTON :: Warning, I2C read dropped, retrying...\n");
         }
         else if (trv == 0) // Motor has stopped
         {
-            vTaskDelay(xDelay100ms);
+            stall_count = 0;
+            vTaskDelay(xDelay250ms);
             int8_t zeroFlag = module_pis_status_zero();
 
             if (zeroFlag == 1)
@@ -180,14 +185,22 @@ void task_move_piston_to_zero(void)
             }
             else if (zeroFlag == 0)
             {
-                // Stopped but not reported at zero
                 count_reset++;
-                if (count_reset > 4)
+                if (count_reset > 3)
                 {
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
-                    vTaskDelay(xDelay250ms);
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting (zero limit missed)\n");
+
+                    /* Issue robust reset */
                     PIS_Reset();
-                    vTaskDelay(pdMS_TO_TICKS(2500)); // Allow NVM reload
+
+                    /* Crucial: Slave micro needs 2.5s to finish reboot & load NVM */
+                    vTaskDelay(pdMS_TO_TICKS(2500));
+
+                    /* Re-unlock write mode after slave reboot */
+                    artemis_piston_set_write_mode(true);
+                    vTaskDelay(pdMS_TO_TICKS(50));
+
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Re-setting move to zero\n");
                     PIS_move_to_zero();
                     vTaskDelay(period);
                     count_reset = 0;
@@ -197,10 +210,12 @@ void task_move_piston_to_zero(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Reset Timeout\n");
                         pistonRun = false;
-                        count_reset = 0;
-                        reset = 0;
                     }
                 }
+            }
+            else
+            {
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Warning, zero status read dropped\n");
             }
         }
         else // trv == 1 (Still moving)
@@ -210,8 +225,7 @@ void task_move_piston_to_zero(void)
 
             if (stall_count > stall_count_max)
             {
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout, resetting slave\n");
                 PIS_Reset();
                 vTaskDelay(pdMS_TO_TICKS(2500));
                 pistonRun = false;
@@ -227,7 +241,6 @@ void task_move_piston_to_zero(void)
         }
     }
 
-    /* Safely get the length and update it without writing 0.0 on comms drop */
     if (module_pis_get_length_safe(&length))
     {
         taskENTER_CRITICAL();
@@ -244,14 +257,19 @@ void task_move_piston_to_zero(void)
 void task_move_piston_to_full(void)
 {
     LiveTask = true;
-    assert(piston.rtos.rate != 0);
-    uint32_t period = xDelay5000ms / piston.rtos.rate;
+    uint32_t rate = (piston.rtos.rate > 0) ? piston.rtos.rate : 1;
+    uint32_t period = xDelay5000ms / rate;
     float length = 0.0f;
 
-    // Wait up to 3s for any prior motion to settle before issuing a reset
+    // Wait up to 3s for any prior motion to settle before issuing command
     uint8_t wait_settle = 0;
-    while (module_pis_trv_status() == 1 && wait_settle < 6)
+    while (wait_settle < 6)
     {
+        int8_t trv_pre = module_pis_trv_status();
+        if (trv_pre == 0)
+        {
+            break; // Verified stopped
+        }
         ARTEMIS_DEBUG_PRINTF("PISTON :: Waiting for existing motion to finish...\n");
         vTaskDelay(pdMS_TO_TICKS(500));
         wait_settle++;
@@ -261,7 +279,7 @@ void task_move_piston_to_full(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, motor stuck in travel, resetting slave\n");
         PIS_Reset();
-        vTaskDelay(pdMS_TO_TICKS(2500)); // Allow NVM reload
+        vTaskDelay(pdMS_TO_TICKS(2500));
     }
 
     /** Start Piston Extend to full length */
@@ -280,11 +298,11 @@ void task_move_piston_to_full(void)
 
         if (trv == -1)
         {
-            // Transient bus drop: ignore and continue
             ARTEMIS_DEBUG_PRINTF("PISTON :: Warning, I2C read dropped, retrying...\n");
         }
         else if (trv == 0) // Motor has stopped
         {
+            stall_count = 0;
             vTaskDelay(xDelay250ms);
             int8_t fullFlag = module_pis_status_full();
 
@@ -297,14 +315,22 @@ void task_move_piston_to_full(void)
             }
             else if (fullFlag == 0)
             {
-                // Stopped but not reported at full
                 count_reset++;
-                if (count_reset > 4)
+                if (count_reset > 3)
                 {
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
-                    vTaskDelay(xDelay250ms);
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting (full limit missed)\n");
+
+                    /* Issue robust reset */
                     PIS_Reset();
-                    vTaskDelay(pdMS_TO_TICKS(2500)); // Allow NVM reload
+
+                    /* Crucial: Slave micro needs 2.5s to finish reboot & load NVM */
+                    vTaskDelay(pdMS_TO_TICKS(2500));
+
+                    /* Re-unlock write mode after slave reboot */
+                    artemis_piston_set_write_mode(true);
+                    vTaskDelay(pdMS_TO_TICKS(50));
+
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Re-setting move to full\n");
                     PIS_move_to_full();
                     vTaskDelay(period);
                     count_reset = 0;
@@ -314,10 +340,12 @@ void task_move_piston_to_full(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Reset Timeout\n");
                         pistonRun = false;
-                        count_reset = 0;
-                        reset = 0;
                     }
                 }
+            }
+            else
+            {
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Warning, full status read dropped\n");
             }
         }
         else // trv == 1 (Still moving)
@@ -327,8 +355,7 @@ void task_move_piston_to_full(void)
 
             if (stall_count > stall_count_max)
             {
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout, resetting slave\n");
                 PIS_Reset();
                 vTaskDelay(pdMS_TO_TICKS(2500));
                 pistonRun = false;
@@ -344,7 +371,6 @@ void task_move_piston_to_full(void)
         }
     }
 
-    /* Safely get the length and update it without writing 0.0 on comms drop */
     if (module_pis_get_length_safe(&length))
     {
         taskENTER_CRITICAL();
@@ -361,14 +387,19 @@ void task_move_piston_to_full(void)
 void task_reset_piston_to_full(void)
 {
     LiveTask = true;
-    assert(piston.rtos.rate != 0);
-    uint32_t period = xDelay5000ms / piston.rtos.rate;
+    uint32_t rate = (piston.rtos.rate > 0) ? piston.rtos.rate : 1;
+    uint32_t period = xDelay5000ms / rate;
     float length = 0.0f;
 
-    // Wait up to 3s for any prior motion to settle before issuing a reset
+    // Wait up to 3s for any prior motion to settle before issuing command
     uint8_t wait_settle = 0;
-    while (module_pis_trv_status() == 1 && wait_settle < 6)
+    while (wait_settle < 6)
     {
+        int8_t trv_pre = module_pis_trv_status();
+        if (trv_pre == 0)
+        {
+            break; // Verified stopped
+        }
         ARTEMIS_DEBUG_PRINTF("PISTON :: Waiting for existing motion to finish...\n");
         vTaskDelay(pdMS_TO_TICKS(500));
         wait_settle++;
@@ -378,7 +409,7 @@ void task_reset_piston_to_full(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, motor stuck in travel, resetting slave\n");
         PIS_Reset();
-        vTaskDelay(pdMS_TO_TICKS(2500)); // Allow NVM reload
+        vTaskDelay(pdMS_TO_TICKS(2500));
     }
 
     /** Start Piston Extend to full length and reset encoder counts */
@@ -397,11 +428,11 @@ void task_reset_piston_to_full(void)
 
         if (trv == -1)
         {
-            // Transient bus drop: ignore and continue
             ARTEMIS_DEBUG_PRINTF("PISTON :: Warning, I2C read dropped, retrying...\n");
         }
         else if (trv == 0) // Motor has stopped
         {
+            stall_count = 0;
             vTaskDelay(xDelay250ms);
             int8_t fullResetFlag = module_pis_status_fullreset();
 
@@ -414,13 +445,22 @@ void task_reset_piston_to_full(void)
             }
             else if (fullResetFlag == 0)
             {
-                // Stopped but full reset flag not set
                 count_reset++;
-                if (count_reset > 4)
+                if (count_reset > 3)
                 {
-                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting (full reset flag missed)\n");
+
+                    /* Issue robust reset */
                     PIS_Reset();
-                    vTaskDelay(pdMS_TO_TICKS(2500)); // Allow NVM reload
+
+                    /* Crucial: Slave micro needs 2.5s to finish reboot & load NVM */
+                    vTaskDelay(pdMS_TO_TICKS(2500));
+
+                    /* Re-unlock write mode after slave reboot */
+                    artemis_piston_set_write_mode(true);
+                    vTaskDelay(pdMS_TO_TICKS(50));
+
+                    ARTEMIS_DEBUG_PRINTF("PISTON :: Re-setting reset to full\n");
                     PIS_reset_to_full();
                     vTaskDelay(period);
                     count_reset = 0;
@@ -430,10 +470,12 @@ void task_reset_piston_to_full(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Reset Timeout\n");
                         pistonRun = false;
-                        count_reset = 0;
-                        reset = 0;
                     }
                 }
+            }
+            else
+            {
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Warning, full reset status read dropped\n");
             }
         }
         else // trv == 1 (Still moving)
@@ -443,8 +485,7 @@ void task_reset_piston_to_full(void)
 
             if (stall_count > stall_count_max)
             {
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout\n");
-                ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting\n");
+                ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout, resetting slave\n");
                 PIS_Reset();
                 vTaskDelay(pdMS_TO_TICKS(2500));
                 pistonRun = false;
@@ -460,7 +501,6 @@ void task_reset_piston_to_full(void)
         }
     }
 
-    /* Safely get the length and update it without writing 0.0 on comms drop */
     if (module_pis_get_length_safe(&length))
     {
         taskENTER_CRITICAL();
@@ -477,8 +517,8 @@ void task_reset_piston_to_full(void)
 void task_move_piston_to_length(void)
 {
     LiveTask = true;
-    assert(piston.rtos.rate != 0);
-    uint32_t period = xDelay5000ms / piston.rtos.rate;
+    uint32_t rate = (piston.rtos.rate > 0) ? piston.rtos.rate : 1;
+    uint32_t period = xDelay5000ms / rate;
     float length = 0.0f;
 
     // Wait up to 3s for any prior motion to settle before issuing a reset
@@ -543,9 +583,17 @@ void task_move_piston_to_length(void)
                     if (count_reset > 3)
                     {
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting (target missed)\n");
+                        
+                        /* Issue robust reset */
                         PIS_Reset();
-                        // 2.5s delay to allow slave EEPROM/flash boot before re-sending
+                        
+                        /* Crucial: Slave micro needs 2.5s to finish reboot & load NVM */
                         vTaskDelay(pdMS_TO_TICKS(2500));
+                        
+                        /* Re-unlock write mode after slave reboot */
+                        artemis_piston_set_write_mode(true);
+                        vTaskDelay(pdMS_TO_TICKS(50));
+
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Re-setting length = %0.5f\n", piston.setpoint_l);
                         PIS_move_to_length(piston.setpoint_l);
                         vTaskDelay(period);
@@ -632,9 +680,9 @@ bool PIS_Get_Length(float *length)
 void task_move_piston_to_volume(void)
 {
     LiveTask = true;
-    assert(piston.rtos.rate != 0);
-    uint32_t period = xDelay5000ms / piston.rtos.rate;
-    float volume = 0.0f;
+    uint32_t rate = (piston.rtos.rate > 0) ? piston.rtos.rate : 1;
+    uint32_t period = xDelay5000ms / rate;
+    float length = 0.0f;
 
     // 1. Wait up to 3s for any prior motion to settle before issuing a reset
     uint8_t wait_settle = 0;
@@ -697,26 +745,37 @@ void task_move_piston_to_volume(void)
                     count_reset++;
                     if (count_reset > 3)
                     {
-                        ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting (volume missed)\n");
-                        vTaskDelay(xDelay250ms);
+                        ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting (volume missed: cur=%0.3f, target=%0.3f, diff=%0.3f)\n",
+                                             piston.volume, piston.setpoint_v, (piston.volume - piston.setpoint_v));
+
+                        /* 1. Issue the robust reset sequence (stops motor, unlocks 0xA5, sends reset key) */
                         PIS_Reset();
-                        // 2.5s delay to allow slave EEPROM/flash boot before re-sending
+
+                        /* 2. Critical: Wait 2.5s for slave core reboot and EEPROM/NVM reload */
                         vTaskDelay(pdMS_TO_TICKS(2500));
-                        ARTEMIS_DEBUG_PRINTF("PISTON :: Setting volume = %0.5f\n", piston.setpoint_v);
+
+                        /* 3. Re-unlock write mode now that the slave has booted clean */
+                        artemis_piston_set_write_mode(true);
+                        vTaskDelay(pdMS_TO_TICKS(50));
+
+                        /* 4. Re-issue the target volume */
+                        ARTEMIS_DEBUG_PRINTF("PISTON :: Re-setting volume = %0.4f\n", piston.setpoint_v);
                         PIS_move_to_volume(piston.setpoint_v);
+
+                        /* 5. Allow motor start and initial settling before re-entering travel status checks */
                         vTaskDelay(period);
+
                         count_reset = 0;
                         reset++;
 
                         if (reset > 2)
                         {
-                            ARTEMIS_DEBUG_PRINTF("PISTON :: Reset Timeout\n");
+                            ARTEMIS_DEBUG_PRINTF("PISTON :: Reset Timeout - aborting recovery\n");
                             pistonRun = false;
-                            count_reset = 0;
-                            reset = 0;
                         }
                     }
                 }
+                
             }
         }
         else // trv == 1 (Still moving)
@@ -778,7 +837,9 @@ void PIS_set_piston_rate(uint8_t rate)
     if (rate > 0 && rate <= 10)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Setting rate = %uHz\n", rate);
+        taskENTER_CRITICAL();
         piston.rtos.rate = rate;
+        taskEXIT_CRITICAL();
     }
 }
 
@@ -1090,12 +1151,21 @@ static float module_pis_get_volume(void)
 
 void PIS_Reset(void)
 {
-    uint8_t addr = PISTON_I2C_W_RESET;
-    uint8_t cmd[2] = {addr, PISTON_I2C_W_RESET_KEY};
+    uint8_t reset_cmd[2] = {PISTON_I2C_W_RESET, PISTON_I2C_W_RESET_KEY};
     
-    /** Put in write mode */
+    /* 1. Force the motor drive off so slave ISR exits any active stall loop */
+    PIS_stop();
+    vTaskDelay(pdMS_TO_TICKS(50));
+
+    /* 2. Unlock write registers */
     artemis_piston_set_write_mode(true);
-    artemis_piston_i2c_send_msg(cmd, 2, true);
+    vTaskDelay(pdMS_TO_TICKS(20));
+
+    /* 3. Send the hardware reset key */
+    artemis_piston_i2c_send_msg(reset_cmd, 2, true);
+
+    /* 4. Hold the master for 10ms to allow slave regulator / micro to enter reset */
+    am_hal_systick_delay_us(10000);
 }
 
 void PIS_move_to_full(void)
