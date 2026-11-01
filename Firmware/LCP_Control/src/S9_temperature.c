@@ -89,40 +89,27 @@ void S9T_init(S9_init_param *p)
     /* Set the baudrate */
     MAX14830_Set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
 
-    /* Turn on the sensor rail */
+    /* Turn on the module */
     S9T_ON();
 
-    /* 1. S9 MCU Boot Margin: S9 needs ~100-150ms before its UART parses commands */
-    am_util_delay_ms(150);
-
-    /* 2. Disarm autonomous sampling */
-    MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"stop\r", 5);
-    am_util_delay_ms(50);
-    MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"rate 0\r", 7);
-    am_util_delay_ms(50);
-
-    /* 3. Flush autonomous measurement bytes that entered the MAX14830 FIFO during power-on */
-    uint8_t flush_buf[32];
-    while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
-
-    /* 4. Run formal stop verification */
+    /* Stop sampling immediately after power-up */
     _module_s9_stop_sampling();
 
-    /* 5. Fetch device metadata with a clean buffer */
+    /* Fetch device info */
     S9T_dev_info();
     ARTEMIS_DEBUG_PRINTF("S9 Temperature Sensor is initialized\n\n");
 
-    /* Turn off the module so it remains silent until RTOS starts */
+    /* Turn off the module */
     S9T_OFF();
 }
 
 STATIC void _module_s9_stop_sampling(void)
 {
     S9_result_t result = S9_RESULT_FAIL;
-    uint8_t sampleStr[SHORT_RESPONSE_BUFFER_SIZE];
+    uint8_t sampleStr[64] = {0};  /* Expanded from 16 to 64 to hold in-flight measurement + OK */
     uint8_t rxLen = 0;
 
-    /* Issue the stop command */
+    /* Issue stop command directly */
     MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"stop\r", 5);
     result = receive_response(sampleStr, &rxLen, sizeof(sampleStr));
 
@@ -134,38 +121,44 @@ STATIC void _module_s9_stop_sampling(void)
     {
         ARTEMIS_DEBUG_PRINTF("S9 : Sampling did not stop\n");
     }
-
-    /* Drain lingering measurement frames */
-    uint8_t dummy[32];
-    uint16_t flushed = 0;
-    uint8_t flush_count = 0;
-    do
-    {
-        flushed = MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, dummy);
-        flush_count++;
-        if (flushed > 0)
-        {
-            am_util_delay_ms(5);
-        }
-    } while (flushed > 0 && flush_count < 10);
 }
 
 void _module_s9_stop_sampling_RTOS(void)
 {
     S9_result_t result = S9_RESULT_FAIL;
-    uint8_t response_buffer[SHORT_RESPONSE_BUFFER_SIZE];
+    uint8_t response_buffer[64] = {0};  /* Expanded from 16 to 64 bytes */
     uint16_t response_len = 0;
-    const uint8_t MAX_STOP_COMMAND_ATTEMPTS = 3;
+    const uint8_t MAX_STOP_COMMAND_ATTEMPTS = 2;
 
     for (uint8_t attempt = 0; attempt < MAX_STOP_COMMAND_ATTEMPTS; ++attempt)
     {
         if (attempt > 0)
         {
+            ARTEMIS_DEBUG_PRINTF("S9: Retrying 'stop\\r' command (attempt %u of %u).\n", attempt + 1, MAX_STOP_COMMAND_ATTEMPTS);
+
             vTaskDelay(pdMS_TO_TICKS(50));
-            MAX14830_reset_rx_fifo((eMAX18430_ComPort_t)pS9->device.uart.port);
+
+            /* Drain software ring buffer before retry */
+            uint8_t dummy_flush_buffer[64];
+            uint16_t flushed_bytes_count;
+            uint8_t flush_attempts = 0;
+            const uint8_t MAX_FLUSH_READ_ATTEMPTS = 5;
+
+            do
+            {
+                flushed_bytes_count = MAX14830_UART_Read((eMAX18430_ComPort_t)pS9->device.uart.port, dummy_flush_buffer);
+                flush_attempts++;
+                if (flushed_bytes_count > 0)
+                {
+                    vTaskDelay(pdMS_TO_TICKS(10));
+                }
+            } while (flushed_bytes_count > 0 && flush_attempts < MAX_FLUSH_READ_ATTEMPTS);
         }
 
+        /* Send the stop command */
         MAX14830_UART_Write((eMAX18430_ComPort_t)pS9->device.uart.port, (uint8_t*)"stop\r", 5);
+
+        /* Wait for response */
         result = receive_response_RTOS(response_buffer, &response_len, sizeof(response_buffer));
 
         if (result == S9_RESULT_OK)
@@ -177,7 +170,7 @@ void _module_s9_stop_sampling_RTOS(void)
 
     if (result != S9_RESULT_OK)
     {
-        ARTEMIS_DEBUG_PRINTF("S9: ERROR - Failed to stop sampling after retries.\n");
+        ARTEMIS_DEBUG_PRINTF("S9: ERROR - Failed to stop sampling after %u attempts.\n", MAX_STOP_COMMAND_ATTEMPTS);
     }
 }
 

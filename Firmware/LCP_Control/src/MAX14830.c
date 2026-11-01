@@ -1,18 +1,10 @@
 /**
  * @file MAX14830.c
- * @author Matt Casari (matthew.casari@noaa.gov)
  * @brief Maxim MAX14830 Quad SPI-to-UART Driver
- * @version 0.1
- * @date 2021-08-11
- * 
- * @co-author Basharat Martin (basharat.martin@noaa.gov)
  */
 
 #include "MAX14830.h"
 
-//*****************************************************************************
-// Required built-ins.
-//*****************************************************************************
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
@@ -21,37 +13,20 @@
 #include <assert.h>
 #include <stdio.h>
 
-//*****************************************************************************
-// Standard AmbiqSuite includes.
-//*****************************************************************************
 #include "am_mcu_apollo.h"
 #include "am_bsp.h"
 #include "am_util.h"
-
-//*****************************************************************************
-// Artemis specific files
-//*****************************************************************************
 #include "artemis_spi.h"
 #include "artemis_debug.h"
 
-//*****************************************************************************
-// FreeRTOS include files.
-//*****************************************************************************
 #include "FreeRTOS.h"
 #include "FreeRTOSConfig.h"
 #include "event_groups.h"
 #include "semphr.h"
 #include "task.h"
 
-//*****************************************************************************
-// Project Files
-//*****************************************************************************
 #include "am_bsp_pins.h"
 #include "buffer_c.h"
-
-//*****************************************************************************
-// Register Defines
-//*****************************************************************************
 
 /** FIFO Data Registers */
 #define MAX14830_RHR                ( 0x00 )
@@ -83,16 +58,12 @@
 
 /** Flow Control Registers */
 #define MAX14830_REG_FLOWCTRL       ( 0x13 )
-#define MAX14830_REG_XON1           ( 0x14 )
-#define MAX14830_REG_XON2           ( 0x15 )
-#define MAX14830_REG_XOFF1          ( 0x16 )
-#define MAX14830_REG_XOFF2          ( 0x17 )
 
 /** GPIO Registers */
 #define MAX14830_REG_GPIOCONFIG     ( 0x18 )
 #define MAX14830_REG_GPIODATA       ( 0x19 )
 
-/** Clock Configuration Registers*/
+/** Clock Configuration Registers */
 #define MAX14830_REG_PLLCONFIG      ( 0x1A )
 #define MAX14830_REG_BRGCONFIG      ( 0x1B )
 #define MAX14830_REG_DIVLSB         ( 0x1C )
@@ -101,32 +72,11 @@
 
 /** Global Registers */
 #define MAX14830_REG_GLOBALRQ       ( 0x1F )
-#define MAX14830_REG_GLOBLCOMND     ( 0x1F )
-
-/** Synchronization Registers */
-#define MAX14830_REG_TXSYNCH        ( 0x20 )
-#define MAX14830_REG_SYNCHDELAY1    ( 0x21 )
-#define MAX14830_REG_SYNCHDELAY2    ( 0x22 )
-
-/** Timer Registers */
-#define MAX14830_REG_TIMER1         ( 0x23 )
-#define MAX14830_REG_TIMER2         ( 0x24 )
-
-/** Revision Register */
-#define MAX14830_REG_REVID          ( 0x25 )
 
 /** IRQEn Register Bits */
-#define MAX14830_IRQ_CTSIEN         ( 1u << 7 )
 #define MAX14830_IRQ_RFIFOEMTY      ( 1u << 6 )
-#define MAX14830_IRQ_TFIFOEMTY      ( 1u << 5 )
-#define MAX14830_IRQ_TFIFOTRG       ( 1u << 4 )
-#define MAX14830_IRQ_RFIFOTRG       ( 1u << 3 )
-#define MAX14830_IRQ_STS            ( 1u << 2 )
-#define MAX14830_IRQ_SPCLCHR        ( 1u << 1 )
-#define MAX14830_IRQ_LSRERR         ( 1u )
 
 /** LSR Register Bits */
-#define MAX14830_LSR_CTS            ( 1u << 7 )
 #define MAX14830_LSR_RXNOISE        ( 1u << 5 )
 #define MAX14830_LSR_RXBREAK        ( 1u << 4 )
 #define MAX14830_LSR_FRAMEERR       ( 1u << 3 )
@@ -137,90 +87,62 @@
 /** MODE1 Register Bits */
 #define MAX14830_MODE1_IRQ_SEL      ( 1u << 7 )
 #define MAX14830_MODE1_TRNSCV_CTRL  ( 1u << 4 )
-#define MAX14830_MODE1_RTS_HIZ      ( 1u << 3 )
-#define MAX14830_MODE1_TX_HIZ       ( 1u << 2 )
-#define MAX14830_MODE1_TX_DISABL    ( 1u << 1 )
-#define MAX14830_MODE1_RX_DISABL    ( 1u )
 
 /** MODE2 Register Bits */
 #define MAX14830_MODE2_ECHO_SUPRS   ( 1u << 7 )
-#define MAX14830_MODE2_MULTI_DROP   ( 1u << 6 )
-#define MAX14830_MODE2_LOOPBACK     ( 1u << 5 )
-#define MAX14830_MODE2_SPECIAL_CHR  ( 1u << 4 )
 #define MAX14830_MODE2_RX_EMTY_INV  ( 1u << 3 )
-#define MAX14830_MODE2_RX_TRIG_INV  ( 1u << 2 )
 #define MAX14830_MODE2_FIFO_RST     ( 1u << 1 )
-#define MAX14830_MODE2_RST          ( 1u )
 
 /** LCR Register Bits */
-#define MAX14830_LCR_RTS            ( 1u << 7 )
-#define MAX14830_LCR_TX_BREAK       ( 1u << 6 )
-#define MAX14830_LCR_FORCE_PARITY   ( 1u << 5 )
-#define MAX14830_LCR_EVEN_PARITY    ( 1u << 4 )
-#define MAX14830_LCR_PARITY_EN      ( 1u << 3 )
 #define MAX14830_LCR_STOPBITS_1     ( 0u )
-#define MAX14830_LCR_STOPBITS_2     ( 1u << 2 )
 #define MAX14830_LCR_LENGTH_8       ( 0x03 )
 
 #define MAX14830_FLOWLVL_HALT(words)    ((words / 8) & 0x0f)
 #define MAX14830_FLOWLVL_RES(words)     (((words / 8) & 0x0f) << 4)
-
 #define MAX14830_FIFOTRIGLVL_TX(words)  ((words / 8) & 0x0f)
 #define MAX14830_FIFOTRIGLVL_RX(words)  (((words / 8) & 0x0f) << 4)
 
 /** CLKSource Register Bits */
 #define MAX14830_CLK_PLL_BYPASS     ( 1u << 3 )
-#define MAX14830_CLK_PLL_EN         ( 1u << 2 )
 #define MAX14830_CLK_CRYSTAL_EN     ( 1u << 1 )
 
 /** BRGConfig Register Bits */
 #define MAX14830_BRG_CLK_DISABLE    ( 1u << 6 )
 
-/** Write Bit */
-#define MAX14830_SPI_WRITE_BIT      ( 1u << 7)
+/** SPI Command Flags */
+#define MAX14830_SPI_WRITE_BIT      ( 1u << 7 )
 #define MAX14830_SPI_READ_BIT       ( 0x7F )
 
-/** System Settings */
 #define MAX14830_XTAL_FREQ          ( 4000000u )
 #define MAX14830_NUM_SERIAL_PORTS   ( 4 )
 #define MAX14830_WRITE_TASK_PRIORITY ( 5 )
 #define STACK_SIZE                  ( 256 )
 
-//*****************************************************************************
-// FreeRTOS variables, tasks and semaphores
-//*****************************************************************************
 static SemaphoreHandle_t xSpiMutex = NULL;
 static volatile bool rx_bytes = false;
 static EventGroupHandle_t gEventHandle = NULL;
 
-//*****************************************************************************
-// Ambiq IOM static variables
-//*****************************************************************************
 static void *pIomHandle;
 static am_hal_iom_config_t IomConfig = {0};
 
-#define XFER_DATA_SIZE      ( 64 )
+#define XFER_DATA_SIZE ( 64 )
 static uint8_t xfer_data[XFER_DATA_SIZE];
 
-//*****************************************************************************
-// Circular buffer defines
-//*****************************************************************************
 sCircularBufferC_t txBuf[MAX14830_NUM_SERIAL_PORTS];
 sCircularBufferC_t rxBuf[MAX14830_NUM_SERIAL_PORTS];
 
-//*****************************************************************************
-// Static Function Prototypes
-//*****************************************************************************
 static void module_MAX14830_conf(void);
 static void module_MAX14830_chip_enable(void);
 static void module_MAX14830_chip_disable(void);
 static void module_MAX14830_Power_On(void);
 static void module_MAX14830_Power_Off(void);
+
 static uint32_t module_MAX14830_Read(
                     eMAX18430_ComPort_t port,
                     uint8_t reg,
                     uint16_t rxlen,
                     uint8_t *pData);
+
 static void module_MAX14830_Write(
                     eMAX18430_ComPort_t port,
                     uint8_t reg,
@@ -228,40 +150,32 @@ static void module_MAX14830_Write(
                     uint16_t len);
 
 static void module_MAX14830_RegUpdate(eMAX18430_ComPort_t port,
-                 uint8_t reg, uint8_t bit, uint8_t val);
+                    uint8_t reg, uint8_t bit, uint8_t val);
 
 void module_MAX14830_Write_Task(void *pvParameters);
 void module_MAX14830_Handle_IRQ(void);
 
-//*****************************************************************************
-// Global Functions
-//*****************************************************************************
-
 bool MAX14830_initialize(void)
 {
     IomConfig.eInterfaceMode       = AM_HAL_IOM_SPI_MODE;
-    IomConfig.ui32ClockFreq        = AM_HAL_IOM_100KHZ;  /* Preserves 100 kHz SPI bus clock */
+    IomConfig.ui32ClockFreq        = AM_HAL_IOM_100KHZ;
     IomConfig.eSpiMode             = AM_HAL_IOM_SPI_MODE_0;
     IomConfig.pNBTxnBuf            = NULL;
     IomConfig.ui32NBTxnBufLength   = 0;
 
-    /** Initialize the SPI Configurations */
     ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_initialize(3, &pIomHandle));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_power_ctrl(pIomHandle, AM_HAL_SYSCTRL_WAKE, false));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_configure(pIomHandle, &IomConfig));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_iom_enable(pIomHandle));
 
-    /* SPI3 module */
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM3_SCK, g_AM_BSP_GPIO_IOM3_SCK));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM3_MISO, g_AM_BSP_GPIO_IOM3_MISO));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM3_MOSI, g_AM_BSP_GPIO_IOM3_MOSI));
-
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM3_CS, g_AM_BSP_GPIO_IOM3_CS));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_S2U_NIRQ, g_AM_BSP_GPIO_S2U_NIRQ));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_S2U_NRESET, g_AM_BSP_GPIO_S2U_NRESET));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_S2U_ON, g_AM_BSP_GPIO_S2U_ON));
 
-    /* Enable interrupt for IRQ */
     AM_HAL_GPIO_MASKCREATE(GpioIntMask);
     am_hal_gpio_interrupt_clear(AM_HAL_GPIO_MASKBIT(pGpioIntMask, AM_BSP_GPIO_S2U_NIRQ));
     am_hal_gpio_interrupt_enable(AM_HAL_GPIO_MASKBIT(pGpioIntMask, AM_BSP_GPIO_S2U_NIRQ));
@@ -270,9 +184,7 @@ bool MAX14830_initialize(void)
     NVIC_EnableIRQ(GPIO_IRQn);
     am_hal_interrupt_master_enable();
 
-    /* Turn on */
     module_MAX14830_Power_On();
-    /* MAX14830 register configuration */
     module_MAX14830_conf();
 
     return true;
@@ -287,97 +199,65 @@ void MAX14830_uninitialize(void)
 
 static void module_MAX14830_conf(void)
 {
-    /** Set the MAX14830 Clock Source to enable Crystal, done only by port0 */
     uint8_t regVal = MAX14830_CLK_CRYSTAL_EN | MAX14830_CLK_PLL_BYPASS;
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_CLKSOURCE, &regVal, 1);
 
-    /* Enable IRQ bit and automatic transceiver direction */
     regVal = MAX14830_MODE1_IRQ_SEL | MAX14830_MODE1_TRNSCV_CTRL | 0x20;
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE1, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT1, MAX14830_REG_MODE1, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT2, MAX14830_REG_MODE1, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT3, MAX14830_REG_MODE1, &regVal, 1);
 
-    /* Enable first received byte through IRQ interrupt, and reset FIFO */
     regVal = MAX14830_MODE2_RX_EMTY_INV | MAX14830_MODE2_FIFO_RST;
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT1, MAX14830_REG_MODE2, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT2, MAX14830_REG_MODE2, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT3, MAX14830_REG_MODE2, &regVal, 1);
 
-    /* Update FIFO */
     module_MAX14830_RegUpdate(MAX14830_COM_PORT0, MAX14830_REG_MODE2, MAX14830_MODE2_FIFO_RST, 0);
     module_MAX14830_RegUpdate(MAX14830_COM_PORT1, MAX14830_REG_MODE2, MAX14830_MODE2_FIFO_RST, 0);
     module_MAX14830_RegUpdate(MAX14830_COM_PORT2, MAX14830_REG_MODE2, MAX14830_MODE2_FIFO_RST, 0);
     module_MAX14830_RegUpdate(MAX14830_COM_PORT3, MAX14830_REG_MODE2, MAX14830_MODE2_FIFO_RST, 0);
 
-    /* Echo suppress for RS-485 half-duplex */
     regVal = MAX14830_MODE2_ECHO_SUPRS | MAX14830_MODE2_RX_EMTY_INV;
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT3, MAX14830_REG_MODE2, &regVal, 1);
 
-    /* Flow control halt level 96, resume level 48 */
     regVal = MAX14830_FLOWLVL_HALT(96) | MAX14830_FLOWLVL_RES(48);
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_FLOWLVL, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT1, MAX14830_REG_FLOWLVL, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT2, MAX14830_REG_FLOWLVL, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT3, MAX14830_REG_FLOWLVL, &regVal, 1);
 
-    /* Set 8N1 */
     regVal = MAX14830_LCR_LENGTH_8 | MAX14830_LCR_STOPBITS_1;
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_LCR, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT1, MAX14830_REG_LCR, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT2, MAX14830_REG_LCR, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT3, MAX14830_REG_LCR, &regVal, 1);
 
-    /* RX TX FIFO trigger level */
     regVal = MAX14830_FIFOTRIGLVL_RX(64) | MAX14830_FIFOTRIGLVL_TX(64);
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_FIFOTRGLVL, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT1, MAX14830_REG_FIFOTRGLVL, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT2, MAX14830_REG_FIFOTRGLVL, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT3, MAX14830_REG_FIFOTRGLVL, &regVal, 1);
 
-    /* Enable power to port 0/1 and 2/3 */
     regVal = MAX14830_GPIO_PIN_TO_BIT(2);
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_GPIOCONFIG, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_GPIODATA, &regVal, 1);
 
-    /* Clear ISR register for existing used ports, 0 and 3 */
     module_MAX14830_Read(MAX14830_COM_PORT0, MAX14830_REG_ISR, 1, &regVal);
     module_MAX14830_Read(MAX14830_COM_PORT3, MAX14830_REG_ISR, 1, &regVal);
 
-    /* Enable Interrupt only to receive first byte */
     regVal = MAX14830_IRQ_RFIFOEMTY;
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_IRQEN, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT3, MAX14830_REG_IRQEN, &regVal, 1);
 
-    /* Disable all the UART clocks initially */
     for (uint8_t i = 0; i < 4; i++)
     {
         module_MAX14830_Read((eMAX18430_ComPort_t)i, MAX14830_REG_BRGCONFIG, 1, &regVal);
         regVal |= MAX14830_BRG_CLK_DISABLE;
         module_MAX14830_Write((eMAX18430_ComPort_t)i, MAX14830_REG_BRGCONFIG, &regVal, 1);
     }
-}
-
-void MAX14830_reset_rx_fifo(eMAX18430_ComPort_t port)
-{
-    uint8_t regVal = 0;
-    module_MAX14830_Read(port, MAX14830_REG_MODE2, 1, &regVal);
-    regVal |= MAX14830_MODE2_FIFO_RST;
-    module_MAX14830_Write(port, MAX14830_REG_MODE2, &regVal, 1);
-    regVal &= ~MAX14830_MODE2_FIFO_RST;
-    module_MAX14830_Write(port, MAX14830_REG_MODE2, &regVal, 1);
-}
-
-void MAX14830_read_register(eMAX18430_ComPort_t port, uint8_t reg, uint8_t *val)
-{
-    module_MAX14830_Read(port, reg, 1, val);
-}
-
-void MAX14830_write(eMAX18430_ComPort_t port, uint8_t *data, uint16_t len)
-{
-    MAX14830_UART_Write_direct(port, data, len);
 }
 
 void MAX14830_disable_direct(void)
@@ -539,7 +419,7 @@ void module_MAX14830_Handle_IRQ(void)
     uint8_t rxData[128] = {0};
     uint8_t i = 0;
     uint8_t irq = 0;
-    uint8_t port = 0;
+    uint8_t port = 0xFF;
     module_MAX14830_Read(MAX14830_COM_PORT0, MAX14830_REG_GLOBALRQ, 1, &irq);
 
     for (uint8_t p = 0; p < 4; p++)
@@ -547,6 +427,7 @@ void module_MAX14830_Handle_IRQ(void)
         if ((~irq & 0x0F) & (1u << p))
         {
             port = p;
+            break;
         }
     }
 
@@ -567,7 +448,7 @@ void module_MAX14830_Handle_IRQ(void)
             if (gEventHandle != NULL)
             {
                 BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-                BaseType_t xResult = xEventGroupSetBitsFromISR(gEventHandle, (uint8_t)port + 0x01, &xHigherPriorityTaskWoken);
+                BaseType_t xResult = xEventGroupSetBitsFromISR(gEventHandle, (1u << port), &xHigherPriorityTaskWoken);
                 if (xResult != pdFAIL)
                 {
                     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
@@ -678,21 +559,17 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData)
 {
     uint32_t len = 0;
     sCircularBufferC_t *pBuf = &rxBuf[(uint8_t)port];
+    EventBits_t target_bit = (1u << (uint8_t)port);
 
-    while (1)
+    EventBits_t bits = xEventGroupWaitBits(gEventHandle, target_bit, pdTRUE, pdFALSE, pdMS_TO_TICKS(100));
+    if (bits & target_bit)
     {
-        uint8_t Port = xEventGroupWaitBits(gEventHandle, 0x07, pdTRUE, pdFALSE, xDelay2000ms);
-        Port = (Port - 1);
-        if (Port == (uint8_t)port)
+        vTaskDelay(pdMS_TO_TICKS(5UL));
+        while (BufferC_Get_Size(pBuf) > 0)
         {
-            vTaskDelay(pdMS_TO_TICKS(10UL));
-            while (BufferC_Get_Size(pBuf) > 0)
-            {
-                BufferC_getc(pBuf, (char *)pData);
-                pData++;
-                len++;
-            }
-            break;
+            BufferC_getc(pBuf, (char *)pData);
+            pData++;
+            len++;
         }
     }
     return len;
@@ -703,9 +580,7 @@ uint16_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, uint8_t *pData)
     uint16_t len = 0;
     sCircularBufferC_t *pBuf = &rxBuf[(uint8_t)port];
 
-    uint32_t cnt = 0;
-    while (!rx_bytes && cnt++ < 500000);
-
+    /* Pull any data placed into the software circular buffer by the ISR */
     while (BufferC_Get_Size(pBuf) > 0)
     {
         BufferC_getc(pBuf, (char *)pData);
@@ -740,10 +615,11 @@ static uint32_t module_MAX14830_Read(
                                     uint16_t rxlen,
                                     uint8_t *pData)
 {
+    uint32_t aligned_rx[36]; // Safe 32-bit aligned buffer up to 144 bytes
     module_MAX14830_chip_enable();
 
-    uint8_t cmd = MAX14830_SPI_READ_BIT & (port << 5);
-    cmd |= reg;
+    /* Bit 7 = 0 for Read; Bits 6:5 = port; Bits 4:0 = register */
+    uint8_t cmd = (((uint8_t)port & 0x03) << 5) | (reg & 0x1F);
 
     am_hal_iom_transfer_t transfer =
     {
@@ -756,7 +632,7 @@ static uint32_t module_MAX14830_Read(
         .ui32NumBytes           = rxlen,
         .eDirection             = AM_HAL_IOM_RX,
         .pui32TxBuffer          = NULL,
-        .pui32RxBuffer          = (uint32_t *)pData,
+        .pui32RxBuffer          = aligned_rx,
         .bContinue              = false,
         .ui8RepeatCount         = 0,
         .ui8Priority            = 1,
@@ -765,6 +641,7 @@ static uint32_t module_MAX14830_Read(
     am_hal_iom_blocking_transfer(pIomHandle, &transfer);
     module_MAX14830_chip_disable();
 
+    memcpy(pData, aligned_rx, rxlen);
     return 0;
 }
 
@@ -774,11 +651,14 @@ static void module_MAX14830_Write(
                                 uint8_t *data,
                                 uint16_t len)
 {
+    uint32_t aligned_tx[36];
     assert(reg <= 0x1F);
+
+    memcpy(aligned_tx, data, len);
     module_MAX14830_chip_enable();
 
-    uint8_t cmd = MAX14830_SPI_WRITE_BIT | (port << 5);
-    cmd |= reg;
+    /* Bit 7 = 1 for Write; Bits 6:5 = port; Bits 4:0 = register */
+    uint8_t cmd = MAX14830_SPI_WRITE_BIT | (((uint8_t)port & 0x03) << 5) | (reg & 0x1F);
 
     am_hal_iom_transfer_t transfer =
     {
@@ -790,7 +670,7 @@ static void module_MAX14830_Write(
         .ui32Instr              = cmd,
         .ui32NumBytes           = len,
         .eDirection             = AM_HAL_IOM_TX,
-        .pui32TxBuffer          = (uint32_t *)data,
+        .pui32TxBuffer          = aligned_tx,
         .pui32RxBuffer          = NULL,
         .bContinue              = false,
         .ui8RepeatCount         = 0,
