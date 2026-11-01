@@ -1070,12 +1070,12 @@ uint16_t i9603n_read_imei(uint8_t *rxData)
         char *lData = NULL;
         if (irid_buf_rx[0] == 'A' && irid_buf_rx[1] == 'T')
         {
-            uint16_t i=0;
-            while (irid_buf_rx[i]!='\n' && i<300)
+            uint16_t i = 0;
+            while (irid_buf_rx[i] != '\n' && i < 300)
             {
                 i++;
             }
-            lData = &irid_buf_rx[i+1];
+            lData = &irid_buf_rx[i + 1];
         }
         else
         {
@@ -1083,15 +1083,15 @@ uint16_t i9603n_read_imei(uint8_t *rxData)
         }
 
         char *tok = strtok(lData, "\r\n");
-        while (tok !=NULL)
+        while (tok != NULL)
         {
-            if (strcmp(tok,"OK")==0)
+            if (strcmp(tok, "OK") == 0)
             {
                 break;
             }
 
-            len = strlen(tok)+1;
-            strncpy ((char *)rxData, tok, len);
+            len = strlen(tok) + 1;
+            memcpy(rxData, tok, len);
             rxData += len;
             rxLen += len;
             tok = strtok(NULL, "\r\n");
@@ -1117,12 +1117,12 @@ uint16_t i9603n_read_model(uint8_t *rxData)
         char *lData = NULL;
         if (irid_buf_rx[0] == 'A' && irid_buf_rx[1] == 'T')
         {
-            uint16_t i=0;
-            while (irid_buf_rx[i]!='\n' && i<300)
+            uint16_t i = 0;
+            while (irid_buf_rx[i] != '\n' && i < 300)
             {
                 i++;
             }
-            lData = &irid_buf_rx[i+1];
+            lData = &irid_buf_rx[i + 1];
         }
         else
         {
@@ -1130,14 +1130,15 @@ uint16_t i9603n_read_model(uint8_t *rxData)
         }
 
         char *tok = strtok(lData, "\r\n");
-        while (tok !=NULL)
+        while (tok != NULL)
         {
-            if (strcmp(tok,"OK")==0)
+            if (strcmp(tok, "OK") == 0)
             {
                 break;
             }
-            len = strlen(tok)+1;
-            strncpy ((char *)rxData, tok, len);
+
+            len = strlen(tok) + 1;
+            memcpy(rxData, tok, len);
             rxData += len;
             rxLen += len;
             tok = strtok(NULL, "\r\n");
@@ -1152,7 +1153,6 @@ uint16_t i9603n_read_revision(uint8_t *rxData)
     char *cmd = "AT+CGMR\r";
     uint16_t rxLen = 0;
     uint16_t len = 0;
-    i9603n_result_t result = I9603N_RESULT_FAIL;
     uint8_t cmd_len = strlen(cmd);
 
     module_i9603n_send(cmd, cmd_len);
@@ -1163,12 +1163,12 @@ uint16_t i9603n_read_revision(uint8_t *rxData)
         char *lData = NULL;
         if (irid_buf_rx[0] == 'A' && irid_buf_rx[1] == 'T')
         {
-            uint16_t i=0;
-            while (irid_buf_rx[i]!='\n' && i<300)
+            uint16_t i = 0;
+            while (irid_buf_rx[i] != '\n' && i < 300)
             {
                 i++;
             }
-            lData = &irid_buf_rx[i+1];
+            lData = &irid_buf_rx[i + 1];
         }
         else
         {
@@ -1176,14 +1176,15 @@ uint16_t i9603n_read_revision(uint8_t *rxData)
         }
 
         char *tok = strtok(lData, "\r");
-        while (tok !=NULL)
+        while (tok != NULL)
         {
-            if (strcmp(tok,"\nOK")==0)
+            if (strcmp(tok, "\nOK") == 0)
             {
                 break;
             }
-            len = strlen(tok)+1;
-            strncpy ((char *)rxData, tok, len);
+
+            len = strlen(tok) + 1;
+            memcpy(rxData, tok, len);
             rxData += len;
             rxLen += len;
             tok = strtok(NULL, "\r");
