@@ -73,15 +73,18 @@ bool SENS_initialize(void)
 
     /* initialize temperature sensor */
     success = TEMP_initialize(TEMP_SoundNine_OEM);
+    ARTEMIS_DEBUG_PRINTF("--> STEP A: S9 Finished. Disabling MAX14830 Direct...\n");
 
     /* disable max14830*/
-    MAX14830_disable_direct();
+    //MAX14830_disable_direct();
 
     /* initialize GPS */
     success = GPS_initialize();
+    ARTEMIS_DEBUG_PRINTF("--> STEP C: GPS Initialized (%d). Initializing Piston...\n", success);
 
     /* Piston Board information */
     success = PIS_initialize();
+    ARTEMIS_DEBUG_PRINTF("--> STEP D: Piston Initialized (%d). Creating Semaphores...\n", success);
 
     /* Create a single semaphore for Temperature and Pressure sensors */
     xTDSemaphore = xSemaphoreCreateMutex();

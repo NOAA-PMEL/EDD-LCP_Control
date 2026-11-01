@@ -102,6 +102,8 @@ void S9T_init(S9_init_param *p)
 
     /* Turn off the module */
     S9T_OFF();
+    uint8_t discard_buf[64];
+    while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, discard_buf) > 0);
 }
 
 STATIC void _module_s9_stop_sampling(void)
