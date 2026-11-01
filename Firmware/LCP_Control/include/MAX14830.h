@@ -11,37 +11,32 @@
  *
  * @note Controls the MAX14830 SPI to UART Converter for 4 channels
  *
- *
  * @bug  No known bugs
  */
 #ifndef _MAX14830_H
 #define _MAX14830_H
 
-
 /**********************************************************************************
-* Includes
+- Includes
 *********************************************************************************/
-
 #include <stdint.h>
 #include <stdbool.h>
 
-
 /**********************************************************************************
-* Configuration Constants
+- Configuration Constants & Register Defines
 *********************************************************************************/
+#define MAX14830_REG_LSR                ( 0x04 )
 
 /**********************************************************************************
-* MACROS
+- MACROS
 *********************************************************************************/
-
-
+#define MAX14830_GPIO_PIN_TO_BIT(x)     ( 1u << ((x) % 4) )
 
 /**********************************************************************************
-* Typdefs
+- Typedefs
 *********************************************************************************/
 /**
  * @brief MAX14830 Port Selection
- *
  */
 typedef enum
 {
@@ -49,11 +44,10 @@ typedef enum
   MAX14830_COM_PORT1    = 1,
   MAX14830_COM_PORT2    = 2,
   MAX14830_COM_PORT3    = 3  
-}eMAX18430_ComPort_t;
+} eMAX18430_ComPort_t;
 
 /**
- * @brief Baudarate selections availalbe for MAX14830
- * 
+ * @brief Baudrate selections available for MAX14830
  */
 typedef enum
 {
@@ -67,15 +61,13 @@ typedef enum
   MAX14830_COM_BAUDRATE_57600   = 57600,
   MAX14830_COM_BAUDRATE_115200  = 115200,
   MAX14830_COM_BAUDRATE_230400  = 230400
-}eMAX14830_Baudrate_t;
-
-#define MAX14830_GPIO_PIN_TO_BIT(x)     ( 1u << (x % 4))
+} eMAX14830_Baudrate_t;
 
 /**********************************************************************************
-* Function Prototypes
+- Function Prototypes
 *********************************************************************************/
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
 
 bool MAX14830_initialize(void);
@@ -93,6 +85,11 @@ void MAX14830_disable(void);
 void MAX14830_enable(void);
 void MAX14830_disable_direct(void);
 void MAX14830_enable_direct(void);
+
+/* Hardware Recovery & Low-Level Register Access */
+void MAX14830_reset_rx_fifo(eMAX18430_ComPort_t port);
+void MAX14830_read_register(eMAX18430_ComPort_t port, uint8_t reg, uint8_t *val);
+void MAX14830_write(eMAX18430_ComPort_t port, uint8_t *data, uint16_t len);
 
 #ifdef __cplusplus
 } // extern "C"
