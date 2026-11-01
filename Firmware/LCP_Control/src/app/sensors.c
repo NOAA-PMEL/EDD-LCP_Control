@@ -10,6 +10,7 @@
 #include "artemis_rtc.h"
 #include "config.h"
 #include "am_util_string.h"
+#include <assert.h>
 
 #define SENSOR_MAX_DEPTH_RATE           ( 10 )
 #define SENSOR_MAX_TEMPERATURE_RATE     ( 2 )

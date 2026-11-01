@@ -2,6 +2,7 @@
 #include "artemis_piston.h"
 #include "artemis_debug.h"
 #include "math.h"
+#include <string.h>
 #include "config.h"
 
 // Static variables
