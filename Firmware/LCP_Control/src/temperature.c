@@ -8,6 +8,10 @@
 #include "am_bsp_pins.h"
 #include "MAX14830.h"
 
+/* FreeRTOS includes for vTaskDelay and pdMS_TO_TICKS */
+#include "FreeRTOS.h"
+#include "task.h"
+
 static Temperature_t module = {
     .sensor = TEMP_SoundNine_OEM,
 };

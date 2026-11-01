@@ -205,11 +205,7 @@ void S9T_dev_info(void)
         ARTEMIS_DEBUG_PRINTF("\tMID     : %s\n", (char*)rx_buffer);
     }
 
-    /* 2. Calibration Coefficients (C0-C3, R0, Average) */
-    while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
-    _module_s9_get_coefficients();
-
-    /* 3. UID */
+    /* 2. UID */
     while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
     MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"uid\r", 4);
     result = receive_response(rx_buffer, &rx_len, sizeof(rx_buffer));
@@ -227,13 +223,14 @@ void S9T_dev_info(void)
         ARTEMIS_DEBUG_PRINTF("\tUID     : TIMEOUT\n");
     }
 
-    /* 4. Firmware Version */
+    /* 3. Firmware Version & Coefficients */
     while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
     MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"ver\r", 4);
     result = receive_response(rx_buffer, &rx_len, sizeof(rx_buffer));
     if (result == S9_RESULT_OK)
     {
         rx_buffer[rx_len] = '\0';
+        _parse_version(rx_buffer, pS9, rx_len);
         while (rx_len > 0 && (rx_buffer[rx_len - 1] == '\r' || rx_buffer[rx_len - 1] == '\n'))
         {
             rx_buffer[--rx_len] = '\0';
@@ -245,7 +242,7 @@ void S9T_dev_info(void)
         ARTEMIS_DEBUG_PRINTF("\tFW Ver  : TIMEOUT\n");
     }
 
-    /* 5. Status */
+    /* 4. Status */
     while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
     MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"status\r", 7);
     result = receive_response(rx_buffer, &rx_len, sizeof(rx_buffer));
