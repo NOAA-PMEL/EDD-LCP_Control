@@ -50,7 +50,7 @@ STATIC int16_t _parse_response(uint8_t *rData, char *pattern, uint16_t len);
 STATIC S9_result_t receive_response(uint8_t *rData, uint8_t *len, uint16_t rDataMaxSize);
 STATIC S9_result_t receive_response_RTOS(uint8_t *rData, uint16_t *len, uint16_t rDataMaxSize);
 STATIC void _module_s9_stop_sampling(void);
-STATIC void _module_s9_stop_sampling_RTOS(void);
+void _module_s9_stop_sampling_RTOS(void);
 
 void S9T_init(S9_init_param *p)
 {
@@ -103,7 +103,7 @@ STATIC void _module_s9_stop_sampling(void)
     }
 }
 
-STATIC void _module_s9_stop_sampling_RTOS(void)
+void _module_s9_stop_sampling_RTOS(void)
 {
     S9_result_t result = S9_RESULT_FAIL;
     uint8_t response_buffer[64];
