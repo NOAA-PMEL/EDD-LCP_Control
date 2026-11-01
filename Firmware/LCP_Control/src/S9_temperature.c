@@ -387,7 +387,7 @@ STATIC void _parse_version(uint8_t *data, sS9_t *p, uint8_t rxLen)
 
     tok = strtok(NULL, "=");
     tok = strtok(NULL, "\r");
-    if (tok) p->info.average = atoi(tok);
+    if (tok) p->info.average = (float)atof(tok);
 
     tok = strtok(NULL, "=");
     tok = strtok(NULL, "\r");

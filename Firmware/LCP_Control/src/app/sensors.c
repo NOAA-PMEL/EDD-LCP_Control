@@ -428,53 +428,51 @@ void task_depth(void)
     vTaskDelete(NULL);
 }
 
-void task_temperature(void)
+void task_temperature(void *pvParameters)
 {
+    (void)pvParameters;
     assert(sensor_data.temperature.rate != 0);
-    Temperature_Measurement_t temperature = {0};
 
-    uint32_t period = xDelay1000ms / sensor_data.temperature.rate;
-    ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, Setting period = %ums\n", period);
-
+    Temperature_Measurement_t measurement = {0};
+    uint32_t period = pdMS_TO_TICKS(1000 / sensor_data.temperature.rate);
     TickType_t xLastWakeTime = xTaskGetTickCount();
     Event_e tEvent = IDLE;
+
+    ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature Task Started (Rate: %u Hz)\n",
+                         sensor_data.temperature.rate);
+
+    /* Turn on rail and initialize port once */
+    TEMP_initialize_RTOS();
     xTemp_run = true;
 
     while (xTemp_run)
     {
-        /* 1. Energize COM0 power rail */
-        TEMP_Power_ON();
-
-        /* 2. Hardware boot delay: SoundNine internal MCU boot */
-        vTaskDelay(pdMS_TO_TICKS(100));
-
-        /* 3. Silence auto-stream immediately after boot */
-        TEMP_stop_sampling();
-
-        if (xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
-        {
-            /* 4. Issue polled reading ("sample\r") */
-            TEMP_Read(&temperature);
-
-            /* 5. Shut power rail off immediately to save energy */
-            TEMP_Power_OFF();
-
-            sensor_data.temperature.current = temperature.temperature;
-            xSemaphoreGive(xTDSemaphore);
-
-            tEvent = RECEIVE;
-            SendEvent(xTempEventQueue, &tEvent);
-        }
-        else
-        {
-            TEMP_Power_OFF();
-            ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, semaphore not available\n");
-        }
-
-        /* Sleep in blocked state with rail at 0V until next period */
         vTaskDelayUntil(&xLastWakeTime, period);
+
+        if (xSemaphoreTake(xTDSemaphore, pdMS_TO_TICKS(50)) == pdTRUE)
+        {
+            /* Driver internally sends 'sample\r' and handles MAX14830 read */
+            TEMP_Read(&measurement);
+
+            if (!isnan(measurement.temperature) && measurement.temperature > -5.0f && measurement.temperature < 45.0f)
+            {
+                sensor_data.temperature.current = measurement.temperature;
+                sensor_data.temperature.resistance = measurement.resistance;
+
+                tEvent = RECEIVE;
+                SendEvent(xTempEventQueue, &tEvent);
+            }
+            else
+            {
+                ARTEMIS_DEBUG_PRINTF("SENSORS :: S9 Dropped (T=%.2f, R=%.2f)\n",
+                                     measurement.temperature, measurement.resistance);
+            }
+
+            xSemaphoreGive(xTDSemaphore);
+        }
     }
 
+    TEMP_uninitialize_RTOS();
     tEvent = DELETE;
     SendEvent(xTDEventQueue, &tEvent);
     vTaskDelete(NULL);
