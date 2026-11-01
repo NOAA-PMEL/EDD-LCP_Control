@@ -4,6 +4,7 @@
 #include "math.h"
 #include "config.h"
 #include <string.h>
+#include <assert.h>
 
 // Static variables
 static Piston_t piston;
@@ -115,10 +116,19 @@ void PIS_task_move_zero(TaskHandle_t *xPiston)
                              xPiston) == pdPASS );
 }
 
-void PIS_task_delete(void)
+bool PIS_task_delete(TaskHandle_t *xPiston)
 {
     pistonRun = false;
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    vTaskDelay(pdMS_TO_TICKS(100));
+
+    if (xPiston != NULL && *xPiston != NULL)
+    {
+        vTaskDelete(*xPiston);
+        *xPiston = NULL;
+    }
+
+    LiveTask = false;
+    return true;
 }
 
 void task_move_piston_to_zero(void)
