@@ -1151,6 +1151,7 @@ uint16_t i9603n_read_model(uint8_t *rxData)
 uint16_t i9603n_read_revision(uint8_t *rxData)
 {
     char *cmd = "AT+CGMR\r";
+    i9603n_result_t result = I9603N_RESULT_FAIL;
     uint16_t rxLen = 0;
     uint16_t len = 0;
     uint8_t cmd_len = strlen(cmd);
