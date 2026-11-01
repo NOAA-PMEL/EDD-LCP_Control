@@ -1,82 +1,91 @@
+/**
+ * @file temperature.h
+ * @brief High-level abstraction header for temperature sensors.
+ */
+
 #ifndef TEMPERATURE_H
 #define TEMPERATURE_H
 
 #include <stdint.h>
 #include <stdbool.h>
-//#include "artemis_pa9ld.h"
 
+/**********************************************************************************
+- Typedefs & Structures
+*********************************************************************************/
 
-typedef enum eTemperatureSensor_t{
+typedef enum eTemperatureSensor_t {
     TEMP_Undefined,
     TEMP_SoundNine_OEM,
-}TemperatureSensor_t;
+} TemperatureSensor_t;
 
-typedef struct sTemperature_t
-{   
+typedef struct sTemperature_t {   
     TemperatureSensor_t sensor;
-     struct {
-        uint8_t uart;          /**< UART Port */
-    }uart;
-    //struct {
-    //    uint32_t i2c;           /**< I2C Channel (IOM Module)*/
-    //}i2c;
-    //struct {
-    //    module_manufacturer_t manufacturer; /**< Keller Manufacturer Info */
-    //    module_scaling_t scaling;           /**< Keller Scaling Coefficients */
-    //}device;
-}Temperature_t;
+    struct {
+        uint8_t uart;           /**< UART Port */
+    } uart;
+} Temperature_t;
 
-typedef struct sTemperature_Measurement_t
-{
+typedef struct sTemperature_Measurement_t {
     float temperature;
     float resistance;
-}Temperature_Measurement_t;
-
+} Temperature_Measurement_t;
 
 /**********************************************************************************
 - Function Prototypes
 *********************************************************************************/
 
-/** @brief Temperature Sensor Init
- *
- *  Initializes the Temperature Sensors
- *
- *  @return None
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** 
+ * @brief Initialize temperature sensor subsystem.
+ * @param sensor Target sensor type.
+ * @return true if initialized successfully.
  */
 bool TEMP_initialize(TemperatureSensor_t sensor);
 
-/** @brief Temperature Power On
- *
- *  Provide Power to the Temperature Sensor
- *
- *  @return None
+/** 
+ * @brief FreeRTOS-aware initialization routine.
+ * Powers rail, enables MAX14830 port, waits for POST, and silences streaming.
+ */
+void TEMP_initialize_RTOS(void);
+
+/** 
+ * @brief FreeRTOS teardown routine.
+ * Disables the MAX14830 port and turns off sensor power.
+ */
+void TEMP_uninitialize_RTOS(void);
+
+/** 
+ * @brief Provide power to the temperature sensor rail.
  */
 void TEMP_Power_ON(void);
 
-/**
- * @brief Turn Temperature Sensor OFF
- * 
- * Disable power to Temperature Sensor
+/** 
+ * @brief Cut power to the temperature sensor rail.
  */
 void TEMP_Power_OFF(void);
 
-/**
- * @brief Stop autonomous auto-sampling stream
- * 
- * Silences continuous streaming from the SoundNine OEM sensor so
- * on-demand polled reads ("sample\r") can execute reliably.
+/** 
+ * @brief Stop autonomous auto-sampling stream.
+ * @return true on command transmission and FIFO flush.
  */
-void TEMP_stop_sampling(void);
+bool TEMP_stop_sampling(void);
 
-/**
- * @brief Read the temperature sensor.
- * 
- * Read the temperature sensor and return relevant data
- * 
- * @param data Pointer to data struct
+/** 
+ * @brief Flushes the MAX14830 RX FIFO and clears the overrun status flag.
+ */
+void TEMP_flush_rx(void);
+
+/** 
+ * @brief Read temperature sensor on demand.
+ * @param data Destination pointer for parsed measurement results.
  */
 void TEMP_Read(Temperature_Measurement_t *data);
-void TEMP_initialize_RTOS(void);
-void TEMP_uninitialize_RTOS(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // TEMPERATURE_H
