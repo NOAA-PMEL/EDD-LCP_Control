@@ -428,9 +428,8 @@ void task_depth(void)
     vTaskDelete(NULL);
 }
 
-void task_temperature(void *pvParameters)
+void task_temperature(void)
 {
-    (void)pvParameters;
     assert(sensor_data.temperature.rate != 0);
 
     Temperature_Measurement_t measurement = {0};
@@ -441,7 +440,6 @@ void task_temperature(void *pvParameters)
     ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature Task Started (Rate: %u Hz)\n",
                          sensor_data.temperature.rate);
 
-    /* Turn on rail and initialize port once */
     TEMP_initialize_RTOS();
     xTemp_run = true;
 
@@ -451,21 +449,20 @@ void task_temperature(void *pvParameters)
 
         if (xSemaphoreTake(xTDSemaphore, pdMS_TO_TICKS(50)) == pdTRUE)
         {
-            /* Driver internally sends 'sample\r' and handles MAX14830 read */
             TEMP_Read(&measurement);
 
-            if (!isnan(measurement.temperature) && measurement.temperature > -5.0f && measurement.temperature < 45.0f)
+            /* Check valid reading range */
+            if (measurement.temperature > -5.0f && measurement.temperature < 45.0f)
             {
                 sensor_data.temperature.current = measurement.temperature;
-                sensor_data.temperature.resistance = measurement.resistance;
 
                 tEvent = RECEIVE;
                 SendEvent(xTempEventQueue, &tEvent);
             }
             else
             {
-                ARTEMIS_DEBUG_PRINTF("SENSORS :: S9 Dropped (T=%.2f, R=%.2f)\n",
-                                     measurement.temperature, measurement.resistance);
+                ARTEMIS_DEBUG_PRINTF("SENSORS :: S9 Dropped (T=%.2f)\n",
+                                     measurement.temperature);
             }
 
             xSemaphoreGive(xTDSemaphore);
