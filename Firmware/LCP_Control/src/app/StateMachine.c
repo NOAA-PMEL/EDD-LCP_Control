@@ -30,6 +30,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <math.h>
+#include <stdio.h>
 #include "artemis_debug.h"
 #include "artemis_rtc.h"
 #include "StateMachine.h"

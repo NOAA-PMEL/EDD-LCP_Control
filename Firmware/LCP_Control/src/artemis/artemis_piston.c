@@ -116,7 +116,7 @@ void artemis_piston_blackout_wait(void)
 void artemis_piston_bus_clear(void)
 {
     // Reconfigure SCL & SDA as open-drain GPIO outputs
-    am_hal_gpio_pincfg_t gpio_out = AM_HAL_GPIO_PINCFG_OPENDRAIN;
+    am_hal_gpio_pincfg_t gpio_out = g_am_hal_gpio_pincfg_opendrain;
 
     am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM2_SCL, gpio_out);
     am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM2_SDA, gpio_out);
