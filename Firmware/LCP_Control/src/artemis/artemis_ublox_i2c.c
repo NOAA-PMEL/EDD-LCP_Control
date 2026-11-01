@@ -38,9 +38,6 @@
 #define I2C_MSG_LEN_MAX              ( 128 )
 #define ARTEMIS_UBLOX_BUFFER_LENGTH  ( I2C_MSG_LEN_MAX )
 
-#define ARTEMIS_UBLOX_I2C_DATA_LEN_REG  0xFD
-#define ARTEMIS_UBLOX_I2C_DATA_REG      0xFF
-
 //*****************************************************************************
 // Structs
 //*****************************************************************************

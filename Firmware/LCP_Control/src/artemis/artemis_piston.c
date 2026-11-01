@@ -1,3 +1,8 @@
+/**
+ * @file artemis_piston.c
+ * @brief Artemis driver for the piston actuator controller over I2C.
+ */
+
 #include "artemis_piston.h"
 
 //*****************************************************************************
@@ -115,8 +120,12 @@ void artemis_piston_blackout_wait(void)
 /// Recovers I2C bus if MSP430 entered blocking delay with SDA held low
 void artemis_piston_bus_clear(void)
 {
-    // Reconfigure SCL & SDA as open-drain GPIO outputs
-    am_hal_gpio_pincfg_t gpio_out = g_am_hal_gpio_pincfg_opendrain;
+    // Reconfigure SCL & SDA as open-drain GPIO outputs using universal function index 3
+    am_hal_gpio_pincfg_t gpio_out = {0};
+    gpio_out.uFuncSel       = 3; // Universal GPIO mode on Apollo3
+    gpio_out.eGPOutcfg      = AM_HAL_GPIO_PIN_OUTCFG_OPENDRAIN;
+    gpio_out.eDriveStrength = AM_HAL_GPIO_PIN_DRIVESTRENGTH_12MA;
+    gpio_out.ePullup        = AM_HAL_GPIO_PIN_PULLUP_1_5K;
 
     am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM2_SCL, gpio_out);
     am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM2_SDA, gpio_out);
@@ -208,6 +217,7 @@ void artemis_piston_i2c_send_msg(uint8_t *msg, uint16_t len, bool stop)
             artemis_stream_write(&txstream, msg, ARTEMIS_PISTON_BUFFER_LENGTH);
             artemis_i2c_send(i2c, true, &txstream);
             artemis_stream_reset(&txstream);
+            msg += ARTEMIS_PISTON_BUFFER_LENGTH;
             len -= ARTEMIS_PISTON_BUFFER_LENGTH;
         }
         else
@@ -308,21 +318,28 @@ void artemis_piston_i2c_read(uint8_t addr, uint8_t *data, uint16_t len)
 /// Non-blocking read with retry backoff to survive slave freezes
 bool artemis_piston_i2c_read_retry(uint8_t addr, uint8_t *data, uint16_t len, uint8_t max_retries)
 {
-    uint8_t dummy[len];
-    memset(dummy, 0xFF, len);
-
     for (uint8_t attempt = 0; attempt < max_retries; attempt++)
     {
         artemis_piston_i2c_read(addr, data, len);
 
-        // A valid response will not be all 0xFF (sentinel returned on NACK/drop)
-        if (memcmp(data, dummy, len) != 0)
+        // Check if response contains at least one valid byte other than sentinel 0xFF
+        bool valid = false;
+        for (uint16_t i = 0; i < len; i++)
+        {
+            if (data[i] != 0xFF)
+            {
+                valid = true;
+                break;
+            }
+        }
+
+        if (valid)
         {
             return true;
         }
 
         // Bus may be locked by slave spinloop; clear pins and back off
-        if (attempt % 5 == 4)
+        if ((attempt % 5) == 4)
         {
             artemis_piston_bus_clear();
         }
