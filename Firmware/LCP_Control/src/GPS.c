@@ -121,7 +121,8 @@ static bool ubx_send_packet(uint8_t ubx_class, uint8_t ubx_id, uint8_t *payload,
     UBX_create_msg_from_packet(&packet, tx_msg);
 
     // 3. Transmit full packet over I2C including checksum
-    return artemis_ublox_i2c_send_msg(tx_msg, total_wire_len, true);
+    artemis_ublox_i2c_send_msg(tx_msg, total_wire_len, true);
+    return true;
 }
 
 /************************************************************************

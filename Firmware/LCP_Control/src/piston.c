@@ -21,7 +21,7 @@ static bool module_pis_read_if_zero(void);
 static bool module_pis_trv_eng(void);
 static float module_pis_get_volume(void);
 static float module_pis_get_length(void);
-static void module_pis_information(void);
+static bool module_pis_information(void);
 
 bool PIS_taskStatus(void)
 {
