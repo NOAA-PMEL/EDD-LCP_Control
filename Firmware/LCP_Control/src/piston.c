@@ -31,15 +31,33 @@ bool PIS_taskStatus(void)
 // Global Functions
 bool PIS_initialize(void)
 {
-    /** Guarantee safe non-zero divisor before any RTOS tasks run */
-    taskENTER_CRITICAL();
-    piston.rtos.rate = 1;
-    taskEXIT_CRITICAL();
+    bool success = true;
+    uint8_t sys_id = 0;
+    int32_t status = 0;
 
-    /** Initialize the I2C Port */
-    artemis_piston_i2c_initialize(PISTON_I2C_ADDR);
-    module_pis_information();
-    return true;
+    ARTEMIS_DEBUG_PRINTF("\nPiston Board Information\n");
+    ARTEMIS_DEBUG_PRINTF("**************************************\n");
+    ARTEMIS_DEBUG_PRINTF("System Identification   : ");
+
+    /* Example pattern: read register 0xE8 (PISTON_I2C_R_SYS_ID) */
+    status = module_piston_read_reg(PISTON_I2C_R_SYS_ID, &sys_id, 1);
+
+    if (status != 0)
+    {
+        ARTEMIS_DEBUG_PRINTF("NOT DETECTED (NAK)\n");
+        ARTEMIS_DEBUG_PRINTF("PISTON :: Warning: Piston board not responding on I2C (0x%02X)\n\n", PISTON_I2C_ADDR);
+        
+        /* Mark data invalid and return false safely */
+        pPiston->rtos.data_valid = false;
+        return false;
+    }
+
+    ARTEMIS_DEBUG_PRINTF("0x%02X\n", sys_id);
+
+    /* Proceed to read firmware version and parameters only if sys_id succeeded */
+    // ... remaining reads ...
+
+    return success;
 }
 
 void PIS_uninitialize(void)
