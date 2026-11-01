@@ -89,21 +89,31 @@ void S9T_init(S9_init_param *p)
     /* Set the baudrate */
     MAX14830_Set_baudrate(pS9->device.uart.port, pS9->device.uart.baudrate);
 
-    /* Turn on the module */
+    /* Turn on the sensor rail */
     S9T_ON();
-    am_hal_systick_delay_us(350000); // 350ms S9 microcontroller cold-boot delay
 
-    /* Stop sampling */
+    /* 1. S9 MCU Boot Margin: S9 needs ~100-150ms before its UART parses commands */
+    am_util_delay_ms(150);
+
+    /* 2. Disarm autonomous sampling */
+    MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"stop\r", 5);
+    am_util_delay_ms(50);
+    MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"rate 0\r", 7);
+    am_util_delay_ms(50);
+
+    /* 3. Flush autonomous measurement bytes that entered the MAX14830 FIFO during power-on */
+    uint8_t flush_buf[32];
+    while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
+
+    /* 4. Run formal stop verification */
     _module_s9_stop_sampling();
 
-    // Fetch device info
+    /* 5. Fetch device metadata with a clean buffer */
     S9T_dev_info();
     ARTEMIS_DEBUG_PRINTF("S9 Temperature Sensor is initialized\n\n");
 
-    /* Turn off the module */
+    /* Turn off the module so it remains silent until RTOS starts */
     S9T_OFF();
-    uint8_t discard_buf[64];
-    while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, discard_buf) > 0);
 }
 
 STATIC void _module_s9_stop_sampling(void)
@@ -112,8 +122,10 @@ STATIC void _module_s9_stop_sampling(void)
     uint8_t sampleStr[SHORT_RESPONSE_BUFFER_SIZE];
     uint8_t rxLen = 0;
 
+    /* Issue the stop command */
     MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"stop\r", 5);
     result = receive_response(sampleStr, &rxLen, sizeof(sampleStr));
+
     if (result == S9_RESULT_OK)
     {
         ARTEMIS_DEBUG_PRINTF("S9 : Sampling Stopped\n");
@@ -122,6 +134,20 @@ STATIC void _module_s9_stop_sampling(void)
     {
         ARTEMIS_DEBUG_PRINTF("S9 : Sampling did not stop\n");
     }
+
+    /* Drain lingering measurement frames */
+    uint8_t dummy[32];
+    uint16_t flushed = 0;
+    uint8_t flush_count = 0;
+    do
+    {
+        flushed = MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, dummy);
+        flush_count++;
+        if (flushed > 0)
+        {
+            am_util_delay_ms(5);
+        }
+    } while (flushed > 0 && flush_count < 10);
 }
 
 void _module_s9_stop_sampling_RTOS(void)
@@ -157,54 +183,80 @@ void _module_s9_stop_sampling_RTOS(void)
 
 void S9T_dev_info(void)
 {
-    S9_result_t result = S9_RESULT_FAIL;
-    uint8_t verStr[256] = {0};
-    uint8_t rxLen = 0;
-    uint8_t i = 0;
+    uint8_t rx_buffer[128];
+    uint8_t rx_len = 0;
+    uint8_t flush_buf[32];
+    S9_result_t result;
 
-    MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"ver\r", 4);
-    result = receive_response(verStr, &rxLen, sizeof(verStr));
+    ARTEMIS_DEBUG_PRINTF("S9 Temperature Sensor\n");
+    ARTEMIS_DEBUG_PRINTF("**************************************\n");
+
+    /* 1. Model ID */
+    while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
+    MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"mid\r", 4);
+    result = receive_response(rx_buffer, &rx_len, sizeof(rx_buffer));
     if (result == S9_RESULT_OK)
     {
-        _parse_version(verStr, pS9, rxLen);
-
-        ARTEMIS_DEBUG_PRINTF("S9 Temperature Sensor\n");
-        ARTEMIS_DEBUG_PRINTF("**************************************\n");
-
-        ARTEMIS_DEBUG_PRINTF("\tMID\t: ");
-        for (i = 0; i < 8; i++) {
-            ARTEMIS_DEBUG_PRINTF("%c", pS9->info.MID[i]);
+        rx_buffer[rx_len] = '\0';
+        while (rx_len > 0 && (rx_buffer[rx_len - 1] == '\r' || rx_buffer[rx_len - 1] == '\n'))
+        {
+            rx_buffer[--rx_len] = '\0';
         }
-        ARTEMIS_DEBUG_PRINTF("\n");
+        ARTEMIS_DEBUG_PRINTF("\tMID     : %s\n", (char*)rx_buffer);
+    }
 
-        ARTEMIS_DEBUG_PRINTF("\tC0\t: %.7f\n", pS9->info.C0);
-        ARTEMIS_DEBUG_PRINTF("\tC1\t: %.7f\n", pS9->info.C1);
-        ARTEMIS_DEBUG_PRINTF("\tC2\t: %.7f\n", pS9->info.C2);
-        ARTEMIS_DEBUG_PRINTF("\tC3\t: %.7f\n", pS9->info.C3);
-        ARTEMIS_DEBUG_PRINTF("\tR0\t: %.7f\n", pS9->info.R0);
-        ARTEMIS_DEBUG_PRINTF("\tAverage\t: %u\n", pS9->info.average);
+    /* 2. Calibration Coefficients (C0-C3, R0, Average) */
+    while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
+    _module_s9_get_coefficients();
 
-        ARTEMIS_DEBUG_PRINTF("\tUID\t: ");
-        for (i = 0; i < 32; i++) {
-            ARTEMIS_DEBUG_PRINTF("%c", pS9->info.UID[i]);
+    /* 3. UID */
+    while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
+    MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"uid\r", 4);
+    result = receive_response(rx_buffer, &rx_len, sizeof(rx_buffer));
+    if (result == S9_RESULT_OK)
+    {
+        rx_buffer[rx_len] = '\0';
+        while (rx_len > 0 && (rx_buffer[rx_len - 1] == '\r' || rx_buffer[rx_len - 1] == '\n'))
+        {
+            rx_buffer[--rx_len] = '\0';
         }
-        ARTEMIS_DEBUG_PRINTF("\n");
-
-        ARTEMIS_DEBUG_PRINTF("\tFW Ver\t: ");
-        for (i = 0; i < 10; i++) {
-            ARTEMIS_DEBUG_PRINTF("%c", pS9->info.sensor[i]);
-        }
-        ARTEMIS_DEBUG_PRINTF("\n");
-
-        ARTEMIS_DEBUG_PRINTF("\tStatus\t: ");
-        for (i = 0; i < 2; i++) {
-            ARTEMIS_DEBUG_PRINTF("%c", pS9->info.status[i]);
-        }
-        ARTEMIS_DEBUG_PRINTF("\n");
+        ARTEMIS_DEBUG_PRINTF("\tUID     : %s\n", (char*)rx_buffer);
     }
     else
     {
-        ARTEMIS_DEBUG_PRINTF("S9 : Something went wrong\n");
+        ARTEMIS_DEBUG_PRINTF("\tUID     : TIMEOUT\n");
+    }
+
+    /* 4. Firmware Version */
+    while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
+    MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"ver\r", 4);
+    result = receive_response(rx_buffer, &rx_len, sizeof(rx_buffer));
+    if (result == S9_RESULT_OK)
+    {
+        rx_buffer[rx_len] = '\0';
+        while (rx_len > 0 && (rx_buffer[rx_len - 1] == '\r' || rx_buffer[rx_len - 1] == '\n'))
+        {
+            rx_buffer[--rx_len] = '\0';
+        }
+        ARTEMIS_DEBUG_PRINTF("\tFW Ver  : %s\n", (char*)rx_buffer);
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("\tFW Ver  : TIMEOUT\n");
+    }
+
+    /* 5. Status */
+    while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
+    MAX14830_UART_Write_direct(pS9->device.uart.port, (uint8_t*)"status\r", 7);
+    result = receive_response(rx_buffer, &rx_len, sizeof(rx_buffer));
+    if (result == S9_RESULT_OK)
+    {
+        rx_buffer[rx_len] = '\0';
+        while (rx_len > 0 && (rx_buffer[rx_len - 1] == '\r' || rx_buffer[rx_len - 1] == '\n'))
+        {
+            rx_buffer[--rx_len] = '\0';
+        }
+        ARTEMIS_DEBUG_PRINTF("\tStatus  : %s\n", (char*)rx_buffer);
     }
 }
 
@@ -247,11 +299,30 @@ float S9T_Read(float *t, float *r)
     uint8_t sampleStr[64] = {0};
     uint16_t rxLen = 0;
     S9_result_t result = S9_RESULT_FAIL;
+    uint8_t flush_buf[32];
 
 #ifdef FREE_RTOS
+    /* 1. Send stop and rate 0 to halt incoming autonomous transmissions */
+    MAX14830_UART_Write((eMAX18430_ComPort_t)pS9->device.uart.port, (uint8_t *)"stop\r", 5);
+    vTaskDelay(pdMS_TO_TICKS(15));
+    MAX14830_UART_Write((eMAX18430_ComPort_t)pS9->device.uart.port, (uint8_t *)"rate 0\r", 7);
+    vTaskDelay(pdMS_TO_TICKS(15));
+
+    /* 2. Flush autonomous frames spewed during the power-on warmup */
+    while (MAX14830_UART_Read((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
+
+    /* 3. Issue clean on-demand sample */
     MAX14830_UART_Write((eMAX18430_ComPort_t)pS9->device.uart.port, (uint8_t *)"sample\r", 7);
     result = receive_response_RTOS(sampleStr, &rxLen, sizeof(sampleStr));
 #else
+    /* Non-RTOS / Boot path */
+    MAX14830_UART_Write_direct((eMAX18430_ComPort_t)pS9->device.uart.port, (uint8_t *)"stop\r", 5);
+    am_util_delay_ms(15);
+    MAX14830_UART_Write_direct((eMAX18430_ComPort_t)pS9->device.uart.port, (uint8_t *)"rate 0\r", 7);
+    am_util_delay_ms(15);
+
+    while (MAX14830_UART_Read_direct((eMAX18430_ComPort_t)pS9->device.uart.port, flush_buf) > 0);
+
     MAX14830_UART_Write_direct((eMAX18430_ComPort_t)pS9->device.uart.port, (uint8_t *)"sample\r", 7);
     result = receive_response(sampleStr, &rxLen, sizeof(sampleStr));
 #endif

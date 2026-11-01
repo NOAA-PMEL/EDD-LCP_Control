@@ -10,7 +10,7 @@
 #include "artemis_rtc.h"
 
 /************************************************************************
- *                               MACROS
+ *                                MACROS
  ************************************************************************/
 
 /* UBX MGA Subtypes & IDs */
@@ -22,8 +22,12 @@
 #define UBX_CFG_NAV5_MASK_DYN       ( 0x0001 ) // Apply dynamic model parameter
 #define UBX_DYN_MODEL_SEA           ( 5 )      // Sea dynamic model
 
+/* Wire Protocol Constants */
+#define UBX_CHECKSUM_SIZE           ( 2 )
+#define UBX_FRAME_OVERHEAD_SIZE     ( UBX_HEADER_SIZE + UBX_CHECKSUM_SIZE ) // 6 + 2 = 8 bytes
+
 /************************************************************************
- *                          STRUCTS
+ *                               STRUCTS
  ************************************************************************/
 
 #pragma pack(push, 1)
@@ -93,7 +97,7 @@ typedef struct
 #pragma pack(pop)
 
 /************************************************************************
- *                     STATIC HELPER FUNCTIONS
+ *                         STATIC HELPER FUNCTIONS
  ************************************************************************/
 
 /**
@@ -103,8 +107,9 @@ static bool ubx_send_packet(uint8_t ubx_class, uint8_t ubx_id, uint8_t *payload,
 {
     ubx_packet_t packet = {0};
     uint8_t tx_msg[64] = {0}; // Sized comfortably for NAV5 (44B) and INI (28-32B)
+    uint16_t total_wire_len = payload_len + UBX_FRAME_OVERHEAD_SIZE;
 
-    if (payload_len + UBX_HEADER_SIZE > sizeof(tx_msg))
+    if (total_wire_len > sizeof(tx_msg))
     {
         return false;
     }
@@ -112,17 +117,15 @@ static bool ubx_send_packet(uint8_t ubx_class, uint8_t ubx_id, uint8_t *payload,
     // 1. Pack structure
     UBX_create_ubx_packet(ubx_class, ubx_id, payload, payload_len, &packet);
 
-    // 2. Generate full wire format (sync words + class + id + length + payload + Fletcher checksum)
+    // 2. Generate full wire format (sync + class + id + length + payload + CK_A + CK_B)
     UBX_create_msg_from_packet(&packet, tx_msg);
 
-    // 3. Transmit over I2C to address 0x42 with stop bit
-    artemis_ublox_i2c_send_msg(tx_msg, payload_len + UBX_HEADER_SIZE, true);
-
-    return true;
+    // 3. Transmit full packet over I2C including checksum
+    return artemis_ublox_i2c_send_msg(tx_msg, total_wire_len, true);
 }
 
 /************************************************************************
- *                         GLOBAL FUNCTIONS
+ *                          GLOBAL FUNCTIONS
  ************************************************************************/
 
 bool GPS_set_dynamic_model_sea(void)
@@ -147,7 +150,9 @@ bool GPS_inject_rtc_time_with_acc(uint16_t time_accuracy_sec)
     time_msg.version  = 0x00;
     time_msg.ref      = 0x00;
     time_msg.gnssId   = 0x00;
-    time_msg.year     = (uint16_t)(2000 + time.year);
+    
+    // Guard against 2-digit vs 4-digit RTC year values
+    time_msg.year     = (time.year < 100) ? (uint16_t)(2000 + time.year) : (uint16_t)time.year;
     time_msg.month    = time.month;
     time_msg.day      = time.day;
     time_msg.hour     = time.hour;
@@ -220,5 +225,7 @@ void GPS_on(void)
 
 void GPS_off(void)
 {
+    // Clean up u-blox peripheral state before dropping power rail
+    UBLOX_uninitialize();
     artemis_ublox_i2c_power_off();
 }

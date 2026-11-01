@@ -50,15 +50,28 @@ void TEMP_Power_OFF(void)
 
 void TEMP_initialize_RTOS(void)
 {
-    /* Energize the sensor rail once */
-    TEMP_Power_ON();
+    uint8_t flush_buf[32];
 
-    /* Configure MAX14830 COM0 clock and baudrate */
+    /* 1. Configure MAX14830 COM port clock and baudrate first */
     MAX14830_port_enable((eMAX18430_ComPort_t)sParam.port);
     MAX14830_Set_baudrate((eMAX18430_ComPort_t)sParam.port, sParam.baudrate);
 
-    /* Send stop\r via driver to halt autonomous streaming */
+    /* 2. Energize sensor power rail */
+    TEMP_Power_ON();
+
+    /* 3. Essential: Wait for SoundNine internal MCU to complete boot sequence */
+    vTaskDelay(pdMS_TO_TICKS(150));
+
+    /* 4. Send stop and rate 0 to halt autonomous streaming */
     _module_s9_stop_sampling_RTOS();
+    vTaskDelay(pdMS_TO_TICKS(20));
+
+    /* 5. Drain any autonomous bytes that leaked into the FIFO during warm-up */
+    while (MAX14830_UART_Read((eMAX18430_ComPort_t)sParam.port, flush_buf) > 0);
+
+    /* 6. If task_temperature() uses per-sample power gating, shut the rail 
+     * off here so task_temperature() starts with the rail cleanly unpowered. */
+    TEMP_Power_OFF();
 }
 
 void TEMP_uninitialize_RTOS(void)

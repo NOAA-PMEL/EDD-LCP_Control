@@ -31,33 +31,11 @@ bool PIS_taskStatus(void)
 // Global Functions
 bool PIS_initialize(void)
 {
-    bool success = true;
-    uint8_t sys_id = 0;
-    int32_t status = 0;
+    /* Initialize I2C driver with the defined piston slave address */
+    artemis_piston_i2c_initialize(PISTON_I2C_ADDR);
 
-    ARTEMIS_DEBUG_PRINTF("\nPiston Board Information\n");
-    ARTEMIS_DEBUG_PRINTF("**************************************\n");
-    ARTEMIS_DEBUG_PRINTF("System Identification   : ");
-
-    /* Example pattern: read register 0xE8 (PISTON_I2C_R_SYS_ID) */
-    status = module_piston_read_reg(PISTON_I2C_R_SYS_ID, &sys_id, 1);
-
-    if (status != 0)
-    {
-        ARTEMIS_DEBUG_PRINTF("NOT DETECTED (NAK)\n");
-        ARTEMIS_DEBUG_PRINTF("PISTON :: Warning: Piston board not responding on I2C (0x%02X)\n\n", PISTON_I2C_ADDR);
-        
-        /* Mark data invalid and return false safely */
-        pPiston->rtos.data_valid = false;
-        return false;
-    }
-
-    ARTEMIS_DEBUG_PRINTF("0x%02X\n", sys_id);
-
-    /* Proceed to read firmware version and parameters only if sys_id succeeded */
-    // ... remaining reads ...
-
-    return success;
+    /* Query board info */
+    return module_pis_information();
 }
 
 void PIS_uninitialize(void)
@@ -66,11 +44,12 @@ void PIS_uninitialize(void)
     artemis_piston_i2c_uninitialize();
 }
 
-static void module_pis_information(void)
+static bool module_pis_information(void)
 {
-    /* Fetch system_id with retry guard */
+    /* Fetch 8-byte system_id string (e.g. "LCPPST01") */
     uint8_t addr = PISTON_I2C_R_SYS_ID;
     uint8_t data[8] = {0};
+    bool board_detected = false;
 
     ARTEMIS_DEBUG_PRINTF("\nPiston Board Information\n");
     ARTEMIS_DEBUG_PRINTF("**************************************\n");
@@ -82,25 +61,27 @@ static void module_pis_information(void)
         {
             ARTEMIS_DEBUG_PRINTF("%c", (char)data[i]);
         }
+        ARTEMIS_DEBUG_PRINTF("\n");
+        board_detected = true;
     }
     else
     {
-        ARTEMIS_DEBUG_PRINTF("UNKNOWN (Slave did not acknowledge)");
+        ARTEMIS_DEBUG_PRINTF("NOT DETECTED (Slave did not acknowledge)\n\n");
+        return false;
     }
     
-    ARTEMIS_DEBUG_PRINTF("\n");
-    /* Wait for 50ms */
-    vTaskDelay(pdMS_TO_TICKS(50));
+    /* Hardware SysTick delay: safe to call before FreeRTOS scheduler starts */
+    am_hal_systick_delay_us(50000);
 
     /* Fetch build year, firmware major, minor and build */
     addr = PISTON_I2C_R_YEAR_BUILD;
     memset(data, 0, 8);
     if (artemis_piston_i2c_read_retry(addr, data, 8, PIS_I2C_DEFAULT_RETRIES))
     {
-        uint16_t year_build = (data[1] << 8) | data[0];
+        uint16_t year_build = (uint16_t)((data[1] << 8) | data[0]);
         uint8_t maj = data[2];
         uint8_t min = data[3];
-        uint32_t build = (data[7] << 24) | (data[6] << 16) | (data[5] << 8) | data[4];
+        uint32_t build = ((uint32_t)data[7] << 24) | ((uint32_t)data[6] << 16) | ((uint32_t)data[5] << 8) | data[4];
 
         ARTEMIS_DEBUG_PRINTF("Firmware build year\t: %u\n", year_build);
         ARTEMIS_DEBUG_PRINTF("Firmware version    \t: v%u.%u.%u\n\n", maj, min, build);
@@ -110,7 +91,8 @@ static void module_pis_information(void)
         ARTEMIS_DEBUG_PRINTF("Firmware info query timed out\n\n");
     }
 
-    vTaskDelay(pdMS_TO_TICKS(50));
+    am_hal_systick_delay_us(50000);
+    return board_detected;
 }
 
 void PIS_task_move_length(TaskHandle_t *xPiston)

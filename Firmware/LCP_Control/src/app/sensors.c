@@ -73,20 +73,19 @@ bool SENS_initialize(void)
 
     /* initialize temperature sensor */
     success = TEMP_initialize(TEMP_SoundNine_OEM);
-    ARTEMIS_DEBUG_PRINTF("--> STEP A: S9 Finished. Disabling MAX14830 Direct...\n");
+    ARTEMIS_DEBUG_PRINTF("--> STEP A: S9 Finished.\n");
 
-    /* disable max14830*/
-    //MAX14830_disable_direct();
+    /* disable max14830 direct mode */
+    // MAX14830_disable_direct();
 
-    /* initialize GPS */
-    success = GPS_initialize();
-    ARTEMIS_DEBUG_PRINTF("--> STEP C: GPS Initialized (%d). Initializing Piston...\n", success);
-
-    /* Piston Board information */
+    /* 1. Run Piston Board initialization FIRST (Restores working LOG_0007 order) */
     success = PIS_initialize();
-    ARTEMIS_DEBUG_PRINTF("--> STEP D: Piston Initialized (%d). Creating Semaphores...\n", success);
+    ARTEMIS_DEBUG_PRINTF("--> STEP B: Piston Initialized (%d).\n", success);
 
-    /* Create a single semaphore for Temperature and Pressure sensors */
+    /* 2. GPS is NOT initialized here while unpowered.
+     * task_gps() handles GPS_on() and GPS_initialize() at runtime. */
+
+    /* Create a single mutex for Temperature and Pressure sensors */
     xTDSemaphore = xSemaphoreCreateMutex();
     if (xTDSemaphore == NULL)
     {
@@ -122,6 +121,7 @@ bool SENS_initialize(void)
     {
         success = true;
     }
+
     ARTEMIS_DEBUG_PRINTF("SENSORS :: Sensors are initialized\n\n");
     return success;
 }
@@ -394,7 +394,7 @@ void task_depth(void)
     {
         /* 1. Turn ON sensor hardware rail */
         DEPTH_Power_ON();
-        vTaskDelay(pdMS_TO_TICKS(100)); // 100ms warm-up margin for Keller transducer
+        vTaskDelay(pdMS_TO_TICKS(20)); // 20ms margin allows up to 10Hz sampling
 
         if (xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
         {
@@ -443,16 +443,27 @@ void task_temperature(void)
     ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature Task Started (Rate: %u Hz)\n",
                          sensor_data.temperature.rate);
 
-    TEMP_initialize_RTOS();
     xTemp_run = true;
 
     while (xTemp_run)
     {
+        /* 1. Sleep until next scheduled sample tick with rail OFF */
         vTaskDelayUntil(&xLastWakeTime, period);
 
-        if (xSemaphoreTake(xTDSemaphore, pdMS_TO_TICKS(50)) == pdTRUE)
+        /* 2. Acquire shared bus mutex BEFORE energizing hardware */
+        if (xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
         {
+            /* 3. Power ON sensor hardware rail */
+            TEMP_Power_ON();
+            
+            /* S9 boot margin: wait for S9 MCU UART parser to come online */
+            vTaskDelay(pdMS_TO_TICKS(100));
+
+            /* 4. Read temperature */
             TEMP_Read(&measurement);
+
+            /* 5. Shut rail OFF immediately to preserve power and silence UART */
+            TEMP_Power_OFF();
 
             /* Check valid reading range */
             if (measurement.temperature > -5.0f && measurement.temperature < 45.0f)
@@ -470,9 +481,14 @@ void task_temperature(void)
 
             xSemaphoreGive(xTDSemaphore);
         }
+        else
+        {
+            ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, semaphore not available\n");
+        }
     }
 
-    TEMP_uninitialize_RTOS();
+    /* Ensure rail is unpowered on task exit */
+    TEMP_Power_OFF();
     tEvent = DELETE;
     SendEvent(xTDEventQueue, &tEvent);
     vTaskDelete(NULL);
@@ -524,6 +540,8 @@ void task_gps(void)
     else
     {
         ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Timer did not start\n");
+        GPS_off();
+        TaskLive_GPS = false;
         vTaskDelete(NULL);
     }
 
@@ -576,6 +594,9 @@ void task_gps(void)
         }
         xTimer = NULL;
     }
+
+    /* De-energize u-blox receiver and release bus before terminating */
+    GPS_off();
 
     ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Task is deleting...\n");
     vTaskDelay(xDelay1000ms);
