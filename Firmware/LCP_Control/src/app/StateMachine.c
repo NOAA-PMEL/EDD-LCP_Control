@@ -687,9 +687,9 @@ void module_pds_idle(void)
     bool piston_task_running = false;
 
     // Use direct length command to bypass slave baseline volume offsets
-    PIS_set_piston_rate(1);[cite: 2]
-    PIS_set_length(Length);[cite: 2]
-    PIS_task_move_length(&s_xPiston);[cite: 2]
+    PIS_set_piston_rate(1);
+    PIS_set_length(Length);
+    PIS_task_move_length(&s_xPiston);
     vTaskDelay(xDelay5000ms);
 
     while (piston_move)
@@ -705,15 +705,15 @@ void module_pds_idle(void)
             {
                 ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston time-out, task->finished\n");
                 // Time-out: delete the task, reset the piston board and set piston_move to false
-                PIS_Get_Length(&Length);[cite: 2]
-                Volume = CTRL_calculate_volume_from_length(Length);[cite: 4]
-                Density = CTRL_calculate_lcp_density(Volume);[cite: 4]
+                PIS_Get_Length(&Length);
+                Volume = CTRL_calculate_volume_from_length(Length);
+                Density = CTRL_calculate_lcp_density(Volume);
                 ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                 ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston time-out, task->finished\n");
 
                 PIS_task_delete(&s_xPiston); // Signal to exit loop
                 vTaskDelay(xDelay10000ms);   // Wait for the task to exit the loop and delete itself
-                PIS_Reset();                 // PIS_Reset() already handles its internal 2500ms delay[cite: 2]
+                PIS_Reset();                 // PIS_Reset() already handles its internal 2500ms delay
                 piston_timer = 0;
                 piston_move = false;
                 piston_task_running = false;
@@ -721,9 +721,9 @@ void module_pds_idle(void)
         }
         else
         {
-            PIS_Get_Length(&Length);[cite: 2]
-            Volume = CTRL_calculate_volume_from_length(Length);[cite: 4]
-            Density = CTRL_calculate_lcp_density(Volume);[cite: 4]
+            PIS_Get_Length(&Length);
+            Volume = CTRL_calculate_volume_from_length(Length);
+            Density = CTRL_calculate_lcp_density(Volume);
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n", Density, Volume, Length);
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task->finished\n");
             piston_move = false;
@@ -771,13 +771,13 @@ void module_pds_idle(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: idle, deliberately stopping the Piston\n");
                 /* stop the piston */
-                PIS_task_delete(&s_xPiston); // Signal to exit loop[cite: 2]
-                previousTaskAlive = PIS_taskStatus(); // check if the piston task is running[cite: 2]
+                PIS_task_delete(&s_xPiston); // Signal to exit loop
+                previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 while (previousTaskAlive)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: idle, Previous piston task is still running...\n");
                     vTaskDelay(xDelay5000ms);
-                    previousTaskAlive = PIS_taskStatus(); // check if the piston task is running[cite: 2]
+                    previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
                 }
                 vTaskDelay(piston_period);
                 piston_move = false;
