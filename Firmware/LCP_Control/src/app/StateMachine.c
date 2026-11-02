@@ -270,6 +270,9 @@ void STATE_MainState(SystemMode_t mode)
 
 void STATE_Popup(void)
 {
+    // Clear any stale events leftover from predeploy/profiler cycles
+    xQueueReset(gEventQueue);
+
     /* wait for a global event */
     while (1)
     {
@@ -325,6 +328,8 @@ void STATE_Popup(void)
 
 void module_pus_idle(void)
 {
+    vTaskDelay(xDelay500ms); // Settle bus before peripheral shutdown
+    
     /* turn off all the sensor */
     SENS_sensor_depth_off();
     SENS_sensor_temperature_off();
@@ -408,7 +413,12 @@ void module_pus_surface_float(void)
             ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Depth reached    = %0.4f m\n", Depth);
             run = false;
             piston_move = false;
-            SENS_task_delete(xDepth);
+            if (xDepth != NULL)
+            {
+                SENS_task_delete(xDepth);
+                xDepth = NULL;
+            }
+            vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
             SENS_sensor_depth_off();
         }
         else
@@ -428,7 +438,7 @@ void module_pus_surface_float(void)
                     /* do nothing for now, */
                     ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Depth Rate is negative, do nothing\n");
                 }
-                else if (averaged_rate > 0.0 && !piston_move)
+                else if (averaged_rate >= 0.01 && !piston_move)
                 {
                     /* decrease piston position by PARK_POSITION_INCREMENT inches */
                     ARTEMIS_DEBUG_PRINTF("PUS :: surface_float, Depth Rate is positive, increase %fin\n", PARK_POSITION_INCREMENT);
@@ -772,7 +782,12 @@ void module_pds_idle(void)
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Pressure reached = %0.4f bar\n", Pressure);
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Depth reached    = %0.4f m\n", Depth);
             run = false;
-            SENS_task_delete(xDepth);
+            if (xDepth != NULL)
+            {
+                SENS_task_delete(xDepth);
+                xDepth = NULL;
+            }
+            vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
             SENS_sensor_depth_off();
             pdsEvent = MODE_PROFILE;
         }
@@ -792,6 +807,8 @@ void module_pds_systemcheck(void)
     Event_e pdsEvent;
     if (sensors_check == true)
     {
+        vTaskDelay(xDelay500ms); // Settle bus before peripheral shutdown
+
         /* Turn off all the sensors, except GPS */
         SENS_sensor_depth_off();
         SENS_sensor_temperature_off();
@@ -858,6 +875,7 @@ void module_pds_systemcheck(void)
                 ARTEMIS_DEBUG_PRINTF("PDS :: systemcheck, GPS task->finished\n");
                 run = false;
                 gpsTimer = 0;
+                vTaskDelay(pdMS_TO_TICKS(100)); // Allow bus to drain
                 SENS_sensor_gps_off();
 
                 /* store data in the SDcard */
@@ -1028,6 +1046,8 @@ void STATE_Profiler(void)
 
 void module_sps_idle(void)
 {
+    vTaskDelay(xDelay500ms); // Settle bus before peripheral shutdown
+
     /** Turn all sensors and systems OFF */
     SENS_sensor_gps_off();
     SENS_sensor_depth_off();
@@ -1345,6 +1365,7 @@ void module_sps_move_to_park(void)
                         SENS_task_delete(xDepth);
                         xDepth = NULL;
                     }
+                    vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                     SENS_sensor_depth_off();
 
                     /* check if piston is still moving then reset it and stop */
@@ -1393,6 +1414,7 @@ void module_sps_move_to_park(void)
                             SENS_task_delete(xDepth);
                             xDepth = NULL;
                         }
+                        vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                         SENS_sensor_depth_off();
 
                         /* check if piston is still moving then reset it and stop */
@@ -1505,6 +1527,7 @@ void module_sps_move_to_park(void)
                 SENS_task_delete(xDepth);
                 xDepth = NULL;
             }
+            vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
             SENS_sensor_depth_off();
 
             run = false;
@@ -1542,6 +1565,7 @@ void module_sps_move_to_park(void)
                                 SENS_task_delete(xDepth);
                                 xDepth = NULL;
                             }
+                            vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                             SENS_sensor_depth_off();
 
                             spsEvent = MODE_CRUSH_TO_PROFILE;
@@ -1585,6 +1609,7 @@ void module_sps_move_to_park(void)
                             SENS_task_delete(xDepth);
                             xDepth = NULL;
                         }
+                        vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                         SENS_sensor_depth_off();
 
                         spsEvent = MODE_CRUSH_TO_PROFILE;
@@ -1655,6 +1680,7 @@ void module_sps_move_to_park(void)
         SENS_task_delete(xDepth);
         xDepth = NULL;
     }
+    vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
     SENS_sensor_depth_off();
 
     SendEvent(spsEventQueue, &spsEvent);
@@ -1683,7 +1709,7 @@ void module_sps_park(void)
     DATA_reset(&current_park_data);
     current_park_data.pNumber = park_number; // Explicitly set the profile number for this cycle
 
-    float s_rate = 0;
+    float s_rate = PARK_RATE;
     //uint32_t park_time = 0;
 
     rtc_time time;
@@ -2114,6 +2140,7 @@ void module_sps_park(void)
                                     SENS_task_delete(xDepth);
                                     xDepth = NULL;
                                 }
+                                vTaskDelay(pdMS_TO_TICKS(150)); // Allow in-flight IOM transactions to finish
                                 SENS_sensor_temperature_off();
                                 SENS_sensor_depth_off();
 
@@ -2158,12 +2185,20 @@ void module_sps_park(void)
                         if (crush_depth)
                         {
                             /* stop here, in case of emergency blow */
-                            if (xDepth != NULL)
-                            {
-                                SENS_task_delete(xDepth);
-                                xDepth = NULL;
-                            }
-                            SENS_sensor_depth_off();
+                                if (xTemp != NULL)
+                                {
+                                    SENS_task_delete(xTemp);
+                                    xTemp = NULL;
+                                }
+                                if (xDepth != NULL)
+                                {
+                                    SENS_task_delete(xDepth);
+                                    xDepth = NULL;
+                                }
+                                vTaskDelay(pdMS_TO_TICKS(150)); // Allow in-flight IOM transactions to finish
+                                SENS_sensor_temperature_off();
+                                SENS_sensor_depth_off();
+
                             spsEvent = MODE_CRUSH_TO_PROFILE;
                             vTaskDelay(piston_period);
                             run = false;
@@ -2252,11 +2287,19 @@ void module_sps_park(void)
                     piston_move = false;
                 }
 
+                /* stop here, in case of emergency blow */
+                if (xTemp != NULL)
+                {
+                    SENS_task_delete(xTemp);
+                    xTemp = NULL;
+                }
                 if (xDepth != NULL)
                 {
                     SENS_task_delete(xDepth);
                     xDepth = NULL;
                 }
+                vTaskDelay(pdMS_TO_TICKS(150)); // Allow in-flight IOM transactions to finish
+                SENS_sensor_temperature_off();
                 SENS_sensor_depth_off();
 
                 ARTEMIS_DEBUG_PRINTF("\n\nSPS :: park, << Reached maximum Park Depth >>\n\n");
@@ -2300,9 +2343,20 @@ void module_sps_park(void)
                 }
                 else
                 {
-                    SENS_task_delete(xTemp);
+                    if (xTemp != NULL)
+                    {
+                        SENS_task_delete(xTemp);
+                        xTemp = NULL;
+                    }
+                    vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                     SENS_sensor_temperature_off();
-                    SENS_task_delete(xDepth);
+
+                    if (xDepth != NULL)
+                    {
+                        SENS_task_delete(xDepth);
+                        xDepth = NULL;
+                    }
+                    vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                     SENS_sensor_depth_off();
                 }
 
@@ -2337,6 +2391,7 @@ void module_sps_park(void)
         SENS_task_delete(xDepth);
         xDepth = NULL;
     }
+    vTaskDelay(pdMS_TO_TICKS(150)); // Allow in-flight IOM transactions to finish
     SENS_sensor_temperature_off();
     SENS_sensor_depth_off();
     park_number++;
@@ -2554,6 +2609,7 @@ void module_sps_move_to_profile(void)
                         SENS_task_delete(xDepth);
                         xDepth = NULL;
                     }
+                    vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                     SENS_sensor_depth_off();
 
                     /* check if piston is still moving then reset it and stop */
@@ -2608,6 +2664,7 @@ void module_sps_move_to_profile(void)
                             SENS_task_delete(xDepth);
                             xDepth = NULL;
                         }
+                        vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                         SENS_sensor_depth_off();
                          /* check if piston is still moving then reset it and stop */
                         //if (piston_move)
@@ -2717,6 +2774,7 @@ void module_sps_move_to_profile(void)
                 SENS_task_delete(xDepth);
                 xDepth = NULL;
             }
+            vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
             SENS_sensor_depth_off();
 
             run = false;
@@ -2753,6 +2811,7 @@ void module_sps_move_to_profile(void)
                                 SENS_task_delete(xDepth);
                                 xDepth = NULL;
                             }
+                            vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                             SENS_sensor_depth_off();
 
                             /* stop here, in case of emergency blow */
@@ -2797,6 +2856,7 @@ void module_sps_move_to_profile(void)
                             SENS_task_delete(xDepth);
                             xDepth = NULL;
                         }
+                        vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                         SENS_sensor_depth_off();
 
                         /* stop here, in case of emergency blow */
@@ -2870,6 +2930,7 @@ void module_sps_move_to_profile(void)
         SENS_task_delete(xDepth);
         xDepth = NULL;
     }
+    vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
     SENS_sensor_depth_off();
 
     SendEvent(spsEventQueue, &spsEvent);
@@ -3159,9 +3220,20 @@ void module_sps_profile(void)
                                 spsEvent = MODE_CRIT_TO_PARK;
 
                                 /* turn off the sensors */
-                                SENS_task_delete(xTemp);
+                                if (xTemp != NULL)
+                                {
+                                    SENS_task_delete(xTemp);
+                                    xTemp = NULL;
+                                }
+                                vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                                 SENS_sensor_temperature_off();
-                                SENS_task_delete(xDepth);
+
+                                if (xDepth != NULL)
+                                {
+                                    SENS_task_delete(xDepth);
+                                    xDepth = NULL;
+                                }
+                                vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                                 SENS_sensor_depth_off();
                                 piston_move = false;
                                 run = false;
@@ -3191,9 +3263,20 @@ void module_sps_profile(void)
                                 spsEvent = MODE_CRIT_TO_PARK;
 
                                 /* turn off the sensors */
-                                SENS_task_delete(xTemp);
+                                if (xTemp != NULL)
+                                {
+                                    SENS_task_delete(xTemp);
+                                    xTemp = NULL;
+                                }
+                                vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                                 SENS_sensor_temperature_off();
-                                SENS_task_delete(xDepth);
+
+                                if (xDepth != NULL)
+                                {
+                                    SENS_task_delete(xDepth);
+                                    xDepth = NULL;
+                                }
+                                vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
                                 SENS_sensor_depth_off();
                                 piston_move = false;
                                 run = false;
@@ -3500,9 +3583,21 @@ void module_sps_profile(void)
           
             crush_depth = false;
             surface = false;
-            SENS_task_delete(xTemp);
+
+            if (xTemp != NULL)
+            {
+                SENS_task_delete(xTemp);
+                xTemp = NULL;
+            }
+            vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
             SENS_sensor_temperature_off();
-            SENS_task_delete(xDepth);
+
+            if (xDepth != NULL)
+            {
+                SENS_task_delete(xDepth);
+                xDepth = NULL;
+            }
+            vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
             SENS_sensor_depth_off();
             run = false;
             spsEvent = MODE_DONE;

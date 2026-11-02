@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 
+
 // Static variables
 static Piston_t piston;
 static volatile bool pistonRun = false;
@@ -123,11 +124,14 @@ bool PIS_task_delete(TaskHandle_t *xPiston)
 
     if (xPiston != NULL && *xPiston != NULL)
     {
-        vTaskDelete(*xPiston);
-        *xPiston = NULL;
+        // If LiveTask is false, the worker task already self-deleted via vTaskDelete(NULL)
+        if (LiveTask)
+        {
+            vTaskDelete(*xPiston);
+            LiveTask = false;
+        }
+        *xPiston = NULL; // Safely clears s_xPiston in StateMachine.c via pointer!
     }
-
-    LiveTask = false;
     return true;
 }
 
@@ -448,7 +452,7 @@ void task_reset_piston_to_full(void)
 
     vTaskDelay(pdMS_TO_TICKS(100));
     ARTEMIS_DEBUG_PRINTF("PISTON :: task_reset_piston_to_full self-deleting...\n");
-    LiveTask = false;
+    LiveTask = false;  
     vTaskDelete(NULL);
 }
 
@@ -541,6 +545,7 @@ void task_move_piston_to_length(void)
                 PIS_Reset();
                 vTaskDelay(pdMS_TO_TICKS(2500));
                 pistonRun = false;
+                stall_count = 0;
             }
         }
 
@@ -761,7 +766,10 @@ void PIS_extend(void)
     uint8_t cmd[5] = {addr, 0x01, 0x01, 0x00, 0x01};
 
     artemis_piston_set_write_mode(true);
+    am_hal_systick_delay_us(25000);
     artemis_piston_i2c_send_msg(cmd, 5, true);
+    am_hal_systick_delay_us(25000);
+    artemis_piston_set_write_mode(false);
 }
 
 void PIS_retract(void)
@@ -770,7 +778,10 @@ void PIS_retract(void)
     uint8_t cmd[5] = {addr, 0xFF, 0x01, 0x00, 0x01};
 
     artemis_piston_set_write_mode(true);
+    am_hal_systick_delay_us(25000);
     artemis_piston_i2c_send_msg(cmd, 5, true);
+    am_hal_systick_delay_us(25000);
+    artemis_piston_set_write_mode(false);
 }
 
 void PIS_stop(void)
@@ -779,7 +790,10 @@ void PIS_stop(void)
     uint8_t cmd[5] = {addr, 0x00, 0x01, 0x00, 0x01};
 
     artemis_piston_set_write_mode(true);
+    am_hal_systick_delay_us(25000);
     artemis_piston_i2c_send_msg(cmd, 5, true);
+    am_hal_systick_delay_us(25000);
+    artemis_piston_set_write_mode(false);
 }
 
 bool PIS_calibration_check(void)
@@ -807,7 +821,10 @@ void PIS_calibration(bool cal)
     ARTEMIS_DEBUG_PRINTF("PISTON :: Being calibrated\n");
     am_util_delay_ms(100);
     artemis_piston_set_write_mode(true);
+    am_hal_systick_delay_us(25000);
     artemis_piston_i2c_send_msg(cmd, 2, true);
+    am_hal_systick_delay_us(25000);
+    artemis_piston_set_write_mode(false);
 }
 
 float PIS_get_length(void)
@@ -837,8 +854,18 @@ bool PIS_move_to_length(float length)
         v[i + 1] = (conv.u32Length >> (i * 8)) & 0xFF;
     }
 
+    // 1. Unlock write mode and wait for secondary MCU decode
     artemis_piston_set_write_mode(true);
+    am_hal_systick_delay_us(25000);
+
+    // 2. Transmit the 5-byte payload with full STOP
     artemis_piston_i2c_send_msg(v, 5, true);
+    am_hal_systick_delay_us(50000);
+
+    // 3. Relock write mode
+    artemis_piston_set_write_mode(false);
+    am_hal_systick_delay_us(10000);
+
     return true;
 }
 
@@ -864,8 +891,18 @@ bool PIS_move_to_volume(float volume)
         v[i + 1] = (conv.u32Volume >> (i * 8)) & 0xFF;
     }
 
+    // 1. Unlock write mode and wait for secondary MCU decode
     artemis_piston_set_write_mode(true);
+    am_hal_systick_delay_us(25000);
+
+    // 2. Transmit the 5-byte payload with full STOP
     artemis_piston_i2c_send_msg(v, 5, true);
+    am_hal_systick_delay_us(50000);
+
+    // 3. Relock write mode
+    artemis_piston_set_write_mode(false);
+    am_hal_systick_delay_us(10000);
+
     return true;
 }
 
@@ -999,7 +1036,10 @@ void PIS_Reset(void)
     uint8_t cmd[2] = {addr, PISTON_I2C_W_RESET_KEY};
 
     artemis_piston_set_write_mode(true);
+    am_hal_systick_delay_us(25000);
+
     artemis_piston_i2c_send_msg(cmd, 2, true);
+    am_hal_systick_delay_us(100000); // 100ms hardware reboot window
 }
 
 void PIS_move_to_full(void)
@@ -1008,7 +1048,10 @@ void PIS_move_to_full(void)
     uint8_t cmd[2] = {addr, 0x01};
 
     artemis_piston_set_write_mode(true);
+    am_hal_systick_delay_us(25000);
     artemis_piston_i2c_send_msg(cmd, 2, true);
+    am_hal_systick_delay_us(25000);
+    artemis_piston_set_write_mode(false);
 }
 
 void PIS_move_to_zero(void)
@@ -1017,7 +1060,10 @@ void PIS_move_to_zero(void)
     uint8_t cmd[2] = {addr, 0x01};
 
     artemis_piston_set_write_mode(true);
+    am_hal_systick_delay_us(25000);
     artemis_piston_i2c_send_msg(cmd, 2, true);
+    am_hal_systick_delay_us(25000);
+    artemis_piston_set_write_mode(false);
 }
 
 void PIS_reset_to_full(void)
@@ -1026,5 +1072,8 @@ void PIS_reset_to_full(void)
     uint8_t cmd[2] = {addr, 0x01};
 
     artemis_piston_set_write_mode(true);
+    am_hal_systick_delay_us(25000);
     artemis_piston_i2c_send_msg(cmd, 2, true);
+    am_hal_systick_delay_us(25000);
+    artemis_piston_set_write_mode(false);
 }
