@@ -67,6 +67,19 @@ static module_t module;
 //*****************************************************************************
 // Global Functions
 //*****************************************************************************
+static inline void pis_delay_ms(uint32_t ms)
+{
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING)
+    {
+        uint32_t ticks = pdMS_TO_TICKS(ms);
+        vTaskDelay(ticks > 0 ? ticks : 1);
+    }
+    else
+    {
+        am_util_delay_ms(ms);
+    }
+}
+
 void artemis_piston_i2c_initialize(uint8_t i2c_addr)
 {
     artemis_i2c_t *i2c = &module.i2c;
@@ -202,12 +215,19 @@ void artemis_piston_i2c_read(uint8_t addr, uint8_t *data, uint16_t len)
     artemis_stream_reset(&txstream);
     artemis_stream_reset(&rxstream);
 
-    // 1. Send address with STOP = TRUE (matches 10/30 code)
+    // 1. Send address with STOP = TRUE
     artemis_stream_put(&txstream, addr);
     artemis_i2c_send(i2c, true, &txstream);
 
-    // 2. 100ms hardware delay for slave MCU register pointer decode (from 10/30 code)
-    am_hal_systick_delay_us(100000);
+    // 2. Non-blocking delay for slave MCU decode
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING)
+    {
+        vTaskDelay(pdMS_TO_TICKS(50)); // 50ms yields CPU to other tasks
+    }
+    else
+    {
+        am_hal_systick_delay_us(50000);
+    }
 
     // 3. Receive data from the slave
     artemis_i2c_receive(i2c, true, &rxstream, len);
@@ -226,5 +246,5 @@ void artemis_piston_set_write_mode(bool state)
     msg[1] = key;
 
     artemis_piston_i2c_send_msg(msg, 2, true);
-    am_util_delay_ms(5);
+    pis_delay_ms(5);
 }

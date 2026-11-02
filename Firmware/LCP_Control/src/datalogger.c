@@ -25,6 +25,9 @@
 #include "buffer_c.h"
 #include "artemis_debug.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+
 static void datalogger_i2c_read(uint8_t offset, uint8_t offsetlen,
                                 uint8_t *pBuf, uint16_t size);
 static void datalogger_i2c_write(uint8_t offset, uint8_t offsetlen,
@@ -309,10 +312,7 @@ void datalogger_predeploy_mode(SensorGps_t *gps, bool check)
     //}
     //ARTEMIS_DEBUG_PRINTF("\n");
 
-    for (uint16_t i=0; i< strlen(data); i++)
-    {
-        ARTEMIS_DEBUG_PRINTF("%c", data[i]);
-    }
+    ARTEMIS_DEBUG_PRINTF("%s", data);
 
 }
 
@@ -722,21 +722,25 @@ uint16_t datalogger_fw_version(void)
  * @brief Power Up the Datalogger Module
  * 
  */
+/**
+ * @brief Power Up the Datalogger Module
+ * 
+ */
 void datalogger_power_on(void)
 {
-	am_hal_gpio_output_clear(module.power.pin);
-    
-    // Provide 400ms margin for OpenLog ATmega boot and SD card mount
-    am_hal_systick_delay_us(400000);
+    am_hal_gpio_output_clear(module.power.pin);
 
-    ///* wait for SD card to be initiated */
-    //uint8_t ret = 0;
-    //uint8_t delay = 0;
-    //do {
-    //    am_hal_systick_delay_us(100000);
-    //    ret = datalogger_status();
-    //    delay++;
-    //} while ( ! (ret&0x01) && delay < 20);
+    /* Check if the FreeRTOS scheduler is actively running */
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING)
+    {
+        /* Non-blocking delay: yields the CPU so other FreeRTOS tasks can execute */
+        vTaskDelay(pdMS_TO_TICKS(400));
+    }
+    else
+    {
+        /* Pre-scheduler cold boot: hardware busy-wait fallback */
+        am_hal_systick_delay_us(400000);
+    }
 }
 
 /**

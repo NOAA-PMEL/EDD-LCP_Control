@@ -165,11 +165,10 @@ void S9T_dev_info(void)
         ARTEMIS_DEBUG_PRINTF("S9 Temperature Sensor\n");
         ARTEMIS_DEBUG_PRINTF("**************************************\n");
 
-        ARTEMIS_DEBUG_PRINTF("\tMID\t: ");
-        for (i = 0; i < 8; i++) {
-            ARTEMIS_DEBUG_PRINTF("%c", pS9->info.MID[i]);
-        }
-        ARTEMIS_DEBUG_PRINTF("\n");
+        char safe_buf[36];
+
+        snprintf(safe_buf, sizeof(safe_buf), "%.8s", pS9->info.MID);
+        ARTEMIS_DEBUG_PRINTF("\tMID\t: %s\n", safe_buf);
 
         ARTEMIS_DEBUG_PRINTF("\tC0\t: %.7f\n", pS9->info.C0);
         ARTEMIS_DEBUG_PRINTF("\tC1\t: %.7f\n", pS9->info.C1);
@@ -178,23 +177,14 @@ void S9T_dev_info(void)
         ARTEMIS_DEBUG_PRINTF("\tR0\t: %.7f\n", pS9->info.R0);
         ARTEMIS_DEBUG_PRINTF("\tAverage\t: %u\n", pS9->info.average);
 
-        ARTEMIS_DEBUG_PRINTF("\tUID\t: ");
-        for (i = 0; i < 32; i++) {
-            ARTEMIS_DEBUG_PRINTF("%c", pS9->info.UID[i]);
-        }
-        ARTEMIS_DEBUG_PRINTF("\n");
+        snprintf(safe_buf, sizeof(safe_buf), "%.32s", pS9->info.UID);
+        ARTEMIS_DEBUG_PRINTF("\tUID\t: %s\n", safe_buf);
 
-        ARTEMIS_DEBUG_PRINTF("\tFW Ver\t: ");
-        for (i = 0; i < 10; i++) {
-            ARTEMIS_DEBUG_PRINTF("%c", pS9->info.sensor[i]);
-        }
-        ARTEMIS_DEBUG_PRINTF("\n");
+        snprintf(safe_buf, sizeof(safe_buf), "%.10s", pS9->info.sensor);
+        ARTEMIS_DEBUG_PRINTF("\tFW Ver\t: %s\n", safe_buf);
 
-        ARTEMIS_DEBUG_PRINTF("\tStatus\t: ");
-        for (i = 0; i < 2; i++) {
-            ARTEMIS_DEBUG_PRINTF("%c", pS9->info.status[i]);
-        }
-        ARTEMIS_DEBUG_PRINTF("\n");
+        snprintf(safe_buf, sizeof(safe_buf), "%.2s", pS9->info.status);
+        ARTEMIS_DEBUG_PRINTF("\tStatus\t: %s\n", safe_buf);
     }
     else
     {

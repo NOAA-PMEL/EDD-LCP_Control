@@ -6,6 +6,22 @@
 #include <string.h>
 #include <assert.h>
 
+#include "FreeRTOS.h"
+#include "task.h"
+
+// Non-blocking RTOS delay wrapper with sub-tick truncation guard
+static inline void pis_delay_ms(uint32_t ms)
+{
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING)
+    {
+        uint32_t ticks = pdMS_TO_TICKS(ms);
+        vTaskDelay(ticks > 0 ? ticks : 1);
+    }
+    else
+    {
+        am_util_delay_ms(ms);
+    }
+}
 
 // Static variables
 static Piston_t piston;
@@ -61,7 +77,7 @@ static void module_pis_information(void)
     }
 
     ARTEMIS_DEBUG_PRINTF("\n");
-    am_util_delay_ms(50);
+    pis_delay_ms(50);
 
     /* fetch build year, firmware major, minor and build */
     addr = PISTON_I2C_R_YEAR_BUILD;
@@ -74,7 +90,7 @@ static void module_pis_information(void)
 
     ARTEMIS_DEBUG_PRINTF("Firmware build year\t: %u\n", year_build);
     ARTEMIS_DEBUG_PRINTF("Firmware version   \t: v%u.%u.%u\n\n", maj, min, build);
-    am_util_delay_ms(50);
+    pis_delay_ms(50);
 }
 
 void PIS_task_move_length(TaskHandle_t *xPiston)
@@ -120,17 +136,16 @@ void PIS_task_move_zero(TaskHandle_t *xPiston)
 bool PIS_task_delete(TaskHandle_t *xPiston)
 {
     pistonRun = false;
-    vTaskDelay(pdMS_TO_TICKS(100));
+    pis_delay_ms(100);
 
     if (xPiston != NULL && *xPiston != NULL)
     {
-        // If LiveTask is false, the worker task already self-deleted via vTaskDelete(NULL)
         if (LiveTask)
         {
             vTaskDelete(*xPiston);
             LiveTask = false;
         }
-        *xPiston = NULL; // Safely clears s_xPiston in StateMachine.c via pointer!
+        *xPiston = NULL;
     }
     return true;
 }
@@ -146,7 +161,7 @@ void task_move_piston_to_zero(void)
     while (module_pis_trv_status() == 1 && wait_settle < 6)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Waiting for existing motion to finish...\n");
-        vTaskDelay(pdMS_TO_TICKS(500));
+        pis_delay_ms(500);
         wait_settle++;
     }
 
@@ -154,11 +169,10 @@ void task_move_piston_to_zero(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, motor stuck in travel, resetting slave\n");
         PIS_Reset();
-        vTaskDelay(pdMS_TO_TICKS(2500));
     }
 
     PIS_move_to_zero();
-    vTaskDelay(period);
+    pis_delay_ms(5000 / piston.rtos.rate);
 
     pistonRun = true;
     uint8_t count_reset = 0;
@@ -176,7 +190,7 @@ void task_move_piston_to_zero(void)
         }
         else if (trv == 0)
         {
-            vTaskDelay(pdMS_TO_TICKS(100));
+            pis_delay_ms(100);
             stall_count = 0;
             int8_t zeroFlag = module_pis_status_zero();
 
@@ -194,9 +208,8 @@ void task_move_piston_to_zero(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
                     PIS_Reset();
-                    vTaskDelay(pdMS_TO_TICKS(2500));
                     PIS_move_to_zero();
-                    vTaskDelay(period);
+                    pis_delay_ms(5000 / piston.rtos.rate);
                     count_reset = 0;
                     reset++;
 
@@ -217,7 +230,6 @@ void task_move_piston_to_zero(void)
             {
                 ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout, resetting\n");
                 PIS_Reset();
-                vTaskDelay(pdMS_TO_TICKS(2500));
                 pistonRun = false;
                 stall_count = 0;
             }
@@ -225,7 +237,7 @@ void task_move_piston_to_zero(void)
 
         if (pistonRun)
         {
-            vTaskDelay(period);
+            pis_delay_ms(5000 / piston.rtos.rate);
         }
     }
 
@@ -236,7 +248,7 @@ void task_move_piston_to_zero(void)
         taskEXIT_CRITICAL();
     }
 
-    vTaskDelay(pdMS_TO_TICKS(100));
+    pis_delay_ms(100);
     ARTEMIS_DEBUG_PRINTF("PISTON :: task_move_piston_to_zero self-deleting...\n");
     LiveTask = false;
     vTaskDelete(NULL);
@@ -253,7 +265,7 @@ void task_move_piston_to_full(void)
     while (module_pis_trv_status() == 1 && wait_settle < 6)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Waiting for existing motion to finish...\n");
-        vTaskDelay(pdMS_TO_TICKS(500));
+        pis_delay_ms(500);
         wait_settle++;
     }
 
@@ -261,11 +273,10 @@ void task_move_piston_to_full(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, motor stuck in travel, resetting slave\n");
         PIS_Reset();
-        vTaskDelay(pdMS_TO_TICKS(2500));
     }
 
     PIS_move_to_full();
-    vTaskDelay(period);
+    pis_delay_ms(5000 / piston.rtos.rate);
 
     pistonRun = true;
     uint8_t count_reset = 0;
@@ -283,7 +294,7 @@ void task_move_piston_to_full(void)
         }
         else if (trv == 0)
         {
-            vTaskDelay(pdMS_TO_TICKS(100));
+            pis_delay_ms(100);
             stall_count = 0;
             int8_t fullFlag = module_pis_status_full();
 
@@ -301,9 +312,8 @@ void task_move_piston_to_full(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
                     PIS_Reset();
-                    vTaskDelay(pdMS_TO_TICKS(2500));
                     PIS_move_to_full();
-                    vTaskDelay(period);
+                    pis_delay_ms(5000 / piston.rtos.rate);
                     count_reset = 0;
                     reset++;
 
@@ -324,7 +334,6 @@ void task_move_piston_to_full(void)
             {
                 ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout, resetting\n");
                 PIS_Reset();
-                vTaskDelay(pdMS_TO_TICKS(2500));
                 pistonRun = false;
                 stall_count = 0;
             }
@@ -332,7 +341,7 @@ void task_move_piston_to_full(void)
 
         if (pistonRun)
         {
-            vTaskDelay(period);
+            pis_delay_ms(5000 / piston.rtos.rate);
         }
     }
 
@@ -343,7 +352,7 @@ void task_move_piston_to_full(void)
         taskEXIT_CRITICAL();
     }
 
-    vTaskDelay(pdMS_TO_TICKS(100));
+    pis_delay_ms(100);
     ARTEMIS_DEBUG_PRINTF("PISTON :: task_move_piston_to_full self-deleting...\n");
     LiveTask = false;
     vTaskDelete(NULL);
@@ -360,7 +369,7 @@ void task_reset_piston_to_full(void)
     while (module_pis_trv_status() == 1 && wait_settle < 6)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Waiting for existing motion to finish...\n");
-        vTaskDelay(pdMS_TO_TICKS(500));
+        pis_delay_ms(500);
         wait_settle++;
     }
 
@@ -368,11 +377,10 @@ void task_reset_piston_to_full(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, motor stuck in travel, resetting slave\n");
         PIS_Reset();
-        vTaskDelay(pdMS_TO_TICKS(2500));
     }
 
     PIS_reset_to_full();
-    vTaskDelay(period);
+    pis_delay_ms(5000 / piston.rtos.rate);
 
     pistonRun = true;
     uint8_t count_reset = 0;
@@ -390,7 +398,7 @@ void task_reset_piston_to_full(void)
         }
         else if (trv == 0)
         {
-            vTaskDelay(pdMS_TO_TICKS(100));
+            pis_delay_ms(100);
             stall_count = 0;
             int8_t fullResetFlag = module_pis_status_fullreset();
 
@@ -408,9 +416,8 @@ void task_reset_piston_to_full(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
                     PIS_Reset();
-                    vTaskDelay(pdMS_TO_TICKS(2500));
                     PIS_reset_to_full();
-                    vTaskDelay(period);
+                    pis_delay_ms(5000 / piston.rtos.rate);
                     count_reset = 0;
                     reset++;
 
@@ -431,7 +438,6 @@ void task_reset_piston_to_full(void)
             {
                 ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout, resetting\n");
                 PIS_Reset();
-                vTaskDelay(pdMS_TO_TICKS(2500));
                 pistonRun = false;
                 stall_count = 0;
             }
@@ -439,7 +445,7 @@ void task_reset_piston_to_full(void)
 
         if (pistonRun)
         {
-            vTaskDelay(period);
+            pis_delay_ms(5000 / piston.rtos.rate);
         }
     }
 
@@ -450,7 +456,7 @@ void task_reset_piston_to_full(void)
         taskEXIT_CRITICAL();
     }
 
-    vTaskDelay(pdMS_TO_TICKS(100));
+    pis_delay_ms(100);
     ARTEMIS_DEBUG_PRINTF("PISTON :: task_reset_piston_to_full self-deleting...\n");
     LiveTask = false;  
     vTaskDelete(NULL);
@@ -467,7 +473,7 @@ void task_move_piston_to_length(void)
     while (module_pis_trv_status() == 1 && wait_settle < 6)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Waiting for existing motion to finish...\n");
-        vTaskDelay(pdMS_TO_TICKS(500));
+        pis_delay_ms(500);
         wait_settle++;
     }
 
@@ -475,11 +481,10 @@ void task_move_piston_to_length(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, motor stuck in travel, resetting slave\n");
         PIS_Reset();
-        vTaskDelay(pdMS_TO_TICKS(2500));
     }
 
     PIS_move_to_length(piston.setpoint_l);
-    vTaskDelay(pdMS_TO_TICKS(500));
+    pis_delay_ms(500);
 
     pistonRun = true;
     uint8_t count_reset = 0;
@@ -497,7 +502,7 @@ void task_move_piston_to_length(void)
         }
         else if (trv == 0)
         {
-            vTaskDelay(pdMS_TO_TICKS(100));
+            pis_delay_ms(100);
             if (module_pis_get_length_safe(&length))
             {
                 taskENTER_CRITICAL();
@@ -519,10 +524,9 @@ void task_move_piston_to_length(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting (target missed)\n");
                         PIS_Reset();
-                        vTaskDelay(pdMS_TO_TICKS(2500));
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Re-setting length = %0.5f\n", piston.setpoint_l);
                         PIS_move_to_length(piston.setpoint_l);
-                        vTaskDelay(period);
+                        pis_delay_ms(5000 / piston.rtos.rate);
                         count_reset = 0;
                         reset++;
 
@@ -543,7 +547,6 @@ void task_move_piston_to_length(void)
             {
                 ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout, resetting\n");
                 PIS_Reset();
-                vTaskDelay(pdMS_TO_TICKS(2500));
                 pistonRun = false;
                 stall_count = 0;
             }
@@ -551,11 +554,11 @@ void task_move_piston_to_length(void)
 
         if (pistonRun)
         {
-            vTaskDelay(period);
+            pis_delay_ms(5000 / piston.rtos.rate);
         }
     }
 
-    vTaskDelay(pdMS_TO_TICKS(100));
+    pis_delay_ms(100);
     if (module_pis_get_length_safe(&length))
     {
         taskENTER_CRITICAL();
@@ -577,7 +580,7 @@ void task_move_piston_to_length(void)
                              length, (length - piston.setpoint_l), PISTON_LENGTH_DIFF_MAX);
     }
 
-    vTaskDelay(pdMS_TO_TICKS(100));
+    pis_delay_ms(100);
     ARTEMIS_DEBUG_PRINTF("PISTON :: task_move_piston_to_length self-deleting...\n");
     LiveTask = false;
     vTaskDelete(NULL);
@@ -594,7 +597,7 @@ void task_move_piston_to_volume(void)
     while (module_pis_trv_status() == 1 && wait_settle < 6)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: Waiting for existing motion to finish...\n");
-        vTaskDelay(pdMS_TO_TICKS(500));
+        pis_delay_ms(500);
         wait_settle++;
     }
 
@@ -602,11 +605,10 @@ void task_move_piston_to_volume(void)
     {
         ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, motor stuck in travel, resetting slave\n");
         PIS_Reset();
-        vTaskDelay(pdMS_TO_TICKS(2500));
     }
 
     PIS_move_to_volume(piston.setpoint_v);
-    vTaskDelay(pdMS_TO_TICKS(500));
+    pis_delay_ms(500);
 
     pistonRun = true;
     uint8_t count_reset = 0;
@@ -624,7 +626,7 @@ void task_move_piston_to_volume(void)
         }
         else if (trv == 0)
         {
-            vTaskDelay(pdMS_TO_TICKS(100));
+            pis_delay_ms(100);
             if (module_pis_get_volume_safe(&volume))
             {
                 taskENTER_CRITICAL();
@@ -646,10 +648,9 @@ void task_move_piston_to_volume(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting (volume missed)\n");
                         PIS_Reset();
-                        vTaskDelay(pdMS_TO_TICKS(2500));
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Setting volume = %0.5f\n", piston.setpoint_v);
                         PIS_move_to_volume(piston.setpoint_v);
-                        vTaskDelay(period);
+                        pis_delay_ms(5000 / piston.rtos.rate);
                         count_reset = 0;
                         reset++;
 
@@ -671,7 +672,6 @@ void task_move_piston_to_volume(void)
             {
                 ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout, resetting\n");
                 PIS_Reset();
-                vTaskDelay(pdMS_TO_TICKS(2500));
                 pistonRun = false;
                 stall_count = 0;
             }
@@ -679,11 +679,11 @@ void task_move_piston_to_volume(void)
 
         if (pistonRun)
         {
-            vTaskDelay(period);
+            pis_delay_ms(5000 / piston.rtos.rate);
         }
     }
 
-    vTaskDelay(pdMS_TO_TICKS(50));
+    pis_delay_ms(50);
     if (module_pis_get_volume_safe(&volume))
     {
         taskENTER_CRITICAL();
@@ -705,7 +705,7 @@ void task_move_piston_to_volume(void)
                              volume, (volume - piston.setpoint_v), PISTON_VOLUME_DIFF_MAX);
     }
 
-    vTaskDelay(pdMS_TO_TICKS(50));
+    pis_delay_ms(50);
     ARTEMIS_DEBUG_PRINTF("PISTON :: task_move_piston_to_volume self-deleting...\n");
     LiveTask = false;
     vTaskDelete(NULL);
@@ -766,9 +766,9 @@ void PIS_extend(void)
     uint8_t cmd[5] = {addr, 0x01, 0x01, 0x00, 0x01};
 
     artemis_piston_set_write_mode(true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_i2c_send_msg(cmd, 5, true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_set_write_mode(false);
 }
 
@@ -778,9 +778,9 @@ void PIS_retract(void)
     uint8_t cmd[5] = {addr, 0xFF, 0x01, 0x00, 0x01};
 
     artemis_piston_set_write_mode(true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_i2c_send_msg(cmd, 5, true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_set_write_mode(false);
 }
 
@@ -790,9 +790,9 @@ void PIS_stop(void)
     uint8_t cmd[5] = {addr, 0x00, 0x01, 0x00, 0x01};
 
     artemis_piston_set_write_mode(true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_i2c_send_msg(cmd, 5, true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_set_write_mode(false);
 }
 
@@ -819,11 +819,11 @@ void PIS_calibration(bool cal)
     uint8_t cmd[2] = {addr, 0x01};
 
     ARTEMIS_DEBUG_PRINTF("PISTON :: Being calibrated\n");
-    am_util_delay_ms(100);
+    pis_delay_ms(100);
     artemis_piston_set_write_mode(true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_i2c_send_msg(cmd, 2, true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_set_write_mode(false);
 }
 
@@ -856,15 +856,15 @@ bool PIS_move_to_length(float length)
 
     // 1. Unlock write mode and wait for secondary MCU decode
     artemis_piston_set_write_mode(true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
 
     // 2. Transmit the 5-byte payload with full STOP
     artemis_piston_i2c_send_msg(v, 5, true);
-    am_hal_systick_delay_us(50000);
+    pis_delay_ms(50);
 
     // 3. Relock write mode
     artemis_piston_set_write_mode(false);
-    am_hal_systick_delay_us(10000);
+    pis_delay_ms(10);
 
     return true;
 }
@@ -893,15 +893,15 @@ bool PIS_move_to_volume(float volume)
 
     // 1. Unlock write mode and wait for secondary MCU decode
     artemis_piston_set_write_mode(true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
 
     // 2. Transmit the 5-byte payload with full STOP
     artemis_piston_i2c_send_msg(v, 5, true);
-    am_hal_systick_delay_us(50000);
+    pis_delay_ms(50);
 
     // 3. Relock write mode
     artemis_piston_set_write_mode(false);
-    am_hal_systick_delay_us(10000);
+    pis_delay_ms(10);
 
     return true;
 }
@@ -1036,10 +1036,15 @@ void PIS_Reset(void)
     uint8_t cmd[2] = {addr, PISTON_I2C_W_RESET_KEY};
 
     artemis_piston_set_write_mode(true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
 
     artemis_piston_i2c_send_msg(cmd, 2, true);
-    am_hal_systick_delay_us(100000); // 100ms hardware reboot window
+
+    // 2500ms post-reset settling window: allows slave MCU to re-initialize DRV8874
+    pis_delay_ms(2500);
+
+    // Relock write mode after slave reboot
+    artemis_piston_set_write_mode(false);
 }
 
 void PIS_move_to_full(void)
@@ -1048,9 +1053,9 @@ void PIS_move_to_full(void)
     uint8_t cmd[2] = {addr, 0x01};
 
     artemis_piston_set_write_mode(true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_i2c_send_msg(cmd, 2, true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_set_write_mode(false);
 }
 
@@ -1060,9 +1065,9 @@ void PIS_move_to_zero(void)
     uint8_t cmd[2] = {addr, 0x01};
 
     artemis_piston_set_write_mode(true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_i2c_send_msg(cmd, 2, true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_set_write_mode(false);
 }
 
@@ -1072,8 +1077,8 @@ void PIS_reset_to_full(void)
     uint8_t cmd[2] = {addr, 0x01};
 
     artemis_piston_set_write_mode(true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_i2c_send_msg(cmd, 2, true);
-    am_hal_systick_delay_us(25000);
+    pis_delay_ms(25);
     artemis_piston_set_write_mode(false);
 }

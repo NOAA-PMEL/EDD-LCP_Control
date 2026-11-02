@@ -11,12 +11,14 @@
 #include "config.h"
 #include "am_util_string.h"
 #include <assert.h>
+#include <string.h>
 
 #define SENSOR_MAX_DEPTH_RATE           ( 10 )
 #define SENSOR_MAX_TEMPERATURE_RATE     ( 2 )
 #define SENSOR_MAX_GPS_RATE             ( 2 )
 
-static SemaphoreHandle_t xTDSemaphore = NULL;
+static SemaphoreHandle_t xTDSemaphore = NULL; // Hardware Bus Mutex (MAX14830 arbitration)
+static SemaphoreHandle_t xDataMutex   = NULL; // Sensor Data Mutex (protects sensor_data struct)
 
 typedef enum {
     RECEIVE,
@@ -75,38 +77,32 @@ bool SENS_initialize(void)
     success = TEMP_initialize(TEMP_SoundNine_OEM);
     ARTEMIS_DEBUG_PRINTF("--> STEP A: S9 Finished.\n");
 
-    /* disable max14830 direct mode */
-    // MAX14830_disable_direct();
-
     /* 1. Run Piston Board initialization FIRST (Restores working LOG_0007 order) */
     success = PIS_initialize();
     ARTEMIS_DEBUG_PRINTF("--> STEP B: Piston Initialized (%d).\n", success);
 
-    /* 2. GPS is NOT initialized here while unpowered.
-     * task_gps() handles GPS_on() and GPS_initialize() at runtime. */
-
-    /* Create a single mutex for Temperature and Pressure sensors */
+    /* 2. Hardware bus arbitration mutex */
     xTDSemaphore = xSemaphoreCreateMutex();
     if (xTDSemaphore == NULL)
     {
         ARTEMIS_DEBUG_PRINTF("SENSORS :: ERROR, xTDSemaphore is NULL\n");
         success = false;
     }
-    else
+
+    /* 3. Sensor data protection mutex */
+    xDataMutex = xSemaphoreCreateMutex();
+    if (xDataMutex == NULL)
     {
-        success = true;
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: ERROR, xDataMutex is NULL\n");
+        success = false;
     }
 
-    /** Create semaphore for the gps */
+    /* 4. GPS data protection mutex */
     sensor_data.gps.semaphore = xSemaphoreCreateMutex();
     if (sensor_data.gps.semaphore == NULL)
     {
         ARTEMIS_DEBUG_PRINTF("SENSORS :: ERROR, sensor_data.gps.semaphore is NULL\n");
         success = false;
-    }
-    else
-    {
-        success = true;
     }
 
     xTempEventQueue = xQueueCreate(1, sizeof(Event_e));
@@ -140,12 +136,16 @@ void SENS_uninitialize(void)
         vSemaphoreDelete(xTDSemaphore);
         xTDSemaphore = NULL;
     }
+    if (xDataMutex != NULL) {
+        vSemaphoreDelete(xDataMutex);
+        xDataMutex = NULL;
+    }
     if (sensor_data.gps.semaphore != NULL) {
         vSemaphoreDelete(sensor_data.gps.semaphore);
         sensor_data.gps.semaphore = NULL;
     }
 
-    // --- Delete Event Queues ---
+    // Delete Event Queues
     if (xTempEventQueue != NULL) {
         vQueueDelete(xTempEventQueue);
         xTempEventQueue = NULL;
@@ -172,44 +172,64 @@ void SENS_sensor_temperature_on(void)   { TEMP_initialize_RTOS();       }
 
 bool SENS_get_depth(float *depth, float *pressure, float *rate)
 {
-    bool retVal = false;
-    Event_e dEvent = IDLE;
-    ReceiveEvent(xDepthEventQueue, &dEvent);
-    if (dEvent == RECEIVE)
+    if (depth == NULL || pressure == NULL || rate == NULL)
     {
-        taskENTER_CRITICAL();
-        *depth = sensor_data.depth.current;
-        *rate = sensor_data.depth.ascent_rate;
-        *pressure = sensor_data.pressure.current;
-        retVal = true;
-        taskEXIT_CRITICAL();
+        return false;
     }
-    return retVal;
+
+    if (xDataMutex != NULL && xSemaphoreTake(xDataMutex, pdMS_TO_TICKS(100)) == pdTRUE)
+    {
+        *depth    = sensor_data.depth.current;
+        *rate     = sensor_data.depth.ascent_rate;
+        *pressure = sensor_data.pressure.current;
+        xSemaphoreGive(xDataMutex);
+        return true;
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth, semaphore not available\n");
+        return false;
+    }
 }
 
 bool SENS_get_temperature(float *temperature)
 {
-    bool retVal = false;
-    Event_e tEvent = IDLE;
-    ReceiveEvent(xTempEventQueue, &tEvent);
-    if (tEvent == RECEIVE)
+    if (temperature == NULL)
     {
-        taskENTER_CRITICAL();
-        *temperature = sensor_data.temperature.current;
-        retVal = true;
-        taskEXIT_CRITICAL();
+        return false;
     }
-    return retVal;
+
+    if (xDataMutex != NULL && xSemaphoreTake(xDataMutex, pdMS_TO_TICKS(100)) == pdTRUE)
+    {
+        *temperature = sensor_data.temperature.current;
+        xSemaphoreGive(xDataMutex);
+        return true;
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, semaphore not available\n");
+        return false;
+    }
 }
 
 bool SENS_get_gps(SensorGps_t *gps)
 {
-    bool retVal = false;
-    taskENTER_CRITICAL();
-    *gps = sensor_data.gps;
-    retVal = true;
-    taskEXIT_CRITICAL();
-    return retVal;
+    if (gps == NULL)
+    {
+        return false;
+    }
+
+    if (sensor_data.gps.semaphore != NULL && xSemaphoreTake(sensor_data.gps.semaphore, pdMS_TO_TICKS(100)) == pdTRUE)
+    {
+        *gps = sensor_data.gps;
+        xSemaphoreGive(sensor_data.gps.semaphore);
+        return true;
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, semaphore not available\n");
+        return false;
+    }
 }
 
 bool GPS_running(void)
@@ -402,24 +422,28 @@ void task_depth(void)
 
             /* 2. Turn OFF sensor hardware rail immediately to save battery */
             DEPTH_Power_OFF();
-
-            sensor_data.depth.previous = sensor_data.depth.current;
-            sensor_data.depth.current = depth.Depth;
-            sensor_data.depth.ascent_rate = (sensor_data.depth.current - sensor_data.depth.previous);
-
-            sensor_data.pressure.previous = sensor_data.pressure.current;
-            sensor_data.pressure.current = depth.Pressure;
-
             xSemaphoreGive(xTDSemaphore);
+
+            /* 3. Update in-memory sensor struct under short Data Mutex */
+            if (xSemaphoreTake(xDataMutex, pdMS_TO_TICKS(50)) == pdTRUE)
+            {
+                sensor_data.depth.previous = sensor_data.depth.current;
+                sensor_data.depth.current = depth.Depth;
+                sensor_data.depth.ascent_rate = (sensor_data.depth.current - sensor_data.depth.previous);
+
+                sensor_data.pressure.previous = sensor_data.pressure.current;
+                sensor_data.pressure.current = depth.Pressure;
+                xSemaphoreGive(xDataMutex);
+            }
 
             dEvent = RECEIVE;
             SendEvent(xDepthEventQueue, &dEvent);
         }
         else
         {
-            /* If semaphore acquisition failed, ensure power is turned off */
+            /* If bus mutex acquisition failed, ensure power is turned off */
             DEPTH_Power_OFF();
-            ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth, semaphore not available\n");
+            ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth, bus semaphore not available\n");
         }
 
         /* Sleep for the full period with hardware OFF and 0 heap churn */
@@ -450,25 +474,27 @@ void task_temperature(void)
         /* 1. Sleep until next scheduled sample tick with rail OFF */
         vTaskDelayUntil(&xLastWakeTime, period);
 
-        /* 2. Acquire shared bus mutex BEFORE energizing hardware */
+        /* 2. Power ON sensor hardware rail */
+        TEMP_Power_ON();
+        
+        /* 3. S9 boot margin: wait for S9 MCU UART parser to come online (WITHOUT HOLDING MUTEX!) */
+        vTaskDelay(pdMS_TO_TICKS(100));
+
+        /* 4. Acquire shared hardware bus mutex only for the UART read */
         if (xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
         {
-            /* 3. Power ON sensor hardware rail */
-            TEMP_Power_ON();
-            
-            /* S9 boot margin: wait for S9 MCU UART parser to come online */
-            vTaskDelay(pdMS_TO_TICKS(100));
-
-            /* 4. Read temperature */
             TEMP_Read(&measurement);
-
-            /* 5. Shut rail OFF immediately to preserve power and silence UART */
             TEMP_Power_OFF();
+            xSemaphoreGive(xTDSemaphore);
 
             /* Check valid reading range */
             if (measurement.temperature > -5.0f && measurement.temperature < 45.0f)
             {
-                sensor_data.temperature.current = measurement.temperature;
+                if (xSemaphoreTake(xDataMutex, pdMS_TO_TICKS(50)) == pdTRUE)
+                {
+                    sensor_data.temperature.current = measurement.temperature;
+                    xSemaphoreGive(xDataMutex);
+                }
 
                 tEvent = RECEIVE;
                 SendEvent(xTempEventQueue, &tEvent);
@@ -478,12 +504,11 @@ void task_temperature(void)
                 ARTEMIS_DEBUG_PRINTF("SENSORS :: S9 Dropped (T=%.2f)\n",
                                      measurement.temperature);
             }
-
-            xSemaphoreGive(xTDSemaphore);
         }
         else
         {
-            ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, semaphore not available\n");
+            TEMP_Power_OFF();
+            ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, bus semaphore not available\n");
         }
     }
 
@@ -553,18 +578,20 @@ void task_gps(void)
     {
         if(GPS_Read(&gps))
         {
-            configASSERT(xSemaphoreTake(sensor_data.gps.semaphore, period) == pdTRUE);
-            sensor_data.gps.fix = true;
-            sensor_data.gps.latitude = gps.position.lat;
-            sensor_data.gps.longitude = gps.position.lon;
-            sensor_data.gps.altitude = gps.position.alt;
-            sensor_data.gps.year = gps.time.year;
-            sensor_data.gps.month = gps.time.month;
-            sensor_data.gps.day = gps.time.day;
-            sensor_data.gps.hour = gps.time.hour;
-            sensor_data.gps.min = gps.time.min;
-            sensor_data.gps.sec = gps.time.sec;
-            xSemaphoreGive(sensor_data.gps.semaphore);
+            if (xSemaphoreTake(sensor_data.gps.semaphore, period) == pdTRUE)
+            {
+                sensor_data.gps.fix = true;
+                sensor_data.gps.latitude = gps.position.lat;
+                sensor_data.gps.longitude = gps.position.lon;
+                sensor_data.gps.altitude = gps.position.alt;
+                sensor_data.gps.year = gps.time.year;
+                sensor_data.gps.month = gps.time.month;
+                sensor_data.gps.day = gps.time.day;
+                sensor_data.gps.hour = gps.time.hour;
+                sensor_data.gps.min = gps.time.min;
+                sensor_data.gps.sec = gps.time.sec;
+                xSemaphoreGive(sensor_data.gps.semaphore);
+            }
 
             xFix++;
             // Stop once 3 valid fixes are confirmed to save active battery power
@@ -577,9 +604,11 @@ void task_gps(void)
         }
         else
         {
-            configASSERT(xSemaphoreTake(sensor_data.gps.semaphore, xDelay100ms) == pdTRUE);
-            sensor_data.gps.fix = false;
-            xSemaphoreGive(sensor_data.gps.semaphore);
+            if (xSemaphoreTake(sensor_data.gps.semaphore, xDelay100ms) == pdTRUE)
+            {
+                sensor_data.gps.fix = false;
+                xSemaphoreGive(sensor_data.gps.semaphore);
+            }
         }
         vTaskDelayUntil(&xLastWakeTime, period);
     }

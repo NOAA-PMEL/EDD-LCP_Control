@@ -368,20 +368,15 @@ static void module_k9lx_device_info(uint8_t port)
     ARTEMIS_DEBUG_PRINTF("\nK9LX Pressure Sensor\n");
     ARTEMIS_DEBUG_PRINTF("**************************************\n");
 
-    /* 1. Firmware version */
-    ARTEMIS_DEBUG_PRINTF("\tFirmware Ver\t: ");
+    /* 1. Firmware version - read first, print entire line once */
     ret = module_k9lx_read_reg(port, K9LX_FIRM_VER0, 2, firmware);
     if (ret == 0)
     {
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            ARTEMIS_DEBUG_PRINTF("%u%s", firmware[i], (i < 3) ? "." : "");
-        }
-        ARTEMIS_DEBUG_PRINTF("\n");
+        ARTEMIS_DEBUG_PRINTF("\tFirmware Ver\t: %u.%u.%u.%u\n",
+                             firmware[0], firmware[1], firmware[2], firmware[3]);
     }
 
-    /* 2. Serial number */
-    ARTEMIS_DEBUG_PRINTF("\tSerial Number\t: ");
+    /* 2. Serial number - read first, print entire line once */
     ret = module_k9lx_read_reg(port, K9LX_SER_NUM_H, 2, serial);
     if (ret == 0)
     {
@@ -389,11 +384,10 @@ static void module_k9lx_device_info(uint8_t port)
         {
             serial_nr |= (serial[i] << (8 * (3 - i)));
         }
-        ARTEMIS_DEBUG_PRINTF("%u\n", serial_nr);
+        ARTEMIS_DEBUG_PRINTF("\tSerial Number\t: %u\n", serial_nr);
     }
 
     /* 3. Pressure & Temperature snapshot */
-    ARTEMIS_DEBUG_PRINTF("\tPressure\t: ");
     ret = module_k9lx_read_reg(port, K9LX_FL1_P1, 4, pt);
     if (ret == 0)
     {
@@ -405,7 +399,7 @@ static void module_k9lx_device_info(uint8_t port)
         {
             temperature_c.u[7 - i] = pt[i];
         }
-        ARTEMIS_DEBUG_PRINTF("%0.5f bar\n", pressure_bar.f);
+        ARTEMIS_DEBUG_PRINTF("\tPressure\t: %0.5f bar\n", pressure_bar.f);
         ARTEMIS_DEBUG_PRINTF("\tTemperature\t: %0.3f °C, %0.3f °F\n",
                              temperature_c.f, ((9.0f / 5.0f) * temperature_c.f) + 32.0f);
     }

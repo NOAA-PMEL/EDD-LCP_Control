@@ -660,19 +660,24 @@ void module_pds_idle(void)
     }
     vTaskDelay(xDelay2000ms);
     
-    /** Extend the piston to properly ballast the LCP for hand deployment */
-    ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston move to park density=%.3f kg/m³\n", PARK_DENSITY);
     float Density = PARK_DENSITY;
-    float Volume = CTRL_set_lcp_density(Density);
-    float Length = CTRL_calculate_length_from_volume(Volume);
-    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
+    float Volume = 0.0f;
+    float Length = 0.0f;
 
     if (AIR)
     {
         ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston fully retract for AIR DEPLOY\n");
-        Length = 0;
+        Length = 0.0f;
         Volume = CTRL_calculate_volume_from_length(Length);
         Density = CTRL_calculate_lcp_density(Volume);
+        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
+    }
+    else
+    {
+        /** Extend the piston to properly ballast the LCP for hand deployment */
+        ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston move to park density=%.3f kg/m³\n", PARK_DENSITY);
+        Volume = CTRL_set_lcp_density(Density);
+        Length = CTRL_calculate_length_from_volume(Volume);
         ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
     }
     
@@ -680,9 +685,11 @@ void module_pds_idle(void)
     uint32_t piston_timer = 0;
     bool piston_move = true;
     bool piston_task_running = false;
-    PIS_set_piston_rate(1);
-    PIS_set_volume(Volume);
-    PIS_task_move_volume(&s_xPiston);
+
+    // Use direct length command to bypass slave baseline volume offsets
+    PIS_set_piston_rate(1);[cite: 2]
+    PIS_set_length(Length);[cite: 2]
+    PIS_task_move_length(&s_xPiston);[cite: 2]
     vTaskDelay(xDelay5000ms);
 
     while (piston_move)
@@ -698,16 +705,15 @@ void module_pds_idle(void)
             {
                 ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston time-out, task->finished\n");
                 // Time-out: delete the task, reset the piston board and set piston_move to false
-                PIS_Get_Length(&Length);
-                Volume = CTRL_calculate_volume_from_length(Length);
-                Density = CTRL_calculate_lcp_density(Volume);
+                PIS_Get_Length(&Length);[cite: 2]
+                Volume = CTRL_calculate_volume_from_length(Length);[cite: 4]
+                Density = CTRL_calculate_lcp_density(Volume);[cite: 4]
                 ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                 ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston time-out, task->finished\n");
 
                 PIS_task_delete(&s_xPiston); // Signal to exit loop
-                vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
-                PIS_Reset();
-                vTaskDelay(pdMS_TO_TICKS(2500));
+                vTaskDelay(xDelay10000ms);   // Wait for the task to exit the loop and delete itself
+                PIS_Reset();                 // PIS_Reset() already handles its internal 2500ms delay[cite: 2]
                 piston_timer = 0;
                 piston_move = false;
                 piston_task_running = false;
@@ -715,9 +721,9 @@ void module_pds_idle(void)
         }
         else
         {
-            PIS_Get_Volume(&Volume);
-            Length = CTRL_calculate_length_from_volume(Volume);
-            Density = CTRL_calculate_lcp_density(Volume);
+            PIS_Get_Length(&Length);[cite: 2]
+            Volume = CTRL_calculate_volume_from_length(Length);[cite: 4]
+            Density = CTRL_calculate_lcp_density(Volume);[cite: 4]
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n", Density, Volume, Length);
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task->finished\n");
             piston_move = false;
@@ -765,14 +771,13 @@ void module_pds_idle(void)
             {
                 ARTEMIS_DEBUG_PRINTF("SPS :: idle, deliberately stopping the Piston\n");
                 /* stop the piston */
-                //PIS_stop();
-                PIS_task_delete(&s_xPiston); // Signal to exit loop
-                previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+                PIS_task_delete(&s_xPiston); // Signal to exit loop[cite: 2]
+                previousTaskAlive = PIS_taskStatus(); // check if the piston task is running[cite: 2]
                 while (previousTaskAlive)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: idle, Previous piston task is still running...\n");
                     vTaskDelay(xDelay5000ms);
-                    previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+                    previousTaskAlive = PIS_taskStatus(); // check if the piston task is running[cite: 2]
                 }
                 vTaskDelay(piston_period);
                 piston_move = false;
@@ -2101,37 +2106,35 @@ void module_sps_park(void)
                 }
             }
 
-            
             /* check on piston movement */
             if (piston_move)
             {
-                // Turn on the datalogger power during piston movement
-                ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 1] Piston moving, powering on datalogger\n");
+                // Ensure datalogger is powered during movement
                 datalogger_power_on();
                 vTaskDelay(xDelay2000ms);
-                ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 2] Datalogger powered on, entering polling\n");
-                do
+
+                while (piston_move)
                 {
-                    piston_task_running = PIS_taskStatus(); // check if the piston task is running
+                    piston_task_running = PIS_taskStatus();
                     ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->state = %s\n", piston_task_running ? "running" : "not running");
-                    if ( piston_task_running )
+
+                    if (piston_task_running)
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->active\n");
-                        /* keep piston time for up to 15 seconds unless crush_depth activated use piston up to 120 seconds */
+
                         if (crush_depth)
                         {
                             if (piston_timer >= 120000)
                             {
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston CRUSH_DEPTH time-out, task->finished\n");
-                                PIS_task_delete(&s_xPiston); // Signal to exit loop
-                                vTaskDelay(xDelay5000ms); // Wait for the task to exit the loop and delete itself
+                                PIS_task_delete(&s_xPiston);
+                                vTaskDelay(xDelay5000ms);
                                 PIS_Reset();
                                 vTaskDelay(pdMS_TO_TICKS(2500));
                                 piston_timer = 0;
                                 piston_move = false;
                                 piston_task_running = false;
 
-                                /* stop here, in case of emergency blow */
                                 if (xTemp != NULL)
                                 {
                                     SENS_task_delete(xTemp);
@@ -2142,18 +2145,18 @@ void module_sps_park(void)
                                     SENS_task_delete(xDepth);
                                     xDepth = NULL;
                                 }
-                                vTaskDelay(pdMS_TO_TICKS(150)); // Allow in-flight IOM transactions to finish
+                                vTaskDelay(pdMS_TO_TICKS(150));
                                 SENS_sensor_temperature_off();
                                 SENS_sensor_depth_off();
 
                                 spsEvent = MODE_CRUSH_TO_PROFILE;
-                                vTaskDelay(piston_period);
                                 run = false;
                                 break;
                             }
                         }
                         else
                         {
+                            // Allow up to 45s for complete travel, settling, and any slave retry
                             if (piston_timer >= 30000)
                             {
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston time-out, task->finished\n");
@@ -2162,8 +2165,8 @@ void module_sps_park(void)
                                 Density = CTRL_calculate_lcp_density(Volume);
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Density=%.3f kg/m³, Volume=%.3fin³, Length=%.4fin\n", Density, Volume, Length);
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston task->finished\n");
-                                PIS_task_delete(&s_xPiston); // Signal to exit loop
-                                vTaskDelay(xDelay5000ms); // Wait for the task to exit the loop and delete itself
+                                PIS_task_delete(&s_xPiston);
+                                vTaskDelay(xDelay5000ms);
                                 ARTEMIS_DEBUG_PRINTF("SPS :: park, Piston Board Resetting...\n");
                                 PIS_Reset();
                                 vTaskDelay(pdMS_TO_TICKS(2500));
@@ -2186,49 +2189,34 @@ void module_sps_park(void)
 
                         if (crush_depth)
                         {
-                            /* stop here, in case of emergency blow */
-                                if (xTemp != NULL)
-                                {
-                                    SENS_task_delete(xTemp);
-                                    xTemp = NULL;
-                                }
-                                if (xDepth != NULL)
-                                {
-                                    SENS_task_delete(xDepth);
-                                    xDepth = NULL;
-                                }
-                                vTaskDelay(pdMS_TO_TICKS(150)); // Allow in-flight IOM transactions to finish
-                                SENS_sensor_temperature_off();
-                                SENS_sensor_depth_off();
+                            if (xTemp != NULL)
+                            {
+                                SENS_task_delete(xTemp);
+                                xTemp = NULL;
+                            }
+                            if (xDepth != NULL)
+                            {
+                                SENS_task_delete(xDepth);
+                                xDepth = NULL;
+                            }
+                            vTaskDelay(pdMS_TO_TICKS(150));
+                            SENS_sensor_temperature_off();
+                            SENS_sensor_depth_off();
 
                             spsEvent = MODE_CRUSH_TO_PROFILE;
-                            vTaskDelay(piston_period);
                             run = false;
                             break;
                         }
-                    }               
-                    if (park_period >= xDelay10000ms)
-                    {
-                        vTaskDelay(piston_period);
-                        piston_timer += piston_period;
-                    }
-                    else
-                    {
-                        piston_timer += park_period;
                     }
 
-                } while (piston_move && park_period >= xDelay10000ms);
-                ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 3] Exited do-while loop. piston_move = %d\n", piston_move);
-
-                // Turn off datalogger power only once motion completes
-                if (!piston_move)
-                {
-                    vTaskDelay(xDelay1000ms);
-                    ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 4] Powering off datalogger\n");
-                    datalogger_power_off();
-                    ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 5] Datalogger powered off cleanly\n");
+                    // Always poll and delay by piston_period (1000ms) while moving
+                    vTaskDelay(piston_period);
+                    piston_timer += piston_period;
                 }
-                
+
+                // Datalogger is safely powered off only AFTER motion has completely ceased
+                vTaskDelay(xDelay1000ms);
+                datalogger_power_off();
             }
 
             /* emergency blow , extend piston to full */
