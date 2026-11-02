@@ -76,21 +76,18 @@ void artemis_piston_i2c_initialize(uint8_t i2c_addr)
     i2c->address = i2c_addr;
     i2c->iom.module = 2;
     i2c->iom.config.eInterfaceMode = AM_HAL_IOM_I2C_MODE;
-    /* Use standard 100 kHz clock mode for reliable communication with secondary MCU */
-    i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_100KHZ;
+    i2c->iom.config.ui32ClockFreq = AM_HAL_IOM_400KHZ;   // 100% matched to working 10/30
     artemis_iom_initialize(&i2c->iom);
 
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM2_SCL, g_AM_BSP_GPIO_IOM2_SCL));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(AM_BSP_GPIO_IOM2_SDA, g_AM_BSP_GPIO_IOM2_SDA));
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
 
-    /* Power cycle rail to force clean power-on-reset on Piston MCU */
     artemis_piston_i2c_power_off();
-    am_util_delay_ms(50);
+    am_hal_systick_delay_us(1000);
+    am_hal_systick_delay_us(50000);
     artemis_piston_i2c_power_on();
-
-    /* CRITICAL: Allow Piston MCU time to complete internal bootloader before first I2C query */
-    am_util_delay_ms(150);
+    am_hal_systick_delay_us(100000); // 100ms boot settling
 }
 
 void artemis_piston_i2c_uninitialize(void)
@@ -205,20 +202,16 @@ void artemis_piston_i2c_read(uint8_t addr, uint8_t *data, uint16_t len)
     artemis_stream_reset(&txstream);
     artemis_stream_reset(&rxstream);
 
-    /* 1. Transmit register offset with stop = false (Repeated START) */
+    // 1. Send address with STOP = TRUE (matches 10/30 code)
     artemis_stream_put(&txstream, addr);
-    artemis_i2c_send(i2c, false, &txstream);
+    artemis_i2c_send(i2c, true, &txstream);
 
-    /* 2. Microsecond settle for slave clock stretching / register pointer decode */
-    am_hal_systick_delay_us(1000);
+    // 2. 100ms hardware delay for slave MCU register pointer decode (from 10/30 code)
+    am_hal_systick_delay_us(100000);
 
-    /* 3. Receive data from the slave */
+    // 3. Receive data from the slave
     artemis_i2c_receive(i2c, true, &rxstream, len);
-
-    if (artemis_stream_read(&rxstream, data, len) < len)
-    {
-        memset(data, 0xFF, len);
-    }
+    artemis_stream_read(&rxstream, data, len);
 }
 
 void artemis_piston_set_write_mode(bool state)

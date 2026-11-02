@@ -24,7 +24,7 @@
 /**********************************************************************************
  * MACROS & I2C REGISTERS
  *********************************************************************************/
-#define PISTON_I2C_ADDR                 ( 0x24 )        /**< 7-bit Slave I2C Address */
+#define PISTON_I2C_ADDR                 ( 0x6C )        /**< 7-bit Slave I2C Address */
 
 /* MEM WRITE ADDRESSES */
 #define PISTON_I2C_W_SET_VOLUME         ( 0x00 )

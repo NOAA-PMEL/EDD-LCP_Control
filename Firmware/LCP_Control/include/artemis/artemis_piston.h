@@ -14,7 +14,7 @@
 // Configuration Constants
 //
 //*****************************************************************************
-#define ARTEMIS_PISTON_I2C_ADDRESS          ( 0x24 )
+#define ARTEMIS_PISTON_I2C_ADDRESS          ( 0x6C )
 #define ARTEMIS_PISTON_I2C_DATA_LEN_REG     ( 0x01 )
 #define ARTEMIS_PISTON_I2C_DATA_REG         ( 0x02 )
 
