@@ -24,21 +24,14 @@ void artemis_iom_uninitialize(artemis_iom_t *iom)
 {
     if (iom == NULL || iom->handle == NULL)
     {
-        return;
+        return; // Guard against redundant teardown calls
     }
 
-    // Allow hardware FIFO to drain if a transfer is active
-    am_hal_iom_status_t status;
-    uint32_t timeout = 1000;
-    while ((am_hal_iom_status_get(iom->handle, &status) == AM_HAL_STATUS_SUCCESS) &&
-           (status.bStat == AM_HAL_IOM_STAT_BUSY) &&
-           --timeout)
-    {
-        am_hal_systick_delay_us(10);
-    }
+    // Allow in-flight I2C/SPI clock pulses and STOP condition to complete
+    am_hal_systick_delay_us(150);
 
-    // Disable and clean up without fatal assertion trap
+    // Disable and clean up without fatal assertion traps
     am_hal_iom_disable(iom->handle);
     am_hal_iom_uninitialize(iom->handle);
-    iom->handle = NULL;
+    iom->handle = NULL; // Invalidate handle to block re-entry
 }
