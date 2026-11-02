@@ -27,9 +27,12 @@ void artemis_iom_uninitialize(artemis_iom_t *iom)
         return;
     }
 
-    // Allow hardware FIFO to drain if a transfer is settling
+    // Allow hardware FIFO to drain if a transfer is active
+    am_hal_iom_status_t status;
     uint32_t timeout = 1000;
-    while ((am_hal_iom_status_get(iom->handle) == AM_HAL_STATUS_IN_USE) && --timeout)
+    while ((am_hal_iom_status_get(iom->handle, &status) == AM_HAL_STATUS_SUCCESS) &&
+           (status.bStat == AM_HAL_IOM_STAT_BUSY) &&
+           --timeout)
     {
         am_hal_systick_delay_us(10);
     }
