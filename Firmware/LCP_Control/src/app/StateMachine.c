@@ -2106,8 +2106,10 @@ void module_sps_park(void)
             if (piston_move)
             {
                 // Turn on the datalogger power during piston movement
+                ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 1] Piston moving, powering on datalogger\n");
                 datalogger_power_on();
                 vTaskDelay(xDelay2000ms);
+                ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 2] Datalogger powered on, entering polling\n");
                 do
                 {
                     piston_task_running = PIS_taskStatus(); // check if the piston task is running
@@ -2216,12 +2218,15 @@ void module_sps_park(void)
                     }
 
                 } while (piston_move && park_period >= xDelay10000ms);
+                ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 3] Exited do-while loop. piston_move = %d\n", piston_move);
 
                 // Turn off datalogger power only once motion completes
                 if (!piston_move)
                 {
                     vTaskDelay(xDelay1000ms);
+                    ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 4] Powering off datalogger\n");
                     datalogger_power_off();
+                    ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 5] Datalogger powered off cleanly\n");
                 }
                 
             }
@@ -2365,10 +2370,14 @@ void module_sps_park(void)
                 vTaskDelay(piston_period);
                 break;
             }
+
+            ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 6] Reached end of sample window. Turning off datalogger\n");
             vTaskDelay(xDelay1000ms);
             datalogger_power_off();
+            ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 7] Sample window datalogger off complete\n");
         }
 
+        ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 8] End of while(run) iteration, waiting 1s\n");
         /* park time check task delay time */
         vTaskDelay(xDelay1000ms);
     }
