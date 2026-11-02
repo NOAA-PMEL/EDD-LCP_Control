@@ -595,9 +595,6 @@ void task_gps(void)
         xTimer = NULL;
     }
 
-    /* De-energize u-blox receiver and release bus before terminating */
-    GPS_off();
-
     ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Task is deleting...\n");
     vTaskDelay(xDelay1000ms);
     TaskLive_GPS = false;
