@@ -158,7 +158,6 @@ void task_move_piston_to_zero(void)
         {
             //vTaskDelay(xDelay250ms);
             vTaskDelay(xDelay100ms);
-            stall_count = 0;
             fullFlag = module_pis_read_if_zero();
             if (fullFlag)
             {
@@ -266,7 +265,6 @@ void task_move_piston_to_full(void)
         if(module_pis_trv_eng() == false)
         {
             vTaskDelay(xDelay250ms);
-            stall_count = 0;
             fullFlag = module_pis_read_if_full();
             if (fullFlag)
             {
@@ -373,7 +371,6 @@ void task_reset_piston_to_full(void)
         if(module_pis_trv_eng() == false)
         {
             vTaskDelay(xDelay250ms);
-            stall_count = 0;
             fullFlag = module_pis_read_if_fullreset();
             if (fullFlag)
             {
@@ -488,7 +485,6 @@ void task_move_piston_to_length(void)
             taskENTER_CRITICAL();
             piston.length = length;
             taskEXIT_CRITICAL();
-            stall_count = 0;
 
             if (piston.length >=(piston.setpoint_l - PISTON_LENGTH_DIFF_MAX) &&
                 piston.length <=(piston.setpoint_l + PISTON_LENGTH_DIFF_MAX))
@@ -634,7 +630,6 @@ void task_move_piston_to_volume(void)
             taskENTER_CRITICAL();
             piston.volume = volume;
             taskEXIT_CRITICAL();
-            stall_count = 0;
 
             if (piston.volume >=(piston.setpoint_v - PISTON_VOLUME_DIFF_MAX) &&
                 piston.volume <=(piston.setpoint_v + PISTON_VOLUME_DIFF_MAX))
