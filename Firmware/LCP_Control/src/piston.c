@@ -861,14 +861,14 @@ bool PIS_move_to_length(float length)
     pis_delay_ms(50);
 
     // 2. Transmit the 5-byte payload with full STOP
-    bool sent = artemis_piston_i2c_send_msg(v, 5, true);
+    artemis_piston_i2c_send_msg(v, 5, true);
     pis_delay_ms(50);
 
     // 3. Relock write mode
     artemis_piston_set_write_mode(false);
     pis_delay_ms(25);
 
-    return sent;
+    return true;
 }
 
 bool PIS_get_position(void)
@@ -898,14 +898,14 @@ bool PIS_move_to_volume(float volume)
     pis_delay_ms(50);
 
     // 2. Transmit the 5-byte payload with full STOP
-    bool sent = artemis_piston_i2c_send_msg(v, 5, true);
+    artemis_piston_i2c_send_msg(v, 5, true);
     pis_delay_ms(50);
 
     // 3. Relock write mode
     artemis_piston_set_write_mode(false);
     pis_delay_ms(25);
 
-    return sent;
+    return true;
 }
 
 static int8_t module_pis_status_zero(void)

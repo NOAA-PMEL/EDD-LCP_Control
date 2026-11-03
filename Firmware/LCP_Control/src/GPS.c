@@ -8,6 +8,7 @@
 #include "ublox_ubx.h"
 #include "artemis_ublox_i2c.h"
 #include "artemis_rtc.h"
+#include <math.h>
 
 /************************************************************************
  *                                MACROS
