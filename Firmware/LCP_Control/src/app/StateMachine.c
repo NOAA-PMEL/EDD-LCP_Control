@@ -637,19 +637,24 @@ void module_pds_idle(void)
     }
     vTaskDelay(xDelay2000ms);
     
-    /** Extend the piston to properly ballast the LCP for hand deployment */
-    ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston move to park density=%.3f kg/m³\n", PARK_DENSITY);
     float Density = PARK_DENSITY;
-    float Volume = CTRL_set_lcp_density(Density);
-    float Length = CTRL_calculate_length_from_volume(Volume);
-    ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
+    float Volume = 0.0f;
+    float Length = 0.0f;
 
     if (AIR)
     {
-        ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston fully retract for AIR DEPLOY");
-        Length = 0;
+        ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston fully retract for AIR DEPLOY\n");
+        Length = 0.0f;
         Volume = CTRL_calculate_volume_from_length(Length);
         Density = CTRL_calculate_lcp_density(Volume);
+        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
+    }
+    else
+    {
+        /** Extend the piston to properly ballast the LCP for hand deployment */
+        ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston move to park density=%.3f kg/m³\n", PARK_DENSITY);
+        Volume = CTRL_set_lcp_density(Density);
+        Length = CTRL_calculate_length_from_volume(Volume);
         ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
     }
     
@@ -659,8 +664,8 @@ void module_pds_idle(void)
     bool piston_task_running = false;
     TaskHandle_t xPiston = NULL;
     PIS_set_piston_rate(1);
-    PIS_set_volume(Volume);
-    PIS_task_move_volume(&xPiston);
+    PIS_set_length(Length);
+    PIS_task_move_length(&xPiston);
     vTaskDelay(xDelay5000ms);
 
     while (piston_move)
@@ -693,8 +698,8 @@ void module_pds_idle(void)
         }
         else
         {
-            PIS_Get_Volume(&Volume);
-            Length = CTRL_calculate_length_from_volume(Volume);
+            PIS_Get_Length(&Length);
+            Volume = CTRL_calculate_volume_from_length(Length);
             Density = CTRL_calculate_lcp_density(Volume);
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n", Density, Volume, Length);
             ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Piston task->finished\n");
