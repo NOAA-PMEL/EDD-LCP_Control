@@ -1908,10 +1908,12 @@ void module_sps_park(void)
             samples++;
 
             // Power off the datalogger to save battery
-            vTaskDelay(xDelay1000ms);
-            datalogger_power_off();
+            if (park_period >= pdMS_TO_TICKS(60000))
+            {
+                vTaskDelay(xDelay1000ms);
+                datalogger_power_off();
+            }
             
-
             if (samples > 9)
             {
                 datalogger_power_on();
@@ -1927,8 +1929,11 @@ void module_sps_park(void)
                 samples = 0;
 
                 datalogger_park_mode(park_filename, avg_p, avg_t, &time);
-                vTaskDelay(xDelay1000ms);
-                datalogger_power_off();
+                if (park_period >= pdMS_TO_TICKS(60000))
+                {
+                    vTaskDelay(xDelay1000ms);
+                    datalogger_power_off();
+                }
             }
 
             if (Depth >= park_depth-PARK_DEPTH_ERR && Depth <= park_depth+PARK_DEPTH_ERR)
@@ -2215,8 +2220,11 @@ void module_sps_park(void)
                 }
 
                 // Datalogger is safely powered off only AFTER motion has completely ceased
-                vTaskDelay(xDelay1000ms);
-                datalogger_power_off();
+                if (park_period >= pdMS_TO_TICKS(60000))
+                {
+                    vTaskDelay(xDelay1000ms);
+                    datalogger_power_off();
+                }
             }
 
             /* emergency blow , extend piston to full */
@@ -2330,7 +2338,7 @@ void module_sps_park(void)
                     piston_move = false;
                 }
 
-                if (park_period >= xDelay10000ms)
+                if (park_period >= pdMS_TO_TICKS(60000))
                 {
                     /* do nothing, tasks are already deleted and sensors are turned off */
                 }
@@ -2359,10 +2367,17 @@ void module_sps_park(void)
                 break;
             }
 
-            ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 6] Reached end of sample window. Turning off datalogger\n");
-            vTaskDelay(xDelay1000ms);
-            datalogger_power_off();
-            ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 7] Sample window datalogger off complete\n");
+            if (park_period >= pdMS_TO_TICKS(60000))
+            {
+                ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 6] Reached end of sample window. Turning off datalogger\n");
+                vTaskDelay(xDelay1000ms);
+                datalogger_power_off();
+                ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 7] Sample window datalogger off complete\n");
+            }
+            else
+            {
+                ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 6] Park period < 60s (%ums). Keeping datalogger on.\n", park_period);
+            }
         }
 
         ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 8] End of while(run) iteration, waiting 1s\n");

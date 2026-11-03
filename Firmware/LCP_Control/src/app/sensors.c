@@ -464,8 +464,7 @@ void task_temperature(void)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     Event_e tEvent = IDLE;
 
-    ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature Task Started (Rate: %u Hz)\n",
-                         sensor_data.temperature.rate);
+    ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature Task Started (Rate: %.3f Hz)\n", sensor_data.temperature.rate);
 
     xTemp_run = true;
 

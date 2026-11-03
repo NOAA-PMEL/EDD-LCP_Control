@@ -202,7 +202,9 @@ bool GPS_Read(GPS_Data_t *data)
 
     fix = UBLOX_read_nav(&ublox);
 
-    if (fix)
+    // Filter out unverified transient aiding spikes (e.g. altitude > 1,000m or 0,0 lat/lon)
+    if (fix && (fabsf(ublox.position.lat) > 0.001f || fabsf(ublox.position.lon) > 0.001f)
+            && (ublox.position.alt > -100.0f && ublox.position.alt < 2000.0f))
     {
         data->fix = true;
         data->position.lat = ublox.position.lat;
@@ -215,8 +217,11 @@ bool GPS_Read(GPS_Data_t *data)
         data->time.hour = ublox.time.hour;
         data->time.min = ublox.time.min;
         data->time.sec = ublox.time.sec;
+        return true;
     }
-    return fix;
+
+    data->fix = false;
+    return false;
 }
 
 void GPS_on(void)
