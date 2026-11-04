@@ -135,7 +135,6 @@ target_compile_options(${TARGET_NAME} PRIVATE
 # --- Linker Options (Main Target) ---
 # Explicitly enforce nosys.specs to eliminate semihosting bkpt traps
 set(LINKER_FLAGS
-    --specs=nosys.specs
     -nostartfiles
     -static
     -Wl,--gc-sections
