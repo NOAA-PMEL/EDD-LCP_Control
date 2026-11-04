@@ -2369,18 +2369,11 @@ void module_sps_park(void)
 
             if (park_period >= pdMS_TO_TICKS(60000))
             {
-                ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 6] Reached end of sample window. Turning off datalogger\n");
                 vTaskDelay(xDelay1000ms);
                 datalogger_power_off();
-                ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 7] Sample window datalogger off complete\n");
-            }
-            else
-            {
-                ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 6] Park period < 60s (%ums). Keeping datalogger on.\n", park_period);
             }
         }
 
-        ARTEMIS_DEBUG_PRINTF("[PARK_TRACE: 8] End of while(run) iteration, waiting 1s\n");
         /* park time check task delay time */
         vTaskDelay(xDelay1000ms);
     }

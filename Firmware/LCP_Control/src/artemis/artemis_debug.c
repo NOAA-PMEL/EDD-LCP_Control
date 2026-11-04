@@ -3,6 +3,7 @@
 #include "artemis_debug.h"
 #include "am_bsp.h"
 #include "datalogger.h"
+#include "am_util_stdio.h"
 
 void artemis_debug_initialize(void)
 {
@@ -52,6 +53,8 @@ void artemis_debug_initialize(void)
         ARTEMIS_DEBUG_PRINTF("\n<<< TEST_BERINGSEA Profile selected >>>\n\n");
 #elif defined(__TEST_PS__)
         ARTEMIS_DEBUG_PRINTF("\n<<< TEST_PS Profile selected >>>\n\n");
+#elif defined(__TEST_NOPP__)
+        ARTEMIS_DEBUG_PRINTF("\n<<< TEST_NOPP Profile selected >>>\n\n");
 #else
         ARTEMIS_DEBUG_PRINTF("\n<<< ERROR:: No Profile was selected >>>\n\n");
         #error "ERROR:: No test profile was selected"
@@ -88,4 +91,21 @@ void artemis_debug_halerror(const char *hfunc, uint32_t error, const char *func,
 	ARTEMIS_DEBUG_PRINTF("}\n");
 
 	while(1);
+}
+
+/**
+ * @brief Retarget low-level C library _write to Ambiq stdio printer.
+ * Overrides default toolchain semihosting stubs to eliminate bkpt 0x00ab traps.
+ */
+int _write(int file, char *ptr, int len)
+{
+    if (file == 1 || file == 2) // stdout or stderr
+    {
+        for (int i = 0; i < len; i++)
+        {
+            am_util_stdio_printf("%c", ptr[i]);
+        }
+        return len;
+    }
+    return -1;
 }

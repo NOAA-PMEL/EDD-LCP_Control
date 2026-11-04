@@ -94,3 +94,9 @@ void TEMP_Read(Temperature_Measurement_t *data)
     data->temperature = temperature;
     data->resistance = resistance;
 }
+
+void TEMP_flush_rx(void)
+{
+    uint8_t dummy[32];
+    while (MAX14830_UART_Read((eMAX18430_ComPort_t)sParam.port, dummy) > 0);
+}

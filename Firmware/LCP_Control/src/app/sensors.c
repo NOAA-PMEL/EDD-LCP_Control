@@ -401,31 +401,57 @@ void SENS_set_gps_rate(uint16_t rate)
 void task_depth(void)
 {
     sDepth_Measurement_t depth = {0};
-    assert(sensor_data.depth.rate != 0);
+    assert(sensor_data.depth.rate > 0.0f);
 
-    uint32_t period = xDelay1000ms / sensor_data.depth.rate;
-    ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth, Setting period = %ums\n", period);
+    /* 1. Calculate sample period with floating-point math */
+    const uint32_t period_ms = (uint32_t)(1000.0f / sensor_data.depth.rate);
+    const TickType_t xPeriod = pdMS_TO_TICKS(period_ms);
+
+    /* 2. Duty-cycle ONLY if interval is strictly greater than 60 seconds */
+    const bool bPowerCycle = (period_ms > 60000UL);
 
     TickType_t xLastWakeTime = xTaskGetTickCount();
     Event_e dEvent = IDLE;
     xDepth_run = true;
 
+    ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth Task Started (Period: %ums, PowerCycle: %s)\n",
+                         period_ms, bPowerCycle ? "YES" : "NO");
+
+    /* If sampling <= 60s, energize rail once up front and let it settle */
+    if (!bPowerCycle)
+    {
+        DEPTH_Power_ON();
+        vTaskDelay(pdMS_TO_TICKS(250UL)); // Keller 9LXe internal MCU startup margin
+    }
+
     while (xDepth_run)
     {
-        /* 1. Turn ON sensor hardware rail */
-        DEPTH_Power_ON();
-        vTaskDelay(pdMS_TO_TICKS(20)); // 20ms margin allows up to 10Hz sampling
+        /* 1. Sleep until scheduled sample tick */
+        vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
-        if (xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
+        /* 2. Cold-boot sensor WITHOUT holding bus mutex (only if duty-cycling) */
+        if (bPowerCycle)
+        {
+            DEPTH_Power_ON();
+            vTaskDelay(pdMS_TO_TICKS(250UL)); // Allow internal ASIC to boot
+        }
+
+        /* 3. Acquire shared bus mutex ONLY for the active Modbus read transaction */
+        if (xSemaphoreTake(xTDSemaphore, xPeriod) == pdTRUE)
         {
             DEPTH_Read(&depth);
 
-            /* 2. Turn OFF sensor hardware rail immediately to save battery */
-            DEPTH_Power_OFF();
+            /* Turn OFF rail immediately if duty-cycling */
+            if (bPowerCycle)
+            {
+                DEPTH_Power_OFF();
+            }
+
+            /* Release bus immediately */
             xSemaphoreGive(xTDSemaphore);
 
-            /* 3. Update in-memory sensor struct under short Data Mutex */
-            if (xSemaphoreTake(xDataMutex, pdMS_TO_TICKS(50)) == pdTRUE)
+            /* 4. Commit readings to shared telemetry struct under data mutex */
+            if (xSemaphoreTake(xDataMutex, pdMS_TO_TICKS(50UL)) == pdTRUE)
             {
                 sensor_data.depth.previous = sensor_data.depth.current;
                 sensor_data.depth.current = depth.Depth;
@@ -441,15 +467,16 @@ void task_depth(void)
         }
         else
         {
-            /* If bus mutex acquisition failed, ensure power is turned off */
-            DEPTH_Power_OFF();
+            if (bPowerCycle)
+            {
+                DEPTH_Power_OFF();
+            }
             ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth, bus semaphore not available\n");
         }
-
-        /* Sleep for the full period with hardware OFF and 0 heap churn */
-        vTaskDelayUntil(&xLastWakeTime, period);
     }
 
+    /* Clean exit */
+    DEPTH_Power_OFF();
     dEvent = DELETE;
     SendEvent(xTDEventQueue, &dEvent);
     vTaskDelete(NULL);
@@ -457,39 +484,68 @@ void task_depth(void)
 
 void task_temperature(void)
 {
-    assert(sensor_data.temperature.rate != 0);
+    assert(sensor_data.temperature.rate > 0.0f);
 
     Temperature_Measurement_t measurement = {0};
-    uint32_t period = pdMS_TO_TICKS(1000 / sensor_data.temperature.rate);
+
+    /* Safe floating-point period conversion */
+    const uint32_t period_ms = (uint32_t)(1000.0f / sensor_data.temperature.rate);
+    const TickType_t xPeriod = pdMS_TO_TICKS(period_ms);
+
+    /* Duty-cycle ONLY if interval is strictly greater than 60 seconds */
+    const bool bPowerCycle = (period_ms > 60000UL);
+
     TickType_t xLastWakeTime = xTaskGetTickCount();
     Event_e tEvent = IDLE;
 
-    ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature Task Started (Rate: %.3f Hz)\n", sensor_data.temperature.rate);
+    ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature Task Started (Period: %ums, PowerCycle: %s)\n",
+                         period_ms, bPowerCycle ? "YES" : "NO");
 
     xTemp_run = true;
 
+    /* If sampling <= 60s, turn power on ONCE up front and let it settle */
+    if (!bPowerCycle)
+    {
+        TEMP_Power_ON();
+        vTaskDelay(pdMS_TO_TICKS(100UL));
+
+        if (xSemaphoreTake(xTDSemaphore, xPeriod) == pdTRUE)
+        {
+            TEMP_flush_rx();
+            xSemaphoreGive(xTDSemaphore);
+        }
+    }
+
     while (xTemp_run)
     {
-        /* 1. Sleep until next scheduled sample tick with rail OFF */
-        vTaskDelayUntil(&xLastWakeTime, period);
+        /* 1. Sleep until next scheduled sample tick */
+        vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
-        /* 2. Power ON sensor hardware rail */
-        TEMP_Power_ON();
-        
-        /* 3. S9 boot margin: wait for S9 MCU UART parser to come online (WITHOUT HOLDING MUTEX!) */
-        vTaskDelay(pdMS_TO_TICKS(100));
+        /* 2. Power ON and warm up ONLY if duty-cycling (> 60s) */
+        if (bPowerCycle)
+        {
+            TEMP_Power_ON();
+            vTaskDelay(pdMS_TO_TICKS(100UL)); // S9 boot margin (NO MUTEX HELD!)
+        }
 
-        /* 4. Acquire shared hardware bus mutex only for the UART read */
-        if (xSemaphoreTake(xTDSemaphore, period) == pdTRUE)
+        /* 3. Acquire shared bus mutex ONLY for the active read transaction */
+        if (xSemaphoreTake(xTDSemaphore, xPeriod) == pdTRUE)
         {
             TEMP_Read(&measurement);
-            TEMP_Power_OFF();
+
+            if (bPowerCycle)
+            {
+                TEMP_Power_OFF();
+                TEMP_flush_rx();
+            }
+
+            /* Release bus immediately */
             xSemaphoreGive(xTDSemaphore);
 
             /* Check valid reading range */
             if (measurement.temperature > -5.0f && measurement.temperature < 45.0f)
             {
-                if (xSemaphoreTake(xDataMutex, pdMS_TO_TICKS(50)) == pdTRUE)
+                if (xSemaphoreTake(xDataMutex, pdMS_TO_TICKS(50UL)) == pdTRUE)
                 {
                     sensor_data.temperature.current = measurement.temperature;
                     xSemaphoreGive(xDataMutex);
@@ -506,7 +562,10 @@ void task_temperature(void)
         }
         else
         {
-            TEMP_Power_OFF();
+            if (bPowerCycle)
+            {
+                TEMP_Power_OFF();
+            }
             ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, bus semaphore not available\n");
         }
     }
@@ -525,7 +584,7 @@ void task_gps(void)
     assert(sensor_data.gps.rate != 0);
 
     GPS_Data_t gps = {0};
-    uint32_t period = xDelay1000ms / sensor_data.gps.rate;
+    uint32_t period = (uint32_t)(1000.0f / (float)sensor_data.gps.rate);
     ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Setting period = %ums\n", period);
 
     /* 1. Energize u-blox hardware rail */

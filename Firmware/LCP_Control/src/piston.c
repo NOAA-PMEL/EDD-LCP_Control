@@ -38,6 +38,34 @@ static bool module_pis_get_volume_safe(float *out_volume);
 static float module_pis_get_volume(void);
 static float module_pis_get_length(void);
 static void module_pis_information(void);
+static bool pis_unlock_write_mode(void);
+
+/**
+ * @brief Helper to unlock write mode on the secondary MSP430 MCU with readback verification.
+ * Accommodates slave ISR UART logging and eUSCI peripheral re-enable cycles.
+ */
+static bool pis_unlock_write_mode(void)
+{
+    uint8_t check_val = 0;
+
+    for (uint8_t retry = 0; retry < 5; retry++)
+    {
+        artemis_piston_set_write_mode(true);
+        // Allow time for slave USCI_B1_ISR -> CTRL_Check_Write() UART debug logging to clear
+        pis_delay_ms(150);
+
+        // Verify the slave accepted 0xA5 into RAM_VAR_WRITE
+        check_val = 0;
+        if (artemis_piston_i2c_read(PISTON_I2C_RW_VAR_WRITE, &check_val, 1) && (check_val == 0xA5))
+        {
+            return true;
+        }
+        pis_delay_ms(50);
+    }
+
+    ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, write mode unlock failed after retries (read: 0x%02X)\n", check_val);
+    return false;
+}
 
 bool PIS_taskStatus(void)
 {
@@ -154,7 +182,6 @@ void task_move_piston_to_zero(void)
 {
     LiveTask = true;
     assert(piston.rtos.rate != 0);
-    uint32_t period = pdMS_TO_TICKS(5000 / piston.rtos.rate);
     float length = 0.0f;
 
     uint8_t wait_settle = 0;
@@ -258,7 +285,6 @@ void task_move_piston_to_full(void)
 {
     LiveTask = true;
     assert(piston.rtos.rate != 0);
-    uint32_t period = pdMS_TO_TICKS(5000 / piston.rtos.rate);
     float length = 0.0f;
 
     uint8_t wait_settle = 0;
@@ -362,7 +388,6 @@ void task_reset_piston_to_full(void)
 {
     LiveTask = true;
     assert(piston.rtos.rate != 0);
-    uint32_t period = pdMS_TO_TICKS(5000 / piston.rtos.rate);
     float length = 0.0f;
 
     uint8_t wait_settle = 0;
@@ -466,7 +491,6 @@ void task_move_piston_to_length(void)
 {
     LiveTask = true;
     assert(piston.rtos.rate != 0);
-    uint32_t period = pdMS_TO_TICKS(5000 / piston.rtos.rate);
     float length = 0.0f;
 
     uint8_t wait_settle = 0;
@@ -591,7 +615,6 @@ void task_move_piston_to_volume(void)
 {
     LiveTask = true;
     assert(piston.rtos.rate != 0);
-    uint32_t period = pdMS_TO_TICKS(5000 / piston.rtos.rate);
     float volume = 0.0f;
 
     uint8_t wait_settle = 0;
@@ -767,11 +790,13 @@ void PIS_extend(void)
     uint8_t addr = PISTON_I2C_RW_TRV_USER_OR;
     uint8_t cmd[5] = {addr, 0x01, 0x01, 0x00, 0x01};
 
-    artemis_piston_set_write_mode(true);
-    pis_delay_ms(50);
-    artemis_piston_i2c_send_msg(cmd, 5, true);
-    pis_delay_ms(50);
-    artemis_piston_set_write_mode(false);
+    if (pis_unlock_write_mode())
+    {
+        artemis_piston_i2c_send_msg(cmd, 5, true);
+        pis_delay_ms(150);
+        artemis_piston_set_write_mode(false);
+        pis_delay_ms(50);
+    }
 }
 
 void PIS_retract(void)
@@ -779,11 +804,13 @@ void PIS_retract(void)
     uint8_t addr = PISTON_I2C_RW_TRV_DIR;
     uint8_t cmd[5] = {addr, 0xFF, 0x01, 0x00, 0x01};
 
-    artemis_piston_set_write_mode(true);
-    pis_delay_ms(50);
-    artemis_piston_i2c_send_msg(cmd, 5, true);
-    pis_delay_ms(50);
-    artemis_piston_set_write_mode(false);
+    if (pis_unlock_write_mode())
+    {
+        artemis_piston_i2c_send_msg(cmd, 5, true);
+        pis_delay_ms(150);
+        artemis_piston_set_write_mode(false);
+        pis_delay_ms(50);
+    }
 }
 
 void PIS_stop(void)
@@ -791,11 +818,13 @@ void PIS_stop(void)
     uint8_t addr = PISTON_I2C_RW_TRV_USER_OR;
     uint8_t cmd[5] = {addr, 0x00, 0x01, 0x00, 0x01};
 
-    artemis_piston_set_write_mode(true);
-    pis_delay_ms(50);
-    artemis_piston_i2c_send_msg(cmd, 5, true);
-    pis_delay_ms(50);
-    artemis_piston_set_write_mode(false);
+    if (pis_unlock_write_mode())
+    {
+        artemis_piston_i2c_send_msg(cmd, 5, true);
+        pis_delay_ms(150);
+        artemis_piston_set_write_mode(false);
+        pis_delay_ms(50);
+    }
 }
 
 bool PIS_calibration_check(void)
@@ -821,12 +850,13 @@ void PIS_calibration(bool cal)
     uint8_t cmd[2] = {addr, 0x01};
 
     ARTEMIS_DEBUG_PRINTF("PISTON :: Being calibrated\n");
-    pis_delay_ms(100);
-    artemis_piston_set_write_mode(true);
-    pis_delay_ms(50);
-    artemis_piston_i2c_send_msg(cmd, 2, true);
-    pis_delay_ms(50);
-    artemis_piston_set_write_mode(false);
+    if (pis_unlock_write_mode())
+    {
+        artemis_piston_i2c_send_msg(cmd, 2, true);
+        pis_delay_ms(150);
+        artemis_piston_set_write_mode(false);
+        pis_delay_ms(50);
+    }
 }
 
 float PIS_get_length(void)
@@ -856,17 +886,21 @@ bool PIS_move_to_length(float length)
         v[i + 1] = (conv.u32Length >> (i * 8)) & 0xFF;
     }
 
-    // 1. Unlock write mode and wait for secondary MCU decode
-    artemis_piston_set_write_mode(true);
-    pis_delay_ms(50);
+    // 1. Confirm write mode unlock on secondary MCU with readback
+    if (!pis_unlock_write_mode())
+    {
+        ARTEMIS_DEBUG_PRINTF("PISTON :: Aborting move_to_length: write mode unlock failed\n");
+        return false;
+    }
 
     // 2. Transmit the 5-byte payload with full STOP
     artemis_piston_i2c_send_msg(v, 5, true);
-    pis_delay_ms(50);
+    // Allow slave to finish CTRL_Write() and launch motor routine
+    pis_delay_ms(150);
 
     // 3. Relock write mode
     artemis_piston_set_write_mode(false);
-    pis_delay_ms(25);
+    pis_delay_ms(50);
 
     return true;
 }
@@ -893,17 +927,21 @@ bool PIS_move_to_volume(float volume)
         v[i + 1] = (conv.u32Volume >> (i * 8)) & 0xFF;
     }
 
-    // 1. Unlock write mode and wait for secondary MCU decode
-    artemis_piston_set_write_mode(true);
-    pis_delay_ms(50);
+    // 1. Confirm write mode unlock on secondary MCU with readback
+    if (!pis_unlock_write_mode())
+    {
+        ARTEMIS_DEBUG_PRINTF("PISTON :: Aborting move_to_volume: write mode unlock failed\n");
+        return false;
+    }
 
     // 2. Transmit the 5-byte payload with full STOP
     artemis_piston_i2c_send_msg(v, 5, true);
-    pis_delay_ms(50);
+    // Allow slave to finish CTRL_Write() and launch motor routine
+    pis_delay_ms(150);
 
     // 3. Relock write mode
     artemis_piston_set_write_mode(false);
-    pis_delay_ms(25);
+    pis_delay_ms(50);
 
     return true;
 }
@@ -1042,7 +1080,7 @@ void PIS_Reset(void)
 
     artemis_piston_i2c_send_msg(cmd, 2, true);
 
-    // Increased to 3500ms: allows slave MCU to fully boot, initialize DRV8874, and re-enable I2C
+    // 3500ms allows slave MCU to fully boot, initialize DRV8874, and re-enable I2C
     pis_delay_ms(3500);
 
     // Relock write mode after slave reboot
@@ -1055,11 +1093,13 @@ void PIS_move_to_full(void)
     uint8_t addr = PISTON_I2C_RW_MOV_FULL;
     uint8_t cmd[2] = {addr, 0x01};
 
-    artemis_piston_set_write_mode(true);
-    pis_delay_ms(50);
-    artemis_piston_i2c_send_msg(cmd, 2, true);
-    pis_delay_ms(50);
-    artemis_piston_set_write_mode(false);
+    if (pis_unlock_write_mode())
+    {
+        artemis_piston_i2c_send_msg(cmd, 2, true);
+        pis_delay_ms(150);
+        artemis_piston_set_write_mode(false);
+        pis_delay_ms(50);
+    }
 }
 
 void PIS_move_to_zero(void)
@@ -1067,11 +1107,13 @@ void PIS_move_to_zero(void)
     uint8_t addr = PISTON_I2C_RW_MOV_ZERO;
     uint8_t cmd[2] = {addr, 0x01};
 
-    artemis_piston_set_write_mode(true);
-    pis_delay_ms(50);
-    artemis_piston_i2c_send_msg(cmd, 2, true);
-    pis_delay_ms(50);
-    artemis_piston_set_write_mode(false);
+    if (pis_unlock_write_mode())
+    {
+        artemis_piston_i2c_send_msg(cmd, 2, true);
+        pis_delay_ms(150);
+        artemis_piston_set_write_mode(false);
+        pis_delay_ms(50);
+    }
 }
 
 void PIS_reset_to_full(void)
@@ -1079,9 +1121,11 @@ void PIS_reset_to_full(void)
     uint8_t addr = PISTON_I2C_RW_RST_FULL;
     uint8_t cmd[2] = {addr, 0x01};
 
-    artemis_piston_set_write_mode(true);
-    pis_delay_ms(50);
-    artemis_piston_i2c_send_msg(cmd, 2, true);
-    pis_delay_ms(50);
-    artemis_piston_set_write_mode(false);
+    if (pis_unlock_write_mode())
+    {
+        artemis_piston_i2c_send_msg(cmd, 2, true);
+        pis_delay_ms(150);
+        artemis_piston_set_write_mode(false);
+        pis_delay_ms(50);
+    }
 }
