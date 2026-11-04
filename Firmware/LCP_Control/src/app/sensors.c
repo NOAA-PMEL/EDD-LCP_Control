@@ -373,7 +373,18 @@ void SENS_task_gps(TaskHandle_t *xGPS)
 
 void SENS_set_depth_rate(float rate)
 {
-    if( (rate > 0) && (rate < SENSOR_MAX_DEPTH_RATE) )
+    if (rate <= 0.0f)
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, Depth rate %.4f <= 0! Fallback to 0.1Hz\n", rate);
+        sensor_data.depth.rate = 0.1f;
+    }
+    else if (rate > SENSOR_MAX_DEPTH_RATE)
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, Depth rate %.4f > max (%dHz)! Clamping to %dHz\n",
+                             rate, SENSOR_MAX_DEPTH_RATE, SENSOR_MAX_DEPTH_RATE);
+        sensor_data.depth.rate = (float)SENSOR_MAX_DEPTH_RATE;
+    }
+    else
     {
         ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth, Setting rate = %.6fHz\n", rate);
         sensor_data.depth.rate = rate;
@@ -382,7 +393,18 @@ void SENS_set_depth_rate(float rate)
 
 void SENS_set_temperature_rate(float rate)
 {
-    if( (rate > 0) && (rate < SENSOR_MAX_TEMPERATURE_RATE))
+    if (rate <= 0.0f)
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, Temperature rate %.4f <= 0! Fallback to 0.1Hz\n", rate);
+        sensor_data.temperature.rate = 0.1f;
+    }
+    else if (rate > SENSOR_MAX_TEMPERATURE_RATE)
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, Temperature rate %.4f > max (%dHz)! Clamping to %dHz\n",
+                             rate, SENSOR_MAX_TEMPERATURE_RATE, SENSOR_MAX_TEMPERATURE_RATE);
+        sensor_data.temperature.rate = (float)SENSOR_MAX_TEMPERATURE_RATE;
+    }
+    else
     {
         ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, Setting rate = %.6fHz\n", rate);
         sensor_data.temperature.rate = rate;
@@ -391,7 +413,18 @@ void SENS_set_temperature_rate(float rate)
 
 void SENS_set_gps_rate(uint16_t rate)
 {
-    if( (rate > 0) && (rate < SENSOR_MAX_GPS_RATE))
+    if (rate == 0)
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, GPS rate 0! Fallback to 1Hz\n");
+        sensor_data.gps.rate = 1;
+    }
+    else if (rate > SENSOR_MAX_GPS_RATE)
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, GPS rate %u > max (%uHz)! Clamping to %uHz\n",
+                             rate, SENSOR_MAX_GPS_RATE, SENSOR_MAX_GPS_RATE);
+        sensor_data.gps.rate = SENSOR_MAX_GPS_RATE;
+    }
+    else
     {
         ARTEMIS_DEBUG_PRINTF("SENSORS :: GPS, Setting rate = %uHz\n", rate);
         sensor_data.gps.rate = rate;
@@ -401,6 +434,13 @@ void SENS_set_gps_rate(uint16_t rate)
 void task_depth(void)
 {
     sDepth_Measurement_t depth = {0};
+
+    if (sensor_data.depth.rate <= 0.0f)
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, task_depth started with rate <= 0! Defaulting to 0.1Hz\n");
+        sensor_data.depth.rate = 0.1f;
+    }
+
     assert(sensor_data.depth.rate > 0.0f);
 
     /* 1. Calculate sample period with floating-point math */
@@ -484,6 +524,12 @@ void task_depth(void)
 
 void task_temperature(void)
 {
+    if (sensor_data.temperature.rate <= 0.0f)
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, task_temperature started with rate <= 0! Defaulting to 0.1Hz\n");
+        sensor_data.temperature.rate = 0.1f;
+    }
+
     assert(sensor_data.temperature.rate > 0.0f);
 
     Temperature_Measurement_t measurement = {0};

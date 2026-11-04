@@ -664,13 +664,23 @@ void module_pds_idle(void)
     float Volume = 0.0f;
     float Length = 0.0f;
 
+    uint32_t piston_period = xDelay1000ms;
+    uint32_t piston_timer = 0;
+    bool piston_move = true;
+    bool piston_task_running = false;
+
+    PIS_set_piston_rate(1);
+
     if (AIR)
     {
-        ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston fully retract for AIR DEPLOY\n");
+        ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, commanding Piston Zero/Retract for AIR DEPLOY\n");
         Length = 0.0f;
         Volume = CTRL_calculate_volume_from_length(Length);
         Density = CTRL_calculate_lcp_density(Volume);
-        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
+        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Target -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
+
+        /* Launch explicit zeroing/homing task to drive motor back from 11.6in to limit switch */
+        PIS_task_move_zero(&s_xPiston);
     }
     else
     {
@@ -678,18 +688,11 @@ void module_pds_idle(void)
         ARTEMIS_DEBUG_PRINTF("\nPDS :: Idle, piston move to park density=%.3f kg/m³\n", PARK_DENSITY);
         Volume = CTRL_set_lcp_density(Density);
         Length = CTRL_calculate_length_from_volume(Volume);
-        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Setting -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
-    }
-    
-    uint32_t piston_period = xDelay1000ms;
-    uint32_t piston_timer = 0;
-    bool piston_move = true;
-    bool piston_task_running = false;
+        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Target -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
 
-    // Use direct length command to bypass slave baseline volume offsets
-    PIS_set_piston_rate(1);
-    PIS_set_length(Length);
-    PIS_task_move_length(&s_xPiston);
+        PIS_set_length(Length);
+        PIS_task_move_length(&s_xPiston);
+    }
     vTaskDelay(xDelay5000ms);
 
     while (piston_move)

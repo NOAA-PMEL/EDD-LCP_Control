@@ -78,7 +78,41 @@ bool PIS_initialize(void)
 {
     /** Initialize the I2C Port */
     artemis_piston_i2c_initialize(PISTON_I2C_ADDR);
+    
+    // Give slave bus lines 50ms to settle after IOM hardware configuration
+    pis_delay_ms(50);
+
+    // Read System ID and Firmware version (contains internal 50ms delays)
     module_pis_information();
+    pis_delay_ms(50);
+
+    /* Sync initial live piston length from slave */
+    float initial_len = 0.0f;
+    if (module_pis_get_length_safe(&initial_len))
+    {
+        piston.length = initial_len;
+        ARTEMIS_DEBUG_PRINTF("PISTON :: Initial Length read from slave = %0.4fin\n", initial_len);
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("PISTON :: WARNING: Could not read initial length from slave\n");
+    }
+
+    // Bus settling time between reading length and reading volume registers
+    pis_delay_ms(25);
+
+    /* Sync initial live piston volume from slave */
+    float initial_vol = 0.0f;
+    if (module_pis_get_volume_safe(&initial_vol))
+    {
+        piston.volume = initial_vol;
+        ARTEMIS_DEBUG_PRINTF("PISTON :: Initial Volume read from slave = %0.4fin³\n", initial_vol);
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("PISTON :: WARNING: Could not read initial volume from slave\n");
+    }
+
     return true;
 }
 

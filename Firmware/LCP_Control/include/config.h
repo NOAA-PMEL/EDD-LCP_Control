@@ -229,7 +229,7 @@
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.0f )
-#define BALLAST_DEPTH_SAMPLE_RATE           ( 10.0f )
+#define BALLAST_DEPTH_SAMPLE_RATE           ( 1.0f / 10.0f )
 #define BALLAST_DEPTH_PROFILE               ( 2.0f )
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 1.0f )
 #define PARK_DEPTH                          ( 3.5f ) //( 4.0f )
@@ -266,7 +266,7 @@
 #define POPUP_RATE                          ( 1.0f / 60.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1754355600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )
-#define BALLAST_DEPTH_SAMPLE_RATE           ( 10.0f )
+#define BALLAST_DEPTH_SAMPLE_RATE           (  1.0f / 10.0f )
 #define BALLAST_DEPTH_PROFILE               ( 4.0f )
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 1.0f )
 #define PARK_DEPTH                          ( 7.6f )
@@ -303,7 +303,7 @@
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )
-#define BALLAST_DEPTH_SAMPLE_RATE           ( 10.0f )
+#define BALLAST_DEPTH_SAMPLE_RATE           (  1.0f / 10.0f )
 #define BALLAST_DEPTH_PROFILE               ( 4.0f )
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 0.05f )
 #define PARK_DEPTH                          ( 160.0f ) //( 4.0f )
@@ -340,7 +340,7 @@
 #define POPUP_RATE                          ( 1.0f / 1080.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1755504000 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )
-#define BALLAST_DEPTH_SAMPLE_RATE           ( 10.0f )
+#define BALLAST_DEPTH_SAMPLE_RATE           (  1.0f / 10.0f )
 #define BALLAST_DEPTH_PROFILE               ( 4.0f ) //XXXXX Should probably add 1.2+ meters to this for cold water to counteract extra vaccum in LCP
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 0.05f )
 #define PARK_DEPTH                          ( 66.0f ) //( 4.0f )
@@ -377,7 +377,7 @@
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )
-#define BALLAST_DEPTH_SAMPLE_RATE           ( 10.0f )
+#define BALLAST_DEPTH_SAMPLE_RATE           (  1.0f / 10.0f )
 #define BALLAST_DEPTH_PROFILE               ( 8.0f )
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 0.2f )
 #define PARK_DEPTH                          ( 170.0f ) //( 4.0f )
