@@ -209,7 +209,12 @@ static void module_k9lx_read_sensor_pt(K9lx_data_pt *data)
     u32_to_float_t pressure_bar;
     u32_to_float_t temperature_c;
 
+#ifdef FREERTOS
+    ret = module_k9lx_read_reg_RTOS(pK9lx->device.uart.port, K9LX_FL1_P1, 4, pt);
+#else
     ret = module_k9lx_read_reg(pK9lx->device.uart.port, K9LX_FL1_P1, 4, pt);
+#endif
+
     if (ret == 0)
     {
         for (uint8_t i = 0; i < 4; i++)
@@ -257,6 +262,69 @@ static int8_t module_k9lx_data_integrity (uint8_t *Data, uint8_t len)
     }
 
     return -1;
+}
+
+static int8_t module_k9lx_read_reg(uint8_t port, uint16_t reg_add, uint8_t reg_num, uint8_t *pData)
+{
+    uint8_t cmd[CMD_LENGTH] = {0};
+    uint8_t rxlen = 0;
+    uint8_t rData[16] = {0};
+    uint8_t crc_h = 0, crc_l = 0;
+
+    cmd[0] = K9LX_ADDR;
+    cmd[1] = K9LX_READ_REG_CMD;
+    cmd[2] = (reg_add >> 8) & 0xFF;
+    cmd[3] = reg_add & 0xFF;
+    cmd[4] = 0x00;
+    cmd[5] = reg_num;
+
+    module_k9lx_crc16(&crc_h, &crc_l, cmd, 6);
+    cmd[6] = crc_l;
+    cmd[7] = crc_h;
+
+    MAX14830_UART_Write((eMAX18430_ComPort_t)port, cmd, CMD_LENGTH);
+
+    /* 
+     * Keller Modbus frame format:
+     * Addr (1) + Func (1) + ByteCount (1) + Data (reg_num * 2) + CRC (2) = 5 + (reg_num * 2)
+     */
+    const uint8_t expected_len = 5 + (reg_num * 2);
+    uint8_t chunk[16] = {0};
+    uint32_t attempts = 0;
+    const uint32_t MAX_ATTEMPTS = 15; // 15 x 10ms = 150ms timeout window
+
+    /* Bare-metal polling loop using am_util_delay_ms since FreeRTOS scheduler isn't started */
+    while (rxlen < expected_len && attempts++ < MAX_ATTEMPTS)
+    {
+        uint16_t len = MAX14830_UART_Read((eMAX18430_ComPort_t)port, chunk);
+        if (len > 0)
+        {
+            for (uint8_t i = 0; i < len && (rxlen + i) < sizeof(rData); i++)
+            {
+                rData[rxlen + i] = chunk[i];
+            }
+            rxlen += len;
+        }
+        else
+        {
+            am_util_delay_ms(10);
+        }
+    }
+
+    int8_t ret = module_k9lx_data_integrity(rData, rxlen);
+    if (ret == 0 && rxlen >= expected_len)
+    {
+        for (uint8_t i = 0; i < rxlen - 5; i++)
+        {
+            pData[i] = rData[i + 3];
+        }
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("K9lX:: Read ERROR (%d, rxlen=%u)\n", ret, rxlen);
+    }
+
+    return ret;
 }
 
 static int8_t module_k9lx_read_reg_RTOS(uint8_t port, uint16_t reg_add, uint8_t reg_num, uint8_t *pData)
