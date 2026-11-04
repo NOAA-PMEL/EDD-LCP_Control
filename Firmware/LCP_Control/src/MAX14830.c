@@ -445,7 +445,7 @@ void module_MAX14830_Handle_IRQ(void)
         if (!isr_status && !rxlen)
         {
             rx_bytes = true;
-            if (gEventHandle != NULL)
+            if (gEventHandle != NULL && xTaskGetSchedulerState() == taskSCHEDULER_RUNNING)
             {
                 BaseType_t xHigherPriorityTaskWoken = pdFALSE;
                 BaseType_t xResult = xEventGroupSetBitsFromISR(gEventHandle, (1u << port), &xHigherPriorityTaskWoken);
@@ -497,10 +497,18 @@ void module_MAX14830_Write_Task(void *pvParameters)
     uint8_t txlen = 0;
     uint8_t sData[32] = {0};
 
-    while (xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS(200UL)) != pdPASS);
+    if (xSpiMutex != NULL)
+    {
+        while (xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS(200UL)) != pdPASS);
+    }
+    
     txlen = BufferC_gets(pBuf, (char *)sData, 32);
     module_MAX14830_Write(port, MAX14830_THR, sData, txlen);
-    xSemaphoreGive(xSpiMutex);
+    
+    if (xSpiMutex != NULL)
+    {
+        xSemaphoreGive(xSpiMutex);
+    }
 
     vTaskDelete(NULL);
 }
@@ -522,20 +530,29 @@ uint32_t MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t ba
 
 void MAX14830_UART_Write(eMAX18430_ComPort_t port, uint8_t *data, uint16_t len)
 {
-    uint8_t taskDesc[configMAX_TASK_NAME_LEN];
-    sprintf((char *)taskDesc, "S2U Write CH%u", (uint8_t)port);
-
-    for (uint8_t i = 0; i < len; i++)
+    /* If the FreeRTOS scheduler is running, queue to buffer and spawn writer task */
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING)
     {
-        BufferC_putc(&txBuf[(uint8_t)port], *data++);
-    }
+        uint8_t taskDesc[configMAX_TASK_NAME_LEN];
+        sprintf((char *)taskDesc, "S2U Write CH%u", (uint8_t)port);
 
-    xTaskCreate(module_MAX14830_Write_Task,
-                (char *)taskDesc,
-                STACK_SIZE,
-                (void *)port,
-                tskIDLE_PRIORITY + MAX14830_WRITE_TASK_PRIORITY,
-                NULL);
+        for (uint8_t i = 0; i < len; i++)
+        {
+            BufferC_putc(&txBuf[(uint8_t)port], *data++);
+        }
+
+        xTaskCreate(module_MAX14830_Write_Task,
+                    (char *)taskDesc,
+                    STACK_SIZE,
+                    (void *)port,
+                    tskIDLE_PRIORITY + MAX14830_WRITE_TASK_PRIORITY,
+                    NULL);
+    }
+    else
+    {
+        /* Pre-scheduler bootup fallback: write data synchronously */
+        MAX14830_UART_Write_direct(port, data, len);
+    }
 }
 
 void MAX14830_UART_Write_direct(eMAX18430_ComPort_t port, uint8_t *data, uint16_t len)
@@ -561,10 +578,24 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData)
     sCircularBufferC_t *pBuf = &rxBuf[(uint8_t)port];
     EventBits_t target_bit = (1u << (uint8_t)port);
 
-    EventBits_t bits = xEventGroupWaitBits(gEventHandle, target_bit, pdTRUE, pdFALSE, pdMS_TO_TICKS(100));
-    if (bits & target_bit)
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING && gEventHandle != NULL)
     {
-        vTaskDelay(pdMS_TO_TICKS(5UL));
+        EventBits_t bits = xEventGroupWaitBits(gEventHandle, target_bit, pdTRUE, pdFALSE, pdMS_TO_TICKS(100));
+        if (bits & target_bit)
+        {
+            vTaskDelay(pdMS_TO_TICKS(5UL));
+            while (BufferC_Get_Size(pBuf) > 0)
+            {
+                BufferC_getc(pBuf, (char *)pData);
+                pData++;
+                len++;
+            }
+        }
+    }
+    else
+    {
+        /* Pre-scheduler bootup fallback: give hardware time to receive and drain buffer directly */
+        am_util_delay_ms(15);
         while (BufferC_Get_Size(pBuf) > 0)
         {
             BufferC_getc(pBuf, (char *)pData);
@@ -572,6 +603,7 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData)
             len++;
         }
     }
+
     return len;
 }
 
