@@ -56,7 +56,8 @@ static bool pis_unlock_write_mode(void)
 
         // Verify the slave accepted 0xA5 into RAM_VAR_WRITE
         check_val = 0;
-        if (artemis_piston_i2c_read(PISTON_I2C_W_VAR_WRITE, &check_val, 1) && (check_val == 0xA5))
+        artemis_piston_i2c_read(PISTON_I2C_W_VAR_WRITE, &check_val, 1);
+        if (check_val == 0xA5)
         {
             return true;
         }
