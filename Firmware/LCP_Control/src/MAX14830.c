@@ -550,22 +550,45 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData)
 
     if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING && gEventHandle != NULL)
     {
-        /* Wait up to 100ms for the ISR to signal data arrival (matches MAX14830_2.c baseline) */
-        EventBits_t bits = xEventGroupWaitBits(gEventHandle, target_bit, pdTRUE, pdFALSE, pdMS_TO_TICKS(100));
-        if (bits & target_bit)
+        /* 1. Wait for ISR notification if buffer is empty */
+        if (BufferC_Get_Size(pBuf) == 0)
         {
-            vTaskDelay(pdMS_TO_TICKS(5UL));
-            while (BufferC_Get_Size(pBuf) > 0)
+            xEventGroupClearBits(gEventHandle, target_bit);
+            EventBits_t bits = xEventGroupWaitBits(gEventHandle, target_bit, pdTRUE, pdFALSE, pdMS_TO_TICKS(350UL));
+            if (bits & target_bit)
             {
-                BufferC_getc(pBuf, (char *)pData);
-                pData++;
-                len++;
+                vTaskDelay(pdMS_TO_TICKS(10UL));
             }
+        }
+
+        /* 2. Hardware FIFO fallback: If buffer is still empty, poll MAX14830 directly */
+        if (BufferC_Get_Size(pBuf) == 0)
+        {
+            uint8_t fifo_level = 0;
+            module_MAX14830_Read(port, MAX14830_REG_RXFIFOLVL, 1, &fifo_level);
+            if (fifo_level > 0)
+            {
+                uint8_t hw_data[32];
+                uint8_t read_bytes = (fifo_level > 32) ? 32 : fifo_level;
+                module_MAX14830_Read(port, MAX14830_RHR, read_bytes, hw_data);
+                for (uint8_t b = 0; b < read_bytes; b++)
+                {
+                    BufferC_putc(pBuf, hw_data[b]);
+                }
+            }
+        }
+
+        /* 3. Drain circular buffer */
+        while (BufferC_Get_Size(pBuf) > 0)
+        {
+            BufferC_getc(pBuf, (char *)pData);
+            pData++;
+            len++;
         }
     }
     else
     {
-        /* Pre-scheduler cold bootup check (during sensor initialization) */
+        /* Pre-scheduler bootup fallback */
         am_util_delay_ms(25);
         while (BufferC_Get_Size(pBuf) > 0)
         {
