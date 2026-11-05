@@ -4373,71 +4373,100 @@ void module_sps_tx(void)
                 vTaskDelay(xDelay1000ms);
 
                 // --- Initiate Transfer and Monitor ---
-                task_Iridium_transfer(&xIridium);
+                task_Iridium_transfer(&xIridium); // This task also self-deletes
                 bool transfer_run = true;
-                page_transmission_success = false;
-                vTaskDelay(xDelay1000ms);
-
-                while (transfer_run && !fatal_error_occurred) 
+                page_transmission_success = false; // Reset before this transfer attempt
+                vTaskDelay(xDelay1000ms); // Allow time for task to start
+                while(transfer_run && !fatal_error_occurred) 
                 {
-                    iridium_task_running = Iridium_running();
+                    iridium_task_running = Iridium_running(); // Check if the Iridium task is running
                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium transfer task->state = %s\n", iridium_task_running ? "running" : "not running");
-
-                    if (iridium_task_running) 
+                    if ( iridium_task_running ) 
                     { 
-                        vTaskDelay(xDelay1000ms);
+                        vTaskDelay(xDelay1000ms); /* Waiting */ 
                     }
                     else 
                     {
                         ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium transfer task finished.\n"); 
                         vTaskDelay(xDelay500ms);
-
                         uint8_t recv[6] = {0}; 
                         bool status_ok = GET_Iridium_status(recv); 
-
-                        // End the polling loop immediately once the task has exited
                         transfer_run = false;
-
                         if (status_ok) 
                         {
                             if (recv[0] <= 4) 
-                            { 
+                            { // Success code
                                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Page %u transmit SUCCESSFUL.\n", current_page_num);
-                                page_transmission_success = true;
-                                retry_page_internally = false;
+                                page_transmission_success = true; // Page success!
+                                // Let loop exit naturally
                             } 
                             else 
-                            { 
+                            { // Failure code
                                 ARTEMIS_DEBUG_PRINTF("SPS :: tx, Page %u transmit FAILED (Iridium Status: %u).\n", current_page_num, recv[0]);
-                                page_transmission_success = false;
-                                retry_page_internally = true;
-
-                                uint16_t wait_time = 10;
+                                page_transmission_success = false; // Page failed
+                                retry_page_internally = true; // Signal inner loop to retry page after delay
+                                // Handle delays based on error codes
+                                uint16_t wait_time = 10; // Default wait time
                                 if (recv[0] == 38) 
-                                { 
+                                { // Traffic management
                                     uint16_t traffic_buf[8] = {0}; 
                                     uint8_t traffic_len = i9603n_traffic_mgmt_time(traffic_buf);
-                                    if (traffic_len > 0 && traffic_buf[0] == 0) 
+                                    if(traffic_len > 0 && traffic_buf[0] == 0) 
                                     {
                                         wait_time = traffic_buf[1];
                                     }
-                                    if (wait_time < 10) wait_time = 10;
+                                    if(wait_time < 10) wait_time = 10;
                                     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Traffic management wait: %u sec\n", wait_time);
-                                }
-
+                                } // Add other specific error code delays here if needed
                                 i9603n_sleep(); 
                                 vTaskDelay(pdMS_TO_TICKS(wait_time * 1000)); 
                                 i9603n_wakeup(); 
                                 vTaskDelay(xDelay1000ms);
+                                continue; // Continue attempt loop to retry page
                             }
                         } 
                         else 
-                        {
-                            ARTEMIS_DEBUG_PRINTF("SPS :: tx, ERROR getting Iridium transmit status! Retrying page...\n");
-                            page_transmission_success = false;
-                            retry_page_internally = true;
-                            vTaskDelay(xDelay2000ms);
-                        }
+                        { // Failed to get Iridium status
+                            ARTEMIS_DEBUG_PRINTF("SPS :: tx, ERROR getting Iridium transmit status! Retrying attempt...\n");
+                            ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium transfer task finished.\n"); 
+                            vTaskDelay(xDelay500ms);
+                            uint8_t recv[6] = {0}; 
+                            bool status_ok = GET_Iridium_status(recv); 
+                            transfer_run = false;
+                            if (status_ok) 
+                            {
+                                if (recv[0] <= 4) 
+                                { // Success code
+                                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Page %u transmit SUCCESSFUL.\n", current_page_num);
+                                    page_transmission_success = true; // Page success!
+                                    // Let loop exit naturally
+                                } 
+                                else 
+                                { // Failure code
+                                    ARTEMIS_DEBUG_PRINTF("SPS :: tx, Page %u transmit FAILED (Iridium Status: %u).\n", current_page_num, recv[0]);
+                                    page_transmission_success = false; // Page failed
+                                    retry_page_internally = true; // Signal inner loop to retry page after delay
+                                    // Handle delays based on error codes
+                                    uint16_t wait_time = 10; // Default wait time
+                                    if (recv[0] == 38) 
+                                    { // Traffic management
+                                        uint16_t traffic_buf[8] = {0}; 
+                                        uint8_t traffic_len = i9603n_traffic_mgmt_time(traffic_buf);
+                                        if(traffic_len > 0 && traffic_buf[0] == 0) 
+                                        {
+                                            wait_time = traffic_buf[1];
+                                        }
+                                        if(wait_time < 10) wait_time = 10;
+                                        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Traffic management wait: %u sec\n", wait_time);
+                                    } // Add other specific error code delays here if needed
+                                    i9603n_sleep(); 
+                                    vTaskDelay(pdMS_TO_TICKS(wait_time * 1000)); 
+                                    i9603n_wakeup(); 
+                                    vTaskDelay(xDelay1000ms);
+                                    continue; // Continue attempt loop to retry page
+                                }
+                            }
+                        } 
                     }
                 } // end transfer_run loop
                 
@@ -4522,6 +4551,30 @@ void module_sps_tx(void)
 // --- Cleanup and Exit Logic ---
 cleanup_and_exit:
     ARTEMIS_DEBUG_PRINTF("SPS :: tx, Entering cleanup and exit. Max attempts stop reason: %d\n", max_attempts_stop_reason);
+
+    /* -------------------------------------------------------------
+     * Ensure in-flight Iridium/Satellite tasks are terminated
+     * BEFORE turning off power to the modem rail.
+     * ------------------------------------------------------------- */
+    if (Sat_running())
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Satellite task still running on exit, waiting...\n");
+        uint8_t wait_count = 0;
+        while (Sat_running() && wait_count++ < 20)
+        {
+            vTaskDelay(pdMS_TO_TICKS(100));
+        }
+    }
+
+    if (Iridium_running())
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: tx, Iridium transfer task still running on exit, waiting...\n");
+        uint8_t wait_count = 0;
+        while (Iridium_running() && wait_count++ < 20)
+        {
+            vTaskDelay(pdMS_TO_TICKS(100));
+        }
+    }
 
     // Reset attempts ONLY if we stopped processing BECAUSE the head item reached max attempts
     if (max_attempts_stop_reason) 
