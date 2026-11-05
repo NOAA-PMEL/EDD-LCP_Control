@@ -30,6 +30,7 @@ extern "C" {
 //#define __TEST_LAKE__
 //#define __TEST_PS__
 //#define __TEST_BERINGSEA__
+//#define __TEST_NOPP__
 
 #ifdef ARTEMIS_DEBUG
     #define ARTEMIS_DEBUG_ASSERT(expr) (!!(expr) || (artemis_debug_assert(#expr, __FUNCTION__, __FILE__, __LINE__), 0))

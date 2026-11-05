@@ -52,6 +52,8 @@ void artemis_debug_initialize(void)
         ARTEMIS_DEBUG_PRINTF("\n<<< TEST_BERINGSEA Profile selected >>>\n\n");
 #elif defined(__TEST_PS__)
         ARTEMIS_DEBUG_PRINTF("\n<<< TEST_PS Profile selected >>>\n\n");
+#elif defined(__TEST_NOPP__)
+        ARTEMIS_DEBUG_PRINTF("\n<<< TEST_NOPP Profile selected >>>\n\n");        
 #else
         ARTEMIS_DEBUG_PRINTF("\n<<< ERROR:: No Profile was selected >>>\n\n");
         #error "ERROR:: No test profile was selected"
