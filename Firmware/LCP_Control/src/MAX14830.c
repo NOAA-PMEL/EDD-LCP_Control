@@ -492,7 +492,7 @@ void module_MAX14830_Handle_IRQ(void)
     } while (1);
 }
 
-uint32_t MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX18430_Baudrate_t baudrate)
+uint32_t MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate)
 {
     float D = MAX14830_XTAL_FREQ / (16 * (float)baudrate);
     uint32_t DIV = (uint32_t)trunc(D);
