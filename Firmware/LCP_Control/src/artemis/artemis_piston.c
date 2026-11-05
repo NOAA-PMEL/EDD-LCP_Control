@@ -246,5 +246,5 @@ void artemis_piston_set_write_mode(bool state)
     msg[1] = key;
 
     artemis_piston_i2c_send_msg(msg, 2, true);
-    pis_delay_ms(5);
+    pis_delay_ms(100);  // Allow slave MSP430 eUSCI ISR to commit RAM_VAR_WRITE
 }

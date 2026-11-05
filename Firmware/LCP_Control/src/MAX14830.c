@@ -75,8 +75,6 @@
 
 /** IRQEn Register Bits */
 #define MAX14830_IRQ_RFIFOEMTY      ( 1u << 6 )
-#define MAX14830_IRQ_RXDATAINT      ( 1u << 5 )
-#define MAX14830_IRQ_RXTIMEOUT      ( 1u << 0 )
 
 /** LSR Register Bits */
 #define MAX14830_LSR_RXNOISE        ( 1u << 5 )
@@ -184,15 +182,6 @@ bool MAX14830_initialize(void)
     NVIC_EnableIRQ(GPIO_IRQn);
     am_hal_interrupt_master_enable();
 
-    if (gEventHandle == NULL)
-    {
-        gEventHandle = xEventGroupCreate();
-    }
-    if (xSpiMutex == NULL)
-    {
-        xSpiMutex = xSemaphoreCreateMutex();
-    }
-
     module_MAX14830_Power_On();
     module_MAX14830_conf();
 
@@ -228,8 +217,12 @@ static void module_MAX14830_conf(void)
     module_MAX14830_RegUpdate(MAX14830_COM_PORT2, MAX14830_REG_MODE2, MAX14830_MODE2_FIFO_RST, 0);
     module_MAX14830_RegUpdate(MAX14830_COM_PORT3, MAX14830_REG_MODE2, MAX14830_MODE2_FIFO_RST, 0);
 
-    regVal = MAX14830_MODE2_ECHO_SUPRS | MAX14830_MODE2_RX_EMTY_INV;
+    /* Port 0 (S9 full-duplex UART): NO echo suppression */
+    regVal = MAX14830_MODE2_RX_EMTY_INV;
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &regVal, 1);
+
+    /* Port 3 (Keller half-duplex RS-485): Echo suppression enabled */
+    regVal = MAX14830_MODE2_ECHO_SUPRS | MAX14830_MODE2_RX_EMTY_INV;
     module_MAX14830_Write(MAX14830_COM_PORT3, MAX14830_REG_MODE2, &regVal, 1);
 
     regVal = MAX14830_FLOWLVL_HALT(96) | MAX14830_FLOWLVL_RES(48);
@@ -257,8 +250,8 @@ static void module_MAX14830_conf(void)
     module_MAX14830_Read(MAX14830_COM_PORT0, MAX14830_REG_ISR, 1, &regVal);
     module_MAX14830_Read(MAX14830_COM_PORT3, MAX14830_REG_ISR, 1, &regVal);
 
-    /* Interrupt on active data reception (RxDataInt) and line timeout (RxTimeout) */
-    regVal = MAX14830_IRQ_RXDATAINT | MAX14830_IRQ_RXTIMEOUT;
+    /* Restore working baseline interrupt configuration (RFifoEmtyInt) */
+    regVal = MAX14830_IRQ_RFIFOEMTY;
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_IRQEN, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT3, MAX14830_REG_IRQEN, &regVal, 1);
 
@@ -280,6 +273,7 @@ void MAX14830_enable_direct(void)
 {
     am_hal_iom_enable(pIomHandle);
     module_MAX14830_Power_On();
+    module_MAX14830_conf();
 }
 
 void MAX14830_disable(void)
@@ -292,6 +286,7 @@ void MAX14830_enable(void)
 {
     am_hal_iom_enable(pIomHandle);
     module_MAX14830_Power_On();
+    module_MAX14830_conf();
 
     if (gEventHandle == NULL)
     {
@@ -320,10 +315,9 @@ static void module_MAX14830_RegUpdate(eMAX18430_ComPort_t port,
 
 void am_gpio_isr(void)
 {
-    module_MAX14830_Handle_IRQ();
-
     AM_HAL_GPIO_MASKCREATE(GpioIntMask);
     am_hal_gpio_interrupt_clear(AM_HAL_GPIO_MASKBIT(pGpioIntMask, AM_BSP_GPIO_S2U_NIRQ));
+    module_MAX14830_Handle_IRQ();
 }
 
 static void module_MAX14830_chip_enable(void)
@@ -498,7 +492,7 @@ void module_MAX14830_Handle_IRQ(void)
     } while (1);
 }
 
-uint32_t MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate)
+uint32_t MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX18430_Baudrate_t baudrate)
 {
     float D = MAX14830_XTAL_FREQ / (16 * (float)baudrate);
     uint32_t DIV = (uint32_t)trunc(D);
@@ -603,7 +597,7 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData)
     }
     else
     {
-        /* Pre-scheduler fallback */
+        /* Pre-scheduler bootup fallback */
         am_util_delay_ms(25);
         while (BufferC_Get_Size(pBuf) > 0)
         {
