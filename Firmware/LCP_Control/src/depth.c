@@ -29,6 +29,8 @@
 #include "artemis_debug.h"
 #include "am_bsp_pins.h"
 #include "MAX14830.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 /* datalogger read pressure profile */
 #include "datalogger.h"
@@ -133,7 +135,7 @@ void DEPTH_initialize_RTOS(void)
     MAX14830_Set_baudrate((eMAX18430_ComPort_t) kParam.port, kParam.baudrate);
 
     /* 4. Allow 250ms for Keller transducer to boot cleanly */
-    am_util_delay_ms(250);
+    vTaskDelay(pdMS_TO_TICKS(250));
 }
 
 void DEPTH_uninitialize_RTOS(void)

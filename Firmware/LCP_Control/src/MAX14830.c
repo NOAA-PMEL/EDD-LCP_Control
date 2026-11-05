@@ -1,6 +1,6 @@
 /**
  * @file MAX14830.c
- * @brief Maxim MAX14830 Quad SPI-to-UART Driver
+ * @brief Maxim MAX14830 Quad SPI-to-UART Driver (Consolidated Stable Version)
  */
 
 #include "MAX14830.h"
@@ -115,10 +115,8 @@
 
 #define MAX14830_XTAL_FREQ          ( 4000000u )
 #define MAX14830_NUM_SERIAL_PORTS   ( 4 )
-#define STACK_SIZE                  ( 256 )
 
 static SemaphoreHandle_t xSpiMutex = NULL;
-static volatile bool rx_bytes = false;
 static EventGroupHandle_t gEventHandle = NULL;
 
 static void *pIomHandle;
@@ -217,11 +215,11 @@ static void module_MAX14830_conf(void)
     module_MAX14830_RegUpdate(MAX14830_COM_PORT2, MAX14830_REG_MODE2, MAX14830_MODE2_FIFO_RST, 0);
     module_MAX14830_RegUpdate(MAX14830_COM_PORT3, MAX14830_REG_MODE2, MAX14830_MODE2_FIFO_RST, 0);
 
-    /* Port 0 (S9 full-duplex UART): NO echo suppression */
+    /* Port 0 (S9 standard UART): NO Echo Suppression */
     regVal = MAX14830_MODE2_RX_EMTY_INV;
-    module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &regVal, 1);
+   module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_MODE2, &regVal, 1);
 
-    /* Port 3 (Keller half-duplex RS-485): Echo suppression enabled */
+    /* Port 3 (Keller RS-485): Echo Suppression ENABLED */
     regVal = MAX14830_MODE2_ECHO_SUPRS | MAX14830_MODE2_RX_EMTY_INV;
     module_MAX14830_Write(MAX14830_COM_PORT3, MAX14830_REG_MODE2, &regVal, 1);
 
@@ -250,7 +248,6 @@ static void module_MAX14830_conf(void)
     module_MAX14830_Read(MAX14830_COM_PORT0, MAX14830_REG_ISR, 1, &regVal);
     module_MAX14830_Read(MAX14830_COM_PORT3, MAX14830_REG_ISR, 1, &regVal);
 
-    /* Restore working baseline interrupt configuration (RFifoEmtyInt) */
     regVal = MAX14830_IRQ_RFIFOEMTY;
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_IRQEN, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT3, MAX14830_REG_IRQEN, &regVal, 1);
@@ -425,11 +422,12 @@ void module_MAX14830_Handle_IRQ(void)
 
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
+    /* Loop through and service any port with an active interrupt */
     for (uint8_t p = 0; p < 4; p++)
     {
         if ((~irq & 0x0F) & (1u << p))
         {
-            uint8_t rxlen = 0, isr_status = 0, lsr_status = 0, regVal = 0;
+            uint8_t rxlen, isr_status, lsr_status, regVal;
             uint8_t i = 0;
 
             do
@@ -552,44 +550,22 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData)
 
     if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING && gEventHandle != NULL)
     {
-        /* 1. Wait for ISR notification if buffer is empty */
-        if (BufferC_Get_Size(pBuf) == 0)
+        /* Wait up to 100ms for the ISR to signal data arrival (matches MAX14830_2.c baseline) */
+        EventBits_t bits = xEventGroupWaitBits(gEventHandle, target_bit, pdTRUE, pdFALSE, pdMS_TO_TICKS(100));
+        if (bits & target_bit)
         {
-            xEventGroupClearBits(gEventHandle, target_bit);
-            xEventGroupWaitBits(gEventHandle, target_bit, pdTRUE, pdFALSE, pdMS_TO_TICKS(100UL));
-        }
-
-        /* 2. Hardware FIFO fallback: If buffer is still empty, poll MAX14830 directly with SPI Mutex */
-        if (BufferC_Get_Size(pBuf) == 0)
-        {
-            if (xSpiMutex != NULL && xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS(50UL)) == pdPASS)
+            vTaskDelay(pdMS_TO_TICKS(5UL));
+            while (BufferC_Get_Size(pBuf) > 0)
             {
-                uint8_t fifo_level = 0;
-                module_MAX14830_Read(port, MAX14830_REG_RXFIFOLVL, 1, &fifo_level);
-                if (fifo_level > 0)
-                {
-                    uint8_t hw_data[32];
-                    uint8_t read_bytes = (fifo_level > 32) ? 32 : fifo_level;
-                    module_MAX14830_Read(port, MAX14830_RHR, read_bytes, hw_data);
-                    for (uint8_t b = 0; b < read_bytes; b++)
-                    {
-                        BufferC_putc(pBuf, hw_data[b]);
-                    }
-                }
-                xSemaphoreGive(xSpiMutex);
+                BufferC_getc(pBuf, (char *)pData);
+                pData++;
+                len++;
             }
-        }
-
-        /* 3. Drain circular buffer */
-        while (BufferC_Get_Size(pBuf) > 0)
-        {
-            BufferC_getc(pBuf, (char *)pData);
-            pData++;
-            len++;
         }
     }
     else
     {
+        /* Pre-scheduler cold bootup check (during sensor initialization) */
         am_util_delay_ms(25);
         while (BufferC_Get_Size(pBuf) > 0)
         {
@@ -614,7 +590,6 @@ uint16_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, uint8_t *pData)
         len++;
     }
 
-    rx_bytes = false;
     return len;
 }
 

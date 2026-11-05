@@ -456,6 +456,7 @@ void module_pus_surface_float(void)
 
                     piston_timer = 0;
                     PIS_set_length(length_update);
+                    vTaskDelay(pdMS_TO_TICKS(100));
                     PIS_task_move_length(&s_xPiston);
                     piston_move = true;
                     vTaskDelay(xDelay5000ms);
@@ -478,6 +479,7 @@ void module_pus_surface_float(void)
 
                     piston_timer = 0;
                     PIS_set_length(length_update);
+                    vTaskDelay(pdMS_TO_TICKS(100));
                     PIS_task_move_length(&s_xPiston);
                     piston_move = true;
                     vTaskDelay(xDelay5000ms);
@@ -527,6 +529,16 @@ void module_pus_surface_float(void)
         }
         vTaskDelay(period);
         piston_timer += piston_period;
+    } // <--- END OF while (run) LOOP
+
+    /* Guarded cleanup: Ensure depth sampling is completely stopped and rail is powered off
+     * before resetting the piston board or commanding full extension. */
+    if (xDepth != NULL)
+    {
+        SENS_task_delete(xDepth);
+        xDepth = NULL;
+        vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
+        SENS_sensor_depth_off();
     }
 
     // Completely stop the piston task before moving to full length
@@ -691,6 +703,7 @@ void module_pds_idle(void)
         ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Target -> density=%.3f kg/m³, volume=%.3fin³, length=%.4fin\n\n", Density, Volume, Length);
 
         PIS_set_length(Length);
+        vTaskDelay(pdMS_TO_TICKS(100));
         PIS_task_move_length(&s_xPiston);
     }
     vTaskDelay(xDelay5000ms);
@@ -798,6 +811,7 @@ void module_pds_idle(void)
             vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
             SENS_sensor_depth_off();
             pdsEvent = MODE_PROFILE;
+            break;
         }
         vTaskDelayUntil(&xLastWakeTime, period);
     }
@@ -1140,8 +1154,8 @@ void module_sps_move_to_park(void)
                 {
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston zero time-out, task->finished\n");
                     PIS_task_delete(&s_xPiston);
-                    PIS_Get_Length(&zlengthdrift);
                     vTaskDelay(xDelay10000ms); // Wait for the task to exit the loop and delete itself
+                    PIS_Get_Length(&zlengthdrift); // Read length only AFTER task is guaranteed dead
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Length=%.4fin\n", zlengthdrift);
                     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Piston Zero Cal Task->Finished\n");
                     PIS_Reset();
@@ -1232,14 +1246,15 @@ void module_sps_move_to_park(void)
 
     // Completely stop the piston task before moving to park length
     PIS_task_delete(&s_xPiston); // Signal to exit loop
-    vTaskDelay(xDelay5000ms); // Wait for the task to exit the loop and delete itself
-    PIS_Reset();
-    vTaskDelay(xDelay10000ms);
+    vTaskDelay(xDelay5000ms);    // Wait for the task to exit the loop and delete itself
+    PIS_Reset();                 // Handles its internal 2500ms MSP430 boot delay
+    vTaskDelay(xDelay10000ms);   // Telemetry and rail settling delay
 
     piston_timer = 0;
     piston_move = true;
 
     PIS_set_length(length_update);
+    vTaskDelay(pdMS_TO_TICKS(100)); // Allow MSP430 I2C RX ISR to finish before launch
     PIS_task_move_length(&s_xPiston);
     vTaskDelay(xDelay5000ms);
 
@@ -1341,6 +1356,9 @@ void module_sps_move_to_park(void)
             }
             else if (averaged_rate < SYSTEM_FALL_RATE_MIN && !piston_move && !crush_depth)
             {
+                /* Record last adjusted position before decrementing so bottom landing keeps this setting */
+                length_update_last_adjusted = length_update;
+
                 /* decrease piston position by PARK_POSITION_INCREMENT inches */
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Depth Rate is negative, decrease %fin\n", PARK_POSITION_INCREMENT);
                 length_update -= PARK_POSITION_INCREMENT;
@@ -1483,6 +1501,7 @@ void module_sps_move_to_park(void)
                         piston_timer = 0;
                         park_piston_length = length_update;
                         PIS_set_length(length_update);
+                        vTaskDelay(pdMS_TO_TICKS(100));
                         PIS_task_move_length(&s_xPiston);
                         piston_move = true;
                         vTaskDelay(xDelay5000ms);
@@ -1493,6 +1512,7 @@ void module_sps_move_to_park(void)
                     piston_timer = 0;
                     park_piston_length = length_update;
                     PIS_set_length(length_update);
+                    vTaskDelay(pdMS_TO_TICKS(100));
                     PIS_task_move_length(&s_xPiston);
                     piston_move = true;
                     vTaskDelay(xDelay5000ms);
@@ -1643,7 +1663,7 @@ void module_sps_move_to_park(void)
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {
             /*add a CRUSH DEPTH FOS to the saved move-to-park piston length for next profile*/
-            park_piston_length = length_update + 0.5;
+            park_piston_length = length_update + 0.07;
             
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
@@ -1666,6 +1686,7 @@ void module_sps_move_to_park(void)
             piston_timer = 0;
             vTaskDelay(piston_period);
             PIS_set_length(CRUSH_DEPTH_PISTON_POSITION);
+            vTaskDelay(pdMS_TO_TICKS(100));
             PIS_task_move_length(&s_xPiston);
             piston_move = true;
             crush_depth = true;
@@ -1682,14 +1703,16 @@ void module_sps_move_to_park(void)
 
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Task->finished\n\n");
     PIS_task_delete(&s_xPiston); // Always delete the piston task at the end of the move_to_park state
-    // ADD BEFORE SendEvent:
+    vTaskDelay(xDelay10000ms);   // Retain settling delay for piston telemetry/comms
+
+    // Safe guarded cleanup: only shut down hardware if still active
     if (xDepth != NULL)
     {
         SENS_task_delete(xDepth);
         xDepth = NULL;
+        vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
+        SENS_sensor_depth_off();
     }
-    vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
-    SENS_sensor_depth_off();
 
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
@@ -1980,6 +2003,7 @@ void module_sps_park(void)
                             piston_timer = 0;
                             park_piston_length = length_update;
                             PIS_set_length(length_update);
+                            vTaskDelay(pdMS_TO_TICKS(100));
                             PIS_task_move_length(&s_xPiston);
                             piston_move = true;
                             vTaskDelay(xDelay5000ms);
@@ -2005,6 +2029,7 @@ void module_sps_park(void)
                             piston_timer = 0;
                             park_piston_length = length_update;
                             PIS_set_length(length_update);
+                            vTaskDelay(pdMS_TO_TICKS(100));
                             PIS_task_move_length(&s_xPiston);
                             piston_move = true;
                             vTaskDelay(xDelay5000ms);
@@ -2055,6 +2080,7 @@ void module_sps_park(void)
                             piston_timer = 0;
                             park_piston_length = length_update;
                             PIS_set_length(length_update);
+                            vTaskDelay(pdMS_TO_TICKS(100));
                             PIS_task_move_length(&s_xPiston);
                             piston_move = true;
                             vTaskDelay(xDelay5000ms);
@@ -2102,6 +2128,7 @@ void module_sps_park(void)
                             piston_timer = 0;
                             park_piston_length = length_update;
                             PIS_set_length(length_update);
+                            vTaskDelay(pdMS_TO_TICKS(100));
                             PIS_task_move_length(&s_xPiston);
                             piston_move = true;
                             vTaskDelay(xDelay5000ms);
@@ -2237,7 +2264,7 @@ void module_sps_park(void)
                 datalogger_power_on();
                 vTaskDelay(xDelay2000ms);
                 /*add a CRUSH DEPTH FOS to the saved park piston length for next profile*/
-                park_piston_length = length_update + 0.5;
+                park_piston_length = length_update + 0.07;
                 
                 /* check if piston is still moving then reset it and stop */
                 if (piston_move)
@@ -2260,6 +2287,7 @@ void module_sps_park(void)
                 piston_timer = 0;
                 vTaskDelay(piston_period);
                 PIS_set_length(CRUSH_DEPTH_PISTON_POSITION);
+                vTaskDelay(pdMS_TO_TICKS(100));
                 PIS_task_move_length(&s_xPiston);
                 piston_move = true;
                 crush_depth = true;
@@ -2273,6 +2301,14 @@ void module_sps_park(void)
                 // Turn on the datalogger power
                 datalogger_power_on();
                 vTaskDelay(xDelay2000ms);
+
+                /* Add buoyancy safety margin so next park doesn't re-trigger MAX depth */
+                park_piston_length = length_update + 0.032f;
+                if (park_piston_length > CRUSH_DEPTH_PISTON_POSITION && PARK_DEPTH >= CRITICAL_PISTON_POSITON_DEPTH)
+                {
+                    park_piston_length = CRUSH_DEPTH_PISTON_POSITION;
+                }
+
                 /* check if piston is still moving then reset it and stop */
                 if (piston_move)
                 {
@@ -2313,6 +2349,7 @@ void module_sps_park(void)
                 run = false;
                 break;
             }
+
             /* park depth timer */
             if (epochtimer >= endepoch_time && !crush_depth)
             {
@@ -2341,27 +2378,32 @@ void module_sps_park(void)
                     piston_move = false;
                 }
 
+                /* park depth timer */
                 if (park_period >= pdMS_TO_TICKS(60000))
                 {
-                    /* do nothing, tasks are already deleted and sensors are turned off */
-                }
-                else
-                {
+                    /* Duty-cycled mode (>= 60s):
+                     * Ensure any active tasks/rails are torn down cleanly before break */
                     if (xTemp != NULL)
                     {
                         SENS_task_delete(xTemp);
                         xTemp = NULL;
+                        vTaskDelay(pdMS_TO_TICKS(100));
+                        SENS_sensor_temperature_off();
                     }
-                    vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
-                    SENS_sensor_temperature_off();
 
                     if (xDepth != NULL)
                     {
                         SENS_task_delete(xDepth);
                         xDepth = NULL;
+                        vTaskDelay(pdMS_TO_TICKS(100));
+                        SENS_sensor_depth_off();
                     }
-                    vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
-                    SENS_sensor_depth_off();
+                }
+                else
+                {
+                    /* Continuous mode (1 Hz):
+                     * Leave task teardown and power-off to the single final cleanup block
+                     * directly below the loop exit. Do not double-delete here. */
                 }
 
                 spsEvent = MODE_DONE;
@@ -2393,15 +2435,18 @@ void module_sps_park(void)
     {
         SENS_task_delete(xTemp);
         xTemp = NULL;
+        vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight transactions to finish
+        SENS_sensor_temperature_off();
     }
+    
     if (xDepth != NULL)
     {
         SENS_task_delete(xDepth);
         xDepth = NULL;
+        vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight transactions to finish
+        SENS_sensor_depth_off();
     }
-    vTaskDelay(pdMS_TO_TICKS(150)); // Allow in-flight IOM transactions to finish
-    SENS_sensor_temperature_off();
-    SENS_sensor_depth_off();
+
     park_number++;
 
     /* check Heap size */
@@ -2438,40 +2483,46 @@ void module_sps_move_to_profile(void)
     /* for now , pressure and temperature variables are zeros for compressibility and thermal expansion */
     if (to_prof_piston_length == 0.0)
     {
-        
-        /*Set the profile depth target*/
+        /* Set the profile depth target */
         profile_depth = PROFILE_DEPTH;
         
         CTRL_set_lcp_density(TO_PROFILE_DENSITY);
         to_prof_piston_length = CTRL_calculate_piston_position(0.0, 0.0);
 
-        /* check if to_prof_piston_length is greater than park_piston_length */
-        if (to_prof_piston_length > park_piston_length)
+        /* Enforce descent gradient: profile transit must be at least 0.011in less buoyant than park */
+        if (to_prof_piston_length >= park_piston_length)
         {
-            to_prof_piston_length = park_piston_length;
-            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Setting -> park_piston_length (%.4fin) to to_prof_piston_length >>\n", park_piston_length);
+            to_prof_piston_length = park_piston_length - 0.011f;
+            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Enforcing descent: to_prof_piston_length clamped to %.4fin (park - 0.011in) >>\n", to_prof_piston_length);
+        }
+
+        /* Check if length update will result in a position below minimum */
+        if (to_prof_piston_length <= PISTON_POSITION_MINIMUM)
+        {
+            to_prof_piston_length = PISTON_POSITION_MINIMUM;
+            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, to_prof_piston_length=%.4fin < piston position minimum >>\n", to_prof_piston_length);
         }
 
         length_update = to_prof_piston_length;
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Setting -> first time to_prof_piston_length=%.4fin >>\n", to_prof_piston_length);
-
-        /*check if length update will result in a piston position less than zero, set length to PISTON_POSITION_MINIMUM*/
-        if (length_update <= PISTON_POSITION_MINIMUM)
-        {
-        ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, length_update=%.4fin < piston position minimum >>\n", length_update);
-        length_update = PISTON_POSITION_MINIMUM;
-        }
     }
     else
     {
-        /* check if to_prof_piston_length is greater than park_piston_length */
-        if (to_prof_piston_length > park_piston_length)
+        /* Enforce descent gradient: profile transit must be at least 0.011in less buoyant than park */
+        if (to_prof_piston_length >= park_piston_length)
         {
-            to_prof_piston_length = park_piston_length;
-            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Setting -> park_piston_length (%.4fin) to to_prof_piston_length >>\n", park_piston_length);
+            to_prof_piston_length = park_piston_length - 0.011f;
+            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Enforcing descent: adjusted to_prof_piston_length clamped to %.4fin (park - 0.011in) >>\n", to_prof_piston_length);
         }
 
-        /* assigned to local_length, assumed that length was set previously */
+        /* Check if length update will result in a position below minimum */
+        if (to_prof_piston_length <= PISTON_POSITION_MINIMUM)
+        {
+            to_prof_piston_length = PISTON_POSITION_MINIMUM;
+            ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, to_prof_piston_length=%.4fin < piston position minimum >>\n", to_prof_piston_length);
+        }
+
+        /* Assigned to local_length, assumed that length was set previously */
         length_update = to_prof_piston_length;
         ARTEMIS_DEBUG_PRINTF("\n<< SPS :: move_to_profile, Setting -> adjusted to_prof_piston_length=%.4fin >>\n", to_prof_piston_length);
     }
@@ -2487,6 +2538,7 @@ void module_sps_move_to_profile(void)
     bool piston_task_running = false;
     PIS_set_piston_rate(1);
     PIS_set_length(length_update);
+    vTaskDelay(pdMS_TO_TICKS(100));
     PIS_task_move_length(&s_xPiston);
     vTaskDelay(xDelay5000ms);
 
@@ -2584,6 +2636,9 @@ void module_sps_move_to_profile(void)
             }
             else if (averaged_rate < SYSTEM_FALL_RATE_MIN && !piston_move && !crush_depth)
             {
+                /* Record last adjusted position before decrementing so bottom landing keeps this setting */
+                length_update_last_adjusted = length_update;
+
                 /* decrease piston position by PARK_POSITION_INCREMENT inches */
                 ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Depth averaged_rate = %f, decrease %fin\n", averaged_rate, PARK_POSITION_INCREMENT);
                 length_update -= PARK_POSITION_INCREMENT;
@@ -2730,6 +2785,7 @@ void module_sps_move_to_profile(void)
                         piston_timer = 0;
                         to_prof_piston_length = length_update;
                         PIS_set_length(length_update);
+                        vTaskDelay(pdMS_TO_TICKS(100));
                         PIS_task_move_length(&s_xPiston);
                         piston_move = true;
                         vTaskDelay(xDelay5000ms);
@@ -2740,6 +2796,7 @@ void module_sps_move_to_profile(void)
                     piston_timer = 0;
                     to_prof_piston_length = length_update;
                     PIS_set_length(length_update);
+                    vTaskDelay(pdMS_TO_TICKS(100));
                     PIS_task_move_length(&s_xPiston);
                     piston_move = true;
                     vTaskDelay(xDelay5000ms);
@@ -2892,7 +2949,7 @@ void module_sps_move_to_profile(void)
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {   
             /*add a CRUSH DEPTH FOS to the saved move-to-profile piston length for next profile*/
-            to_prof_piston_length = length_update + 0.5;
+            to_prof_piston_length = length_update + 0.07;
 
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
@@ -2915,6 +2972,7 @@ void module_sps_move_to_profile(void)
             piston_timer = 0;
             vTaskDelay(piston_period);
             PIS_set_length(CRUSH_DEPTH_PISTON_POSITION);
+            vTaskDelay(pdMS_TO_TICKS(100));
             PIS_task_move_length(&s_xPiston);
             piston_move = true;
             piston_timer = 0;
@@ -2931,15 +2989,16 @@ void module_sps_move_to_profile(void)
 
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Task->finished\n\n");
     PIS_task_delete(&s_xPiston); // Always delete the piston task at the end
-    vTaskDelay(xDelay10000ms);
+    vTaskDelay(xDelay10000ms);   // Retain settling delay for piston telemetry/comms
 
+    // Safe guarded cleanup: only shut down hardware if still active
     if (xDepth != NULL)
     {
         SENS_task_delete(xDepth);
         xDepth = NULL;
+        vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
+        SENS_sensor_depth_off();
     }
-    vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
-    SENS_sensor_depth_off();
 
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
@@ -3039,6 +3098,7 @@ void module_sps_profile(void)
     }
 
     PIS_set_length(length_update);
+    vTaskDelay(pdMS_TO_TICKS(100));
     PIS_task_move_length(&s_xPiston);
     vTaskDelay(xDelay5000ms);
 
@@ -3312,6 +3372,7 @@ void module_sps_profile(void)
                             piston_timer = 0;
                             prof_piston_length = length_update;
                             PIS_set_length(length_update);
+                            vTaskDelay(pdMS_TO_TICKS(100));
                             PIS_task_move_length(&s_xPiston);
                             piston_move = true;
                             vTaskDelay(xDelay5000ms);
@@ -3328,6 +3389,7 @@ void module_sps_profile(void)
                             piston_timer = 0;
                             prof_piston_length = length_update;
                             PIS_set_length(length_update);
+                            vTaskDelay(pdMS_TO_TICKS(100));
                             PIS_task_move_length(&s_xPiston);
                             piston_move = true;
                             vTaskDelay(xDelay5000ms);
@@ -3339,14 +3401,15 @@ void module_sps_profile(void)
                     piston_timer = 0;
                     prof_piston_length = length_update;
                     PIS_set_length(length_update);
+                    vTaskDelay(pdMS_TO_TICKS(100));
                     PIS_task_move_length(&s_xPiston);
                     piston_move = true;
                     vTaskDelay(xDelay5000ms);
                 }
             }
-            else if ( averaged_rate < (-1*SYSTEM_RISE_RATE_MAX) && !piston_move && !crush_depth)
+            else if ( averaged_rate < (-1*SYSTEM_RISE_RATE_MAX) && !piston_move)
             {
-                /* decrease piston position by PARK_POSITION_INCREMENT2 inches */
+                /* decrease piston position by PARK_POSITION_INCREMENT2 inches to brake excessive ascent */
                 ARTEMIS_DEBUG_PRINTF("SPS :: profile, Depth Rate = %.4f, decrease %fin\n", averaged_rate, PARK_POSITION_INCREMENT2);
                 length_update -= PARK_POSITION_INCREMENT2;
 
@@ -3384,6 +3447,7 @@ void module_sps_profile(void)
                             piston_timer = 0;
                             prof_piston_length = length_update;
                             PIS_set_length(length_update);
+                            vTaskDelay(pdMS_TO_TICKS(100));
                             PIS_task_move_length(&s_xPiston);
                             piston_move = true;
                             vTaskDelay(xDelay5000ms);
@@ -3400,6 +3464,7 @@ void module_sps_profile(void)
                             piston_timer = 0;
                             prof_piston_length = length_update;
                             PIS_set_length(length_update);
+                            vTaskDelay(pdMS_TO_TICKS(100));
                             PIS_task_move_length(&s_xPiston);
                             piston_move = true;
                             vTaskDelay(xDelay5000ms);
@@ -3411,6 +3476,7 @@ void module_sps_profile(void)
                     piston_timer = 0;
                     prof_piston_length = length_update;
                     PIS_set_length(length_update);
+                    vTaskDelay(pdMS_TO_TICKS(100));
                     PIS_task_move_length(&s_xPiston);
                     piston_move = true;
                     vTaskDelay(xDelay5000ms);
@@ -3480,7 +3546,7 @@ void module_sps_profile(void)
         if (Depth >= CRUSH_DEPTH && !crush_depth)
         {
             /*add a CRUSH DEPTH FOS to the saved profile piston length for next profile*/
-            length_update_last_adjusted = length_update + 0.5;
+            length_update_last_adjusted = length_update + 0.07;
             /* check if piston is still moving then reset it and stop */
             if (piston_move)
             {
@@ -3502,6 +3568,7 @@ void module_sps_profile(void)
             length_update = CRUSH_DEPTH_PISTON_POSITION;
             vTaskDelay(piston_period);
             PIS_set_length(CRUSH_DEPTH_PISTON_POSITION);
+            vTaskDelay(pdMS_TO_TICKS(100));
             PIS_task_move_length(&s_xPiston);
             piston_move = true;
             crush_depth = true;
@@ -3542,6 +3609,7 @@ void module_sps_profile(void)
 
                 vTaskDelay(piston_period);
                 PIS_set_length(PISTON_MOVE_TO_SURFACE);
+                vTaskDelay(pdMS_TO_TICKS(100));
                 PIS_task_move_length(&s_xPiston);
                 piston_move = true;
                 surface_piston = true;
@@ -3578,10 +3646,15 @@ void module_sps_profile(void)
                 piston_move = false;   
             }
 
-            if (crush_depth)
+           if (crush_depth)
             {
-                /* set to previous adjusted length update */
+                /* set to previous adjusted length update with safety boundary clamp */
                 prof_piston_length = length_update_last_adjusted;
+                if (prof_piston_length > CRUSH_DEPTH_PISTON_POSITION && (PROFILE_DEPTH - PROFILE_DEPTH_ERR) >= CRITICAL_PISTON_POSITON_DEPTH)
+                {
+                    prof_piston_length = CRUSH_DEPTH_PISTON_POSITION;
+                    ARTEMIS_DEBUG_PRINTF("SPS :: profile, Clamping post-crush prof_piston_length to %.4fin\n", CRUSH_DEPTH_PISTON_POSITION);
+                }
             }
             else
             {
@@ -3627,6 +3700,25 @@ void module_sps_profile(void)
 
     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Task->finished\n");
     PIS_task_delete(&s_xPiston); // Always send the delete command to the piston task
+    vTaskDelay(xDelay10000ms);   // Allow piston comms to settle before transition to surface
+
+    // Safe guarded cleanup: only shut down if an abnormal exit bypassed the in-loop shutdown
+    if (xTemp != NULL)
+    {
+        SENS_task_delete(xTemp);
+        xTemp = NULL;
+        vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
+        SENS_sensor_temperature_off();
+    }
+
+    if (xDepth != NULL)
+    {
+        SENS_task_delete(xDepth);
+        xDepth = NULL;
+        vTaskDelay(pdMS_TO_TICKS(100)); // Allow in-flight IOM transactions to finish
+        SENS_sensor_depth_off();
+    }
+
     SendEvent(spsEventQueue, &spsEvent);
     vTaskDelete(NULL);
 }
@@ -3733,7 +3825,7 @@ void module_sps_move_to_surface(void)
             piston_timer = 0;
         }
 
-        lengthdrift = Length;   
+        PIS_Get_Length(&lengthdrift);  
         piston_timer = 0;
         piston_move = true;
         PIS_set_piston_rate(1);
@@ -3810,6 +3902,7 @@ void module_sps_move_to_surface(void)
     else
     {
         piston_timer = 0;
+        vTaskDelay(pdMS_TO_TICKS(100));
         PIS_task_move_length(&s_xPiston);
         piston_move = true;
         vTaskDelay(xDelay5000ms);

@@ -107,7 +107,7 @@ bool SENS_initialize(void)
 
     xTempEventQueue = xQueueCreate(1, sizeof(Event_e));
     xDepthEventQueue = xQueueCreate(1, sizeof(Event_e));
-    xTDEventQueue = xQueueCreate(1, sizeof(Event_e));
+    xTDEventQueue = xQueueCreate(2, sizeof(Event_e));
     if (xTempEventQueue == NULL || xDepthEventQueue == NULL || xTDEventQueue == NULL)
     {
         ARTEMIS_DEBUG_PRINTF("SENSORS :: ERROR, Temp-Depth Events is NULL\n");
@@ -549,15 +549,15 @@ void task_temperature(void)
 
     xTemp_run = true;
 
-    /* If sampling <= 60s, turn power on ONCE up front and let it settle */
+    /* Continuous or fast sampling (<= 60s): power sensor & enable MAX14830 UART port */
     if (!bPowerCycle)
     {
-        TEMP_Power_ON();
-        vTaskDelay(pdMS_TO_TICKS(100UL));
+        TEMP_initialize_RTOS();
+        vTaskDelay(pdMS_TO_TICKS(150UL)); // S9 startup settling margin
 
         if (xSemaphoreTake(xTDSemaphore, xPeriod) == pdTRUE)
         {
-            TEMP_flush_rx();
+            TEMP_flush_rx(); // Clear initial startup garbage
             xSemaphoreGive(xTDSemaphore);
         }
     }
@@ -567,22 +567,25 @@ void task_temperature(void)
         /* 1. Sleep until next scheduled sample tick */
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
-        /* 2. Power ON and warm up ONLY if duty-cycling (> 60s) */
+        /* 2. Cold boot and enable MAX14830 port ONLY if duty-cycling (> 60s) */
         if (bPowerCycle)
         {
-            TEMP_Power_ON();
-            vTaskDelay(pdMS_TO_TICKS(100UL)); // S9 boot margin (NO MUTEX HELD!)
+            TEMP_initialize_RTOS();
+            vTaskDelay(pdMS_TO_TICKS(150UL)); // S9 boot margin (NO MUTEX HELD!)
         }
 
         /* 3. Acquire shared bus mutex ONLY for the active read transaction */
         if (xSemaphoreTake(xTDSemaphore, xPeriod) == pdTRUE)
         {
+            /* Flush the 10-20Hz backlog immediately before capturing the fresh string.
+             * This prevents reading stale data and eliminates FIFO overflow risk. */
+            TEMP_flush_rx();
             TEMP_Read(&measurement);
 
+            /* Clean teardown and port disable if duty-cycling */
             if (bPowerCycle)
             {
-                TEMP_Power_OFF();
-                TEMP_flush_rx();
+                TEMP_uninitialize_RTOS();
             }
 
             /* Release bus immediately */
@@ -610,14 +613,14 @@ void task_temperature(void)
         {
             if (bPowerCycle)
             {
-                TEMP_Power_OFF();
+                TEMP_uninitialize_RTOS();
             }
             ARTEMIS_DEBUG_PRINTF("SENSORS :: Temperature, bus semaphore not available\n");
         }
     }
 
-    /* Ensure rail is unpowered on task exit */
-    TEMP_Power_OFF();
+    /* Clean exit: ensure rail is unpowered and MAX14830 UART channel is disabled */
+    TEMP_uninitialize_RTOS();
     tEvent = DELETE;
     SendEvent(xTDEventQueue, &tEvent);
     vTaskDelete(NULL);

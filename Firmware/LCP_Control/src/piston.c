@@ -198,13 +198,25 @@ void PIS_task_move_zero(TaskHandle_t *xPiston)
 
 bool PIS_task_delete(TaskHandle_t *xPiston)
 {
+    /* 1. Signal the active piston motion task to stop its loop gracefully */
     pistonRun = false;
-    pis_delay_ms(100);
 
+    /* 2. Cooperative wait: Give the task up to 3.0s (30 x 100ms) to exit 
+     * its current I2C read/write transaction and self-delete */
+    uint8_t timeout = 0;
+    while (LiveTask && timeout < 30)
+    {
+        pis_delay_ms(100);
+        timeout++;
+    }
+
+    /* 3. Fallback / Hard-Kill: If the task is genuinely stuck or hung in a loop,
+     * force-kill it and clean up the handle */
     if (xPiston != NULL && *xPiston != NULL)
     {
         if (LiveTask)
         {
+            ARTEMIS_DEBUG_PRINTF("PISTON :: Warning, task stuck, forcing delete\n");
             vTaskDelete(*xPiston);
             LiveTask = false;
         }
