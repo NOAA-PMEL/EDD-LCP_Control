@@ -352,7 +352,9 @@ static int8_t module_k9lx_read_reg_RTOS(uint8_t port, uint16_t reg_add, uint8_t 
     uint8_t chunk[32] = {0};
     uint8_t sweeps = 0;
 
-    while (rxlen < expected_len && sweeps++ < 4)
+    /* Expand from 4 sweeps @ 15ms (60ms) to 8 sweeps @ 20ms (160ms window)
+     * to safely accommodate the Keller 30-40ms ADC cycle plus RTOS scheduling jitter */
+    while (rxlen < expected_len && sweeps++ < 8)
     {
         uint32_t len = MAX14830_UART_Read((eMAX18430_ComPort_t)port, chunk);
         if (len > 0)
@@ -365,7 +367,7 @@ static int8_t module_k9lx_read_reg_RTOS(uint8_t port, uint16_t reg_add, uint8_t 
 
         if (rxlen < expected_len)
         {
-            vTaskDelay(pdMS_TO_TICKS(15));
+            vTaskDelay(pdMS_TO_TICKS(20));
         }
     }
 
