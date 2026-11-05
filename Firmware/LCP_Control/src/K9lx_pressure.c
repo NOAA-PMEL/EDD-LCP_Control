@@ -345,6 +345,7 @@ static int8_t module_k9lx_read_reg_RTOS(uint8_t port, uint16_t reg_add, uint8_t 
     cmd[6] = crc_l;
     cmd[7] = crc_h;
 
+    /* 1. Synchronously transmit Modbus query to MAX14830 FIFO */
     MAX14830_UART_Write((eMAX18430_ComPort_t)port, cmd, CMD_LENGTH);
 
     /* 
@@ -354,23 +355,25 @@ static int8_t module_k9lx_read_reg_RTOS(uint8_t port, uint16_t reg_add, uint8_t 
      */
     const uint8_t expected_len = 5 + (reg_num * 2);
     uint8_t chunk[16] = {0};
-    uint32_t attempts = 0;
-    const uint32_t MAX_ATTEMPTS = 15; // 15 x 10ms = 150ms timeout window
+    uint8_t sweeps = 0;
 
-    while (rxlen < expected_len && attempts++ < MAX_ATTEMPTS)
+    /* MAX14830_UART_Read blocks up to 350ms internally waiting for the ISR/FIFO.
+       We only need a few sweeps to collect any remaining packet bytes. */
+    while (rxlen < expected_len && sweeps++ < 4)
     {
-        uint16_t len = MAX14830_UART_Read((eMAX18430_ComPort_t)port, chunk);
+        uint32_t len = MAX14830_UART_Read((eMAX18430_ComPort_t)port, chunk);
         if (len > 0)
         {
-            for (uint8_t i = 0; i < len && (rxlen + i) < sizeof(rData); i++)
+            for (uint32_t i = 0; i < len && (rxlen + i) < sizeof(rData); i++)
             {
                 rData[rxlen + i] = chunk[i];
             }
-            rxlen += len;
+            rxlen += (uint8_t)len;
         }
-        else
+
+        if (rxlen < expected_len)
         {
-            vTaskDelay(pdMS_TO_TICKS(10));
+            vTaskDelay(pdMS_TO_TICKS(15));
         }
     }
 
@@ -384,7 +387,6 @@ static int8_t module_k9lx_read_reg_RTOS(uint8_t port, uint16_t reg_add, uint8_t 
     }
     else
     {
-        /* Throttled debug print: outputs on first error, then once every 10 consecutive drops */
         static uint8_t err_count = 0;
         if (err_count++ % 10 == 0)
         {

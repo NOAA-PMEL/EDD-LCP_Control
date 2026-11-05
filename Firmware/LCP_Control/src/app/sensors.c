@@ -457,11 +457,11 @@ void task_depth(void)
     ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth Task Started (Period: %ums, PowerCycle: %s)\n",
                          period_ms, bPowerCycle ? "YES" : "NO");
 
-    /* If sampling <= 60s, energize rail once up front and let it settle */
+    /* Continuous or fast sampling (<= 60s): power sensor and port ON once up front */
     if (!bPowerCycle)
     {
-        DEPTH_Power_ON();
-        vTaskDelay(pdMS_TO_TICKS(250UL)); // Keller 9LXe internal MCU startup margin
+        DEPTH_initialize_RTOS();
+        vTaskDelay(pdMS_TO_TICKS(250UL)); // Allow Keller internal ASIC to stabilize
     }
 
     while (xDepth_run)
@@ -469,11 +469,11 @@ void task_depth(void)
         /* 1. Sleep until scheduled sample tick */
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
-        /* 2. Cold-boot sensor WITHOUT holding bus mutex (only if duty-cycling) */
+        /* 2. Cold-boot sensor and enable port ONLY if duty-cycling */
         if (bPowerCycle)
         {
-            DEPTH_Power_ON();
-            vTaskDelay(pdMS_TO_TICKS(250UL)); // Allow internal ASIC to boot
+            DEPTH_initialize_RTOS();
+            vTaskDelay(pdMS_TO_TICKS(250UL));
         }
 
         /* 3. Acquire shared bus mutex ONLY for the active Modbus read transaction */
@@ -484,7 +484,7 @@ void task_depth(void)
             /* Turn OFF rail immediately if duty-cycling */
             if (bPowerCycle)
             {
-                DEPTH_Power_OFF();
+                DEPTH_uninitialize_RTOS();
             }
 
             /* Release bus immediately */
@@ -509,14 +509,14 @@ void task_depth(void)
         {
             if (bPowerCycle)
             {
-                DEPTH_Power_OFF();
+                DEPTH_uninitialize_RTOS();
             }
             ARTEMIS_DEBUG_PRINTF("SENSORS :: Depth, bus semaphore not available\n");
         }
     }
 
     /* Clean exit */
-    DEPTH_Power_OFF();
+    DEPTH_uninitialize_RTOS();
     dEvent = DELETE;
     SendEvent(xTDEventQueue, &dEvent);
     vTaskDelete(NULL);

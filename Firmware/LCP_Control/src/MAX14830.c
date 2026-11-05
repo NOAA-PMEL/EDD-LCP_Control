@@ -75,6 +75,8 @@
 
 /** IRQEn Register Bits */
 #define MAX14830_IRQ_RFIFOEMTY      ( 1u << 6 )
+#define MAX14830_IRQ_RXDATAINT      ( 1u << 5 )
+#define MAX14830_IRQ_RXTIMEOUT      ( 1u << 0 )
 
 /** LSR Register Bits */
 #define MAX14830_LSR_RXNOISE        ( 1u << 5 )
@@ -115,7 +117,6 @@
 
 #define MAX14830_XTAL_FREQ          ( 4000000u )
 #define MAX14830_NUM_SERIAL_PORTS   ( 4 )
-#define MAX14830_WRITE_TASK_PRIORITY ( 5 )
 #define STACK_SIZE                  ( 256 )
 
 static SemaphoreHandle_t xSpiMutex = NULL;
@@ -152,7 +153,6 @@ static void module_MAX14830_Write(
 static void module_MAX14830_RegUpdate(eMAX18430_ComPort_t port,
                     uint8_t reg, uint8_t bit, uint8_t val);
 
-void module_MAX14830_Write_Task(void *pvParameters);
 void module_MAX14830_Handle_IRQ(void);
 
 bool MAX14830_initialize(void)
@@ -183,6 +183,15 @@ bool MAX14830_initialize(void)
     NVIC_SetPriority(GPIO_IRQn, NVIC_configMAX_SYSCALL_INTERRUPT_PRIORITY);
     NVIC_EnableIRQ(GPIO_IRQn);
     am_hal_interrupt_master_enable();
+
+    if (gEventHandle == NULL)
+    {
+        gEventHandle = xEventGroupCreate();
+    }
+    if (xSpiMutex == NULL)
+    {
+        xSpiMutex = xSemaphoreCreateMutex();
+    }
 
     module_MAX14830_Power_On();
     module_MAX14830_conf();
@@ -248,7 +257,8 @@ static void module_MAX14830_conf(void)
     module_MAX14830_Read(MAX14830_COM_PORT0, MAX14830_REG_ISR, 1, &regVal);
     module_MAX14830_Read(MAX14830_COM_PORT3, MAX14830_REG_ISR, 1, &regVal);
 
-    regVal = MAX14830_IRQ_RFIFOEMTY;
+    /* Interrupt on active data reception (RxDataInt) and line timeout (RxTimeout) */
+    regVal = MAX14830_IRQ_RXDATAINT | MAX14830_IRQ_RXTIMEOUT;
     module_MAX14830_Write(MAX14830_COM_PORT0, MAX14830_REG_IRQEN, &regVal, 1);
     module_MAX14830_Write(MAX14830_COM_PORT3, MAX14830_REG_IRQEN, &regVal, 1);
 
@@ -270,7 +280,6 @@ void MAX14830_enable_direct(void)
 {
     am_hal_iom_enable(pIomHandle);
     module_MAX14830_Power_On();
-    module_MAX14830_conf();
 }
 
 void MAX14830_disable(void)
@@ -283,7 +292,6 @@ void MAX14830_enable(void)
 {
     am_hal_iom_enable(pIomHandle);
     module_MAX14830_Power_On();
-    module_MAX14830_conf();
 
     if (gEventHandle == NULL)
     {
@@ -312,9 +320,10 @@ static void module_MAX14830_RegUpdate(eMAX18430_ComPort_t port,
 
 void am_gpio_isr(void)
 {
+    module_MAX14830_Handle_IRQ();
+
     AM_HAL_GPIO_MASKCREATE(GpioIntMask);
     am_hal_gpio_interrupt_clear(AM_HAL_GPIO_MASKBIT(pGpioIntMask, AM_BSP_GPIO_S2U_NIRQ));
-    module_MAX14830_Handle_IRQ();
 }
 
 static void module_MAX14830_chip_enable(void)
@@ -489,30 +498,6 @@ void module_MAX14830_Handle_IRQ(void)
     } while (1);
 }
 
-void module_MAX14830_Write_Task(void *pvParameters)
-{
-    eMAX18430_ComPort_t port = (eMAX18430_ComPort_t)pvParameters;
-    sCircularBufferC_t *pBuf = &txBuf[(uint8_t)port];
-
-    uint8_t txlen = 0;
-    uint8_t sData[32] = {0};
-
-    if (xSpiMutex != NULL)
-    {
-        while (xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS(200UL)) != pdPASS);
-    }
-    
-    txlen = BufferC_gets(pBuf, (char *)sData, 32);
-    module_MAX14830_Write(port, MAX14830_THR, sData, txlen);
-    
-    if (xSpiMutex != NULL)
-    {
-        xSemaphoreGive(xSpiMutex);
-    }
-
-    vTaskDelete(NULL);
-}
-
 uint32_t MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate)
 {
     float D = MAX14830_XTAL_FREQ / (16 * (float)baudrate);
@@ -530,28 +515,28 @@ uint32_t MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t ba
 
 void MAX14830_UART_Write(eMAX18430_ComPort_t port, uint8_t *data, uint16_t len)
 {
-    /* If the FreeRTOS scheduler is running, queue to buffer and spawn writer task */
-    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING)
+    sCircularBufferC_t *pBuf = &txBuf[(uint8_t)port];
+
+    for (uint8_t i = 0; i < len; i++)
     {
-        uint8_t taskDesc[configMAX_TASK_NAME_LEN];
-        sprintf((char *)taskDesc, "S2U Write CH%u", (uint8_t)port);
-
-        for (uint8_t i = 0; i < len; i++)
-        {
-            BufferC_putc(&txBuf[(uint8_t)port], *data++);
-        }
-
-        xTaskCreate(module_MAX14830_Write_Task,
-                    (char *)taskDesc,
-                    STACK_SIZE,
-                    (void *)port,
-                    tskIDLE_PRIORITY + MAX14830_WRITE_TASK_PRIORITY,
-                    NULL);
+        BufferC_putc(pBuf, *data++);
     }
-    else
+
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING && xSpiMutex != NULL)
     {
-        /* Pre-scheduler bootup fallback: write data synchronously */
-        MAX14830_UART_Write_direct(port, data, len);
+        while (xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS(200UL)) != pdPASS);
+    }
+
+    uint32_t xLen = 0;
+    while (BufferC_Get_Size(pBuf))
+    {
+        xLen = BufferC_gets(pBuf, (char *)xfer_data, XFER_DATA_SIZE);
+        module_MAX14830_Write(port, MAX14830_THR, xfer_data, xLen);
+    }
+
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING && xSpiMutex != NULL)
+    {
+        xSemaphoreGive(xSpiMutex);
     }
 }
 
@@ -580,22 +565,46 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData)
 
     if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING && gEventHandle != NULL)
     {
-        EventBits_t bits = xEventGroupWaitBits(gEventHandle, target_bit, pdTRUE, pdFALSE, pdMS_TO_TICKS(100));
-        if (bits & target_bit)
+        /* 1. Wait for ISR notification if buffer is empty */
+        if (BufferC_Get_Size(pBuf) == 0)
         {
-            vTaskDelay(pdMS_TO_TICKS(5UL));
-            while (BufferC_Get_Size(pBuf) > 0)
+            xEventGroupClearBits(gEventHandle, target_bit);
+            EventBits_t bits = xEventGroupWaitBits(gEventHandle, target_bit, pdTRUE, pdFALSE, pdMS_TO_TICKS(350UL));
+            if (bits & target_bit)
             {
-                BufferC_getc(pBuf, (char *)pData);
-                pData++;
-                len++;
+                vTaskDelay(pdMS_TO_TICKS(10UL));
             }
+        }
+
+        /* 2. Hardware FIFO fallback: If buffer is still empty, poll MAX14830 directly */
+        if (BufferC_Get_Size(pBuf) == 0)
+        {
+            uint8_t fifo_level = 0;
+            module_MAX14830_Read(port, MAX14830_REG_RXFIFOLVL, 1, &fifo_level);
+            if (fifo_level > 0)
+            {
+                uint8_t hw_data[32];
+                uint8_t read_bytes = (fifo_level > 32) ? 32 : fifo_level;
+                module_MAX14830_Read(port, MAX14830_RHR, read_bytes, hw_data);
+                for (uint8_t b = 0; b < read_bytes; b++)
+                {
+                    BufferC_putc(pBuf, hw_data[b]);
+                }
+            }
+        }
+
+        /* 3. Drain circular buffer */
+        while (BufferC_Get_Size(pBuf) > 0)
+        {
+            BufferC_getc(pBuf, (char *)pData);
+            pData++;
+            len++;
         }
     }
     else
     {
-        /* Pre-scheduler bootup fallback: give hardware time to receive and drain buffer directly */
-        am_util_delay_ms(15);
+        /* Pre-scheduler fallback */
+        am_util_delay_ms(25);
         while (BufferC_Get_Size(pBuf) > 0)
         {
             BufferC_getc(pBuf, (char *)pData);
@@ -612,7 +621,6 @@ uint16_t MAX14830_UART_Read_direct(eMAX18430_ComPort_t port, uint8_t *pData)
     uint16_t len = 0;
     sCircularBufferC_t *pBuf = &rxBuf[(uint8_t)port];
 
-    /* Pull any data placed into the software circular buffer by the ISR */
     while (BufferC_Get_Size(pBuf) > 0)
     {
         BufferC_getc(pBuf, (char *)pData);
@@ -647,10 +655,9 @@ static uint32_t module_MAX14830_Read(
                                     uint16_t rxlen,
                                     uint8_t *pData)
 {
-    uint32_t aligned_rx[36]; // Safe 32-bit aligned buffer up to 144 bytes
+    uint32_t aligned_rx[36];
     module_MAX14830_chip_enable();
 
-    /* Bit 7 = 0 for Read; Bits 6:5 = port; Bits 4:0 = register */
     uint8_t cmd = (((uint8_t)port & 0x03) << 5) | (reg & 0x1F);
 
     am_hal_iom_transfer_t transfer =
@@ -689,7 +696,6 @@ static void module_MAX14830_Write(
     memcpy(aligned_tx, data, len);
     module_MAX14830_chip_enable();
 
-    /* Bit 7 = 1 for Write; Bits 6:5 = port; Bits 4:0 = register */
     uint8_t cmd = MAX14830_SPI_WRITE_BIT | (((uint8_t)port & 0x03) << 5) | (reg & 0x1F);
 
     am_hal_iom_transfer_t transfer =

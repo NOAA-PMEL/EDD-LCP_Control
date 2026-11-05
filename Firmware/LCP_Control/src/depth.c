@@ -123,12 +123,17 @@ bool DEPTH_initialize(eDEPTH_Sensor_t sensor)
 
 void DEPTH_initialize_RTOS(void)
 {
+    /* 1. Turn on sensor power rail */
     DEPTH_Power_ON();
+
+    /* 2. Enable MAX14830 UART channel for Keller (COM3) */
     MAX14830_port_enable((eMAX18430_ComPort_t) kParam.port);
+
+    /* 3. Re-apply 9600 baud rate */
     MAX14830_Set_baudrate((eMAX18430_ComPort_t) kParam.port, kParam.baudrate);
 
-    /* Turn off rail after configuration so task_depth starts cleanly unpowered */
-    DEPTH_Power_OFF();
+    /* 4. Allow 250ms for Keller transducer to boot cleanly */
+    am_util_delay_ms(250);
 }
 
 void DEPTH_uninitialize_RTOS(void)

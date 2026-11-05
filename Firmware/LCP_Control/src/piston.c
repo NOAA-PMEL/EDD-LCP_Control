@@ -233,8 +233,10 @@ void task_move_piston_to_zero(void)
         PIS_Reset();
     }
 
+    /* Send move-to-zero command to slave MCU */
     PIS_move_to_zero();
-    pis_delay_ms(5000 / piston.rtos.rate);
+    /* Allow secondary MCU and DRV8874 driver 2000ms to spin up and assert travel status */
+    pis_delay_ms(2000);
 
     pistonRun = true;
     uint8_t count_reset = 0;
@@ -252,6 +254,7 @@ void task_move_piston_to_zero(void)
         }
         else if (trv == 0)
         {
+            /* Motor is not moving: check if mechanical zero switch is triggered */
             pis_delay_ms(100);
             stall_count = 0;
             int8_t zeroFlag = module_pis_status_zero();
@@ -271,7 +274,7 @@ void task_move_piston_to_zero(void)
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
                     PIS_Reset();
                     PIS_move_to_zero();
-                    pis_delay_ms(5000 / piston.rtos.rate);
+                    pis_delay_ms(2000);
                     count_reset = 0;
                     reset++;
 
@@ -285,8 +288,10 @@ void task_move_piston_to_zero(void)
         }
         else
         {
+            /* trv == 1: Motor is actively driving toward zero */
             stall_count++;
-            ARTEMIS_DEBUG_PRINTF("PISTON :: Stall Count = %d\n", stall_count);
+            count_reset = 0;
+            ARTEMIS_DEBUG_PRINTF("PISTON :: In travel (Tick %d/%d)...\n", stall_count, stall_count_max);
 
             if (stall_count > stall_count_max)
             {
@@ -303,6 +308,7 @@ void task_move_piston_to_zero(void)
         }
     }
 
+    /* Update internal piston length tracking from slave hardware */
     if (module_pis_get_length_safe(&length))
     {
         taskENTER_CRITICAL();
@@ -337,7 +343,7 @@ void task_move_piston_to_full(void)
     }
 
     PIS_move_to_full();
-    pis_delay_ms(5000 / piston.rtos.rate);
+    pis_delay_ms(2000);
 
     pistonRun = true;
     uint8_t count_reset = 0;
@@ -374,7 +380,7 @@ void task_move_piston_to_full(void)
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
                     PIS_Reset();
                     PIS_move_to_full();
-                    pis_delay_ms(5000 / piston.rtos.rate);
+                    pis_delay_ms(2000);
                     count_reset = 0;
                     reset++;
 
@@ -389,7 +395,8 @@ void task_move_piston_to_full(void)
         else
         {
             stall_count++;
-            ARTEMIS_DEBUG_PRINTF("PISTON :: Stall Count = %d\n", stall_count);
+            count_reset = 0;
+            ARTEMIS_DEBUG_PRINTF("PISTON :: In travel (Tick %d/%d)...\n", stall_count, stall_count_max);
 
             if (stall_count > stall_count_max)
             {
@@ -440,7 +447,7 @@ void task_reset_piston_to_full(void)
     }
 
     PIS_reset_to_full();
-    pis_delay_ms(5000 / piston.rtos.rate);
+    pis_delay_ms(2000);
 
     pistonRun = true;
     uint8_t count_reset = 0;
@@ -477,7 +484,7 @@ void task_reset_piston_to_full(void)
                     ARTEMIS_DEBUG_PRINTF("PISTON :: Board Resetting\n");
                     PIS_Reset();
                     PIS_reset_to_full();
-                    pis_delay_ms(5000 / piston.rtos.rate);
+                    pis_delay_ms(2000);
                     count_reset = 0;
                     reset++;
 
@@ -492,7 +499,8 @@ void task_reset_piston_to_full(void)
         else
         {
             stall_count++;
-            ARTEMIS_DEBUG_PRINTF("PISTON :: Stall Count = %d\n", stall_count);
+            count_reset = 0;
+            ARTEMIS_DEBUG_PRINTF("PISTON :: In travel (Tick %d/%d)...\n", stall_count, stall_count_max);
 
             if (stall_count > stall_count_max)
             {
@@ -543,8 +551,7 @@ void task_move_piston_to_length(void)
     }
 
     PIS_move_to_length(piston.setpoint_l);
-    // Allow slave motor driver to ramp PWM and update travel status register
-    pis_delay_ms(1000);
+    pis_delay_ms(2000);
 
     pistonRun = true;
     uint8_t count_reset = 0;
@@ -586,7 +593,7 @@ void task_move_piston_to_length(void)
                         PIS_Reset();
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Re-setting length = %0.5f\n", piston.setpoint_l);
                         PIS_move_to_length(piston.setpoint_l);
-                        pis_delay_ms(5000 / piston.rtos.rate);
+                        pis_delay_ms(2000);
                         count_reset = 0;
                         reset++;
 
@@ -602,7 +609,9 @@ void task_move_piston_to_length(void)
         else
         {
             stall_count++;
-            ARTEMIS_DEBUG_PRINTF("PISTON :: Stall Count = %d\n", stall_count);
+            count_reset = 0;
+            ARTEMIS_DEBUG_PRINTF("PISTON :: In travel (Tick %d/%d)...\n", stall_count, stall_count_max);
+
             if (stall_count > stall_count_max)
             {
                 ARTEMIS_DEBUG_PRINTF("PISTON :: Stall count timeout, resetting\n");
@@ -667,8 +676,7 @@ void task_move_piston_to_volume(void)
     }
 
     PIS_move_to_volume(piston.setpoint_v);
-    // Allow slave motor driver to ramp PWM and update travel status register
-    pis_delay_ms(1000);
+    pis_delay_ms(2000);
 
     pistonRun = true;
     uint8_t count_reset = 0;
@@ -710,7 +718,7 @@ void task_move_piston_to_volume(void)
                         PIS_Reset();
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Setting volume = %0.5f\n", piston.setpoint_v);
                         PIS_move_to_volume(piston.setpoint_v);
-                        pis_delay_ms(5000 / piston.rtos.rate);
+                        pis_delay_ms(2000);
                         count_reset = 0;
                         reset++;
 
@@ -726,7 +734,8 @@ void task_move_piston_to_volume(void)
         else
         {
             stall_count++;
-            ARTEMIS_DEBUG_PRINTF("PISTON :: Stall Count = %d\n", stall_count);
+            count_reset = 0;
+            ARTEMIS_DEBUG_PRINTF("PISTON :: In travel (Tick %d/%d)...\n", stall_count, stall_count_max);
 
             if (stall_count > stall_count_max)
             {
@@ -911,8 +920,10 @@ bool PIS_move_to_length(float length)
         float fLength;
         uint32_t u32Length;
     } conv;
-
     conv.fLength = length;
+
+    uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
+    uint8_t lock_cmd[2]   = {PISTON_I2C_W_VAR_WRITE, 0x00};
 
     uint8_t v[5] = {0};
     v[0] = addr;
@@ -921,20 +932,13 @@ bool PIS_move_to_length(float length)
         v[i + 1] = (conv.u32Length >> (i * 8)) & 0xFF;
     }
 
-    // 1. Confirm write mode unlock on secondary MCU with readback
-    if (!pis_unlock_write_mode())
-    {
-        ARTEMIS_DEBUG_PRINTF("PISTON :: Aborting move_to_length: write mode unlock failed\n");
-        return false;
-    }
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(50);
 
-    // 2. Transmit the 5-byte payload with full STOP
     artemis_piston_i2c_send_msg(v, 5, true);
-    // Allow slave to finish CTRL_Write() and launch motor routine
     pis_delay_ms(150);
 
-    // 3. Relock write mode
-    artemis_piston_set_write_mode(false);
+    artemis_piston_i2c_send_msg(lock_cmd, 2, true);
     pis_delay_ms(50);
 
     return true;
@@ -952,8 +956,10 @@ bool PIS_move_to_volume(float volume)
         float dVolume;
         uint32_t u32Volume;
     } conv;
-
     conv.dVolume = volume;
+
+    uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
+    uint8_t lock_cmd[2]   = {PISTON_I2C_W_VAR_WRITE, 0x00};
 
     uint8_t v[5] = {0};
     v[0] = addr;
@@ -962,20 +968,13 @@ bool PIS_move_to_volume(float volume)
         v[i + 1] = (conv.u32Volume >> (i * 8)) & 0xFF;
     }
 
-    // 1. Confirm write mode unlock on secondary MCU with readback
-    if (!pis_unlock_write_mode())
-    {
-        ARTEMIS_DEBUG_PRINTF("PISTON :: Aborting move_to_volume: write mode unlock failed\n");
-        return false;
-    }
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(50);
 
-    // 2. Transmit the 5-byte payload with full STOP
     artemis_piston_i2c_send_msg(v, 5, true);
-    // Allow slave to finish CTRL_Write() and launch motor routine
     pis_delay_ms(150);
 
-    // 3. Relock write mode
-    artemis_piston_set_write_mode(false);
+    artemis_piston_i2c_send_msg(lock_cmd, 2, true);
     pis_delay_ms(50);
 
     return true;
@@ -1125,42 +1124,51 @@ void PIS_Reset(void)
 
 void PIS_move_to_full(void)
 {
-    uint8_t addr = PISTON_I2C_RW_MOV_FULL;
-    uint8_t cmd[2] = {addr, 0x01};
+    uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
+    uint8_t move_cmd[2]   = {PISTON_I2C_RW_MOV_FULL, 0x01};
+    uint8_t lock_cmd[2]   = {PISTON_I2C_W_VAR_WRITE, 0x00};
 
-    if (pis_unlock_write_mode())
-    {
-        artemis_piston_i2c_send_msg(cmd, 2, true);
-        pis_delay_ms(150);
-        artemis_piston_set_write_mode(false);
-        pis_delay_ms(50);
-    }
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(50);
+
+    artemis_piston_i2c_send_msg(move_cmd, 2, true);
+    pis_delay_ms(150);
+
+    artemis_piston_i2c_send_msg(lock_cmd, 2, true);
+    pis_delay_ms(50);
 }
 
 void PIS_move_to_zero(void)
 {
-    uint8_t addr = PISTON_I2C_RW_MOV_ZERO;
-    uint8_t cmd[2] = {addr, 0x01};
+    uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
+    uint8_t move_cmd[2]   = {PISTON_I2C_RW_MOV_ZERO, 0x01};
+    uint8_t lock_cmd[2]   = {PISTON_I2C_W_VAR_WRITE, 0x00};
 
-    if (pis_unlock_write_mode())
-    {
-        artemis_piston_i2c_send_msg(cmd, 2, true);
-        pis_delay_ms(150);
-        artemis_piston_set_write_mode(false);
-        pis_delay_ms(50);
-    }
+    // 1. Direct unlock write
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(50);
+
+    // 2. Unconditionally transmit the move-to-zero command byte
+    artemis_piston_i2c_send_msg(move_cmd, 2, true);
+    pis_delay_ms(150);
+
+    // 3. Relock
+    artemis_piston_i2c_send_msg(lock_cmd, 2, true);
+    pis_delay_ms(50);
 }
 
 void PIS_reset_to_full(void)
 {
-    uint8_t addr = PISTON_I2C_RW_RST_FULL;
-    uint8_t cmd[2] = {addr, 0x01};
+    uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
+    uint8_t move_cmd[2]   = {PISTON_I2C_RW_RST_FULL, 0x01};
+    uint8_t lock_cmd[2]   = {PISTON_I2C_W_VAR_WRITE, 0x00};
 
-    if (pis_unlock_write_mode())
-    {
-        artemis_piston_i2c_send_msg(cmd, 2, true);
-        pis_delay_ms(150);
-        artemis_piston_set_write_mode(false);
-        pis_delay_ms(50);
-    }
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(50);
+
+    artemis_piston_i2c_send_msg(move_cmd, 2, true);
+    pis_delay_ms(150);
+
+    artemis_piston_i2c_send_msg(lock_cmd, 2, true);
+    pis_delay_ms(50);
 }
