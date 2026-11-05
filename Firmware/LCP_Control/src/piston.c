@@ -933,7 +933,7 @@ bool PIS_move_to_length(float length)
     }
 
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
-    pis_delay_ms(50);
+    pis_delay_ms(100);
 
     artemis_piston_i2c_send_msg(v, 5, true);
     pis_delay_ms(150);
@@ -969,7 +969,7 @@ bool PIS_move_to_volume(float volume)
     }
 
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
-    pis_delay_ms(50);
+    pis_delay_ms(100);
 
     artemis_piston_i2c_send_msg(v, 5, true);
     pis_delay_ms(150);
@@ -1129,7 +1129,7 @@ void PIS_move_to_full(void)
     uint8_t lock_cmd[2]   = {PISTON_I2C_W_VAR_WRITE, 0x00};
 
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
-    pis_delay_ms(50);
+    pis_delay_ms(100);
 
     artemis_piston_i2c_send_msg(move_cmd, 2, true);
     pis_delay_ms(150);
@@ -1146,7 +1146,7 @@ void PIS_move_to_zero(void)
 
     // 1. Direct unlock write
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
-    pis_delay_ms(50);
+    pis_delay_ms(100);
 
     // 2. Unconditionally transmit the move-to-zero command byte
     artemis_piston_i2c_send_msg(move_cmd, 2, true);
@@ -1164,7 +1164,7 @@ void PIS_reset_to_full(void)
     uint8_t lock_cmd[2]   = {PISTON_I2C_W_VAR_WRITE, 0x00};
 
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
-    pis_delay_ms(50);
+    pis_delay_ms(100);
 
     artemis_piston_i2c_send_msg(move_cmd, 2, true);
     pis_delay_ms(150);

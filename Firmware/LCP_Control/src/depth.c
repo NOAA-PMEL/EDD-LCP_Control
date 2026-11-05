@@ -52,7 +52,7 @@ static sDepth_t module = {
 };
 
 static K9lx_init_param kParam = {
-    .port       =   MAX14830_COM_PORT3,
+    .port       =   MAX14830_COM_PORT0,
     .baudrate   =   MAX14830_COM_BAUDRATE_9600,
     .pin_config =   &g_AM_BSP_GPIO_COM3_POWER_PIN,
     .pin_number =   AM_BSP_GPIO_COM3_POWER_PIN
