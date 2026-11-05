@@ -237,7 +237,8 @@ static void module_k9lx_read_sensor_pt(K9lx_data_pt *data)
 
 static int8_t module_k9lx_data_integrity (uint8_t *Data, uint8_t len)
 {
-    if (len < 5)
+    /* Modbus frames for Keller cannot exceed K9LX_BUFFER_LENGTH */
+    if (len < 5 || len > K9LX_BUFFER_LENGTH)
     {
         return -1;
     }
@@ -245,7 +246,7 @@ static int8_t module_k9lx_data_integrity (uint8_t *Data, uint8_t len)
     uint8_t lBuf[K9LX_BUFFER_LENGTH] = {0};
     uint8_t crc_h = 0, crc_l = 0;
 
-    for (uint8_t i = 0; i < len && i < K9LX_BUFFER_LENGTH; i++)
+    for (uint8_t i = 0; i < len; i++)
     {
         lBuf[i] = Data[i];
     }
@@ -331,7 +332,7 @@ static int8_t module_k9lx_read_reg_RTOS(uint8_t port, uint16_t reg_add, uint8_t 
 {
     uint8_t cmd[CMD_LENGTH] = {0};
     uint8_t rxlen = 0;
-    uint8_t rData[16] = {0};
+    uint8_t rData[32] = {0}; // Expand from 16 to 32 bytes for safety
     uint8_t crc_h = 0, crc_l = 0;
 
     cmd[0] = K9LX_ADDR;
@@ -345,30 +346,21 @@ static int8_t module_k9lx_read_reg_RTOS(uint8_t port, uint16_t reg_add, uint8_t 
     cmd[6] = crc_l;
     cmd[7] = crc_h;
 
-    /* 1. Synchronously transmit Modbus query to MAX14830 FIFO */
     MAX14830_UART_Write((eMAX18430_ComPort_t)port, cmd, CMD_LENGTH);
 
-    /* 
-     * Keller Modbus frame format:
-     * Addr (1) + Func (1) + ByteCount (1) + Data (reg_num * 2) + CRC (2) = 5 + (reg_num * 2)
-     * For 2 registers (FL1_P1), expected_len = 9 bytes.
-     */
     const uint8_t expected_len = 5 + (reg_num * 2);
-    uint8_t chunk[16] = {0};
+    uint8_t chunk[32] = {0};
     uint8_t sweeps = 0;
 
-    /* MAX14830_UART_Read blocks up to 350ms internally waiting for the ISR/FIFO.
-       We only need a few sweeps to collect any remaining packet bytes. */
     while (rxlen < expected_len && sweeps++ < 4)
     {
         uint32_t len = MAX14830_UART_Read((eMAX18430_ComPort_t)port, chunk);
         if (len > 0)
         {
-            for (uint32_t i = 0; i < len && (rxlen + i) < sizeof(rData); i++)
+            for (uint32_t i = 0; i < len && rxlen < sizeof(rData); i++)
             {
-                rData[rxlen + i] = chunk[i];
+                rData[rxlen++] = chunk[i];
             }
-            rxlen += (uint8_t)len;
         }
 
         if (rxlen < expected_len)
@@ -380,7 +372,7 @@ static int8_t module_k9lx_read_reg_RTOS(uint8_t port, uint16_t reg_add, uint8_t 
     int8_t ret = module_k9lx_data_integrity(rData, rxlen);
     if (ret == 0 && rxlen >= expected_len)
     {
-        for (uint8_t i = 0; i < rxlen - 5; i++)
+        for (uint8_t i = 0; i < (expected_len - 5); i++)
         {
             pData[i] = rData[i + 3];
         }

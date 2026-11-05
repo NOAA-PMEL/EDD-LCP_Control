@@ -54,8 +54,6 @@ void TEMP_Power_OFF(void)
 
 void TEMP_initialize_RTOS(void)
 {
-    uint8_t flush_buf[32];
-
     /* 1. Configure MAX14830 COM port clock and baudrate first */
     MAX14830_port_enable((eMAX18430_ComPort_t)sParam.port);
     MAX14830_Set_baudrate((eMAX18430_ComPort_t)sParam.port, sParam.baudrate);
@@ -71,11 +69,9 @@ void TEMP_initialize_RTOS(void)
     vTaskDelay(pdMS_TO_TICKS(20));
 
     /* 5. Drain any autonomous bytes that leaked into the FIFO during warm-up */
-    while (MAX14830_UART_Read((eMAX18430_ComPort_t)sParam.port, flush_buf) > 0);
+    TEMP_flush_rx();
 
-    /* 6. If task_temperature() uses per-sample power gating, shut the rail 
-     * off here so task_temperature() starts with the rail cleanly unpowered. */
-    TEMP_Power_OFF();
+    /* Keep rail ON so task_temperature() finds the sensor warm and ready */
 }
 
 void TEMP_uninitialize_RTOS(void)
@@ -89,6 +85,9 @@ void TEMP_Read(Temperature_Measurement_t *data)
     float temperature = 0.0f;
     float resistance = 0.0f;
 
+    /* Flush stale characters or leftover CR/LF bytes before sending new sample trigger */
+    TEMP_flush_rx();
+
     S9T_Read(&temperature, &resistance);
 
     data->temperature = temperature;
@@ -98,5 +97,9 @@ void TEMP_Read(Temperature_Measurement_t *data)
 void TEMP_flush_rx(void)
 {
     uint8_t dummy[32];
-    while (MAX14830_UART_Read((eMAX18430_ComPort_t)sParam.port, dummy) > 0);
+    /* Drain circular buffer non-blockingly using byte-count checks */
+    while (MAX14830_UART_Read_bytes_waiting((eMAX18430_ComPort_t)sParam.port) > 0)
+    {
+        MAX14830_UART_Read_direct((eMAX18430_ComPort_t)sParam.port, dummy);
+    }
 }

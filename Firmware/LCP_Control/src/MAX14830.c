@@ -420,76 +420,69 @@ void MAX14830_port_disable(eMAX18430_ComPort_t port)
 void module_MAX14830_Handle_IRQ(void)
 {
     uint8_t rxData[128] = {0};
-    uint8_t i = 0;
     uint8_t irq = 0;
-    uint8_t port = 0xFF;
     module_MAX14830_Read(MAX14830_COM_PORT0, MAX14830_REG_GLOBALRQ, 1, &irq);
+
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
     for (uint8_t p = 0; p < 4; p++)
     {
         if ((~irq & 0x0F) & (1u << p))
         {
-            port = p;
-            break;
-        }
-    }
+            uint8_t rxlen = 0, isr_status = 0, lsr_status = 0, regVal = 0;
+            uint8_t i = 0;
 
-    if (port > 3)
-    {
-        return;
-    }
-
-    uint8_t rxlen, isr_status, lsr_status, regVal;
-    do
-    {
-        module_MAX14830_Read((eMAX18430_ComPort_t)port, MAX14830_REG_ISR, 1, &isr_status);
-        module_MAX14830_Read((eMAX18430_ComPort_t)port, MAX14830_REG_RXFIFOLVL, 1, &rxlen);
-
-        if (!isr_status && !rxlen)
-        {
-            rx_bytes = true;
-            if (gEventHandle != NULL && xTaskGetSchedulerState() == taskSCHEDULER_RUNNING)
+            do
             {
-                BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-                BaseType_t xResult = xEventGroupSetBitsFromISR(gEventHandle, (1u << port), &xHigherPriorityTaskWoken);
-                if (xResult != pdFAIL)
+                module_MAX14830_Read((eMAX18430_ComPort_t)p, MAX14830_REG_ISR, 1, &isr_status);
+                module_MAX14830_Read((eMAX18430_ComPort_t)p, MAX14830_REG_RXFIFOLVL, 1, &rxlen);
+
+                if (!isr_status && !rxlen)
                 {
-                    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+                    if (gEventHandle != NULL && xTaskGetSchedulerState() == taskSCHEDULER_RUNNING)
+                    {
+                        xEventGroupSetBitsFromISR(gEventHandle, (1u << p), &xHigherPriorityTaskWoken);
+                    }
+                    break;
                 }
-            }
-            break;
-        }
 
-        if (rxlen > 0)
-        {
-            while (rxlen > 0)
-            {
-                module_MAX14830_Read((eMAX18430_ComPort_t)port, MAX14830_RHR, 1, &regVal);
-                module_MAX14830_Read((eMAX18430_ComPort_t)port, MAX14830_REG_LSR, 1, &lsr_status);
-
-                if (lsr_status & MAX14830_LSR_RXOVERRUN)
+                if (rxlen > 0)
                 {
-                    module_MAX14830_Read((eMAX18430_ComPort_t)port, MAX14830_REG_RXFIFOLVL, 1, &rxlen);
-                    module_MAX14830_Read((eMAX18430_ComPort_t)port, MAX14830_RHR, rxlen, rxData);
                     while (rxlen > 0)
                     {
-                        BufferC_putc(&rxBuf[(uint8_t)port], rxData[i++]);
+                        module_MAX14830_Read((eMAX18430_ComPort_t)p, MAX14830_RHR, 1, &regVal);
+                        module_MAX14830_Read((eMAX18430_ComPort_t)p, MAX14830_REG_LSR, 1, &lsr_status);
+
+                        if (lsr_status & MAX14830_LSR_RXOVERRUN)
+                        {
+                            module_MAX14830_Read((eMAX18430_ComPort_t)p, MAX14830_REG_RXFIFOLVL, 1, &rxlen);
+                            module_MAX14830_Read((eMAX18430_ComPort_t)p, MAX14830_RHR, rxlen, rxData);
+                            while (rxlen > 0)
+                            {
+                                BufferC_putc(&rxBuf[p], rxData[i++]);
+                                rxlen--;
+                            }
+                            i = 0;
+                            break;
+                        }
+
+                        if (lsr_status & (MAX14830_LSR_RXNOISE | MAX14830_LSR_RXBREAK | MAX14830_LSR_RXPARITY | MAX14830_LSR_FRAMEERR | MAX14830_LSR_RTIMEOUT))
+                        {
+                            break;
+                        }
+
+                        BufferC_putc(&rxBuf[p], regVal);
                         rxlen--;
                     }
-                    i = 0;
-                    break;
                 }
-
-                if (lsr_status & (MAX14830_LSR_RXNOISE | MAX14830_LSR_RXBREAK | MAX14830_LSR_RXPARITY | MAX14830_LSR_FRAMEERR | MAX14830_LSR_RTIMEOUT))
-                {
-                    break;
-                }
-
-                BufferC_putc(&rxBuf[(uint8_t)port], regVal);
-                rxlen--;
-            }
+            } while (1);
         }
-    } while (1);
+    }
+
+    if (xHigherPriorityTaskWoken != pdFALSE)
+    {
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
 }
 
 uint32_t MAX14830_Set_baudrate(eMAX18430_ComPort_t port, eMAX14830_Baudrate_t baudrate)
@@ -563,27 +556,27 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData)
         if (BufferC_Get_Size(pBuf) == 0)
         {
             xEventGroupClearBits(gEventHandle, target_bit);
-            EventBits_t bits = xEventGroupWaitBits(gEventHandle, target_bit, pdTRUE, pdFALSE, pdMS_TO_TICKS(350UL));
-            if (bits & target_bit)
-            {
-                vTaskDelay(pdMS_TO_TICKS(10UL));
-            }
+            xEventGroupWaitBits(gEventHandle, target_bit, pdTRUE, pdFALSE, pdMS_TO_TICKS(100UL));
         }
 
-        /* 2. Hardware FIFO fallback: If buffer is still empty, poll MAX14830 directly */
+        /* 2. Hardware FIFO fallback: If buffer is still empty, poll MAX14830 directly with SPI Mutex */
         if (BufferC_Get_Size(pBuf) == 0)
         {
-            uint8_t fifo_level = 0;
-            module_MAX14830_Read(port, MAX14830_REG_RXFIFOLVL, 1, &fifo_level);
-            if (fifo_level > 0)
+            if (xSpiMutex != NULL && xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS(50UL)) == pdPASS)
             {
-                uint8_t hw_data[32];
-                uint8_t read_bytes = (fifo_level > 32) ? 32 : fifo_level;
-                module_MAX14830_Read(port, MAX14830_RHR, read_bytes, hw_data);
-                for (uint8_t b = 0; b < read_bytes; b++)
+                uint8_t fifo_level = 0;
+                module_MAX14830_Read(port, MAX14830_REG_RXFIFOLVL, 1, &fifo_level);
+                if (fifo_level > 0)
                 {
-                    BufferC_putc(pBuf, hw_data[b]);
+                    uint8_t hw_data[32];
+                    uint8_t read_bytes = (fifo_level > 32) ? 32 : fifo_level;
+                    module_MAX14830_Read(port, MAX14830_RHR, read_bytes, hw_data);
+                    for (uint8_t b = 0; b < read_bytes; b++)
+                    {
+                        BufferC_putc(pBuf, hw_data[b]);
+                    }
                 }
+                xSemaphoreGive(xSpiMutex);
             }
         }
 
@@ -597,7 +590,6 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData)
     }
     else
     {
-        /* Pre-scheduler bootup fallback */
         am_util_delay_ms(25);
         while (BufferC_Get_Size(pBuf) > 0)
         {
