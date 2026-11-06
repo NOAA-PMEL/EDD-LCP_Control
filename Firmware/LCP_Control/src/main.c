@@ -24,6 +24,10 @@
 #define LCP_FREE_RTOS
 //#define SENSORS_Test
 
+#ifdef DEBUG
+    #error "BUILD HALTED: DEBUG is defined! configASSERT will halt the MCU."
+#endif
+
 int main(void)
 {
     /** initialize mcu features */
@@ -31,6 +35,12 @@ int main(void)
 
     /** initialize debug features */
     artemis_debug_initialize();
+
+    #ifdef DEBUG
+    ARTEMIS_DEBUG_PRINTF("\nBUILD CONFIG :: *** DEBUG MODE ACTIVE (ASSERT HALTS) ***\n");
+    #else
+    ARTEMIS_DEBUG_PRINTF("\nBUILD CONFIG :: RELEASE / FLIGHT MODE (ASSERT REBOOTS)\n");
+    #endif
 
     /** 1 second delay */
     am_util_delay_ms(1000);

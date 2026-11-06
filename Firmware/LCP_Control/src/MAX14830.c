@@ -430,6 +430,7 @@ void module_MAX14830_Handle_IRQ(void)
             uint8_t rxlen, isr_status, lsr_status, regVal;
             uint8_t i = 0;
 
+            uint8_t isr_passes = 0;
             do
             {
                 module_MAX14830_Read((eMAX18430_ComPort_t)p, MAX14830_REG_ISR, 1, &isr_status);
@@ -473,7 +474,7 @@ void module_MAX14830_Handle_IRQ(void)
                         rxlen--;
                     }
                 }
-            } while (1);
+            } while (++isr_passes < 64);
         }
     }
 
@@ -509,7 +510,15 @@ void MAX14830_UART_Write(eMAX18430_ComPort_t port, uint8_t *data, uint16_t len)
 
     if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING && xSpiMutex != NULL)
     {
-        while (xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS(200UL)) != pdPASS);
+        uint8_t sem_tries = 0;
+        while (xSemaphoreTake(xSpiMutex, pdMS_TO_TICKS(200UL)) != pdPASS)
+        {
+            if (++sem_tries >= 5)
+            {
+                ARTEMIS_DEBUG_PRINTF("MAX14830 :: ERROR - xSpiMutex timeout in UART_Write!\n");
+                return;
+            }
+        }
     }
 
     uint32_t xLen = 0;

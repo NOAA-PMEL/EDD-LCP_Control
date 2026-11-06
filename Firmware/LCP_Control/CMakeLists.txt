@@ -123,6 +123,7 @@ target_compile_definitions(${TARGET_NAME} PRIVATE
     AM_PACKAGE_BGA
     AM_DEBUG_PRINTF
     gcc
+    NDEBUG
     # AM_BSP_GPIO_ITM_SWO # Optional
 )
 

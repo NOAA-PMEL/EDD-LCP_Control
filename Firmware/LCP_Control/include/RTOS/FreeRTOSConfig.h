@@ -110,9 +110,23 @@ extern "C"
 #define NVIC_configKERNEL_INTERRUPT_PRIORITY            (0x7)
 #define NVIC_configMAX_SYSCALL_INTERRUPT_PRIORITY       (0x4)
 
-/* Define to trap errors during development. */
-//#define configASSERT(x)     if (( x ) == 0) while(1);
-#define configASSERT(x)     if (( x ) == 0) { taskDISABLE_INTERRUPTS(); am_util_stdio_printf("\nERROR:: %s, %d\n", __FILE__, __LINE__); while(1);}
+#ifdef DEBUG
+    // Bench/Dev mode: Halt with interrupts disabled to catch with debugger/serial
+    #define configASSERT(x)     if (( x ) == 0) { \
+                                    taskDISABLE_INTERRUPTS(); \
+                                    am_util_stdio_printf("\nERROR:: %s, %d\n", __FILE__, __LINE__); \
+                                    while(1); \
+                                }
+#else
+    // Field/Sea-Trial mode: Log failure, allow UART FIFO to flush, then reboot
+    #define configASSERT(x)     do { \
+                                    if (( x ) == 0) { \
+                                        am_util_stdio_printf("\nCRITICAL ASSERT FAIL: %s, line %d\n", __FILE__, __LINE__); \
+                                        am_util_delay_ms(50); \
+                                        am_hal_reset_control(AM_HAL_RESET_CONTROL_SWPOR, 0); \
+                                    } \
+                                } while(0)
+#endif
 
 /* FreeRTOS MPU specific definitions. */
 #define configINCLUDE_APPLICATION_DEFINED_PRIVILEGED_FUNCTIONS 0

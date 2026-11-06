@@ -663,12 +663,21 @@ void module_pds_idle(void)
     ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Task->started\n");
     vTaskDelay(xDelay10000ms); // wait for 10 seconds
 
-    bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
-    while (previousTaskAlive)
+    // Bounded check to ensure previous piston task has exited
+    uint8_t pis_wait_count = 0;
+    while (PIS_taskStatus() && pis_wait_count++ < 6)
     {
-        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Previous piston task is still running...\n");
+        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, Waiting for previous piston task to exit (%u/6)...\n", pis_wait_count);
         vTaskDelay(xDelay5000ms);
-        previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    }
+
+    if (PIS_taskStatus())
+    {
+        ARTEMIS_DEBUG_PRINTF("PDS :: Idle, WARNING: Previous piston task hung! Forcing cleanup...\n");
+        PIS_task_delete(&s_xPiston);
+        vTaskDelay(xDelay2000ms);
+        PIS_Reset();
+        vTaskDelay(pdMS_TO_TICKS(2500));
     }
     vTaskDelay(xDelay2000ms);
     
@@ -1105,12 +1114,21 @@ void module_sps_move_to_park(void)
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Task->started\n");
     vTaskDelay(xDelay10000ms); // wait for 10 seconds
 
-    bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
-    while (previousTaskAlive)
+    // Bounded check to ensure previous piston task has exited
+    uint8_t pis_wait_count = 0;
+    while (PIS_taskStatus() && pis_wait_count++ < 6)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Previous piston task is still running...\n");
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, Waiting for previous piston task to exit (%u/6)...\n", pis_wait_count);
         vTaskDelay(xDelay5000ms);
-        previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    }
+
+    if (PIS_taskStatus())
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_park, WARNING: Previous piston task hung! Forcing cleanup...\n");
+        PIS_task_delete(&s_xPiston);
+        vTaskDelay(xDelay2000ms);
+        PIS_Reset();
+        vTaskDelay(pdMS_TO_TICKS(2500));
     }
     vTaskDelay(xDelay2000ms);
 
@@ -1723,12 +1741,21 @@ void module_sps_park(void)
     ARTEMIS_DEBUG_PRINTF("SPS :: park, Task->started\n");
     vTaskDelay(xDelay10000ms); // wait for 10 seconds
 
-    bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
-    while (previousTaskAlive)
+    // Bounded check to ensure previous piston task has exited
+    uint8_t pis_wait_count = 0;
+    while (PIS_taskStatus() && pis_wait_count++ < 6)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: park, Previous piston task is still running...\n");
+        ARTEMIS_DEBUG_PRINTF("SPS :: Waiting for previous piston task to exit (%u/6)...\n", pis_wait_count);
         vTaskDelay(xDelay5000ms);
-        previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    }
+
+    if (PIS_taskStatus())
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: WARNING: Previous piston task hung! Forcing cleanup...\n");
+        PIS_task_delete(&s_xPiston);
+        vTaskDelay(xDelay2000ms);
+        PIS_Reset();
+        vTaskDelay(pdMS_TO_TICKS(2500));
     }
     vTaskDelay(xDelay2000ms);
     
@@ -2464,12 +2491,21 @@ void module_sps_move_to_profile(void)
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Task->started\n");
     vTaskDelay(xDelay10000ms); // wait for 10 seconds
 
-    bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
-    while (previousTaskAlive)
+    // Bounded check to ensure previous piston task has exited
+    uint8_t pis_wait_count = 0;
+    while (PIS_taskStatus() && pis_wait_count++ < 6)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Previous piston task is still running...\n");
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, Waiting for previous piston task to exit (%u/6)...\n", pis_wait_count);
         vTaskDelay(xDelay5000ms);
-        previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    }
+
+    if (PIS_taskStatus())
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_profile, WARNING: Previous piston task hung! Forcing cleanup...\n");
+        PIS_task_delete(&s_xPiston);
+        vTaskDelay(xDelay2000ms);
+        PIS_Reset();
+        vTaskDelay(pdMS_TO_TICKS(2500));
     }
     vTaskDelay(xDelay2000ms);
 
@@ -3009,12 +3045,21 @@ void module_sps_profile(void)
     ARTEMIS_DEBUG_PRINTF("SPS :: profile, Task->started\n");
     vTaskDelay(xDelay10000ms); // wait for 10 seconds
 
-    bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
-    while (previousTaskAlive)
+    // Bounded check to ensure previous piston task has exited
+    uint8_t pis_wait_count = 0;
+    while (PIS_taskStatus() && pis_wait_count++ < 6)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Previous piston task is still running...\n");
+        ARTEMIS_DEBUG_PRINTF("SPS :: profile, Waiting for previous piston task to exit (%u/6)...\n", pis_wait_count);
         vTaskDelay(xDelay5000ms);
-        previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    }
+
+    if (PIS_taskStatus())
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: profile, WARNING: Previous piston task hung! Forcing cleanup...\n");
+        PIS_task_delete(&s_xPiston);
+        vTaskDelay(xDelay2000ms);
+        PIS_Reset();
+        vTaskDelay(pdMS_TO_TICKS(2500));
     }
     vTaskDelay(xDelay2000ms);
 
@@ -3728,12 +3773,21 @@ void module_sps_move_to_surface(void)
     ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Task->started\n");
     vTaskDelay(xDelay10000ms); // Wait for the task to start
 
-    bool previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
-    while (previousTaskAlive)
+    // Bounded check to ensure previous piston task has exited
+    uint8_t pis_wait_count = 0;
+    while (PIS_taskStatus() && pis_wait_count++ < 6)
     {
-        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Previous piston task is still running...\n");
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, Waiting for previous piston task to exit (%u/6)...\n", pis_wait_count);
         vTaskDelay(xDelay5000ms);
-        previousTaskAlive = PIS_taskStatus(); // check if the piston task is running
+    }
+
+    if (PIS_taskStatus())
+    {
+        ARTEMIS_DEBUG_PRINTF("SPS :: move_to_surface, WARNING: Previous piston task hung! Forcing cleanup...\n");
+        PIS_task_delete(&s_xPiston);
+        vTaskDelay(xDelay2000ms);
+        PIS_Reset();
+        vTaskDelay(pdMS_TO_TICKS(2500));
     }
     vTaskDelay(xDelay2000ms);
 

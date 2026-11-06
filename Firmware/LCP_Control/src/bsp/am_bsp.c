@@ -887,9 +887,9 @@ am_bsp_uart_string_print(char *pcString)
     if (ui32BytesWritten != ui32StrLen)
     {
         //
-        // Couldn't send the whole string!!
+        // Truncate cleanly rather than locking up the processor
         //
-        while(1);
+        return; 
     }
 } // am_bsp_uart_string_print()
 

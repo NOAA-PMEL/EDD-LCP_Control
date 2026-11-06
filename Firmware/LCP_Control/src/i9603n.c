@@ -396,15 +396,6 @@ void task_Iridium_satellite (void)
 
         vTaskDelay(period);
     }
-
-    timer++;
-    if (timer >= SATELLITE_TIMER)
-    {
-        run = false;
-        timer = 0;
-    }
-
-    vTaskDelay(period);
     
     /* delete the task */
     ARTEMIS_DEBUG_PRINTF("Iridium :: Satellite Task Self-Deleting...\n");

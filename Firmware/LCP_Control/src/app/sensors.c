@@ -251,8 +251,9 @@ void SENS_task_delete(TaskHandle_t xHandle)
 {
     TaskStatus_t xTaskDetails;
     Event_e xtdEvent = IDLE;
+    uint8_t loop_guard = 0; // Guard against infinite loop
 
-    while (1)
+    while (loop_guard++ < 60) // Bounded to max 3.0s (60 * 50ms)
     {
         vTaskGetInfo(xHandle, &xTaskDetails, pdTRUE, eInvalid);
         eTaskState eState = xTaskDetails.eCurrentState;
@@ -289,14 +290,6 @@ void SENS_task_delete(TaskHandle_t xHandle)
                 break;
             }
         }
-        else if (eState == eReady)
-        {
-            ARTEMIS_DEBUG_PRINTF("SENSORS :: %s in eReady state\n", task_name);
-        }
-        else if (eState == eRunning)
-        {
-            ARTEMIS_DEBUG_PRINTF("SENSORS :: %s in eRunning state, wait\n", task_name);
-        }
         else if ( (eState == eDeleted) || (eState == eInvalid) )
         {
             ARTEMIS_DEBUG_PRINTF("SENSORS :: %s->Deleted\n", task_name);
@@ -313,19 +306,30 @@ void SENS_task_delete(TaskHandle_t xHandle)
         }
         else
         {
-            ARTEMIS_DEBUG_PRINTF("SENSORS :: %s is in unknown state\n", task_name);
-            if(xSemaphoreTake(xTDSemaphore, xDelay10ms) == pdTRUE)
+            /* Handles eReady, eRunning, or unknown transient states silently while waiting */
+            if (eState != eReady && eState != eRunning)
             {
-                xSemaphoreGive(xTDSemaphore);
-                ARTEMIS_DEBUG_PRINTF("SENSORS :: %s, xTDsemaphore->available\n", task_name);
+                ARTEMIS_DEBUG_PRINTF("SENSORS :: %s is in unknown state\n", task_name);
+                if(xSemaphoreTake(xTDSemaphore, xDelay10ms) == pdTRUE)
+                {
+                    xSemaphoreGive(xTDSemaphore);
+                    ARTEMIS_DEBUG_PRINTF("SENSORS :: %s, xTDsemaphore->available\n", task_name);
+                }
+                else
+                {
+                    ARTEMIS_DEBUG_PRINTF("SENSORS :: %s, xTDsemaphore->not available\n", task_name);
+                }
+                break;
             }
-            else
-            {
-                ARTEMIS_DEBUG_PRINTF("SENSORS :: %s, xTDsemaphore->not available\n", task_name);
-            }
-            break;
         }
         vTaskDelay(xDelay50ms);
+    }
+
+    // Force-kill fallback only if task failed to self-delete within 3 seconds
+    if (loop_guard >= 60)
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, %s timed out waiting to delete. Forcing.\n", xTaskDetails.pcTaskName);
+        vTaskDelete(xHandle);
     }
 }
 

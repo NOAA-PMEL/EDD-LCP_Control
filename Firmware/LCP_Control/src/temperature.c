@@ -97,8 +97,9 @@ void TEMP_Read(Temperature_Measurement_t *data)
 void TEMP_flush_rx(void)
 {
     uint8_t dummy[32];
-    /* Drain circular buffer non-blockingly using byte-count checks */
-    while (MAX14830_UART_Read_bytes_waiting((eMAX18430_ComPort_t)sParam.port) > 0)
+    uint8_t max_flushes = 8; // Drain up to 256 bytes maximum
+    /* Drain circular buffer with bounded iteration guard */
+    while (max_flushes-- > 0 && MAX14830_UART_Read_bytes_waiting((eMAX18430_ComPort_t)sParam.port) > 0)
     {
         MAX14830_UART_Read_direct((eMAX18430_ComPort_t)sParam.port, dummy);
     }
