@@ -81,6 +81,12 @@ int main(void)
     ARTEMIS_DEBUG_PRINTF("FreeRTOS here\n");
     ARTEMIS_DEBUG_PRINTF("schedular is going to start\n");
     ARTEMIS_DEBUG_PRINTF("*****************************\n\n");
+
+
+    configASSERT(0); // Temporary verification: force assert reset
+    
+
+
     vTaskStartScheduler();
     ARTEMIS_DEBUG_PRINTF("Do not get here\n");
 
