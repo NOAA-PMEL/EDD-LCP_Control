@@ -29,7 +29,7 @@
 #define HOUSING_RADIUS                      ( SYS_HOUSING_DIAMETER / 2.0f )
 #define HOUSING_RADIUS_SRQ                  ( HOUSING_RADIUS * HOUSING_RADIUS )
 #define HOUSING_LENGTH                      ( SYS_HOUSING_LENGTH )
-#define HOUSING_VOLUME                      ( 655.75f )
+#define HOUSING_VOLUME                      ( 650.00f )
 
 #define SYSTEM_MAX_VOLUME                   ( HOUSING_VOLUME + 121.94f )
 #define SYSTEM_MIN_VOLUME                   ( HOUSING_VOLUME - 0.01f )
@@ -42,7 +42,7 @@
 #define DRAG_PLATE_AREA                     ( PI * DRAG_PLATE_RADIUS_SRQ )
 
 //#define SYSTEM_MASS_EST                     ( 24.17f * 1.0 ) //0.453592    /* in kg */
-#define SYSTEM_MASS_EST                     ( 23.845f  * 1.0 ) //0.453592    /* in lbs */
+#define SYSTEM_MASS_EST                     ( 24.423f  * 1.0 ) //0.453592   23.845 lb housing + 0.578lb ballast /* in lbs */
 #define SYSTEM_CROSSSECTION_AREA            ( DRAG_PLATE_AREA )
 
 #define CYLINDER_DRAG_COEFF                 ( 0.81f )
