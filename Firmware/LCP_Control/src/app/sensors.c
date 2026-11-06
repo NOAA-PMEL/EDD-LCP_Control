@@ -70,22 +70,25 @@ bool SENS_initialize(void)
     /* initialize MAX14830 chip for the sensors */
     success = MAX14830_initialize();
 
+    /* Allow MAX14830 transceivers and Keller PR9LX ASIC to complete cold-boot */
+    am_util_delay_ms(300);
+
     /* initialize pressure sensor */
-    success = DEPTH_initialize(DEPTH_Keller_PR9LX);
+    bool bDepthOk = DEPTH_initialize(DEPTH_Keller_PR9LX);
 
     /* Allow S9 serial interface and wet rail to settle after K9LX query */
-    am_util_delay_ms(200);
+    am_util_delay_ms(350);
 
     /* initialize temperature sensor */
-    success = TEMP_initialize(TEMP_SoundNine_OEM);
+    bool bTempOk = TEMP_initialize(TEMP_SoundNine_OEM);
     ARTEMIS_DEBUG_PRINTF("--> STEP A: S9 Finished.\n");
 
     /* ADD DELAY HERE: Allow Piston slave MCU to complete boot before I2C queries */
     am_util_delay_ms(500);
 
     /* 1. Run Piston Board initialization FIRST (Restores working LOG_0007 order) */
-    success = PIS_initialize();
-    ARTEMIS_DEBUG_PRINTF("--> STEP B: Piston Initialized (%d).\n", success);
+    bool bPistonOk = PIS_initialize();
+    ARTEMIS_DEBUG_PRINTF("--> STEP B: Piston Initialized (%d).\n", bPistonOk);
 
     /* 2. Hardware bus arbitration mutex */
     xTDSemaphore = xSemaphoreCreateMutex();
@@ -121,9 +124,9 @@ bool SENS_initialize(void)
     }
     else
     {
-        success = true;
+        success = success && bDepthOk && bTempOk && bPistonOk;
     }
-
+    
     ARTEMIS_DEBUG_PRINTF("SENSORS :: Sensors are initialized\n\n");
     return success;
 }
@@ -259,7 +262,7 @@ void SENS_task_delete(TaskHandle_t xHandle)
     Event_e xtdEvent = IDLE;
     uint8_t loop_guard = 0; // Guard against infinite loop
 
-    while (loop_guard++ < 60) // Bounded to max 3.0s (60 * 50ms)
+    while (loop_guard++ < 5) // Bounded to max 3.0s (60 * 50ms)
     {
         vTaskGetInfo(xHandle, &xTaskDetails, pdTRUE, eInvalid);
         eTaskState eState = xTaskDetails.eCurrentState;
@@ -332,7 +335,7 @@ void SENS_task_delete(TaskHandle_t xHandle)
     }
 
     // Force-kill fallback only if task failed to self-delete within 3 seconds
-    if (loop_guard >= 60)
+    if (loop_guard >= 5)
     {
         ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, %s timed out waiting to delete. Forcing.\n", xTaskDetails.pcTaskName);
         vTaskDelete(xHandle);

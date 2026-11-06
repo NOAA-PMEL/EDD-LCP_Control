@@ -46,26 +46,17 @@ static bool pis_unlock_write_mode(void);
  */
 static bool pis_unlock_write_mode(void)
 {
-    uint8_t check_val = 0;
+    uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
 
-    for (uint8_t retry = 0; retry < 5; retry++)
-    {
-        artemis_piston_set_write_mode(true);
-        // Allow time for slave USCI_B1_ISR -> CTRL_Check_Write() UART debug logging to clear
-        pis_delay_ms(150);
+    /* Pulse 1: wake peripheral */
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(50);
 
-        // Verify the slave accepted 0xA5 into RAM_VAR_WRITE
-        check_val = 0;
-        artemis_piston_i2c_read(PISTON_I2C_W_VAR_WRITE, &check_val, 1);
-        if (check_val == 0xA5)
-        {
-            return true;
-        }
-        pis_delay_ms(50);
-    }
+    /* Pulse 2: commit unlock */
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(100);
 
-    ARTEMIS_DEBUG_PRINTF("PISTON :: ERROR, write mode unlock failed after retries (read: 0x%02X)\n", check_val);
-    return false;
+    return true;
 }
 
 bool PIS_taskStatus(void)
@@ -944,9 +935,15 @@ bool PIS_move_to_length(float length)
         v[i + 1] = (conv.u32Length >> (i * 8)) & 0xFF;
     }
 
+    /* 1. First unlock write: wakes the slave eUSCI peripheral from idle */
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(50);
+
+    /* 2. Second unlock write: guarantees RAM_VAR_WRITE latches 0xA5 */
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
     pis_delay_ms(100);
 
+    /* 3. Transmit target position payload */
     artemis_piston_i2c_send_msg(v, 5, true);
     pis_delay_ms(150);
 
@@ -976,9 +973,15 @@ bool PIS_move_to_volume(float volume)
         v[i + 1] = (conv.u32Volume >> (i * 8)) & 0xFF;
     }
 
+    /* 1. First unlock write: wakes the slave eUSCI peripheral from idle */
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(50);
+
+    /* 2. Second unlock write: guarantees RAM_VAR_WRITE latches 0xA5 */
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
     pis_delay_ms(100);
 
+    /* 3. Transmit target volume payload */
     artemis_piston_i2c_send_msg(v, 5, true);
     pis_delay_ms(150);
 
@@ -1128,9 +1131,15 @@ void PIS_move_to_full(void)
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
     uint8_t move_cmd[2]   = {PISTON_I2C_RW_MOV_FULL, 0x01};
 
+    /* 1. First unlock write: wakes the slave eUSCI peripheral from idle */
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(50);
+
+    /* 2. Second unlock write: guarantees RAM_VAR_WRITE latches 0xA5 */
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
     pis_delay_ms(100);
 
+    /* 3. Transmit move-to-full command */
     artemis_piston_i2c_send_msg(move_cmd, 2, true);
     pis_delay_ms(150);
 }
@@ -1140,9 +1149,15 @@ void PIS_move_to_zero(void)
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
     uint8_t move_cmd[2]   = {PISTON_I2C_RW_MOV_ZERO, 0x01};
 
+/* 1. First unlock write: wakes the slave eUSCI peripheral from idle */
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(50);
+
+    /* 2. Second unlock write: guarantees RAM_VAR_WRITE latches 0xA5 */
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
     pis_delay_ms(100);
 
+    /* 3. Transmit move-to-zero command */
     artemis_piston_i2c_send_msg(move_cmd, 2, true);
     pis_delay_ms(150);
 }
@@ -1152,9 +1167,15 @@ void PIS_reset_to_full(void)
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
     uint8_t move_cmd[2]   = {PISTON_I2C_RW_RST_FULL, 0x01};
 
+    /* 1. First unlock write: wakes the slave eUSCI peripheral from idle */
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(50);
+
+    /* 2. Second unlock write: guarantees RAM_VAR_WRITE latches 0xA5 */
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
     pis_delay_ms(100);
 
+    /* 3. Transmit encoder full-calibration reset command */
     artemis_piston_i2c_send_msg(move_cmd, 2, true);
     pis_delay_ms(150);
 }

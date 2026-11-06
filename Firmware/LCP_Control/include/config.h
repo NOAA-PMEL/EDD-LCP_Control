@@ -42,7 +42,7 @@
 #define DRAG_PLATE_AREA                     ( PI * DRAG_PLATE_RADIUS_SRQ )
 
 //#define SYSTEM_MASS_EST                     ( 24.17f * 1.0 ) //0.453592    /* in kg */
-#define SYSTEM_MASS_EST                     ( 24.557f  * 1.0 ) //0.453592    /* in lbs */
+#define SYSTEM_MASS_EST                     ( 23.845f  * 1.0 ) //0.453592    /* in lbs */
 #define SYSTEM_CROSSSECTION_AREA            ( DRAG_PLATE_AREA )
 
 #define CYLINDER_DRAG_COEFF                 ( 0.81f )
