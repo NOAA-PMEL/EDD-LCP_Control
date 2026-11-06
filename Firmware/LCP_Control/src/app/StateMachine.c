@@ -75,6 +75,7 @@ static Data_t current_profile_data = {
 
 static sData sPark;         /**< Park mode measurement - StateMachine */
 static sData sProf;         /**< Profile mode measurement - StateMachine */
+static bool previousTaskAlive = false;
 static TaskHandle_t s_xPiston = NULL;
 
 static System_t system =
