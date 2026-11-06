@@ -97,10 +97,9 @@ void artemis_piston_i2c_initialize(uint8_t i2c_addr)
     ARTEMIS_DEBUG_HALSTATUS(am_hal_gpio_pinconfig(module.power.pin, *module.power.pinConfig));
 
     artemis_piston_i2c_power_off();
-    am_hal_systick_delay_us(1000);
     am_hal_systick_delay_us(50000);
     artemis_piston_i2c_power_on();
-    am_hal_systick_delay_us(100000); // 100ms boot settling
+    am_hal_systick_delay_us(500000); // 500ms boot settling for MSP430 eUSCI slave
 }
 
 void artemis_piston_i2c_uninitialize(void)

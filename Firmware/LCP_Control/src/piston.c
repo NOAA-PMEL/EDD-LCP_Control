@@ -603,6 +603,7 @@ void task_move_piston_to_length(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting (target missed)\n");
                         PIS_Reset();
+                        pis_delay_ms(500);
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Re-setting length = %0.5f\n", piston.setpoint_l);
                         PIS_move_to_length(piston.setpoint_l);
                         pis_delay_ms(2000);
@@ -935,7 +936,6 @@ bool PIS_move_to_length(float length)
     conv.fLength = length;
 
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
-    uint8_t lock_cmd[2]   = {PISTON_I2C_W_VAR_WRITE, 0x00};
 
     uint8_t v[5] = {0};
     v[0] = addr;
@@ -949,9 +949,6 @@ bool PIS_move_to_length(float length)
 
     artemis_piston_i2c_send_msg(v, 5, true);
     pis_delay_ms(150);
-
-    artemis_piston_i2c_send_msg(lock_cmd, 2, true);
-    pis_delay_ms(50);
 
     return true;
 }
@@ -971,7 +968,6 @@ bool PIS_move_to_volume(float volume)
     conv.dVolume = volume;
 
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
-    uint8_t lock_cmd[2]   = {PISTON_I2C_W_VAR_WRITE, 0x00};
 
     uint8_t v[5] = {0};
     v[0] = addr;
@@ -985,9 +981,6 @@ bool PIS_move_to_volume(float volume)
 
     artemis_piston_i2c_send_msg(v, 5, true);
     pis_delay_ms(150);
-
-    artemis_piston_i2c_send_msg(lock_cmd, 2, true);
-    pis_delay_ms(50);
 
     return true;
 }
@@ -1128,59 +1121,40 @@ void PIS_Reset(void)
 
     // 3500ms allows slave MCU to fully boot, initialize DRV8874, and re-enable I2C
     pis_delay_ms(3500);
-
-    // Relock write mode after slave reboot
-    artemis_piston_set_write_mode(false);
-    pis_delay_ms(50);
 }
 
 void PIS_move_to_full(void)
 {
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
     uint8_t move_cmd[2]   = {PISTON_I2C_RW_MOV_FULL, 0x01};
-    uint8_t lock_cmd[2]   = {PISTON_I2C_W_VAR_WRITE, 0x00};
 
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
     pis_delay_ms(100);
 
     artemis_piston_i2c_send_msg(move_cmd, 2, true);
     pis_delay_ms(150);
-
-    artemis_piston_i2c_send_msg(lock_cmd, 2, true);
-    pis_delay_ms(50);
 }
 
 void PIS_move_to_zero(void)
 {
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
     uint8_t move_cmd[2]   = {PISTON_I2C_RW_MOV_ZERO, 0x01};
-    uint8_t lock_cmd[2]   = {PISTON_I2C_W_VAR_WRITE, 0x00};
 
-    // 1. Direct unlock write
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
     pis_delay_ms(100);
 
-    // 2. Unconditionally transmit the move-to-zero command byte
     artemis_piston_i2c_send_msg(move_cmd, 2, true);
     pis_delay_ms(150);
-
-    // 3. Relock
-    artemis_piston_i2c_send_msg(lock_cmd, 2, true);
-    pis_delay_ms(50);
 }
 
 void PIS_reset_to_full(void)
 {
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
     uint8_t move_cmd[2]   = {PISTON_I2C_RW_RST_FULL, 0x01};
-    uint8_t lock_cmd[2]   = {PISTON_I2C_W_VAR_WRITE, 0x00};
 
     artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
     pis_delay_ms(100);
 
     artemis_piston_i2c_send_msg(move_cmd, 2, true);
     pis_delay_ms(150);
-
-    artemis_piston_i2c_send_msg(lock_cmd, 2, true);
-    pis_delay_ms(50);
 }

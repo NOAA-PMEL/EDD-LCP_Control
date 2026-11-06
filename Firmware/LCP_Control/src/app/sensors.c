@@ -73,9 +73,15 @@ bool SENS_initialize(void)
     /* initialize pressure sensor */
     success = DEPTH_initialize(DEPTH_Keller_PR9LX);
 
+    /* Allow S9 serial interface and wet rail to settle after K9LX query */
+    am_util_delay_ms(200);
+
     /* initialize temperature sensor */
     success = TEMP_initialize(TEMP_SoundNine_OEM);
     ARTEMIS_DEBUG_PRINTF("--> STEP A: S9 Finished.\n");
+
+    /* ADD DELAY HERE: Allow Piston slave MCU to complete boot before I2C queries */
+    am_util_delay_ms(500);
 
     /* 1. Run Piston Board initialization FIRST (Restores working LOG_0007 order) */
     success = PIS_initialize();

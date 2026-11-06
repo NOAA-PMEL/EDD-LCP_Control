@@ -597,8 +597,19 @@ uint32_t MAX14830_UART_Read(eMAX18430_ComPort_t port, uint8_t *pData)
     }
     else
     {
-        /* Pre-scheduler bootup fallback */
-        am_util_delay_ms(25);
+        /* Pre-scheduler bootup fallback: actively poll hardware FIFO for multi-byte S9 response */
+        for (uint16_t timeout = 0; timeout < 300; timeout++)
+        {
+            module_MAX14830_Handle_IRQ();
+            if (BufferC_Get_Size(pBuf) > 0)
+            {
+                am_util_delay_ms(25);
+                module_MAX14830_Handle_IRQ();
+                break;
+            }
+            am_util_delay_ms(1);
+        }
+
         while (BufferC_Get_Size(pBuf) > 0)
         {
             BufferC_getc(pBuf, (char *)pData);
