@@ -200,7 +200,9 @@ const am_hal_gpio_pincfg_t g_AM_BSP_GPIO_IRIDIUM_NET_AVAIL =
 {
     .uFuncSel            = AM_HAL_PIN_24_GPIO,
     .eDriveStrength      = AM_HAL_GPIO_PIN_DRIVESTRENGTH_2MA,
-    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE
+    .eGPInput            = AM_HAL_GPIO_PIN_INPUT_ENABLE,
+    .eGPOutcfg           = AM_HAL_GPIO_PIN_OUTCFG_DISABLE,
+    .ePullup             = AM_HAL_GPIO_PIN_PULLDOWN_100K
 };
 
 //*****************************************************************************

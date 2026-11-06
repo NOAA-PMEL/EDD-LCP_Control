@@ -142,8 +142,8 @@ void artemis_i9603n_initialize(void)
 	module.power.pin = AM_BSP_GPIO_IRIDIUM_ON;
 	module.rx.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_IRIDIUM_UART_RX;
 	module.rx.pin = AM_BSP_GPIO_IRIDIUM_UART_RX;
-	module.tx.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_IRIDIUM_UART_RX;
-	module.tx.pin = AM_BSP_GPIO_IRIDIUM_UART_RX;
+	module.tx.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_IRIDIUM_UART_TX;
+	module.tx.pin = AM_BSP_GPIO_IRIDIUM_UART_TX;
 	module.ring_ind.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_IRIDIUM_RING_IND;
 	module.ring_ind.pin = AM_BSP_GPIO_IRIDIUM_RING_IND;
 	module.net_avail.pinConfig = (am_hal_gpio_pincfg_t *)&g_AM_BSP_GPIO_IRIDIUM_NET_AVAIL;

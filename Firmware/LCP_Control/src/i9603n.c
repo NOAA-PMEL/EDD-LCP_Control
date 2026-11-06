@@ -339,7 +339,7 @@ void task_Iridium_satellite_visibility (TaskHandle_t *xSatellite)
 void task_Iridium_satellite (void)
 {
     sat_TaskLive = true;
-    /* 1 seocnds period delay */
+    /* 1 seconds period delay */
     uint32_t period = xDelay1000ms;
     ARTEMIS_DEBUG_PRINTF("Iridium :: Satellite delay PERIOD=%dms, %isec\n", period, SATELLITE_TIMER);
 
@@ -351,8 +351,19 @@ void task_Iridium_satellite (void)
 
     while(run)
     {
-        /* check satellite visibility */
+        /* Check physical network availability pin */
         check = artemis_i9603n_is_network_available();
+        
+        /* Validate against actual RF signal quality (CSQ) */
+        if (check)
+        {
+            uint8_t csq_data[10] = {0};
+            uint8_t csq_len = i9603n_signal_quality(csq_data);
+            if (csq_len == 0 || csq_data[0] == 0)
+            {
+                check = false; // Line is floating or high, but modem RF carrier has 0 bars
+            }
+        }
         ARTEMIS_DEBUG_PRINTF("Iridium :: Satellite visibility check=%i\n", (uint8_t)check);
 
         if (check)
@@ -373,6 +384,7 @@ void task_Iridium_satellite (void)
             taskENTER_CRITICAL();
             xVisible = false;
             taskEXIT_CRITICAL();
+            visibility_count = 0; // Reset consecutive counter if signal drops
         }
 
         timer++;
@@ -384,6 +396,16 @@ void task_Iridium_satellite (void)
 
         vTaskDelay(period);
     }
+
+    timer++;
+    if (timer >= SATELLITE_TIMER)
+    {
+        run = false;
+        timer = 0;
+    }
+
+    vTaskDelay(period);
+    
     /* delete the task */
     ARTEMIS_DEBUG_PRINTF("Iridium :: Satellite Task Self-Deleting...\n");
     sat_TaskLive = false;
