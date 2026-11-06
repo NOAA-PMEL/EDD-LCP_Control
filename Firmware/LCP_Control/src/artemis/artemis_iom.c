@@ -1,4 +1,3 @@
-  
 ///
 /// @file artemis_iom.c
 ///
@@ -10,27 +9,6 @@
 #include "am_util.h"
 
 ///
-///
-///
-///
-/// @brief Toggles SCL up to 9 times if SDA is stuck low by a slave device
-///
-static void artemis_iom_recover_i2c_bus(uint32_t scl_pin, uint32_t sda_pin)
-{
-    uint32_t sda_state = 1;
-    am_hal_gpio_pinconfig(sda_pin, g_AM_HAL_GPIO_INPUT);
-    am_hal_gpio_state_read(sda_pin, AM_HAL_GPIO_INPUT_READ, &sda_state);
-
-    if (sda_state == 0) // SDA is stuck low by a slave
-    {
-        ARTEMIS_DEBUG_PRINTF("IOM :: WARNING - SDA stuck low! Pulsing SCL to clear slave...\n");
-
-        // 1. Configure SCL as open-drain output, SDA as input
-        am_hal_gpio_pinconfig(scl_pin, g_AM_HAL_GPIO_OPENDRAIN);
-
-        // 2. Pulse SCL up to 9 times until slave releases SDA
-        for (uint8_t i = 0; i < 9; i++)
-        {///
 /// @brief Toggles SCL up to 9 times if SDA is stuck low by a slave device
 ///
 static void artemis_iom_recover_i2c_bus(uint32_t scl_pin, uint32_t sda_pin)
