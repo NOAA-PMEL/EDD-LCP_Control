@@ -729,7 +729,6 @@ void task_move_piston_to_volume(void)
                     {
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Board resetting (volume missed)\n");
                         PIS_Reset();
-                        pis_delay_ms(500);
                         ARTEMIS_DEBUG_PRINTF("PISTON :: Setting volume = %0.5f\n", piston.setpoint_v);
                         PIS_move_to_volume(piston.setpoint_v);
                         pis_delay_ms(2000);
@@ -937,6 +936,7 @@ bool PIS_move_to_length(float length)
     conv.fLength = length;
 
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
+
     uint8_t v[5] = {0};
     v[0] = addr;
     for (uint8_t i = 0; i < 4; i++)
@@ -944,31 +944,9 @@ bool PIS_move_to_length(float length)
         v[i + 1] = (conv.u32Length >> (i * 8)) & 0xFF;
     }
 
-    /* Bounded retry loop: max 3 attempts (~225ms worst-case) */
-    uint8_t readback = 0;
-    bool unlocked = false;
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(100);
 
-    for (uint8_t attempt = 0; attempt < 3; attempt++)
-    {
-        artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
-        pis_delay_ms(50);
-
-        readback = 0;
-        artemis_piston_i2c_read(PISTON_I2C_W_VAR_WRITE, &readback, 1);
-        if (readback == 0xA5)
-        {
-            unlocked = true;
-            break;
-        }
-        pis_delay_ms(25);
-    }
-
-    if (!unlocked)
-    {
-        ARTEMIS_DEBUG_PRINTF("PISTON :: Warning, write unlock unverified (0x%02X), sending setpoint anyway\n", readback);
-    }
-
-    /* Transmit target position payload regardless of handshake state */
     artemis_piston_i2c_send_msg(v, 5, true);
     pis_delay_ms(150);
 
@@ -990,6 +968,7 @@ bool PIS_move_to_volume(float volume)
     conv.dVolume = volume;
 
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
+
     uint8_t v[5] = {0};
     v[0] = addr;
     for (uint8_t i = 0; i < 4; i++)
@@ -997,31 +976,9 @@ bool PIS_move_to_volume(float volume)
         v[i + 1] = (conv.u32Volume >> (i * 8)) & 0xFF;
     }
 
-    /* Bounded retry loop: max 3 attempts (~225ms worst-case) */
-    uint8_t readback = 0;
-    bool unlocked = false;
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(100);
 
-    for (uint8_t attempt = 0; attempt < 3; attempt++)
-    {
-        artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
-        pis_delay_ms(50);
-
-        readback = 0;
-        artemis_piston_i2c_read(PISTON_I2C_W_VAR_WRITE, &readback, 1);
-        if (readback == 0xA5)
-        {
-            unlocked = true;
-            break;
-        }
-        pis_delay_ms(25);
-    }
-
-    if (!unlocked)
-    {
-        ARTEMIS_DEBUG_PRINTF("PISTON :: Warning, volume move unlock unverified (0x%02X), sending setpoint anyway\n", readback);
-    }
-
-    /* Transmit target volume payload regardless of handshake state */
     artemis_piston_i2c_send_msg(v, 5, true);
     pis_delay_ms(150);
 
@@ -1171,31 +1128,9 @@ void PIS_move_to_full(void)
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
     uint8_t move_cmd[2]   = {PISTON_I2C_RW_MOV_FULL, 0x01};
 
-    uint8_t readback = 0;
-    bool unlocked = false;
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(100);
 
-    /* Bounded retry loop: max 3 attempts (~225ms worst-case) */
-    for (uint8_t attempt = 0; attempt < 3; attempt++)
-    {
-        artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
-        pis_delay_ms(50);
-
-        readback = 0;
-        artemis_piston_i2c_read(PISTON_I2C_W_VAR_WRITE, &readback, 1);
-        if (readback == 0xA5)
-        {
-            unlocked = true;
-            break;
-        }
-        pis_delay_ms(25);
-    }
-
-    if (!unlocked)
-    {
-        ARTEMIS_DEBUG_PRINTF("PISTON :: Warning, move_to_full unlock unverified (0x%02X), sending move anyway\n", readback);
-    }
-
-    /* Transmit move-to-full command */
     artemis_piston_i2c_send_msg(move_cmd, 2, true);
     pis_delay_ms(150);
 }
@@ -1205,28 +1140,8 @@ void PIS_move_to_zero(void)
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
     uint8_t move_cmd[2]   = {PISTON_I2C_RW_MOV_ZERO, 0x01};
 
-    uint8_t readback = 0;
-    bool unlocked = false;
-
-    for (uint8_t attempt = 0; attempt < 3; attempt++)
-    {
-        artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
-        pis_delay_ms(50);
-
-        readback = 0;
-        artemis_piston_i2c_read(PISTON_I2C_W_VAR_WRITE, &readback, 1);
-        if (readback == 0xA5)
-        {
-            unlocked = true;
-            break;
-        }
-        pis_delay_ms(25);
-    }
-
-    if (!unlocked)
-    {
-        ARTEMIS_DEBUG_PRINTF("PISTON :: Warning, zero move unlock unverified (0x%02X), sending move anyway\n", readback);
-    }
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(100);
 
     artemis_piston_i2c_send_msg(move_cmd, 2, true);
     pis_delay_ms(150);
@@ -1237,31 +1152,9 @@ void PIS_reset_to_full(void)
     uint8_t unlock_cmd[2] = {PISTON_I2C_W_VAR_WRITE, 0xA5};
     uint8_t move_cmd[2]   = {PISTON_I2C_RW_RST_FULL, 0x01};
 
-    uint8_t readback = 0;
-    bool unlocked = false;
+    artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
+    pis_delay_ms(100);
 
-    /* Bounded retry loop: max 3 attempts (~225ms worst-case) */
-    for (uint8_t attempt = 0; attempt < 3; attempt++)
-    {
-        artemis_piston_i2c_send_msg(unlock_cmd, 2, true);
-        pis_delay_ms(50);
-
-        readback = 0;
-        artemis_piston_i2c_read(PISTON_I2C_W_VAR_WRITE, &readback, 1);
-        if (readback == 0xA5)
-        {
-            unlocked = true;
-            break;
-        }
-        pis_delay_ms(25);
-    }
-
-    if (!unlocked)
-    {
-        ARTEMIS_DEBUG_PRINTF("PISTON :: Warning, reset_to_full unlock unverified (0x%02X), sending reset anyway\n", readback);
-    }
-
-    /* Transmit reset-to-full encoder calibration command */
     artemis_piston_i2c_send_msg(move_cmd, 2, true);
     pis_delay_ms(150);
 }
