@@ -29,7 +29,7 @@
 #define HOUSING_RADIUS                      ( SYS_HOUSING_DIAMETER / 2.0f )
 #define HOUSING_RADIUS_SRQ                  ( HOUSING_RADIUS * HOUSING_RADIUS )
 #define HOUSING_LENGTH                      ( SYS_HOUSING_LENGTH )
-#define HOUSING_VOLUME                      ( 650.00f )
+#define HOUSING_VOLUME                      ( 648.34f ) // in³ (646.54 baseline + 1.80 ballast displacement)
 
 #define SYSTEM_MAX_VOLUME                   ( HOUSING_VOLUME + 121.94f )
 #define SYSTEM_MIN_VOLUME                   ( HOUSING_VOLUME - 0.01f )
@@ -42,7 +42,7 @@
 #define DRAG_PLATE_AREA                     ( PI * DRAG_PLATE_RADIUS_SRQ )
 
 //#define SYSTEM_MASS_EST                     ( 24.17f * 1.0 ) //0.453592    /* in kg */
-#define SYSTEM_MASS_EST                     ( 24.423f  * 1.0 ) //0.453592   23.845 lb housing + 0.578lb ballast /* in lbs */
+#define SYSTEM_MASS_EST                     ( 24.365f  * 1.0 ) //0.453592   23.845 lb housing + 0.520lb ballast /* in lbs */
 #define SYSTEM_CROSSSECTION_AREA            ( DRAG_PLATE_AREA )
 
 #define CYLINDER_DRAG_COEFF                 ( 0.81f )
@@ -242,15 +242,15 @@
 #define PARK_TIME_SECOND                    ( 120 )    /* 2 mins */
 #define PARK_TIME                           ( 180 )    /* 3 mins */
 #define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
-#define PARK_DENSITY                        ( 1000.0f ) //should be as close to real density as possible
+#define PARK_DENSITY                        ( 999.8f ) //should be as close to real density as possible
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )
 #define PROFILE_FIRST_START_DATE            ( 1748001600 )   // Epoch, date and time of the start of the first profile
 #define PROFILE_SECOND_END_DATE             ( 1747943950 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
 #define PROFILE_DEPTH                       ( 3.7f ) //( 4.5f )
 #define PROFILE_DEPTH_ERR                   ( 0.1f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
-#define TO_PROFILE_DENSITY                  ( 1005.0f ) //should be the highest density
-#define PROFILE_DENSITY                     ( 1000.0f ) //should be the lowest density
+#define TO_PROFILE_DENSITY                  ( 1000.5f ) //should be the highest density
+#define PROFILE_DENSITY                     ( 999.0f ) //should be the lowest density
 #define CRUSH_DEPTH                         ( 10.0f )
 #define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 #define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
@@ -258,36 +258,36 @@
 
 #elif defined(__TEST_LAKE__)
 /** Lake Washington Dock Testing */
-#define AIR                                 ( false )   //flag to tell if LCP starts fully retracted for Air Deployment
+#define AIR                                 ( true )   //flag to tell if LCP starts fully retracted for Air Deployment
 #define BENCH_PROFILE                       ( false )   //flag to use when setting park time if using a bench test pressure profile
-#define MOORED                              ( true )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
-#define POPUP                               ( true )   //flag to tel LCP to sit on bottom until POPUP_DATE
+#define MOORED                              ( false )   //flag to tel LCP it is moored which changes park and profile depth logic in the move-to states if LCP detects the bottom
+#define POPUP                               ( false )   //flag to tel LCP to sit on bottom until POPUP_DATE
 #define PROFILE_SECOND                      ( true )   //flag to tel LCP to first profile every PARK_TIME_SECOND, then every PARK_TIME after reaching PROFILE_SECOND_END_DATE
 #define POPUP_RATE                          ( 1.0f / 60.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1754355600 )    //Epoch, date and time when LCP pops up
 #define BALLAST_DEPTH                       ( 1.5f )
-#define BALLAST_DEPTH_SAMPLE_RATE           (  1.0f / 10.0f )
-#define BALLAST_DEPTH_PROFILE               ( 4.0f )
-#define MOVE_TO_PARK_SAMPLE_RATE            ( 1.0f )
+#define BALLAST_DEPTH_SAMPLE_RATE           (  1.0f / 2.0f )
+#define BALLAST_DEPTH_PROFILE               ( 3.0f )
+#define MOVE_TO_PARK_SAMPLE_RATE            ( 1.0f / 2.0f )
 #define PARK_DEPTH                          ( 7.6f )
 #define PARK_DEPTH_ERR                      ( 1.5f )
 #define PARK_DEPTH_MAX                      ( 200.0f )
-#define PARK_RATE                           ( 1.0f / 300.0f ) /* 5 min */
-#define PARK_RATE_FIRST                     ( 1.0f / 60.0f  )
-#define PARK_RATE_SECOND                    ( 1.0f / 120.0f )
-#define PARK_TIME_FIRST                     ( 120 )    /* 2 min */
-#define PARK_TIME_SECOND                    ( 1800 )    /* 30 min */
-#define PARK_TIME                           ( 3600 )    /* 1 hrs */
+#define PARK_RATE                           ( 1.0f / 540.0f ) /* 9 min */
+#define PARK_RATE_FIRST                     ( 1.0f / 30.0f  )
+#define PARK_RATE_SECOND                    ( 1.0f / 240.0f )
+#define PARK_TIME_FIRST                     ( 300 )    /* 5 min */
+#define PARK_TIME_SECOND                    ( 3600 )    /* 1 hr */
+#define PARK_TIME                           ( 10800 )    /* 3 hrs */
 #define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
-#define PARK_DENSITY                        ( 1037.0f )
-#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f )
+#define PARK_DENSITY                        ( 999.8f )
+#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f / 2.0f )
 #define PROFILE_FIRST_START_DATE            ( 1751400000 )   // Epoch, date and time of the start of the first profile
-#define PROFILE_SECOND_END_DATE             ( 1754362800 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
+#define PROFILE_SECOND_END_DATE             ( 1794268800 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
 #define PROFILE_DEPTH                       ( 8.5f )
 #define PROFILE_DEPTH_ERR                   ( 2.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
-#define TO_PROFILE_DENSITY                  ( 1012.5f )
-#define PROFILE_DENSITY                     ( 1009.1f )
+#define TO_PROFILE_DENSITY                  ( 1000.5f )
+#define PROFILE_DENSITY                     ( 999.0f )
 #define CRUSH_DEPTH                         ( 220.0f )
 #define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 #define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
@@ -376,29 +376,29 @@
 #define PROFILE_SECOND                      ( true )   //flag to tel LCP to first profile every PARK_TIME_SECOND, then every PARK_TIME after reaching PROFILE_SECOND_END_DATE
 #define POPUP_RATE                          ( 1.0f / 86400.0f )   // seconds, instrument park measurment rate while waiting for POPUP_DATE
 #define POPUP_DATE                          ( 1767225600 )    //Epoch, date and time when LCP pops up
-#define BALLAST_DEPTH                       ( 1.5f )
-#define BALLAST_DEPTH_SAMPLE_RATE           (  1.0f / 10.0f )
+#define BALLAST_DEPTH                       ( 4.0f )
+#define BALLAST_DEPTH_SAMPLE_RATE           (  1.0f / 2.0f )
 #define BALLAST_DEPTH_PROFILE               ( 8.0f )
 #define MOVE_TO_PARK_SAMPLE_RATE            ( 0.2f )
 #define PARK_DEPTH                          ( 170.0f ) //( 4.0f )
 #define PARK_DEPTH_ERR                      ( 15.0f )
 #define PARK_DEPTH_MAX                      ( 200.0f )
 #define PARK_RATE                           ( 1.0f / 540.0f )
-#define PARK_RATE_FIRST                     ( 1.0f / 60.0f  )
+#define PARK_RATE_FIRST                     ( 1.0f / 30.0f  )
 #define PARK_RATE_SECOND                    ( 1.0f / 240.0f )
 #define PARK_TIME_FIRST                     ( 3600 )    /* 1 hr */
 #define PARK_TIME_SECOND                    ( 10800 )    /* 3 hrs */
-#define PARK_TIME                           ( 21600 )    /* 6 hrs */
+#define PARK_TIME                           ( 43200 )    /* 12 hrs */
 #define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
-#define PARK_DENSITY                        ( 1027.0f )
+#define PARK_DENSITY                        ( 1027.6f )
 #define MOVE_TO_PROFILE_SAMPLE_RATE         ( 0.2f )
 #define PROFILE_FIRST_START_DATE            ( 1751400000 )   // Epoch, date and time of the start of the first profile
-#define PROFILE_SECOND_END_DATE             ( 1751958000 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
+#define PROFILE_SECOND_END_DATE             ( 1794960000 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
 #define PROFILE_DEPTH                       ( 200.0f ) //( 4.5f )
 #define PROFILE_DEPTH_ERR                   ( 1.0f )
 #define PROFILE_RATE                        ( SYSTEM_PROFILER_PROFILE_RATE )
-#define TO_PROFILE_DENSITY                  ( 1027.5f )
-#define PROFILE_DENSITY                     ( 1025.0f )
+#define TO_PROFILE_DENSITY                  ( 1027.8f )
+#define PROFILE_DENSITY                     ( 1025.2f )
 #define CRUSH_DEPTH                         ( 220.0f )
 #define PARK_POSITION_INCREMENT             ( PISTON_POSITION_INCREMENT )
 #define PARK_POSITION_INCREMENT2            ( PISTON_POSITION_INCREMENT2 )
