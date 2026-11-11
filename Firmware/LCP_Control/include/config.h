@@ -391,7 +391,7 @@
 #define PARK_TIME                           ( 43200 )    /* 12 hrs */
 #define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
 #define PARK_DENSITY                        ( 1027.6f )
-#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 0.2f )
+#define MOVE_TO_PROFILE_SAMPLE_RATE         ( 1.0f / 2.0f )
 #define PROFILE_FIRST_START_DATE            ( 1751400000 )   // Epoch, date and time of the start of the first profile
 #define PROFILE_SECOND_END_DATE             ( 1794960000 )   // Epoch, date and time of the end of the second profile definition after which it defaults to PARK_TIME and PARK_RATE
 #define PROFILE_DEPTH                       ( 200.0f ) //( 4.5f )

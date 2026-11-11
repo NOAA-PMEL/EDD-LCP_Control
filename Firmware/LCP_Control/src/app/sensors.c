@@ -258,87 +258,91 @@ static void EmptyEventQueue(QueueHandle_t eventQueue)
 
 void SENS_task_delete(TaskHandle_t xHandle)
 {
-    TaskStatus_t xTaskDetails;
-    Event_e xtdEvent = IDLE;
-    uint8_t loop_guard = 0; // Guard against infinite loop
-
-    while (loop_guard++ < 5) // Bounded to max 3.0s (60 * 50ms)
+    // Guard against NULL handles
+    if (xHandle == NULL)
     {
-        vTaskGetInfo(xHandle, &xTaskDetails, pdTRUE, eInvalid);
-        eTaskState eState = xTaskDetails.eCurrentState;
-        const char *task_name = xTaskDetails.pcTaskName;
+        return;
+    }
 
-        if ( (eState == eBlocked) || (eState == eSuspended) )
+    TaskStatus_t xTaskDetails;
+    vTaskGetInfo(xHandle, &xTaskDetails, pdFALSE, eInvalid);
+    const char *task_name = (xTaskDetails.pcTaskName != NULL) ? xTaskDetails.pcTaskName : "Unknown";
+
+    // 1. SIGNAL TASK TO STOP (Do this ONCE outside the wait loop)
+    taskENTER_CRITICAL();
+    if (am_util_string_strcmp(task_name, "Depth_Task") == 0)
+    {
+        xDepth_run = false;
+    }
+    else if (am_util_string_strcmp(task_name, "Temperature_Task") == 0)
+    {
+        xTemp_run = false;
+    }
+    else
+    {
+        xDepth_run = false;
+        xTemp_run = false;
+    }
+    taskEXIT_CRITICAL();
+
+    // 2. BREAK ACTIVE vTaskDelay (Immediately wakes the task from 30s / 240s sleep)
+#if (INCLUDE_xTaskAbortDelay == 1)
+    xTaskAbortDelay(xHandle);
+#endif
+
+    // 3. WAIT GRACEFULLY FOR TASK TO SELF-TERMINATE (Up to 3.0 seconds: 60 * 50ms)
+    uint8_t loop_guard = 0;
+    bool task_deleted = false;
+
+    while (loop_guard++ < 60)
+    {
+        eTaskState eState = eTaskGetState(xHandle);
+
+        if ((eState == eDeleted) || (eState == eInvalid))
         {
-            ARTEMIS_DEBUG_PRINTF("SENSORS :: %s in eBlocked state\n", task_name);
-            if ( am_util_string_strcmp(task_name, "Depth_Task") == 0 )
-            {
-                taskENTER_CRITICAL();
-                xDepth_run = false;
-                taskEXIT_CRITICAL();
-                ReceiveEvent(xTDEventQueue, &xtdEvent);
-                EmptyEventQueue(xDepthEventQueue);
-            }
-            else if ( am_util_string_strcmp(task_name, "Temperature_Task") == 0 )
-            {
-                taskENTER_CRITICAL();
-                xTemp_run = false;
-                taskEXIT_CRITICAL();
-                ReceiveEvent(xTDEventQueue, &xtdEvent);
-                EmptyEventQueue(xTempEventQueue);
-            }
-            else
-            {
-                ARTEMIS_DEBUG_PRINTF("SENSORS :: %s is unknonwn\n", task_name);
-                taskENTER_CRITICAL();
-                xTemp_run = false;
-                xDepth_run = false;
-                taskEXIT_CRITICAL();
-                EmptyEventQueue(xTempEventQueue);
-                EmptyEventQueue(xDepthEventQueue);
-                break;
-            }
-        }
-        else if ( (eState == eDeleted) || (eState == eInvalid) )
-        {
-            ARTEMIS_DEBUG_PRINTF("SENSORS :: %s->Deleted\n", task_name);
-            if(xSemaphoreTake(xTDSemaphore, xDelay10ms) == pdTRUE)
-            {
-                xSemaphoreGive(xTDSemaphore);
-                ARTEMIS_DEBUG_PRINTF("SENSORS :: %s, xTDsemaphore->available\n", task_name);
-            }
-            else
-            {
-                ARTEMIS_DEBUG_PRINTF("SENSORS :: %s, xTDsemaphore->not available\n", task_name);
-            }
+            task_deleted = true;
+            ARTEMIS_DEBUG_PRINTF("SENSORS :: %s->Deleted gracefully\n", task_name);
             break;
         }
-        else
-        {
-            /* Handles eReady, eRunning, or unknown transient states silently while waiting */
-            if (eState != eReady && eState != eRunning)
-            {
-                ARTEMIS_DEBUG_PRINTF("SENSORS :: %s is in unknown state\n", task_name);
-                if(xSemaphoreTake(xTDSemaphore, xDelay10ms) == pdTRUE)
-                {
-                    xSemaphoreGive(xTDSemaphore);
-                    ARTEMIS_DEBUG_PRINTF("SENSORS :: %s, xTDsemaphore->available\n", task_name);
-                }
-                else
-                {
-                    ARTEMIS_DEBUG_PRINTF("SENSORS :: %s, xTDsemaphore->not available\n", task_name);
-                }
-                break;
-            }
-        }
+
         vTaskDelay(xDelay50ms);
     }
 
-    // Force-kill fallback only if task failed to self-delete within 3 seconds
-    if (loop_guard >= 5)
+    // 4. FALLBACK: FORCE DELETE ONLY IF TASK IS COMPLETELY HUNG
+    if (!task_deleted)
     {
-        ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, %s timed out waiting to delete. Forcing.\n", xTaskDetails.pcTaskName);
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, %s timed out waiting to delete. Forcing.\n", task_name);
         vTaskDelete(xHandle);
+    }
+
+    // 5. POST-DELETION CLEANUP (Clean queues and verify semaphores ONCE at the end)
+    Event_e xtdEvent = IDLE;
+    if (am_util_string_strcmp(task_name, "Depth_Task") == 0)
+    {
+        ReceiveEvent(xTDEventQueue, &xtdEvent);
+        EmptyEventQueue(xDepthEventQueue);
+    }
+    else if (am_util_string_strcmp(task_name, "Temperature_Task") == 0)
+    {
+        ReceiveEvent(xTDEventQueue, &xtdEvent);
+        EmptyEventQueue(xTempEventQueue);
+    }
+    else
+    {
+        ReceiveEvent(xTDEventQueue, &xtdEvent);
+        EmptyEventQueue(xDepthEventQueue);
+        EmptyEventQueue(xTempEventQueue);
+    }
+
+    // Verify semaphore availability
+    if (xSemaphoreTake(xTDSemaphore, xDelay10ms) == pdTRUE)
+    {
+        xSemaphoreGive(xTDSemaphore);
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: %s, xTDsemaphore->available\n", task_name);
+    }
+    else
+    {
+        ARTEMIS_DEBUG_PRINTF("SENSORS :: WARNING, %s, xTDsemaphore->not available\n", task_name);
     }
 }
 
@@ -482,6 +486,11 @@ void task_depth(void)
         /* 1. Sleep until scheduled sample tick */
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
+        if (!xDepth_run)
+        {
+            break; // Abort signal received: skip power-on and hardware reads
+        }
+
         /* 2. Cold-boot sensor and enable port ONLY if duty-cycling */
         if (bPowerCycle)
         {
@@ -579,6 +588,11 @@ void task_temperature(void)
     {
         /* 1. Sleep until next scheduled sample tick */
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
+
+        if (!xTemp_run)
+        {
+            break; // Abort signal received: skip power-on and S9 serial reads
+        }
 
         /* 2. Cold boot and enable MAX14830 port ONLY if duty-cycling (> 60s) */
         if (bPowerCycle)
