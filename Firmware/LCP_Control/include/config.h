@@ -386,7 +386,7 @@
 #define PARK_RATE                           ( 1.0f / 540.0f )
 #define PARK_RATE_FIRST                     ( 1.0f / 30.0f  )
 #define PARK_RATE_SECOND                    ( 1.0f / 240.0f )
-#define PARK_TIME_FIRST                     ( 3600 )    /* 1 hr */
+#define PARK_TIME_FIRST                     ( 7200 )    /* 2 hr */
 #define PARK_TIME_SECOND                    ( 10800 )    /* 3 hrs */
 #define PARK_TIME                           ( 43200 )    /* 12 hrs */
 #define PARK_TIME_INCREMENT                 ( 0 )  /* seconds, default 0, this is used to increment the PARK_TIME (profile start) by a set amount each profile to account for tide time shifts, needs to be calculated using the PARK_TIME*/
