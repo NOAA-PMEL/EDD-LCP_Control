@@ -379,7 +379,7 @@
 #define BALLAST_DEPTH                       ( 4.0f )
 #define BALLAST_DEPTH_SAMPLE_RATE           (  1.0f / 2.0f )
 #define BALLAST_DEPTH_PROFILE               ( 8.0f )
-#define MOVE_TO_PARK_SAMPLE_RATE            ( 0.2f )
+#define MOVE_TO_PARK_SAMPLE_RATE            ( 1.0f / 2.0f )
 #define PARK_DEPTH                          ( 170.0f ) //( 4.0f )
 #define PARK_DEPTH_ERR                      ( 15.0f )
 #define PARK_DEPTH_MAX                      ( 200.0f )
